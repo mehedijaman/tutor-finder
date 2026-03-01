@@ -32,6 +32,11 @@ it('seeds granular app wide permissions', function () {
         'tutor-password-reset',
         'guardian-password-reset',
         'activity-log-view',
+        'backup-view',
+        'backup-run',
+        'backup-clean',
+        'backup-download',
+        'backup-delete',
     ];
 
     foreach ($permissionNames as $permissionName) {

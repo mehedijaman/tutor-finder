@@ -31,6 +31,11 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'tutor-password-reset',
             'guardian-password-reset',
             'activity-log-view',
+            'backup-view',
+            'backup-run',
+            'backup-clean',
+            'backup-download',
+            'backup-delete',
         )->values()->all();
 
         Permission::query()

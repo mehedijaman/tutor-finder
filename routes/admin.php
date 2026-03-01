@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
+use App\Http\Controllers\Admin\BackupManagementController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\RoleController;
@@ -21,6 +22,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
             ->middleware('permission:activity-log-view')
             ->name('activity-logs.index');
+        Route::get('/backups', [BackupManagementController::class, 'index'])
+            ->middleware('permission:backup-view')
+            ->name('backups.index');
+        Route::post('/backups/run', [BackupManagementController::class, 'run'])
+            ->middleware('permission:backup-run')
+            ->name('backups.run');
+        Route::post('/backups/clean', [BackupManagementController::class, 'clean'])
+            ->middleware('permission:backup-clean')
+            ->name('backups.clean');
+        Route::get('/backups/download', [BackupManagementController::class, 'download'])
+            ->middleware('permission:backup-download')
+            ->name('backups.download');
+        Route::delete('/backups/file', [BackupManagementController::class, 'destroy'])
+            ->middleware('permission:backup-delete')
+            ->name('backups.destroy');
 
         Route::get('/users', [AdminUserController::class, 'index'])
             ->middleware('permission:admin-user-view')
