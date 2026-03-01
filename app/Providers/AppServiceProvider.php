@@ -9,6 +9,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -35,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureRateLimiting();
+        $this->configureLogViewerAuthorization();
     }
 
     /**
@@ -69,5 +71,31 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(10)->by('otp-verify:'.$userId.'|'.$request->ip());
         });
+    }
+
+    /**
+     * Configure Log Viewer gates using application permissions.
+     */
+    protected function configureLogViewerAuthorization(): void
+    {
+        if (! class_exists(\Opcodes\LogViewer\Facades\LogViewer::class)) {
+            return;
+        }
+
+        Gate::define('viewLogViewer', fn (mixed $user): bool => $this->canAccessPermission($user, 'log-viewer-view'));
+        Gate::define('downloadLogFile', fn (mixed $user, mixed $file = null): bool => $this->canAccessPermission($user, 'log-viewer-download'));
+        Gate::define('downloadLogFolder', fn (mixed $user, mixed $folder = null): bool => $this->canAccessPermission($user, 'log-viewer-download'));
+        Gate::define('deleteLogFile', fn (mixed $user, mixed $file = null): bool => $this->canAccessPermission($user, 'log-viewer-delete'));
+        Gate::define('deleteLogFolder', fn (mixed $user, mixed $folder = null): bool => $this->canAccessPermission($user, 'log-viewer-delete'));
+    }
+
+    /**
+     * Check whether the given authenticated user has a permission.
+     */
+    protected function canAccessPermission(mixed $user, string $permission): bool
+    {
+        return is_object($user)
+            && method_exists($user, 'can')
+            && (bool) $user->can($permission);
     }
 }

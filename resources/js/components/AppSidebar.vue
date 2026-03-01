@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import {
+    FileText,
     GraduationCap,
     History,
     HardDrive,
@@ -37,6 +38,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Roles', href: '/admin/roles', icon: Shield },
             { title: 'Activity Logs', href: '/admin/activity-logs', icon: History },
             { title: 'Backups', href: '/admin/backups', icon: HardDrive },
+            { title: 'Log Viewer', href: '/admin/log-viewer', icon: FileText, fullPage: true },
             { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
             { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
         ];

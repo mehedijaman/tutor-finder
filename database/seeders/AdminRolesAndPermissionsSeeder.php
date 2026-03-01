@@ -36,6 +36,9 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'backup-clean',
             'backup-download',
             'backup-delete',
+            'log-viewer-view',
+            'log-viewer-download',
+            'log-viewer-delete',
         )->values()->all();
 
         Permission::query()

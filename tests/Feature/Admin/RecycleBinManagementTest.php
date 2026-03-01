@@ -37,6 +37,9 @@ it('seeds granular app wide permissions', function () {
         'backup-clean',
         'backup-download',
         'backup-delete',
+        'log-viewer-view',
+        'log-viewer-download',
+        'log-viewer-delete',
     ];
 
     foreach ($permissionNames as $permissionName) {
