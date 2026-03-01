@@ -1,6 +1,16 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    FolderGit2,
+    GraduationCap,
+    LayoutGrid,
+    MessageSquareText,
+    Shield,
+    Users,
+    UserRound,
+} from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -17,13 +27,32 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage();
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const role = page.props.auth?.user?.role;
+
+    if (role === 'admin') {
+        return [
+            { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
+            { title: 'Admin Users', href: '/admin/users', icon: Users },
+            { title: 'Roles', href: '/admin/roles', icon: Shield },
+            { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
+            { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
+            { title: 'SMS Settings', href: '/admin/sms-settings', icon: MessageSquareText },
+        ];
+    }
+
+    if (role === 'tutor') {
+        return [
+            { title: 'Dashboard', href: '/tutor/dashboard', icon: LayoutGrid },
+        ];
+    }
+
+    return [
+        { title: 'Dashboard', href: '/guardian/dashboard', icon: LayoutGrid },
+    ];
+});
 
 const footerNavItems: NavItem[] = [
     {

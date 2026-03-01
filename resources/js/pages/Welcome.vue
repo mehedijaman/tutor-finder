@@ -30,7 +30,7 @@ withDefaults(
                         Available today
                     </span>
                     <span>📞 +1 (000) 000-0000</span>
-                    <span>✉️ hello@yourdomain.com</span>
+                    <span>✉️ hello@tutorfinder.com</span>
                 </div>
                 <div class="flex items-center gap-4">
                     <!-- Changed FAQ -> Blog -->
@@ -71,18 +71,27 @@ withDefaults(
 
                 <div class="flex items-center gap-3">
                     <Link
-                        :href="login()"
-                        class="hidden sm:inline-flex text-sm font-medium text-blue-700 hover:text-blue-800"
-                    >
-                        Login
-                    </Link>
-                    <Link
-                        v-if="canRegister"
-                        :href="register()"
+                        v-if="$page.props.auth.user"
+                        :href="dashboard()"
                         class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition"
                     >
-                        Join Now
+                        Dashboard
                     </Link>
+                    <template v-else>
+                        <Link
+                            :href="login()"
+                            class="hidden sm:inline-flex text-sm font-medium text-blue-700 hover:text-blue-800"
+                        >
+                            Login
+                        </Link>
+                        <Link
+                            v-if="canRegister"
+                            :href="register()"
+                            class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition"
+                        >
+                            Join Now
+                        </Link>
+                    </template>
                 </div>
             </div>
         </div>

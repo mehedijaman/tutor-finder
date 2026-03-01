@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Fortify\Features;
 
 test('login screen can be rendered', function () {
@@ -16,10 +15,11 @@ test('users can authenticate using the login screen', function () {
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
         'password' => 'password',
+        'role' => 'guardian',
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('guardian.dashboard', absolute: false));
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {
@@ -43,6 +43,7 @@ test('users with two factor enabled are redirected to two factor challenge', fun
     $response = $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'password',
+        'role' => 'guardian',
     ]);
 
     $response->assertRedirect(route('two-factor.login'));
@@ -56,6 +57,7 @@ test('users can not authenticate with invalid password', function () {
     $this->post(route('login.store'), [
         'email' => $user->email,
         'password' => 'wrong-password',
+        'role' => 'guardian',
     ]);
 
     $this->assertGuest();
@@ -73,11 +75,18 @@ test('users can logout', function () {
 test('users are rate limited', function () {
     $user = User::factory()->create();
 
-    RateLimiter::increment(md5('login'.implode('|', [$user->email, '127.0.0.1'])), amount: 5);
+    foreach (range(1, 5) as $attempt) {
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+            'role' => 'guardian',
+        ]);
+    }
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
         'password' => 'wrong-password',
+        'role' => 'guardian',
     ]);
 
     $response->assertTooManyRequests();

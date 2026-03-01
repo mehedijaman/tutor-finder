@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -26,6 +26,21 @@ import { store } from '@/routes/register';
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
+                    <Label>Register as</Label>
+                    <div class="flex items-center gap-6 rounded-md border p-3">
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="radio" name="role" value="guardian" checked />
+                            <span>Guardian</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="radio" name="role" value="tutor" />
+                            <span>Tutor</span>
+                        </label>
+                    </div>
+                    <InputError :message="errors.role" />
+                </div>
+
+                <div class="grid gap-2">
                     <Label for="name">Name</Label>
                     <Input
                         id="name"
@@ -41,12 +56,25 @@ import { store } from '@/routes/register';
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="phone">Phone number</Label>
+                    <Input
+                        id="phone"
+                        type="text"
+                        required
+                        :tabindex="2"
+                        autocomplete="tel"
+                        name="phone"
+                        placeholder="+15551234567"
+                    />
+                    <InputError :message="errors.phone" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="email">Email address (optional)</Label>
                     <Input
                         id="email"
                         type="email"
-                        required
-                        :tabindex="2"
+                        :tabindex="3"
                         autocomplete="email"
                         name="email"
                         placeholder="email@example.com"
@@ -60,7 +88,7 @@ import { store } from '@/routes/register';
                         id="password"
                         type="password"
                         required
-                        :tabindex="3"
+                        :tabindex="4"
                         autocomplete="new-password"
                         name="password"
                         placeholder="Password"
@@ -74,7 +102,7 @@ import { store } from '@/routes/register';
                         id="password_confirmation"
                         type="password"
                         required
-                        :tabindex="4"
+                        :tabindex="5"
                         autocomplete="new-password"
                         name="password_confirmation"
                         placeholder="Confirm password"
@@ -85,7 +113,7 @@ import { store } from '@/routes/register';
                 <Button
                     type="submit"
                     class="mt-2 w-full"
-                    tabindex="5"
+                    tabindex="6"
                     :disabled="processing"
                     data-test="register-user-button"
                 >
@@ -99,7 +127,7 @@ import { store } from '@/routes/register';
                 <TextLink
                     :href="login()"
                     class="underline underline-offset-4"
-                    :tabindex="6"
+                    :tabindex="7"
                     >Log in</TextLink
                 >
             </div>

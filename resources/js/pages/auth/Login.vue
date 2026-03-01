@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -12,17 +12,26 @@ import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
-defineProps<{
-    status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
-}>();
+defineProps({
+    status: {
+        type: String,
+        default: null,
+    },
+    canResetPassword: {
+        type: Boolean,
+        default: false,
+    },
+    canRegister: {
+        type: Boolean,
+        default: false,
+    },
+});
 </script>
 
 <template>
     <AuthBase
         title="Log in to your account"
-        description="Enter your email and password below to log in"
+        description="Enter your credentials below to continue"
     >
         <Head title="Log in" />
 
@@ -41,16 +50,31 @@ defineProps<{
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label>Login as</Label>
+                    <div class="flex items-center gap-6 rounded-md border p-3">
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="radio" name="role" value="guardian" checked />
+                            <span>Guardian</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="radio" name="role" value="tutor" />
+                            <span>Tutor</span>
+                        </label>
+                    </div>
+                    <InputError :message="errors.role" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="email">Email or phone</Label>
                     <Input
                         id="email"
-                        type="email"
+                        type="text"
                         name="email"
                         required
                         autofocus
                         :tabindex="1"
-                        autocomplete="email"
-                        placeholder="email@example.com"
+                        autocomplete="username"
+                        placeholder="email@example.com or +1555..."
                     />
                     <InputError :message="errors.email" />
                 </div>
