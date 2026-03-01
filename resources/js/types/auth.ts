@@ -11,6 +11,11 @@ export type User = {
 
 export type Auth = {
     user: User;
+    impersonation?: {
+        is_impersonating: boolean;
+        impersonator_id: number | null;
+        impersonator_name: string | null;
+    };
 };
 
 export type TwoFactorConfigContent = {

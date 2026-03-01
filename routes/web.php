@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RoleDashboardRedirectController;
 use App\Http\Controllers\Auth\VerifyOtpController;
+use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,7 @@ Route::middleware('auth')->group(function () {
         ->name('otp.verify.store');
 
     Route::get('/dashboard', RoleDashboardRedirectController::class)->name('dashboard');
+    Route::post('/impersonation/leave', [ImpersonationController::class, 'destroy'])->name('impersonation.leave');
 });
 
 require __DIR__.'/tutor.php';

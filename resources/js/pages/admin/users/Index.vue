@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -18,6 +18,8 @@ const props = defineProps({
         default: () => ({}),
     },
 });
+
+const page = usePage();
 
 const breadcrumbs = [{ title: 'Admin Users', href: '/admin/users' }];
 const baseUrl = '/admin/users';
@@ -183,13 +185,26 @@ function actionItemsForRow(row) {
 
     return [
         { key: 'edit', label: 'Edit' },
+        { key: 'impersonate', label: 'Impersonate', show: canImpersonateRow(row) },
         { key: 'delete', label: 'Delete', destructive: true },
     ];
+}
+
+function canImpersonateRow(row) {
+    const currentUserId = page.props.auth?.user?.id;
+    const isImpersonating = Boolean(page.props.auth?.impersonation?.is_impersonating);
+
+    return !isImpersonating && row.id !== currentUserId && row.status === 'active';
 }
 
 function handleRowAction(actionKey, row) {
     if (actionKey === 'edit') {
         router.visit(`/admin/users/${row.id}/edit`);
+        return;
+    }
+
+    if (actionKey === 'impersonate') {
+        router.post(`/admin/impersonation/${row.id}`);
         return;
     }
 

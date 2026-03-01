@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TutorManagementController;
+use App\Http\Controllers\ImpersonationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -70,6 +71,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->middleware('permission:admin-user-delete')
             ->withTrashed()
             ->name('users.force-delete');
+        Route::post('/impersonation/{user}', [ImpersonationController::class, 'store'])
+            ->name('impersonation.store');
 
         Route::get('/roles', [RoleController::class, 'index'])
             ->middleware('permission:role-view')

@@ -246,8 +246,16 @@ function actionItemsForRow(row) {
             label: row.status === 'active' ? 'Suspend' : 'Unsuspend',
         },
         { key: 'reset-password', label: 'Reset Password' },
+        { key: 'impersonate', label: 'Impersonate', show: canImpersonateRow(row) },
         { key: 'delete', label: 'Delete', destructive: true },
     ];
+}
+
+function canImpersonateRow(row) {
+    const currentUserId = page.props.auth?.user?.id;
+    const isImpersonating = Boolean(page.props.auth?.impersonation?.is_impersonating);
+
+    return !isImpersonating && row.id !== currentUserId && row.status === 'active';
 }
 
 function handleRowAction(actionKey, row) {
@@ -264,6 +272,11 @@ function handleRowAction(actionKey, row) {
     if (actionKey === 'reset-password') {
         resetPasswordUser.value = row;
         resetPasswordOpen.value = true;
+        return;
+    }
+
+    if (actionKey === 'impersonate') {
+        router.post(`/admin/impersonation/${row.id}`);
         return;
     }
 

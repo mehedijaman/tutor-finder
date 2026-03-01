@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Lab404\Impersonate\Models\Impersonate as ImpersonateModel;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+    use HasFactory, HasRoles, ImpersonateModel, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -56,5 +57,22 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Determine whether the user can impersonate another account.
+     */
+    public function canImpersonate(): bool
+    {
+        return $this->role === 'admin' && $this->status === 'active';
+    }
+
+    /**
+     * Determine whether this user account can be impersonated.
+     */
+    public function canBeImpersonated(): bool
+    {
+        return $this->status === 'active'
+            && in_array($this->role, ['admin', 'tutor', 'guardian'], true);
     }
 }

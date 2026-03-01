@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppContent from '@/components/AppContent.vue';
 import AppHeader from '@/components/AppHeader.vue';
+import ImpersonationBanner from '@/components/ImpersonationBanner.vue';
 import AppShell from '@/components/AppShell.vue';
 import type { BreadcrumbItem } from '@/types';
 
@@ -16,6 +17,7 @@ withDefaults(defineProps<Props>(), {
 <template>
     <AppShell class="flex-col">
         <AppHeader :breadcrumbs="breadcrumbs" />
+        <ImpersonationBanner />
         <AppContent>
             <slot />
         </AppContent>

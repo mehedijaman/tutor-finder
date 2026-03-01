@@ -10,6 +10,7 @@ import {
     Shield,
     Users,
     UserRound,
+    Wrench,
 } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -36,9 +37,16 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
             { title: 'Users', href: '/admin/users', icon: Users },
             { title: 'Roles', href: '/admin/roles', icon: Shield },
-            { title: 'Activity Logs', href: '/admin/activity-logs', icon: History },
-            { title: 'Backups', href: '/admin/backups', icon: HardDrive },
-            { title: 'Log Viewer', href: '/admin/log-viewer', icon: FileText, fullPage: true },
+            {
+                title: 'Maintenance',
+                href: '/admin/maintenance',
+                icon: Wrench,
+                children: [
+                    { title: 'Activity Logs', href: '/admin/activity-logs', icon: History },
+                    { title: 'Backups', href: '/admin/backups', icon: HardDrive },
+                    { title: 'Log Viewer', href: '/admin/log-viewer', icon: FileText, fullPage: true },
+                ],
+            },
             { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
             { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
         ];

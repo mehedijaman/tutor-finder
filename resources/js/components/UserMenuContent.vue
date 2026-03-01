@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings } from 'lucide-vue-next';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { LogOut, Settings, Undo2 } from 'lucide-vue-next';
+import { computed } from 'vue';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -15,6 +16,10 @@ import type { User } from '@/types';
 type Props = {
     user: User;
 };
+
+const page = usePage();
+
+const isImpersonating = computed<boolean>(() => Boolean(page.props.auth?.impersonation?.is_impersonating));
 
 const handleLogout = () => {
     router.flushAll();
@@ -35,6 +40,17 @@ defineProps<Props>();
             <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
+            </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem v-if="isImpersonating" :as-child="true">
+            <Link
+                class="block w-full cursor-pointer"
+                href="/impersonation/leave"
+                method="post"
+                as="button"
+            >
+                <Undo2 class="mr-2 h-4 w-4" />
+                Leave Impersonation
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>

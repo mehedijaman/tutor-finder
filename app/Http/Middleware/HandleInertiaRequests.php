@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Lab404\Impersonate\Services\ImpersonateManager;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -35,11 +37,27 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $isImpersonating = $user instanceof User
+            && method_exists($user, 'isImpersonated')
+            && (bool) $user->isImpersonated();
+
+        $impersonator = null;
+
+        if ($isImpersonating) {
+            $impersonator = app(ImpersonateManager::class)->getImpersonator();
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+                'impersonation' => [
+                    'is_impersonating' => $isImpersonating,
+                    'impersonator_id' => $impersonator?->getAuthIdentifier(),
+                    'impersonator_name' => $impersonator?->name,
+                ],
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
