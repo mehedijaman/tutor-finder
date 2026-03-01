@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -17,6 +18,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth', 'ensure.role:admin', 'ensure.active'])->group(function () {
         Route::redirect('/', '/admin/dashboard')->name('home');
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+            ->middleware('permission:activity-log-view')
+            ->name('activity-logs.index');
 
         Route::get('/users', [AdminUserController::class, 'index'])
             ->middleware('permission:admin-user-view')

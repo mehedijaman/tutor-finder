@@ -30,6 +30,7 @@ class AdminRolesAndPermissionsSeeder extends Seeder
         ])->push(
             'tutor-password-reset',
             'guardian-password-reset',
+            'activity-log-view',
         )->values()->all();
 
         Permission::query()

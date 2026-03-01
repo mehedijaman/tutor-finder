@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     GraduationCap,
+    History,
     LayoutGrid,
     Shield,
     Users,
@@ -33,6 +34,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
             { title: 'Users', href: '/admin/users', icon: Users },
             { title: 'Roles', href: '/admin/roles', icon: Shield },
+            { title: 'Activity Logs', href: '/admin/activity-logs', icon: History },
             { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
             { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
         ];
