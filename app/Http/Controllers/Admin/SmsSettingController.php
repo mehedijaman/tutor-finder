@@ -52,7 +52,19 @@ class SmsSettingController extends Controller
             ->paginate(15)
             ->through(function (SmsSetting $smsSetting): array {
                 $credentials = $smsSetting->credentials;
-                $credentialKeys = is_array($credentials) ? array_keys($credentials) : [];
+                $credentialsMap = is_array($credentials) ? $credentials : [];
+                $credentialKeys = array_keys($credentialsMap);
+                $requiredKeys = SmsSetting::requiredCredentialKeys($smsSetting->provider);
+                $missingRequiredKeys = collect($requiredKeys)
+                    ->filter(function (string $key) use ($credentialsMap): bool {
+                        if (! array_key_exists($key, $credentialsMap)) {
+                            return true;
+                        }
+
+                        return trim((string) $credentialsMap[$key]) === '';
+                    })
+                    ->values()
+                    ->all();
 
                 return [
                     'id' => $smsSetting->id,
@@ -61,6 +73,12 @@ class SmsSettingController extends Controller
                     'is_default' => $smsSetting->is_default,
                     'is_active' => $smsSetting->is_active,
                     'credential_keys' => array_values($credentialKeys),
+                    'configured_keys_count' => collect($credentialsMap)
+                        ->filter(fn ($value): bool => trim((string) $value) !== '')
+                        ->count(),
+                    'required_keys_count' => count($requiredKeys),
+                    'missing_required_keys' => $missingRequiredKeys,
+                    'has_complete_credentials' => $missingRequiredKeys === [],
                     'updated_at' => $smsSetting->updated_at?->toDateTimeString(),
                 ];
             })
@@ -78,7 +96,7 @@ class SmsSettingController extends Controller
     public function create(): Response
     {
         return inertia('admin/sms-settings/Create', [
-            'providers' => SmsSetting::availableProviders(),
+            'providers' => SmsSetting::providerOptions(),
         ]);
     }
 
@@ -101,7 +119,6 @@ class SmsSettingController extends Controller
     {
         $credentials = $smsSetting->credentials;
         $credentialsArray = is_array($credentials) ? $credentials : [];
-        $credentialsJson = json_encode($credentialsArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         return inertia('admin/sms-settings/Edit', [
             'smsSetting' => [
@@ -110,9 +127,9 @@ class SmsSettingController extends Controller
                 'provider' => $smsSetting->provider,
                 'is_default' => $smsSetting->is_default,
                 'is_active' => $smsSetting->is_active,
-                'credentials_json' => is_string($credentialsJson) ? $credentialsJson : '{}',
+                'credentials' => $credentialsArray,
             ],
-            'providers' => SmsSetting::availableProviders(),
+            'providers' => SmsSetting::providerOptions(),
         ]);
     }
 

@@ -13,7 +13,11 @@ it('admin can create an sms setting', function () {
     $response = $this->actingAs($admin)->post(route('admin.sms-settings.store'), [
         'name' => 'Primary OTP Gateway',
         'provider' => 'Ssl',
-        'credentials_json' => '{"api_token":"abc","sid":"SID","csms_id":"Sender"}',
+        'credential_items' => [
+            ['key' => 'api_token', 'value' => 'abc'],
+            ['key' => 'sid', 'value' => 'SID'],
+            ['key' => 'csms_id', 'value' => 'Sender'],
+        ],
         'is_default' => '1',
         'is_active' => '1',
     ]);
@@ -42,7 +46,11 @@ it('switches default sms setting when a new default is saved', function () {
     $response = $this->actingAs($admin)->post(route('admin.sms-settings.store'), [
         'name' => 'Gateway Two',
         'provider' => 'Ssl',
-        'credentials_json' => '{"api_token":"two","sid":"SID","csms_id":"Sender"}',
+        'credential_items' => [
+            ['key' => 'api_token', 'value' => 'two'],
+            ['key' => 'sid', 'value' => 'SID'],
+            ['key' => 'csms_id', 'value' => 'Sender'],
+        ],
         'is_default' => '1',
         'is_active' => '1',
     ]);
@@ -65,7 +73,11 @@ it('marks first active sms setting as default when none exists', function () {
     $response = $this->actingAs($admin)->post(route('admin.sms-settings.store'), [
         'name' => 'Fallback Gateway',
         'provider' => 'Ssl',
-        'credentials_json' => '{"api_token":"fallback"}',
+        'credential_items' => [
+            ['key' => 'api_token', 'value' => 'fallback'],
+            ['key' => 'sid', 'value' => 'FALLBACKSID'],
+            ['key' => 'csms_id', 'value' => 'FALLBACKSMS'],
+        ],
         'is_default' => '0',
         'is_active' => '1',
     ]);
@@ -83,4 +95,23 @@ it('non admin user cannot access sms settings index', function () {
     $response = $this->actingAs($user)->get(route('admin.sms-settings.index'));
 
     $response->assertForbidden();
+});
+
+it('requires provider mandatory credentials from laravelbdsms docs', function () {
+    $this->seed(AdminRolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->admin()->create();
+    $admin->assignRole('super-admin');
+
+    $response = $this->actingAs($admin)->post(route('admin.sms-settings.store'), [
+        'name' => 'Incomplete SSL',
+        'provider' => 'Ssl',
+        'credential_items' => [
+            ['key' => 'api_token', 'value' => 'abc'],
+        ],
+        'is_default' => '0',
+        'is_active' => '1',
+    ]);
+
+    $response->assertSessionHasErrors('credentials');
 });

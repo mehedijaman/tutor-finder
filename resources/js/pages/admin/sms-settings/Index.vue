@@ -3,6 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
@@ -25,6 +26,7 @@ const columns = [
     { key: 'name', label: 'Name', sortable: true },
     { key: 'provider', label: 'Provider', sortable: true },
     { key: 'credential_keys', label: 'Credentials' },
+    { key: 'has_complete_credentials', label: 'Readiness' },
     { key: 'is_active', label: 'Status' },
     { key: 'is_default', label: 'Default' },
     { key: 'updated_at', label: 'Updated', sortable: true },
@@ -128,17 +130,41 @@ function handleRowAction(actionKey, row) {
                     @sort="handleSort"
                 >
                     <template #cell-credential_keys="{ row }">
-                        {{ row.credential_keys?.length ? row.credential_keys.join(', ') : '—' }}
+                        <div class="space-y-1">
+                            <div class="text-sm">
+                                {{ row.configured_keys_count ?? row.credential_keys?.length ?? 0 }}/{{ row.required_keys_count ?? 0 }}
+                                required keys configured
+                            </div>
+                            <div class="text-xs text-muted-foreground">
+                                {{ row.credential_keys?.length ? row.credential_keys.join(', ') : 'No keys configured' }}
+                            </div>
+                        </div>
+                    </template>
+
+                    <template #cell-has_complete_credentials="{ row }">
+                        <div class="space-y-1">
+                            <Badge :variant="row.has_complete_credentials ? 'default' : 'destructive'">
+                                {{ row.has_complete_credentials ? 'Ready' : 'Incomplete' }}
+                            </Badge>
+                            <div
+                                v-if="!row.has_complete_credentials && row.missing_required_keys?.length"
+                                class="text-xs text-rose-700"
+                            >
+                                Missing: {{ row.missing_required_keys.join(', ') }}
+                            </div>
+                        </div>
                     </template>
 
                     <template #cell-is_active="{ row }">
-                        <span :class="row.is_active ? 'text-emerald-700' : 'text-rose-700'">
+                        <Badge :variant="row.is_active ? 'default' : 'secondary'">
                             {{ row.is_active ? 'Active' : 'Inactive' }}
-                        </span>
+                        </Badge>
                     </template>
 
                     <template #cell-is_default="{ row }">
-                        {{ row.is_default ? 'Yes' : 'No' }}
+                        <Badge :variant="row.is_default ? 'default' : 'secondary'">
+                            {{ row.is_default ? 'Default' : 'No' }}
+                        </Badge>
                     </template>
 
                     <template #cell-updated_at="{ value }">

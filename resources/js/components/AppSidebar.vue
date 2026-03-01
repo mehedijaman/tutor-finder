@@ -11,6 +11,8 @@ import {
     Users,
     UserRound,
     Wrench,
+    Cog,
+    Key,
 } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -35,20 +37,28 @@ const mainNavItems = computed<NavItem[]>(() => {
     if (role === 'admin') {
         return [
             { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
-            { title: 'Users', href: '/admin/users', icon: Users },
-            { title: 'Roles', href: '/admin/roles', icon: Shield },
+            { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
+            { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
+            { title: 'Settings', href: '/settings', icon: Cog },
             {
-                title: 'Maintenance',
+                title: 'Access Control',
+                href: '/admin/maintenance',
+                icon: Key,
+                children: [
+                    { title: 'Users', href: '/admin/users', icon: Users },
+                    { title: 'Roles', href: '/admin/roles', icon: Shield },
+                ],
+            },
+            {
+                title: 'Backup & Maintenance',
                 href: '/admin/maintenance',
                 icon: Wrench,
                 children: [
-                    { title: 'Activity Logs', href: '/admin/activity-logs', icon: History },
                     { title: 'Backups', href: '/admin/backups', icon: HardDrive },
+                    { title: 'Activity Logs', href: '/admin/activity-logs', icon: History },
                     { title: 'Log Viewer', href: '/admin/log-viewer', icon: FileText, fullPage: true },
                 ],
             },
-            { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
-            { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
         ];
     }
 
@@ -83,9 +93,9 @@ const mainNavItems = computed<NavItem[]>(() => {
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarFooter>
+        <!-- <SidebarFooter>
             <NavUser />
-        </SidebarFooter>
+        </SidebarFooter> -->
     </Sidebar>
     <slot />
 </template>

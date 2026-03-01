@@ -1,13 +1,10 @@
 <script setup>
-import { Form, Head, Link } from '@inertiajs/vue3';
-import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Head, Link } from '@inertiajs/vue3';
+import SmsSettingForm from '@/components/admin/sms-settings/SmsSettingForm.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 
-defineProps({
+const props = defineProps({
     smsSetting: {
         type: Object,
         required: true,
@@ -35,62 +32,13 @@ const breadcrumbs = [
                     <Link href="/settings/sms" class="text-sm text-muted-foreground underline">Back</Link>
                 </div>
 
-                <Form :action="`/settings/sms/${smsSetting.id}`" method="put" class="space-y-6" #default="{ errors, processing }">
-                    <div class="grid gap-4 md:grid-cols-2">
-                        <div class="grid gap-2">
-                            <Label for="name">Name</Label>
-                            <Input id="name" name="name" type="text" :default-value="smsSetting.name" required />
-                            <InputError :message="errors.name" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label for="provider">Provider</Label>
-                            <select id="provider" name="provider" required class="h-10 rounded-md border px-3 text-sm">
-                                <option
-                                    v-for="provider in providers"
-                                    :key="provider"
-                                    :value="provider"
-                                    :selected="smsSetting.provider === provider"
-                                >
-                                    {{ provider }}
-                                </option>
-                            </select>
-                            <InputError :message="errors.provider" />
-                        </div>
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="credentials_json">Credentials JSON</Label>
-                        <textarea
-                            id="credentials_json"
-                            name="credentials_json"
-                            rows="12"
-                            class="rounded-md border px-3 py-2 font-mono text-sm"
-                            :value="smsSetting.credentials_json"
-                            required
-                        ></textarea>
-                        <InputError :message="errors.credentials_json" />
-                    </div>
-
-                    <div class="grid gap-3 rounded-lg border p-4">
-                        <label class="flex items-center gap-2 text-sm">
-                            <input type="hidden" name="is_active" value="0">
-                            <input type="checkbox" name="is_active" value="1" :checked="smsSetting.is_active" class="h-4 w-4 rounded border">
-                            <span>Active</span>
-                        </label>
-
-                        <label class="flex items-center gap-2 text-sm">
-                            <input type="hidden" name="is_default" value="0">
-                            <input type="checkbox" name="is_default" value="1" :checked="smsSetting.is_default" class="h-4 w-4 rounded border">
-                            <span>Set as default</span>
-                        </label>
-
-                        <InputError :message="errors.is_active" />
-                        <InputError :message="errors.is_default" />
-                    </div>
-
-                    <Button type="submit" :disabled="processing">Update SMS Setting</Button>
-                </Form>
+                <SmsSettingForm
+                    :action="`/settings/sms/${smsSetting.id}`"
+                    method="put"
+                    submit-label="Update SMS Setting"
+                    :providers="providers"
+                    :initial="smsSetting"
+                />
             </div>
         </SettingsLayout>
     </AppLayout>
