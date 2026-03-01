@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\SmsSettingStoreRequest;
 use App\Http\Requests\Admin\SmsSettingUpdateRequest;
 use App\Models\SmsSetting;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Response;
 
@@ -15,12 +16,39 @@ class SmsSettingController extends Controller
     /**
      * Display SMS gateway settings.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $smsSettings = SmsSetting::query()
+        $sort = $request->string('sort')->toString();
+
+        if (! in_array($sort, ['name', 'provider', 'updated_at', 'created_at'], true)) {
+            $sort = 'updated_at';
+        }
+
+        $direction = strtolower($request->string('direction')->toString());
+
+        if (! in_array($direction, ['asc', 'desc'], true)) {
+            $direction = 'desc';
+        }
+
+        $filters = [
+            'search' => trim($request->string('search')->toString()),
+            'sort' => $sort,
+            'direction' => $direction,
+        ];
+
+        $items = SmsSetting::query()
+            ->when($filters['search'] !== '', function ($query) use ($filters): void {
+                $search = $filters['search'];
+
+                $query->where(function ($subQuery) use ($search): void {
+                    $subQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('provider', 'like', "%{$search}%");
+                });
+            })
             ->orderByDesc('is_default')
             ->orderByDesc('is_active')
-            ->orderBy('name')
+            ->orderBy($sort, $direction)
             ->paginate(15)
             ->through(function (SmsSetting $smsSetting): array {
                 $credentials = $smsSetting->credentials;
@@ -39,7 +67,8 @@ class SmsSettingController extends Controller
             ->withQueryString();
 
         return inertia('admin/sms-settings/Index', [
-            'smsSettings' => $smsSettings,
+            'items' => $items,
+            'filters' => $filters,
         ]);
     }
 

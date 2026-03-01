@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ManagedUserPasswordResetRequest;
 use App\Http\Requests\Admin\ManagedUserUpdateRequest;
 use App\Http\Requests\Admin\UserStatusUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Inertia\Response;
 
 class GuardianManagementController extends Controller
@@ -17,23 +20,55 @@ class GuardianManagementController extends Controller
      */
     public function index(Request $request): Response
     {
+        $sort = $request->string('sort')->toString();
+
+        if (! in_array($sort, ['name', 'phone', 'status', 'created_at'], true)) {
+            $sort = 'created_at';
+        }
+
+        $direction = strtolower($request->string('direction')->toString());
+
+        if (! in_array($direction, ['asc', 'desc'], true)) {
+            $direction = $sort === 'created_at' ? 'desc' : 'asc';
+        }
+
         $filters = [
-            ...$request->only(['name', 'phone', 'status']),
+            'search' => trim($request->string('search')->toString()),
+            'status' => $request->string('status')->toString(),
             'trash' => $request->boolean('trash'),
+            'sort' => $sort,
+            'direction' => $direction,
         ];
 
-        $guardians = User::query()
+        $items = User::query()
             ->where('role', 'guardian')
             ->when($filters['trash'], fn ($query) => $query->onlyTrashed())
-            ->when($request->filled('name'), fn ($query) => $query->where('name', 'like', '%'.$request->string('name')->toString().'%'))
-            ->when($request->filled('phone'), fn ($query) => $query->where('phone', 'like', '%'.$request->string('phone')->toString().'%'))
-            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')->toString()))
-            ->orderByDesc('created_at')
+            ->when($filters['search'] !== '', function ($query) use ($filters): void {
+                $search = $filters['search'];
+
+                $query->where(function ($subQuery) use ($search): void {
+                    $subQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->when($filters['status'] !== '', fn ($query) => $query->where('status', $filters['status']))
+            ->orderBy($sort, $direction)
             ->paginate(15)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(fn (User $user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'status' => $user->status,
+                'created_at' => $user->created_at?->toDateTimeString(),
+                'deleted_at' => $user->deleted_at?->toDateTimeString(),
+            ]);
 
         return inertia('admin/guardians/Index', [
-            'guardians' => $guardians,
+            'items' => $items,
             'filters' => $filters,
         ]);
     }
@@ -126,8 +161,82 @@ class GuardianManagementController extends Controller
             abort(404);
         }
 
+        if (! $user->trashed()) {
+            return redirect()->route('admin.guardians.index', ['trash' => 1])->with('status', 'Guardian is already active.');
+        }
+
         $user->restore();
 
         return redirect()->route('admin.guardians.index', ['trash' => 1])->with('status', 'Guardian restored successfully.');
+    }
+
+    /**
+     * Restore all soft deleted guardians from recycle bin.
+     */
+    public function restoreAll(): RedirectResponse
+    {
+        $count = User::query()
+            ->onlyTrashed()
+            ->where('role', 'guardian')
+            ->restore();
+
+        return redirect()->back()->with('status', "Restored {$count} guardian(s) from recycle bin.");
+    }
+
+    /**
+     * Permanently delete a guardian from recycle bin.
+     */
+    public function forceDelete(User $user): RedirectResponse
+    {
+        if ($user->role !== 'guardian') {
+            abort(404);
+        }
+
+        if (! $user->trashed()) {
+            return redirect()->back()->withErrors([
+                'user' => 'Only trashed guardians can be permanently deleted.',
+            ]);
+        }
+
+        $user->forceDelete();
+
+        return redirect()->back()->with('status', 'Guardian permanently deleted.');
+    }
+
+    /**
+     * Empty guardian recycle bin.
+     */
+    public function emptyRecycleBin(): RedirectResponse
+    {
+        $count = User::query()
+            ->onlyTrashed()
+            ->where('role', 'guardian')
+            ->forceDelete();
+
+        return redirect()->back()->with('status', "Deleted {$count} guardian(s) from recycle bin.");
+    }
+
+    /**
+     * Reset guardian password.
+     */
+    public function resetPassword(ManagedUserPasswordResetRequest $request, User $user): RedirectResponse
+    {
+        if ($user->role !== 'guardian') {
+            abort(404);
+        }
+
+        $validated = $request->validated();
+
+        $user->forceFill([
+            'password' => Hash::make($validated['password']),
+        ])->save();
+
+        Log::info('Admin reset guardian password.', [
+            'admin_user_id' => $request->user()?->getKey(),
+            'target_user_id' => $user->getKey(),
+            'target_role' => 'guardian',
+        ]);
+
+        return redirect()->back()->with('status', 'Guardian password reset successfully.');
     }
 }

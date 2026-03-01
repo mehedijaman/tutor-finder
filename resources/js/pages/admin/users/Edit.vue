@@ -41,21 +41,21 @@ const breadcrumbs = [
                 <div class="grid gap-4 md:grid-cols-3">
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
-                        <Input id="name" name="name" type="text" :value="adminUser.name" required />
+                        <Input id="name" name="name" type="text" :default-value="adminUser.name" required />
                         <InputError :message="errors.name" />
                     </div>
 
                     <div class="grid gap-2">
                         <Label for="email">Email</Label>
-                        <Input id="email" name="email" type="email" :value="adminUser.email" required />
+                        <Input id="email" name="email" type="email" :default-value="adminUser.email" required />
                         <InputError :message="errors.email" />
                     </div>
 
                     <div class="grid gap-2">
                         <Label for="status">Status</Label>
-                        <select id="status" name="status" :value="adminUser.status" class="h-10 rounded-md border px-3 text-sm">
-                            <option value="active">Active</option>
-                            <option value="suspended">Suspended</option>
+                        <select id="status" name="status" class="h-10 rounded-md border px-3 text-sm">
+                            <option value="active" :selected="adminUser.status === 'active'">Active</option>
+                            <option value="suspended" :selected="adminUser.status === 'suspended'">Suspended</option>
                         </select>
                         <InputError :message="errors.status" />
                     </div>

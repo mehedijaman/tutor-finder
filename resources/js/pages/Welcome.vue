@@ -25,10 +25,10 @@ withDefaults(
                 class="mx-auto max-w-7xl px-4 py-2 flex items-center justify-between text-sm text-slate-600"
             >
                 <div class="flex items-center gap-4">
-                    <span class="inline-flex items-center gap-2">
+                    <!-- <span class="inline-flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                         Available today
-                    </span>
+                    </span> -->
                     <span>📞 +1 (000) 000-0000</span>
                     <span>✉️ hello@tutorfinder.com</span>
                 </div>

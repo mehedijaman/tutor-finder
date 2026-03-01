@@ -1,20 +1,17 @@
 <script setup>
-import { Form, Head } from '@inertiajs/vue3';
-import InputError from '@/components/InputError.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { onBeforeUnmount, ref, watch } from 'vue';
+import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
+import DataTable from '@/components/admin/table/DataTable.vue';
+import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
-defineProps({
-    roles: {
+const props = defineProps({
+    items: {
         type: Object,
         required: true,
-    },
-    permissions: {
-        type: Array,
-        default: () => [],
     },
     filters: {
         type: Object,
@@ -22,9 +19,181 @@ defineProps({
     },
 });
 
-const breadcrumbs = [
-    { title: 'Roles', href: '/admin/roles' },
+const breadcrumbs = [{ title: 'Roles', href: '/admin/roles' }];
+const baseUrl = '/admin/roles';
+
+const columns = [
+    { key: 'name', label: 'Role', sortable: true },
+    { key: 'permissions', label: 'Permissions' },
+    { key: 'created_at', label: 'Created', sortable: true },
+    { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap' },
 ];
+
+const search = ref(props.filters.search ?? '');
+const confirmOpen = ref(false);
+const confirmTitle = ref('');
+const confirmDescription = ref('');
+const confirmLabel = ref('Confirm');
+const confirmDestructive = ref(true);
+const pendingAction = ref(null);
+let searchDebounceTimer = null;
+
+watch(
+    () => props.filters.search,
+    (value) => {
+        const normalized = value ?? '';
+
+        if (normalized !== search.value) {
+            search.value = normalized;
+        }
+    },
+);
+
+watch(search, (value) => {
+    if (searchDebounceTimer) {
+        clearTimeout(searchDebounceTimer);
+    }
+
+    searchDebounceTimer = setTimeout(() => {
+        applyFilters({ search: value, page: 1 });
+    }, 350);
+});
+
+onBeforeUnmount(() => {
+    if (searchDebounceTimer) {
+        clearTimeout(searchDebounceTimer);
+    }
+});
+
+function applyFilters(overrides = {}) {
+    router.get(
+        baseUrl,
+        {
+            trash: props.filters.trash ? 1 : 0,
+            search: search.value,
+            sort: props.filters.sort ?? 'name',
+            direction: props.filters.direction ?? 'asc',
+            ...overrides,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        },
+    );
+}
+
+function handleSort(columnKey) {
+    const nextDirection =
+        props.filters.sort === columnKey && props.filters.direction === 'asc'
+            ? 'desc'
+            : 'asc';
+
+    applyFilters({ sort: columnKey, direction: nextDirection, page: 1 });
+}
+
+function openConfirm(action, row = null) {
+    pendingAction.value = { action, row };
+    confirmTitle.value = 'Confirm Action';
+    confirmDescription.value = '';
+    confirmLabel.value = 'Confirm';
+    confirmDestructive.value = false;
+
+    if (action === 'delete') {
+        confirmTitle.value = 'Delete Role';
+        confirmDescription.value = 'This will move the role to recycle bin.';
+        confirmLabel.value = 'Delete';
+        confirmDestructive.value = true;
+    }
+
+    if (action === 'force-delete') {
+        confirmTitle.value = 'Permanently Delete Role';
+        confirmDescription.value = 'This action is irreversible and removes the role permanently.';
+        confirmLabel.value = 'Permanently Delete';
+        confirmDestructive.value = true;
+    }
+
+    if (action === 'empty-recycle-bin') {
+        confirmTitle.value = 'Empty Recycle Bin';
+        confirmDescription.value = 'This will permanently delete all trashed roles.';
+        confirmLabel.value = 'Empty Recycle Bin';
+        confirmDestructive.value = true;
+    }
+
+    if (action === 'restore') {
+        confirmTitle.value = 'Restore Role';
+        confirmDescription.value = 'This will restore the role from recycle bin.';
+        confirmLabel.value = 'Restore';
+    }
+
+    if (action === 'restore-all') {
+        confirmTitle.value = 'Restore All Roles';
+        confirmDescription.value = 'This will restore all trashed roles.';
+        confirmLabel.value = 'Restore All';
+    }
+
+    confirmOpen.value = true;
+}
+
+function resetConfirmState() {
+    pendingAction.value = null;
+}
+
+function runConfirmedAction() {
+    if (!pendingAction.value) {
+        return;
+    }
+
+    const { action, row } = pendingAction.value;
+
+    if (action === 'delete' && row) {
+        router.delete(`/admin/roles/${row.id}`);
+    }
+
+    if (action === 'force-delete' && row) {
+        router.delete(`/admin/roles/${row.id}/force`);
+    }
+
+    if (action === 'restore' && row) {
+        router.patch(`/admin/roles/${row.id}/restore`);
+    }
+
+    if (action === 'empty-recycle-bin') {
+        router.delete('/admin/roles/recycle-bin/empty');
+    }
+
+    if (action === 'restore-all') {
+        router.patch('/admin/roles/recycle-bin/restore-all');
+    }
+
+    confirmOpen.value = false;
+    resetConfirmState();
+}
+
+function actionItemsForRow() {
+    if (props.filters.trash) {
+        return [
+            { key: 'restore', label: 'Restore' },
+            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+        ];
+    }
+
+    return [
+        { key: 'edit', label: 'Edit' },
+        { key: 'delete', label: 'Delete', destructive: true },
+    ];
+}
+
+function handleRowAction(actionKey, row) {
+    if (actionKey === 'edit') {
+        router.visit(`/admin/roles/${row.id}/edit`);
+        return;
+    }
+
+    if (actionKey === 'delete' || actionKey === 'force-delete' || actionKey === 'restore') {
+        openConfirm(actionKey, row);
+    }
+}
 </script>
 
 <template>
@@ -32,70 +201,89 @@ const breadcrumbs = [
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-6">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-3">
                 <h1 class="text-2xl font-semibold">
                     {{ filters.trash ? 'Role Recycle Bin' : 'Role Management' }}
                 </h1>
-                <a
-                    :href="filters.trash ? '/admin/roles' : '/admin/roles?trash=1'"
-                    class="rounded-md border px-4 py-2 text-sm"
-                >
-                    {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
-                </a>
+
+                <div class="flex items-center gap-2">
+                    <Link
+                        :href="filters.trash ? '/admin/roles' : '/admin/roles?trash=1'"
+                        class="rounded-md border px-4 py-2 text-sm"
+                    >
+                        {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
+                    </Link>
+
+                    <Button
+                        v-if="filters.trash"
+                        type="button"
+                        variant="outline"
+                        @click="openConfirm('restore-all')"
+                    >
+                        Restore All
+                    </Button>
+
+                    <Button
+                        v-if="filters.trash"
+                        type="button"
+                        variant="destructive"
+                        @click="openConfirm('empty-recycle-bin')"
+                    >
+                        Empty Recycle Bin
+                    </Button>
+
+                    <Link
+                        v-if="!filters.trash"
+                        href="/admin/roles/create"
+                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                    >
+                        Create Role
+                    </Link>
+                </div>
             </div>
 
-            <Form v-if="!filters.trash" action="/admin/roles" method="post" class="rounded-xl border bg-white p-4" #default="{ errors, processing }">
-                <div class="grid gap-4 md:grid-cols-2">
-                    <div class="grid gap-2">
-                        <Label for="name">Role name</Label>
-                        <Input id="name" name="name" type="text" required placeholder="manager" />
-                        <InputError :message="errors.name" />
-                    </div>
-                </div>
-
-                <div class="mt-4 space-y-2">
-                    <h2 class="text-sm font-medium">Permissions</h2>
-                    <label v-for="permission in permissions" :key="permission" class="flex items-center gap-2 text-sm">
-                        <Checkbox :id="`role-perm-${permission}`" name="permissions[]" :value="permission" />
-                        <span>{{ permission }}</span>
-                    </label>
-                </div>
-
-                <Button class="mt-4" type="submit" :disabled="processing">Create Role</Button>
-            </Form>
-
-            <div class="overflow-hidden rounded-xl border bg-white">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-muted/40">
-                        <tr>
-                            <th class="px-4 py-3">Role</th>
-                            <th class="px-4 py-3">Permissions</th>
-                            <th class="px-4 py-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="role in roles.data" :key="role.id" class="border-t">
-                            <td class="px-4 py-3">{{ role.name }}</td>
-                            <td class="px-4 py-3">{{ role.permissions.join(', ') || '—' }}</td>
-                            <td class="px-4 py-3">
-                                <div v-if="!filters.trash" class="flex items-center gap-2">
-                                    <a :href="`/admin/roles/${role.id}/edit`" class="text-sm underline">Edit</a>
-                                    <Form :action="`/admin/roles/${role.id}`" method="delete" #default="{ processing }">
-                                        <button type="submit" class="text-sm underline text-rose-600" :disabled="processing">
-                                            Delete
-                                        </button>
-                                    </Form>
-                                </div>
-                                <Form v-else :action="`/admin/roles/${role.id}/restore`" method="patch" #default="{ processing }">
-                                    <button type="submit" class="text-sm underline" :disabled="processing">
-                                        Restore
-                                    </button>
-                                </Form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="rounded-xl border bg-white p-4">
+                <Input
+                    v-model="search"
+                    type="text"
+                    placeholder="Search by role name"
+                    class="max-w-md"
+                />
             </div>
+
+            <DataTable
+                :items="items"
+                :columns="columns"
+                :sort-by="filters.sort"
+                :sort-direction="filters.direction"
+                empty-text="No roles found."
+                @sort="handleSort"
+            >
+                <template #cell-permissions="{ row }">
+                    {{ row.permissions?.join(', ') || '—' }}
+                </template>
+
+                <template #cell-created_at="{ value }">
+                    {{ value ? new Date(value).toLocaleString() : '—' }}
+                </template>
+
+                <template #cell-actions="{ row }">
+                    <RowActionsDropdown
+                        :actions="actionItemsForRow()"
+                        @select="(action) => handleRowAction(action, row)"
+                    />
+                </template>
+            </DataTable>
         </div>
+
+        <ConfirmDialog
+            v-model:open="confirmOpen"
+            :title="confirmTitle"
+            :description="confirmDescription"
+            :confirm-label="confirmLabel"
+            :destructive="confirmDestructive"
+            @confirm="runConfirmedAction"
+            @cancel="resetConfirmState"
+        />
     </AdminLayout>
 </template>

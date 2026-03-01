@@ -1,8 +1,11 @@
 <script setup>
-import { Form, Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
+import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
-defineProps({
+const props = defineProps({
     guardian: {
         type: Object,
         required: true,
@@ -13,6 +16,18 @@ const breadcrumbs = [
     { title: 'Guardians', href: '/admin/guardians' },
     { title: 'Details', href: '#' },
 ];
+
+const confirmOpen = ref(false);
+
+function toggleStatus() {
+    const nextStatus = props.guardian.status === 'active' ? 'suspended' : 'active';
+
+    router.patch(`/admin/guardians/${props.guardian.id}/status`, {
+        status: nextStatus,
+    });
+
+    confirmOpen.value = false;
+}
 </script>
 
 <template>
@@ -33,12 +48,22 @@ const breadcrumbs = [
                 <p><span class="font-medium">Phone verified:</span> {{ guardian.phone_verified_at || 'No' }}</p>
             </div>
 
-            <Form :action="`/admin/guardians/${guardian.id}/status`" method="patch" #default="{ processing }">
-                <input type="hidden" name="status" :value="guardian.status === 'active' ? 'suspended' : 'active'" />
-                <button type="submit" class="rounded-md bg-black px-4 py-2 text-sm text-white" :disabled="processing">
-                    {{ guardian.status === 'active' ? 'Suspend Guardian' : 'Activate Guardian' }}
-                </button>
-            </Form>
+            <Button type="button" @click="confirmOpen = true">
+                {{ guardian.status === 'active' ? 'Suspend Guardian' : 'Unsuspend Guardian' }}
+            </Button>
         </div>
+
+        <ConfirmDialog
+            v-model:open="confirmOpen"
+            :title="guardian.status === 'active' ? 'Suspend Guardian' : 'Unsuspend Guardian'"
+            :description="
+                guardian.status === 'active'
+                    ? 'Suspend user will prevent login and dashboard access.'
+                    : 'Unsuspend will re-enable access.'
+            "
+            :confirm-label="guardian.status === 'active' ? 'Suspend' : 'Unsuspend'"
+            :destructive="guardian.status === 'active'"
+            @confirm="toggleStatus"
+        />
     </AdminLayout>
 </template>

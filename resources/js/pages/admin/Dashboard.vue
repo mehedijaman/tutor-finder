@@ -32,7 +32,7 @@ const breadcrumbs = [
                 <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/admin/guardians">
                     Manage Guardians
                 </Link>
-                <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/admin/sms-settings">
+                <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/settings/sms">
                     SMS Settings
                 </Link>
             </div>

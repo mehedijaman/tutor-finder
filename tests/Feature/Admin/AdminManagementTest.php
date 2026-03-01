@@ -29,3 +29,16 @@ it('admin can create another admin and assign role', function () {
     expect($newAdmin->hasRole('admin'))->toBeTrue();
     expect($newAdmin->can('tutor-view'))->toBeTrue();
 });
+
+it('admin can view create role page', function () {
+    $this->seed(AdminRolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->admin()->create([
+        'email' => 'role-creator@example.com',
+    ]);
+    $admin->assignRole('super-admin');
+
+    $this->actingAs($admin)
+        ->get(route('admin.roles.create'))
+        ->assertSuccessful();
+});

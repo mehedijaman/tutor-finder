@@ -27,7 +27,10 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             "{$resource}-view",
             "{$resource}-update",
             "{$resource}-delete",
-        ])->values()->all();
+        ])->push(
+            'tutor-password-reset',
+            'guardian-password-reset',
+        )->values()->all();
 
         Permission::query()
             ->where('guard_name', 'web')

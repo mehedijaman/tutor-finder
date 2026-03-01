@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\SmsSettingController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
@@ -25,4 +26,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');
+});
+
+Route::middleware(['auth', 'ensure.role:admin', 'ensure.active'])->group(function () {
+    Route::get('settings/sms', [SmsSettingController::class, 'index'])
+        ->middleware('permission:sms-setting-view')
+        ->name('admin.sms-settings.index');
+    Route::get('settings/sms/create', [SmsSettingController::class, 'create'])
+        ->middleware('permission:sms-setting-create')
+        ->name('admin.sms-settings.create');
+    Route::post('settings/sms', [SmsSettingController::class, 'store'])
+        ->middleware('permission:sms-setting-create')
+        ->name('admin.sms-settings.store');
+    Route::get('settings/sms/{smsSetting}/edit', [SmsSettingController::class, 'edit'])
+        ->middleware('permission:sms-setting-update')
+        ->name('admin.sms-settings.edit');
+    Route::put('settings/sms/{smsSetting}', [SmsSettingController::class, 'update'])
+        ->middleware('permission:sms-setting-update')
+        ->name('admin.sms-settings.update');
 });

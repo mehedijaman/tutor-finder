@@ -2,15 +2,12 @@
 import { Form, Head, Link } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
 defineProps({
-    role: {
-        type: Object,
-        required: true,
-    },
     permissions: {
         type: Array,
         default: () => [],
@@ -19,44 +16,42 @@ defineProps({
 
 const breadcrumbs = [
     { title: 'Roles', href: '/admin/roles' },
-    { title: 'Edit', href: '#' },
+    { title: 'Create', href: '/admin/roles/create' },
 ];
 </script>
 
 <template>
-    <Head title="Edit Role" />
+    <Head title="Create Role" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-semibold">Edit Role</h1>
+                <h1 class="text-2xl font-semibold">Create Role</h1>
                 <Link href="/admin/roles" class="text-sm text-muted-foreground underline">Back</Link>
             </div>
 
-            <Form :action="`/admin/roles/${role.id}`" method="put" class="rounded-xl border bg-white p-4" #default="{ errors, processing }">
+            <Form action="/admin/roles" method="post" class="rounded-xl border bg-white p-4" #default="{ errors, processing }">
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="grid gap-2">
                         <Label for="name">Role name</Label>
-                        <Input id="name" name="name" type="text" :default-value="role.name" required />
+                        <Input id="name" name="name" type="text" required placeholder="manager" />
                         <InputError :message="errors.name" />
                     </div>
                 </div>
 
                 <div class="mt-4 space-y-2">
                     <h2 class="text-sm font-medium">Permissions</h2>
-                    <label v-for="permission in permissions" :key="permission" class="flex items-center gap-2 text-sm">
-                        <input
-                            type="checkbox"
-                            name="permissions[]"
-                            :value="permission"
-                            :checked="role.permissions.includes(permission)"
-                            class="h-4 w-4 rounded border"
-                        >
+                    <label
+                        v-for="permission in permissions"
+                        :key="permission"
+                        class="flex items-center gap-2 text-sm"
+                    >
+                        <Checkbox :id="`role-perm-${permission}`" name="permissions[]" :value="permission" />
                         <span>{{ permission }}</span>
                     </label>
                 </div>
 
-                <Button class="mt-4" type="submit" :disabled="processing">Update Role</Button>
+                <Button class="mt-4" type="submit" :disabled="processing">Create Role</Button>
             </Form>
         </div>
     </AdminLayout>
