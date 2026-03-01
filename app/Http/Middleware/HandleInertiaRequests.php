@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use App\Support\SiteSettingsResolver;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Lab404\Impersonate\Services\ImpersonateManager;
@@ -59,6 +60,7 @@ class HandleInertiaRequests extends Middleware
                     'impersonator_name' => $impersonator?->name,
                 ],
             ],
+            'siteSettings' => fn (): array => app(SiteSettingsResolver::class)->publicPayload(),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

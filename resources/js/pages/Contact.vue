@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useSiteSettings } from '@/composables/useSiteSettings';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -10,6 +11,8 @@ withDefaults(
         canRegister: true,
     },
 );
+
+const { siteName, primaryPhone, primaryEmail, primaryAddress } = useSiteSettings();
 
 // Adjust this to your Laravel route name/url for handling contact submissions.
 const form = useForm({
@@ -67,7 +70,7 @@ function submit() {
         <!-- Page header -->
         <section class="mx-auto max-w-7xl px-4 pb-8">
             <div class="rounded-3xl bg-gradient-to-r from-blue-600 to-sky-500 p-8 md:p-10 text-white shadow-sm">
-                <p class="text-white/90 text-sm font-semibold">Tutor Finder</p>
+                <p class="text-white/90 text-sm font-semibold">{{ siteName }}</p>
                 <h1 class="mt-2 text-3xl md:text-4xl font-extrabold">Contact us</h1>
                 <p class="mt-3 max-w-2xl text-white/90">
                     Send us a message and we’ll get back to you as soon as possible.
@@ -93,7 +96,7 @@ function submit() {
                                 </div>
                                 <div>
                                     <dt class="font-semibold">Email</dt>
-                                    <dd class="text-slate-600">hello@yourdomain.com</dd>
+                                    <dd class="text-slate-600">{{ primaryEmail || 'hello@yourdomain.com' }}</dd>
                                 </div>
                             </div>
 
@@ -103,7 +106,7 @@ function submit() {
                                 </div>
                                 <div>
                                     <dt class="font-semibold">Phone</dt>
-                                    <dd class="text-slate-600">+1 (000) 000-0000</dd>
+                                    <dd class="text-slate-600">{{ primaryPhone || '+1 (000) 000-0000' }}</dd>
                                 </div>
                             </div>
 
@@ -113,7 +116,7 @@ function submit() {
                                 </div>
                                 <div>
                                     <dt class="font-semibold">Location</dt>
-                                    <dd class="text-slate-600">Your City, Country</dd>
+                                    <dd class="text-slate-600">{{ primaryAddress || 'Your City, Country' }}</dd>
                                 </div>
                             </div>
                         </dl>
@@ -245,7 +248,7 @@ function submit() {
         <footer class="bg-slate-900 text-slate-200">
             <div class="mx-auto max-w-7xl px-4 py-10">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
-                    <p>© {{ new Date().getFullYear() }} Tutor Finder. All rights reserved.</p>
+                    <p>© {{ new Date().getFullYear() }} {{ siteName }}. All rights reserved.</p>
                     <div class="flex items-center gap-4">
                         <a class="hover:text-slate-200" href="#">Privacy</a>
                         <a class="hover:text-slate-200" href="#">Terms</a>

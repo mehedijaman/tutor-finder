@@ -45,6 +45,11 @@ const sidebarNavItems = computed<NavItem[]>(() => {
 
     if (page.props.auth?.user?.role === 'admin') {
         items.push({
+            title: 'Site Settings',
+            href: '/settings/site',
+        });
+
+        items.push({
             title: 'SMS Settings',
             href: '/settings/sms',
         });

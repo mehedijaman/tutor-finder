@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { useSiteSettings } from '@/composables/useSiteSettings';
 import { ref, computed } from 'vue';
 
 type Post = {
@@ -12,13 +13,15 @@ type Post = {
     featured?: boolean;
 };
 
+const { siteName } = useSiteSettings();
+
 const posts = ref<Post[]>([
     {
         id: 1,
         title: 'How to Choose the Right Tutor for Your Child',
         excerpt: 'Finding the right tutor can significantly impact your child’s academic success. Here’s what to look for...',
         category: 'Parents',
-        author: 'Tutor Finder Team',
+        author: `${siteName.value} Team`,
         date: 'March 1, 2026',
         featured: true,
     },
@@ -27,7 +30,7 @@ const posts = ref<Post[]>([
         title: 'How Tutors Can Stand Out in a Competitive Market',
         excerpt: 'With more tutors joining online platforms, it’s important to differentiate yourself...',
         category: 'Tutors',
-        author: 'Tutor Finder Team',
+        author: `${siteName.value} Team`,
         date: 'February 26, 2026',
     },
     {
@@ -35,7 +38,7 @@ const posts = ref<Post[]>([
         title: 'Top Study Techniques That Actually Work',
         excerpt: 'Evidence-based study techniques can dramatically improve performance...',
         category: 'Students',
-        author: 'Tutor Finder Team',
+        author: `${siteName.value} Team`,
         date: 'February 20, 2026',
     },
 ]);
@@ -68,7 +71,7 @@ const featuredPost = computed(() =>
 
 <!-- Header -->
 <div class="mb-10">
-<h1 class="text-3xl font-extrabold">Tutor Finder Blog</h1>
+<h1 class="text-3xl font-extrabold">{{ siteName }} Blog</h1>
 <p class="text-slate-600 mt-2">
 Insights, tips, and resources for tutors and families.
 </p>

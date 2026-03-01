@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { useSiteSettings } from '@/composables/useSiteSettings';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -10,6 +11,8 @@ withDefaults(
         canRegister: true,
     },
 );
+
+const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } = useSiteSettings();
 </script>
 
 <template>
@@ -29,8 +32,8 @@ withDefaults(
                         <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                         Available today
                     </span> -->
-                    <span>📞 +1 (000) 000-0000</span>
-                    <span>✉️ hello@tutorfinder.com</span>
+                    <span>📞 {{ primaryPhone || '+1 (000) 000-0000' }}</span>
+                    <span>✉️ {{ primaryEmail || 'hello@yourdomain.com' }}</span>
                 </div>
                 <div class="flex items-center gap-4">
                     <!-- Changed FAQ -> Blog -->
@@ -47,11 +50,17 @@ withDefaults(
             <div class="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
                 <!-- Brand updated -->
                 <a href="#home" class="flex items-center gap-2">
-                    <div class="h-9 w-9 rounded-lg bg-blue-600 grid place-items-center text-white font-bold">
-                        T
+                    <img
+                        v-if="logoUrl"
+                        :src="logoUrl"
+                        :alt="siteName"
+                        class="h-9 w-9 rounded-lg border border-blue-100 object-cover"
+                    />
+                    <div v-else class="h-9 w-9 rounded-lg bg-blue-600 grid place-items-center text-white font-bold">
+                        {{ siteName.charAt(0).toUpperCase() }}
                     </div>
                     <div class="leading-tight">
-                        <div class="font-semibold">Tutor Finder</div>
+                        <div class="font-semibold">{{ siteName }}</div>
                         <div class="text-xs text-slate-500 -mt-0.5">
                             Tutors • Students • Parents
                         </div>
@@ -235,9 +244,9 @@ withDefaults(
             <div class="mx-auto max-w-7xl px-4">
                 <div class="text-center max-w-2xl mx-auto">
                     <p class="text-blue-600 font-semibold">About</p>
-                    <h2 class="mt-2 text-3xl font-extrabold">About Tutor Finder</h2>
+                    <h2 class="mt-2 text-3xl font-extrabold">About {{ siteName }}</h2>
                     <p class="mt-4 text-slate-600">
-                        Tutor Finder connects learners with trusted tutors for personalized support—homework help,
+                        {{ siteName }} connects learners with trusted tutors for personalized support—homework help,
                         exam prep, and skill building. Track progress, schedule sessions, and learn with confidence.
                     </p>
 
@@ -548,10 +557,16 @@ withDefaults(
                 <div class="grid md:grid-cols-3 gap-8">
                     <div>
                         <div class="flex items-center gap-2">
-                            <div class="h-9 w-9 rounded-lg bg-blue-600 grid place-items-center text-white font-bold">
-                                T
+                            <img
+                                v-if="logoUrl"
+                                :src="logoUrl"
+                                :alt="siteName"
+                                class="h-9 w-9 rounded-lg border border-blue-500/20 object-cover"
+                            />
+                            <div v-else class="h-9 w-9 rounded-lg bg-blue-600 grid place-items-center text-white font-bold">
+                                {{ siteName.charAt(0).toUpperCase() }}
                             </div>
-                            <div class="font-semibold">Tutor Finder</div>
+                            <div class="font-semibold">{{ siteName }}</div>
                         </div>
                         <p class="mt-3 text-sm text-slate-400">
                             Connecting students with tutors for better outcomes.
@@ -570,9 +585,9 @@ withDefaults(
                     <div>
                         <p class="font-semibold">Contact</p>
                         <ul class="mt-3 space-y-2 text-sm text-slate-400">
-                            <li>📍 Your City, Country</li>
-                            <li>📞 +1 (000) 000-0000</li>
-                            <li>✉️ hello@yourdomain.com</li>
+                            <li>📍 {{ primaryAddress || 'Your City, Country' }}</li>
+                            <li>📞 {{ primaryPhone || '+1 (000) 000-0000' }}</li>
+                            <li>✉️ {{ primaryEmail || 'hello@yourdomain.com' }}</li>
                         </ul>
                     </div>
                 </div>
@@ -580,7 +595,7 @@ withDefaults(
                 <div
                     class="mt-10 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-500"
                 >
-                    <p>© {{ new Date().getFullYear() }} Tutor Finder. All rights reserved.</p>
+                    <p>© {{ new Date().getFullYear() }} {{ siteName }}. All rights reserved.</p>
                     <div class="flex items-center gap-4">
                         <a class="hover:text-slate-300" href="#">Privacy</a>
                         <a class="hover:text-slate-300" href="#">Terms</a>

@@ -1,6 +1,7 @@
 <!-- Faq.vue -->
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { useSiteSettings } from '@/composables/useSiteSettings';
 import { dashboard, login, register } from '@/routes';
 import { computed, ref } from 'vue';
 
@@ -12,6 +13,8 @@ withDefaults(
 );
 
 type FaqItem = { q: string; a: string };
+
+const { siteName } = useSiteSettings();
 
 const activeTab = ref<'guardian' | 'tutor'>('guardian');
 const openIndex = ref<number | null>(0);
@@ -120,7 +123,7 @@ function toggle(i: number) {
         <!-- Hero -->
         <section class="mx-auto max-w-7xl px-4 pb-8">
             <div class="rounded-3xl bg-gradient-to-r from-blue-600 to-sky-500 p-8 md:p-10 text-white shadow-sm">
-                <p class="text-white/90 text-sm font-semibold">Tutor Finder</p>
+                <p class="text-white/90 text-sm font-semibold">{{ siteName }}</p>
                 <h1 class="mt-2 text-3xl md:text-4xl font-extrabold">Frequently Asked Questions</h1>
                 <p class="mt-3 max-w-2xl text-white/90">
                     Answers for both guardians/students and tutors. Use the tabs to switch.
@@ -283,7 +286,7 @@ function toggle(i: number) {
         <footer class="bg-slate-900 text-slate-200">
             <div class="mx-auto max-w-7xl px-4 py-10">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
-                    <p>© {{ new Date().getFullYear() }} Tutor Finder. All rights reserved.</p>
+                    <p>© {{ new Date().getFullYear() }} {{ siteName }}. All rights reserved.</p>
                     <div class="flex items-center gap-4">
                         <a class="hover:text-slate-200" href="/privacy">Privacy</a>
                         <a class="hover:text-slate-200" href="/terms">Terms</a>

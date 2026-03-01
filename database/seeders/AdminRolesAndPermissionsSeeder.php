@@ -30,6 +30,8 @@ class AdminRolesAndPermissionsSeeder extends Seeder
         ])->push(
             'tutor-password-reset',
             'guardian-password-reset',
+            'site-setting-view',
+            'site-setting-update',
             'activity-log-view',
             'backup-view',
             'backup-run',

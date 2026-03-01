@@ -1,6 +1,7 @@
 <!-- TermsOfService.vue -->
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { useSiteSettings } from '@/composables/useSiteSettings';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -11,6 +12,7 @@ withDefaults(
 );
 
 const updatedAt = 'March 1, 2026'; // change anytime
+const { siteName, primaryEmail } = useSiteSettings();
 </script>
 
 <template>
@@ -51,10 +53,10 @@ const updatedAt = 'March 1, 2026'; // change anytime
         <!-- Page hero -->
         <section class="mx-auto max-w-7xl px-4 pb-8">
             <div class="rounded-3xl bg-gradient-to-r from-blue-600 to-sky-500 p-8 md:p-10 text-white shadow-sm">
-                <p class="text-white/90 text-sm font-semibold">Tutor Finder</p>
+                <p class="text-white/90 text-sm font-semibold">{{ siteName }}</p>
                 <h1 class="mt-2 text-3xl md:text-4xl font-extrabold">Terms of Service</h1>
                 <p class="mt-3 max-w-2xl text-white/90">
-                    These terms govern your use of Tutor Finder and outline responsibilities for students, guardians, and tutors.
+                    These terms govern your use of {{ siteName }} and outline responsibilities for students, guardians, and tutors.
                 </p>
                 <p class="mt-4 text-sm text-white/80">Last updated: {{ updatedAt }}</p>
             </div>
@@ -66,13 +68,13 @@ const updatedAt = 'March 1, 2026'; // change anytime
                 <div class="prose prose-slate max-w-none prose-h2:mt-8 prose-h2:mb-3 prose-h3:mt-6 prose-h3:mb-2">
                     <h2>1. Agreement to these terms</h2>
                     <p>
-                        By accessing or using Tutor Finder (“we,” “us,” “our”), you agree to these Terms of Service
+                        By accessing or using {{ siteName }} (“we,” “us,” “our”), you agree to these Terms of Service
                         (“Terms”). If you do not agree, do not use the Services.
                     </p>
 
                     <h2>2. The Services</h2>
                     <p>
-                        Tutor Finder provides tools to connect students/guardians with tutors, including profiles, matching,
+                        {{ siteName }} provides tools to connect students/guardians with tutors, including profiles, matching,
                         messaging, scheduling, and related features. We may change or discontinue features at any time.
                     </p>
 
@@ -137,7 +139,7 @@ const updatedAt = 'March 1, 2026'; // change anytime
 
                     <h2>10. Limitation of liability</h2>
                     <p>
-                        To the maximum extent permitted by law, Tutor Finder will not be liable for indirect, incidental,
+                        To the maximum extent permitted by law, {{ siteName }} will not be liable for indirect, incidental,
                         special, consequential, or punitive damages, or any loss of data, profits, or reputation arising from
                         your use of the Services.
                     </p>
@@ -150,7 +152,7 @@ const updatedAt = 'March 1, 2026'; // change anytime
 
                     <h2>12. Contact</h2>
                     <p>
-                        Questions about these Terms? Contact us at <strong>support@yourdomain.com</strong> or via the contact page.
+                        Questions about these Terms? Contact us at <strong>{{ primaryEmail || 'support@yourdomain.com' }}</strong> or via the contact page.
                     </p>
                 </div>
 
@@ -171,7 +173,7 @@ const updatedAt = 'March 1, 2026'; // change anytime
         <footer class="bg-slate-900 text-slate-200">
             <div class="mx-auto max-w-7xl px-4 py-10">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
-                    <p>© {{ new Date().getFullYear() }} Tutor Finder. All rights reserved.</p>
+                    <p>© {{ new Date().getFullYear() }} {{ siteName }}. All rights reserved.</p>
                     <div class="flex items-center gap-4">
                         <a class="hover:text-slate-200" href="/privacy">Privacy</a>
                         <a class="hover:text-slate-200" href="/terms">Terms</a>

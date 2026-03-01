@@ -1,6 +1,7 @@
 <!-- PrivacyPolicy.vue -->
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { useSiteSettings } from '@/composables/useSiteSettings';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -11,6 +12,7 @@ withDefaults(
 );
 
 const updatedAt = 'March 1, 2026'; // change anytime
+const { siteName, primaryEmail } = useSiteSettings();
 </script>
 
 <template>
@@ -51,10 +53,10 @@ const updatedAt = 'March 1, 2026'; // change anytime
         <!-- Page hero -->
         <section class="mx-auto max-w-7xl px-4 pb-8">
             <div class="rounded-3xl bg-gradient-to-r from-blue-600 to-sky-500 p-8 md:p-10 text-white shadow-sm">
-                <p class="text-white/90 text-sm font-semibold">Tutor Finder</p>
+                <p class="text-white/90 text-sm font-semibold">{{ siteName }}</p>
                 <h1 class="mt-2 text-3xl md:text-4xl font-extrabold">Privacy Policy</h1>
                 <p class="mt-3 max-w-2xl text-white/90">
-                    This policy explains how Tutor Finder collects, uses, and protects your information.
+                    This policy explains how {{ siteName }} collects, uses, and protects your information.
                 </p>
                 <p class="mt-4 text-sm text-white/80">Last updated: {{ updatedAt }}</p>
             </div>
@@ -66,7 +68,7 @@ const updatedAt = 'March 1, 2026'; // change anytime
                 <div class="prose prose-slate max-w-none prose-h2:mt-8 prose-h2:mb-3 prose-h3:mt-6 prose-h3:mb-2">
                     <h2>1. Who we are</h2>
                     <p>
-                        Tutor Finder is a platform that helps students/guardians connect with tutors. This Privacy Policy
+                        {{ siteName }} is a platform that helps students/guardians connect with tutors. This Privacy Policy
                         applies to our website, applications, and services (the “Services”).
                     </p>
 
@@ -136,7 +138,7 @@ const updatedAt = 'March 1, 2026'; // change anytime
 
                     <h2>9. Children’s privacy</h2>
                     <p>
-                        Tutor Finder may be used by students. Guardians may supervise or manage student accounts.
+                        {{ siteName }} may be used by students. Guardians may supervise or manage student accounts.
                         We collect only the information necessary to provide the Services and encourage guardians to review
                         activity and settings.
                     </p>
@@ -155,7 +157,7 @@ const updatedAt = 'March 1, 2026'; // change anytime
 
                     <h2>12. Contact us</h2>
                     <p>
-                        Questions about privacy? Contact us at <strong>privacy@yourdomain.com</strong> or via the contact page.
+                        Questions about privacy? Contact us at <strong>{{ primaryEmail || 'privacy@yourdomain.com' }}</strong> or via the contact page.
                     </p>
                 </div>
 
@@ -176,7 +178,7 @@ const updatedAt = 'March 1, 2026'; // change anytime
         <footer class="bg-slate-900 text-slate-200">
             <div class="mx-auto max-w-7xl px-4 py-10">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-400">
-                    <p>© {{ new Date().getFullYear() }} Tutor Finder. All rights reserved.</p>
+                    <p>© {{ new Date().getFullYear() }} {{ siteName }}. All rights reserved.</p>
                     <div class="flex items-center gap-4">
                         <a class="hover:text-slate-200" href="/privacy">Privacy</a>
                         <a class="hover:text-slate-200" href="/terms">Terms</a>

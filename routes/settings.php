@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SmsSettingController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -29,6 +30,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'ensure.role:admin', 'ensure.active'])->group(function () {
+    Route::get('settings/site', [SiteSettingController::class, 'edit'])
+        ->middleware('permission:site-setting-view')
+        ->name('admin.site-settings.edit');
+    Route::put('settings/site', [SiteSettingController::class, 'update'])
+        ->middleware('permission:site-setting-update')
+        ->name('admin.site-settings.update');
+
     Route::get('settings/sms', [SmsSettingController::class, 'index'])
         ->middleware('permission:sms-setting-view')
         ->name('admin.sms-settings.index');
