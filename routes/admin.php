@@ -8,7 +8,9 @@ use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\BlogTagController;
 use App\Http\Controllers\Admin\BlogUploadController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TutorManagementController;
@@ -42,6 +44,47 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/backups/file', [BackupManagementController::class, 'destroy'])
             ->middleware('permission:backup-delete')
             ->name('backups.destroy');
+        Route::get('/contact-messages', [ContactMessageController::class, 'index'])
+            ->middleware('permission:contact-message-view')
+            ->name('contact-messages.index');
+        Route::get('/contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])
+            ->middleware('permission:contact-message-view')
+            ->name('contact-messages.show');
+        Route::patch('/contact-messages/{contactMessage}/status', [ContactMessageController::class, 'updateStatus'])
+            ->middleware('permission:contact-message-update')
+            ->name('contact-messages.status');
+        Route::get('/faqs', [AdminFaqController::class, 'index'])
+            ->middleware('permission:faq-view')
+            ->name('faqs.index');
+        Route::get('/faqs/create', [AdminFaqController::class, 'create'])
+            ->middleware('permission:faq-create')
+            ->name('faqs.create');
+        Route::post('/faqs', [AdminFaqController::class, 'store'])
+            ->middleware('permission:faq-create')
+            ->name('faqs.store');
+        Route::get('/faqs/{faq}/edit', [AdminFaqController::class, 'edit'])
+            ->middleware('permission:faq-update')
+            ->name('faqs.edit');
+        Route::put('/faqs/{faq}', [AdminFaqController::class, 'update'])
+            ->middleware('permission:faq-update')
+            ->name('faqs.update');
+        Route::patch('/faqs/{faq}/status', [AdminFaqController::class, 'updateStatus'])
+            ->middleware('permission:faq-update')
+            ->name('faqs.status');
+        Route::delete('/faqs/{faq}', [AdminFaqController::class, 'destroy'])
+            ->middleware('permission:faq-delete')
+            ->name('faqs.destroy');
+        Route::patch('/faqs/{faq}/restore', [AdminFaqController::class, 'restore'])
+            ->middleware('permission:faq-restore')
+            ->withTrashed()
+            ->name('faqs.restore');
+        Route::delete('/faqs/{faq}/force', [AdminFaqController::class, 'forceDelete'])
+            ->middleware('permission:faq-force-delete')
+            ->withTrashed()
+            ->name('faqs.force-delete');
+        Route::delete('/faqs/recycle-bin/empty', [AdminFaqController::class, 'emptyRecycleBin'])
+            ->middleware('permission:faq-force-delete')
+            ->name('faqs.empty-recycle-bin');
 
         Route::prefix('blog')->name('blog.')->group(function () {
             Route::post('/uploads/images', [BlogUploadController::class, 'storeImage'])

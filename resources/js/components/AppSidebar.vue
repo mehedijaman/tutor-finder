@@ -5,6 +5,8 @@ import {
     FileText,
     FolderOpen,
     GraduationCap,
+    MessagesSquare,
+    CircleHelp,
     History,
     HardDrive,
     LayoutGrid,
@@ -42,6 +44,8 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
             { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
             { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
+            { title: 'Contact Messages', href: '/admin/contact-messages', icon: MessagesSquare },
+            { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             {
                 title: 'Blog',
                 href: '/admin/blog/posts',

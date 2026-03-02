@@ -61,6 +61,10 @@ class HandleInertiaRequests extends Middleware
                 ],
             ],
             'siteSettings' => fn (): array => app(SiteSettingsResolver::class)->publicPayload(),
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'status' => fn () => $request->session()->get('status'),
+            ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

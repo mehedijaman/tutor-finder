@@ -71,6 +71,20 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(10)->by('otp-verify:'.$userId.'|'.$request->ip());
         });
+
+        RateLimiter::for('contact-form', function ($request) {
+            $identifier = trim((string) $request->input('email'));
+
+            if ($identifier === '') {
+                $identifier = trim((string) $request->input('phone'));
+            }
+
+            if ($identifier === '') {
+                $identifier = 'anonymous';
+            }
+
+            return Limit::perMinute(5)->by('contact-form:'.$request->ip().'|'.$identifier);
+        });
     }
 
     /**

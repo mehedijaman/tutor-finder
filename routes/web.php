@@ -3,16 +3,21 @@
 use App\Http\Controllers\Auth\RoleDashboardRedirectController;
 use App\Http\Controllers\Auth\VerifyOtpController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'index'])->name('home');
 Route::get('/jobs', [SiteController::class, 'jobs'])->name('jobs');
-Route::get('/faq', [SiteController::class, 'faq'])->name('faq');
+Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
-Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])
+    ->middleware('throttle:contact-form')
+    ->name('contact.store');
 Route::get('/privacy-policy', [SiteController::class, 'privacy'])->name('privacy-policy');
 Route::get('/terms-of-service', [SiteController::class, 'terms'])->name('terms-of-service');
 
