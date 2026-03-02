@@ -3,11 +3,14 @@ import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     FileText,
+    FolderOpen,
     GraduationCap,
     History,
     HardDrive,
     LayoutGrid,
+    Newspaper,
     Shield,
+    Tags,
     Users,
     UserRound,
     Wrench,
@@ -39,6 +42,16 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
             { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
             { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
+            {
+                title: 'Blog',
+                href: '/admin/blog/posts',
+                icon: Newspaper,
+                children: [
+                    { title: 'Posts', href: '/admin/blog/posts', icon: FileText },
+                    { title: 'Categories', href: '/admin/blog/categories', icon: FolderOpen },
+                    { title: 'Tags', href: '/admin/blog/tags', icon: Tags },
+                ],
+            },
             { title: 'Settings', href: '/settings', icon: Cog },
             {
                 title: 'Access Control',

@@ -4,6 +4,10 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\BackupManagementController;
+use App\Http\Controllers\Admin\BlogCategoryController;
+use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\BlogTagController;
+use App\Http\Controllers\Admin\BlogUploadController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\RoleController;
@@ -38,6 +42,102 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/backups/file', [BackupManagementController::class, 'destroy'])
             ->middleware('permission:backup-delete')
             ->name('backups.destroy');
+
+        Route::prefix('blog')->name('blog.')->group(function () {
+            Route::post('/uploads/images', [BlogUploadController::class, 'storeImage'])
+                ->middleware('permission:blog-post-update')
+                ->name('uploads.images');
+
+            Route::get('/categories', [BlogCategoryController::class, 'index'])
+                ->middleware('permission:blog-category-view')
+                ->name('categories.index');
+            Route::get('/categories/create', [BlogCategoryController::class, 'create'])
+                ->middleware('permission:blog-category-create')
+                ->name('categories.create');
+            Route::post('/categories', [BlogCategoryController::class, 'store'])
+                ->middleware('permission:blog-category-create')
+                ->name('categories.store');
+            Route::get('/categories/{blogCategory}/edit', [BlogCategoryController::class, 'edit'])
+                ->middleware('permission:blog-category-update')
+                ->name('categories.edit');
+            Route::put('/categories/{blogCategory}', [BlogCategoryController::class, 'update'])
+                ->middleware('permission:blog-category-update')
+                ->name('categories.update');
+            Route::delete('/categories/{blogCategory}', [BlogCategoryController::class, 'destroy'])
+                ->middleware('permission:blog-category-delete')
+                ->name('categories.destroy');
+            Route::patch('/categories/{blogCategory}/restore', [BlogCategoryController::class, 'restore'])
+                ->middleware('permission:blog-category-restore')
+                ->withTrashed()
+                ->name('categories.restore');
+            Route::delete('/categories/{blogCategory}/force', [BlogCategoryController::class, 'forceDelete'])
+                ->middleware('permission:blog-category-force-delete')
+                ->withTrashed()
+                ->name('categories.force-delete');
+            Route::delete('/categories/recycle-bin/empty', [BlogCategoryController::class, 'emptyRecycleBin'])
+                ->middleware('permission:blog-category-force-delete')
+                ->name('categories.empty-recycle-bin');
+
+            Route::get('/tags', [BlogTagController::class, 'index'])
+                ->middleware('permission:blog-tag-view')
+                ->name('tags.index');
+            Route::get('/tags/create', [BlogTagController::class, 'create'])
+                ->middleware('permission:blog-tag-create')
+                ->name('tags.create');
+            Route::post('/tags', [BlogTagController::class, 'store'])
+                ->middleware('permission:blog-tag-create')
+                ->name('tags.store');
+            Route::get('/tags/{blogTag}/edit', [BlogTagController::class, 'edit'])
+                ->middleware('permission:blog-tag-update')
+                ->name('tags.edit');
+            Route::put('/tags/{blogTag}', [BlogTagController::class, 'update'])
+                ->middleware('permission:blog-tag-update')
+                ->name('tags.update');
+            Route::delete('/tags/{blogTag}', [BlogTagController::class, 'destroy'])
+                ->middleware('permission:blog-tag-delete')
+                ->name('tags.destroy');
+            Route::patch('/tags/{blogTag}/restore', [BlogTagController::class, 'restore'])
+                ->middleware('permission:blog-tag-restore')
+                ->withTrashed()
+                ->name('tags.restore');
+            Route::delete('/tags/{blogTag}/force', [BlogTagController::class, 'forceDelete'])
+                ->middleware('permission:blog-tag-force-delete')
+                ->withTrashed()
+                ->name('tags.force-delete');
+            Route::delete('/tags/recycle-bin/empty', [BlogTagController::class, 'emptyRecycleBin'])
+                ->middleware('permission:blog-tag-force-delete')
+                ->name('tags.empty-recycle-bin');
+
+            Route::get('/posts', [BlogPostController::class, 'index'])
+                ->middleware('permission:blog-post-view')
+                ->name('posts.index');
+            Route::get('/posts/create', [BlogPostController::class, 'create'])
+                ->middleware('permission:blog-post-create')
+                ->name('posts.create');
+            Route::post('/posts', [BlogPostController::class, 'store'])
+                ->middleware('permission:blog-post-create')
+                ->name('posts.store');
+            Route::get('/posts/{blogPost}/edit', [BlogPostController::class, 'edit'])
+                ->middleware('permission:blog-post-update')
+                ->name('posts.edit');
+            Route::put('/posts/{blogPost}', [BlogPostController::class, 'update'])
+                ->middleware('permission:blog-post-update')
+                ->name('posts.update');
+            Route::delete('/posts/{blogPost}', [BlogPostController::class, 'destroy'])
+                ->middleware('permission:blog-post-delete')
+                ->name('posts.destroy');
+            Route::patch('/posts/{blogPost}/restore', [BlogPostController::class, 'restore'])
+                ->middleware('permission:blog-post-restore')
+                ->withTrashed()
+                ->name('posts.restore');
+            Route::delete('/posts/{blogPost}/force', [BlogPostController::class, 'forceDelete'])
+                ->middleware('permission:blog-post-force-delete')
+                ->withTrashed()
+                ->name('posts.force-delete');
+            Route::delete('/posts/recycle-bin/empty', [BlogPostController::class, 'emptyRecycleBin'])
+                ->middleware('permission:blog-post-force-delete')
+                ->name('posts.empty-recycle-bin');
+        });
 
         Route::get('/users', [AdminUserController::class, 'index'])
             ->middleware('permission:admin-user-view')

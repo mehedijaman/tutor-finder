@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+
+class BlogCategory extends Model implements HasMedia
+{
+    /** @use HasFactory<\Database\Factories\BlogCategoryFactory> */
+    use HasFactory, InteractsWithMedia, SoftDeletes;
+
+    /**
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'status',
+        'meta_title',
+        'meta_description',
+    ];
+
+    /**
+     * Get blog posts that belong to this category.
+     */
+    public function posts(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            BlogPost::class,
+            'blog_category_post',
+            'category_id',
+            'post_id',
+        );
+    }
+
+    /**
+     * Register category media collections.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')->singleFile();
+    }
+}

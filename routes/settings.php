@@ -52,4 +52,7 @@ Route::middleware(['auth', 'ensure.role:admin', 'ensure.active'])->group(functio
     Route::put('settings/sms/{smsSetting}', [SmsSettingController::class, 'update'])
         ->middleware('permission:sms-setting-update')
         ->name('admin.sms-settings.update');
+    Route::post('settings/sms/test', [SmsSettingController::class, 'testSms'])
+        ->middleware('permission:sms-setting-update')
+        ->name('admin.sms-settings.test');
 });

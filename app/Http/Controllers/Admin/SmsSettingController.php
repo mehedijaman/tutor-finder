@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Contracts\SmsSender;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SendTestSmsRequest;
 use App\Http\Requests\Admin\SmsSettingStoreRequest;
 use App\Http\Requests\Admin\SmsSettingUpdateRequest;
 use App\Models\SmsSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\ViewErrorBag;
 use Inertia\Response;
+use Throwable;
 
 class SmsSettingController extends Controller
 {
@@ -87,6 +91,12 @@ class SmsSettingController extends Controller
         return inertia('admin/sms-settings/Index', [
             'items' => $items,
             'filters' => $filters,
+            'permissions' => [
+                'can_create' => $request->user()?->can('sms-setting-create') ?? false,
+                'can_test' => $request->user()?->can('sms-setting-update') ?? false,
+            ],
+            'resultMessage' => session('status'),
+            'errorMessage' => $this->resolveSmsError($request),
         ]);
     }
 
@@ -143,6 +153,33 @@ class SmsSettingController extends Controller
         $this->persist($validated, $smsSetting);
 
         return redirect()->route('admin.sms-settings.index')->with('status', 'SMS setting updated successfully.');
+    }
+
+    /**
+     * Send a test SMS through the default active gateway setting.
+     */
+    public function testSms(SendTestSmsRequest $request, SmsSender $smsSender): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        try {
+            $smsSender->send(
+                (string) $validated['mobile'],
+                (string) $validated['message'],
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('admin.sms-settings.index')
+                ->withErrors([
+                    'sms' => $exception->getMessage(),
+                ]);
+        }
+
+        return redirect()
+            ->route('admin.sms-settings.index')
+            ->with('status', 'Test SMS sent successfully.');
     }
 
     /**
@@ -215,5 +252,23 @@ class SmsSettingController extends Controller
         if (! $fallback->is_default) {
             $fallback->forceFill(['is_default' => true])->save();
         }
+    }
+
+    /**
+     * Resolve SMS-related error message from the session error bag.
+     */
+    private function resolveSmsError(Request $request): ?string
+    {
+        $errors = $request->session()->get('errors');
+
+        if (! $errors instanceof ViewErrorBag) {
+            return null;
+        }
+
+        if (! $errors->has('sms')) {
+            return null;
+        }
+
+        return $errors->first('sms');
     }
 }

@@ -1,10 +1,21 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
+import InputError from '@/components/InputError.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 
@@ -16,6 +27,18 @@ const props = defineProps({
     filters: {
         type: Object,
         default: () => ({}),
+    },
+    permissions: {
+        type: Object,
+        default: () => ({}),
+    },
+    resultMessage: {
+        type: String,
+        default: null,
+    },
+    errorMessage: {
+        type: String,
+        default: null,
     },
 });
 
@@ -34,7 +57,12 @@ const columns = [
 ];
 
 const search = ref(props.filters.search ?? '');
+const isTestSmsModalOpen = ref(false);
 let searchDebounceTimer = null;
+const testSmsForm = useForm({
+    mobile: '',
+    message: '',
+});
 
 watch(
     () => props.filters.search,
@@ -94,6 +122,32 @@ function handleRowAction(actionKey, row) {
         router.visit(`/settings/sms/${row.id}/edit`);
     }
 }
+
+function openTestSmsModal() {
+    testSmsForm.reset();
+    testSmsForm.clearErrors();
+    isTestSmsModalOpen.value = true;
+}
+
+function handleTestSmsModalOpenChange(value) {
+    isTestSmsModalOpen.value = value;
+
+    if (!value) {
+        testSmsForm.reset();
+        testSmsForm.clearErrors();
+    }
+}
+
+function submitTestSms() {
+    testSmsForm.post('/settings/sms/test', {
+        preserveScroll: true,
+        onSuccess: () => {
+            isTestSmsModalOpen.value = false;
+            testSmsForm.reset();
+            testSmsForm.clearErrors();
+        },
+    });
+}
 </script>
 
 <template>
@@ -104,12 +158,38 @@ function handleRowAction(actionKey, row) {
             <div class="space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <h1 class="text-2xl font-semibold">SMS Settings</h1>
-                    <Link
-                        href="/settings/sms/create"
-                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
-                    >
-                        Add SMS Setting
-                    </Link>
+                    <div class="flex items-center gap-2">
+                        <Button
+                            v-if="permissions.can_test"
+                            type="button"
+                            variant="outline"
+                            @click="openTestSmsModal"
+                        >
+                            Test SMS
+                        </Button>
+
+                        <Link
+                            v-if="permissions.can_create"
+                            href="/settings/sms/create"
+                            class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                        >
+                            Add SMS Setting
+                        </Link>
+                    </div>
+                </div>
+
+                <div
+                    v-if="resultMessage"
+                    class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                >
+                    {{ resultMessage }}
+                </div>
+
+                <div
+                    v-if="errorMessage"
+                    class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
+                >
+                    {{ errorMessage }}
                 </div>
 
                 <div class="rounded-xl border bg-white p-4">
@@ -179,6 +259,58 @@ function handleRowAction(actionKey, row) {
                     </template>
                 </DataTable>
             </div>
+
+            <Dialog :open="isTestSmsModalOpen" @update:open="handleTestSmsModalOpenChange">
+                <DialogContent>
+                    <DialogHeader class="space-y-2">
+                        <DialogTitle>Send Test SMS</DialogTitle>
+                        <DialogDescription>
+                            Send a test message using the current default active SMS gateway.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form class="space-y-4" @submit.prevent="submitTestSms">
+                        <div class="grid gap-2">
+                            <Label for="test-sms-mobile">Mobile Number</Label>
+                            <Input
+                                id="test-sms-mobile"
+                                v-model="testSmsForm.mobile"
+                                type="text"
+                                placeholder="017XXXXXXXX"
+                                autocomplete="tel"
+                            />
+                            <InputError :message="testSmsForm.errors.mobile" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="test-sms-message">SMS Message</Label>
+                            <textarea
+                                id="test-sms-message"
+                                v-model="testSmsForm.message"
+                                rows="4"
+                                class="rounded-md border px-3 py-2 text-sm"
+                                placeholder="Write a short test message"
+                            ></textarea>
+                            <InputError :message="testSmsForm.errors.message" />
+                            <InputError :message="testSmsForm.errors.sms" />
+                        </div>
+
+                        <DialogFooter class="gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                :disabled="testSmsForm.processing"
+                                @click="handleTestSmsModalOpenChange(false)"
+                            >
+                                Cancel
+                            </Button>
+                            <Button type="submit" :disabled="testSmsForm.processing">
+                                Send SMS
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </SettingsLayout>
     </AppLayout>
 </template>

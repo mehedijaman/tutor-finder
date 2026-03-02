@@ -22,6 +22,9 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'admin-user',
             'role',
             'sms-setting',
+            'blog-category',
+            'blog-tag',
+            'blog-post',
         ])->flatMap(fn (string $resource): array => [
             "{$resource}-create",
             "{$resource}-view",
@@ -41,6 +44,13 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'log-viewer-view',
             'log-viewer-download',
             'log-viewer-delete',
+            'blog-category-restore',
+            'blog-category-force-delete',
+            'blog-tag-restore',
+            'blog-tag-force-delete',
+            'blog-post-restore',
+            'blog-post-force-delete',
+            'blog-post-publish',
         )->values()->all();
 
         Permission::query()

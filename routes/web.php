@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RoleDashboardRedirectController;
 use App\Http\Controllers\Auth\VerifyOtpController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
@@ -9,7 +10,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [SiteController::class, 'index'])->name('home');
 Route::get('/jobs', [SiteController::class, 'jobs'])->name('jobs');
 Route::get('/faq', [SiteController::class, 'faq'])->name('faq');
-Route::get('/blog', [SiteController::class, 'blog'])->name('blog');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/contact', [SiteController::class, 'contact'])->name('contact');
 Route::get('/privacy-policy', [SiteController::class, 'privacy'])->name('privacy-policy');
 Route::get('/terms-of-service', [SiteController::class, 'terms'])->name('terms-of-service');
