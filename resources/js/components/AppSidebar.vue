@@ -22,6 +22,7 @@ import {
     Cog,
     Key,
     Bell,
+    Briefcase,
 } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -52,11 +53,23 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Contact Messages', href: '/admin/contact-messages', icon: MessagesSquare },
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             {
+                title: 'Jobs',
+                href: '/admin/jobs',
+                icon: Briefcase,
+                children: [
+                    { title: 'Create Job', href: '/admin/jobs/create', icon: FileText },
+                    { title: 'Pending Jobs', href: '/admin/jobs/pending', icon: FileText },
+                    { title: 'Live Jobs', href: '/admin/jobs/live', icon: FileText },
+                    { title: 'Confirmed Jobs', href: '/admin/jobs/confirmed', icon: FileText },
+                    { title: 'Cancelled Jobs', href: '/admin/jobs/cancelled', icon: FileText },
+                    { title: 'All Jobs', href: '/admin/jobs', icon: FileText },
+                ],
+            },
+            {
                 title: 'Tuition Taxonomy',
                 href: '/admin/tuition/taxonomies/countries',
                 icon: BookOpen,
                 children: [
-                    { title: 'Jobs', href: '/admin/tuition/jobs', icon: FileText },
                     { title: 'Countries', href: '/admin/tuition/taxonomies/countries', icon: Globe },
                     { title: 'Cities', href: '/admin/tuition/taxonomies/cities', icon: MapPin },
                     { title: 'Areas', href: '/admin/tuition/taxonomies/areas', icon: MapPin },

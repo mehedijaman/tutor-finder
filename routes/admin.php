@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\GuardianManagementController;
+use App\Http\Controllers\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Tuition\JobController as TuitionJobController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\AreaController as TaxonomyAreaController;
@@ -93,6 +94,60 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/faqs/recycle-bin/empty', [AdminFaqController::class, 'emptyRecycleBin'])
             ->middleware('permission:faq-force-delete')
             ->name('faqs.empty-recycle-bin');
+
+        Route::prefix('jobs')->name('jobs.')->group(function () {
+            Route::get('/', [AdminJobController::class, 'index'])
+                ->middleware('permission:job-view')
+                ->name('index');
+            Route::get('/pending', [AdminJobController::class, 'pending'])
+                ->middleware('permission:job-view')
+                ->name('pending');
+            Route::get('/live', [AdminJobController::class, 'live'])
+                ->middleware('permission:job-view')
+                ->name('live');
+            Route::get('/confirmed', [AdminJobController::class, 'confirmed'])
+                ->middleware('permission:job-view')
+                ->name('confirmed');
+            Route::get('/cancelled', [AdminJobController::class, 'cancelled'])
+                ->middleware('permission:job-view')
+                ->name('cancelled');
+
+            Route::get('/create', [AdminJobController::class, 'create'])
+                ->middleware('permission:job-create')
+                ->name('create');
+            Route::post('/', [AdminJobController::class, 'store'])
+                ->middleware('permission:job-create')
+                ->name('store');
+
+            Route::get('/{job}/edit', [AdminJobController::class, 'edit'])
+                ->middleware('permission:job-update')
+                ->name('edit');
+            Route::put('/{job}', [AdminJobController::class, 'update'])
+                ->middleware('permission:job-update')
+                ->name('update');
+
+            Route::patch('/{job}/approve', [AdminJobController::class, 'approve'])
+                ->middleware('permission:job-approve')
+                ->name('approve');
+            Route::patch('/{job}/status', [AdminJobController::class, 'status'])
+                ->middleware('permission:job-update')
+                ->name('status');
+
+            Route::delete('/{job}', [AdminJobController::class, 'destroy'])
+                ->middleware('permission:job-delete')
+                ->name('destroy');
+            Route::patch('/{job}/restore', [AdminJobController::class, 'restore'])
+                ->middleware('permission:job-restore')
+                ->withTrashed()
+                ->name('restore');
+            Route::delete('/{job}/force', [AdminJobController::class, 'forceDelete'])
+                ->middleware('permission:job-force-delete')
+                ->withTrashed()
+                ->name('force-delete');
+            Route::delete('/recycle-bin/empty', [AdminJobController::class, 'emptyRecycleBin'])
+                ->middleware('permission:job-force-delete')
+                ->name('empty-recycle-bin');
+        });
 
         Route::prefix('blog')->name('blog.')->group(function () {
             Route::post('/uploads/images', [BlogUploadController::class, 'storeImage'])
