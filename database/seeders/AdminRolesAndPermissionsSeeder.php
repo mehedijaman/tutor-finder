@@ -33,6 +33,7 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'class',
             'subject',
             'tuition-type',
+            'job',
         ])->flatMap(fn (string $resource): array => [
             "{$resource}-create",
             "{$resource}-view",
@@ -77,6 +78,9 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'subject-force-delete',
             'tuition-type-restore',
             'tuition-type-force-delete',
+            'job-restore',
+            'job-force-delete',
+            'job-approve',
         )->values()->all();
 
         Permission::query()

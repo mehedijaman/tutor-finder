@@ -35,6 +35,14 @@ class Country extends Model
     }
 
     /**
+     * Get jobs in this country.
+     */
+    public function tuitionJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class);
+    }
+
+    /**
      * Apply default ordering.
      */
     public function scopeOrdered(Builder $query): Builder

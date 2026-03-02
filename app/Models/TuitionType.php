@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TuitionType extends Model
@@ -45,5 +46,13 @@ class TuitionType extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('name');
+    }
+
+    /**
+     * Get jobs for this tuition type.
+     */
+    public function tuitionJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class);
     }
 }

@@ -209,6 +209,12 @@ class SubjectController extends Controller
             return redirect()->back()->withErrors(['subject' => 'Only trashed subjects can be permanently deleted.']);
         }
 
+        if ($subject->tuitionJobs()->withTrashed()->exists()) {
+            return redirect()
+                ->back()
+                ->withErrors(['subject' => 'Subject cannot be permanently deleted while linked jobs exist.']);
+        }
+
         $subject->forceDelete();
 
         return redirect()->back()->with('status', 'Subject permanently deleted.');
@@ -219,11 +225,26 @@ class SubjectController extends Controller
      */
     public function emptyRecycleBin(): RedirectResponse
     {
-        $count = Subject::query()->onlyTrashed()->count();
+        $deleted = 0;
+        $skipped = 0;
 
-        Subject::query()->onlyTrashed()->forceDelete();
+        Subject::query()
+            ->onlyTrashed()
+            ->get()
+            ->each(function (Subject $subject) use (&$deleted, &$skipped): void {
+                if ($subject->tuitionJobs()->withTrashed()->exists()) {
+                    $skipped++;
 
-        return redirect()->back()->with('status', "Deleted {$count} subject(s) from recycle bin.");
+                    return;
+                }
+
+                $subject->forceDelete();
+                $deleted++;
+            });
+
+        return redirect()
+            ->back()
+            ->with('status', "Deleted {$deleted} subject(s). Skipped {$skipped} due to linked jobs.");
     }
 
     /**

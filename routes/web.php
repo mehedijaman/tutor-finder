@@ -6,11 +6,13 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ImpersonationController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'index'])->name('home');
-Route::get('/jobs', [SiteController::class, 'jobs'])->name('jobs');
+Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
+Route::get('/jobs/{slug}', [JobController::class, 'show'])->name('jobs.show');
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');

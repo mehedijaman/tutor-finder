@@ -49,6 +49,12 @@ const isChildActive = (item: NavItem): boolean => item.children?.some((child) =>
                             >
                                 <component :is="item.icon" />
                                 <span>{{ item.title }}</span>
+                                <span
+                                    v-if="item.badge !== undefined"
+                                    class="mr-1 inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground"
+                                >
+                                    {{ item.badge }}
+                                </span>
                                 <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
@@ -66,10 +72,22 @@ const isChildActive = (item: NavItem): boolean => item.children?.some((child) =>
                                         <a v-if="child.fullPage" :href="child.href">
                                             <component :is="child.icon" />
                                             <span>{{ child.title }}</span>
+                                            <span
+                                                v-if="child.badge !== undefined"
+                                                class="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground"
+                                            >
+                                                {{ child.badge }}
+                                            </span>
                                         </a>
                                         <Link v-else :href="child.href">
                                             <component :is="child.icon" />
                                             <span>{{ child.title }}</span>
+                                            <span
+                                                v-if="child.badge !== undefined"
+                                                class="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground"
+                                            >
+                                                {{ child.badge }}
+                                            </span>
                                         </Link>
                                     </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
@@ -87,10 +105,22 @@ const isChildActive = (item: NavItem): boolean => item.children?.some((child) =>
                         <a v-if="item.fullPage" :href="item.href">
                             <component :is="item.icon" />
                             <span>{{ item.title }}</span>
+                            <span
+                                v-if="item.badge !== undefined"
+                                class="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground"
+                            >
+                                {{ item.badge }}
+                            </span>
                         </a>
                         <Link v-else :href="item.href">
                             <component :is="item.icon" />
                             <span>{{ item.title }}</span>
+                            <span
+                                v-if="item.badge !== undefined"
+                                class="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground"
+                            >
+                                {{ item.badge }}
+                            </span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

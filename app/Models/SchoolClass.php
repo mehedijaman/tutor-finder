@@ -65,6 +65,14 @@ class SchoolClass extends Model
     }
 
     /**
+     * Get jobs under this class.
+     */
+    public function tuitionJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class, 'class_id');
+    }
+
+    /**
      * Apply default ordering.
      */
     public function scopeOrdered(Builder $query): Builder

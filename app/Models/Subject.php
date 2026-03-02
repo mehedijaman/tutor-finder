@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Subject extends Model
@@ -46,6 +47,15 @@ class Subject extends Model
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
+    /**
+     * Get jobs linked with this subject.
+     */
+    public function tuitionJobs(): BelongsToMany
+    {
+        return $this->belongsToMany(TuitionJob::class, 'tuition_job_subjects', 'subject_id', 'job_id')
+            ->withTimestamps();
     }
 
     /**

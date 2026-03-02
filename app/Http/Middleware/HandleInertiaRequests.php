@@ -60,12 +60,29 @@ class HandleInertiaRequests extends Middleware
                     'impersonator_name' => $impersonator?->name,
                 ],
             ],
+            'notificationCounts' => fn (): array => $this->notificationCounts($user),
             'siteSettings' => fn (): array => app(SiteSettingsResolver::class)->publicPayload(),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'status' => fn () => $request->session()->get('status'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+        ];
+    }
+
+    /**
+     * Get notification count payload for shared sidebar usage.
+     *
+     * @return array{unread: int}
+     */
+    private function notificationCounts(?User $user): array
+    {
+        if (! $user instanceof User || ! in_array($user->role, ['tutor', 'guardian'], true)) {
+            return ['unread' => 0];
+        }
+
+        return [
+            'unread' => $user->unreadNotifications()->count(),
         ];
     }
 }

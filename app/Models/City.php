@@ -45,6 +45,14 @@ class City extends Model
     }
 
     /**
+     * Get jobs in this city.
+     */
+    public function tuitionJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class);
+    }
+
+    /**
      * Apply default ordering.
      */
     public function scopeOrdered(Builder $query): Builder

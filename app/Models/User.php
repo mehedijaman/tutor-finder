@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -74,5 +75,53 @@ class User extends Authenticatable
     {
         return $this->status === 'active'
             && in_array($this->role, ['admin', 'tutor', 'guardian'], true);
+    }
+
+    /**
+     * Get jobs posted by this guardian.
+     */
+    public function guardianJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class, 'guardian_id');
+    }
+
+    /**
+     * Get jobs created by this admin.
+     */
+    public function createdTuitionJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class, 'created_by');
+    }
+
+    /**
+     * Get jobs updated by this admin.
+     */
+    public function updatedTuitionJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class, 'updated_by');
+    }
+
+    /**
+     * Get jobs confirmed by this admin.
+     */
+    public function confirmedTuitionJobs(): HasMany
+    {
+        return $this->hasMany(TuitionJob::class, 'confirmed_by');
+    }
+
+    /**
+     * Get tutor applications submitted by this tutor.
+     */
+    public function tutorJobApplications(): HasMany
+    {
+        return $this->hasMany(TuitionJobApplication::class, 'tutor_id');
+    }
+
+    /**
+     * Get tutor applications reviewed by this guardian/admin.
+     */
+    public function reviewedJobApplications(): HasMany
+    {
+        return $this->hasMany(TuitionJobApplication::class, 'reviewed_by');
     }
 }

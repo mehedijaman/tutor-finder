@@ -21,6 +21,7 @@ import {
     Wrench,
     Cog,
     Key,
+    Bell,
 } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -38,6 +39,7 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const page = usePage();
+const unreadNotificationCount = computed(() => Number(page.props.notificationCounts?.unread ?? 0));
 
 const mainNavItems = computed<NavItem[]>(() => {
     const role = page.props.auth?.user?.role;
@@ -50,10 +52,11 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Contact Messages', href: '/admin/contact-messages', icon: MessagesSquare },
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             {
-                title: 'Tuition',
+                title: 'Tuition Taxonomy',
                 href: '/admin/tuition/taxonomies/countries',
                 icon: BookOpen,
                 children: [
+                    { title: 'Jobs', href: '/admin/tuition/jobs', icon: FileText },
                     { title: 'Countries', href: '/admin/tuition/taxonomies/countries', icon: Globe },
                     { title: 'Cities', href: '/admin/tuition/taxonomies/cities', icon: MapPin },
                     { title: 'Areas', href: '/admin/tuition/taxonomies/areas', icon: MapPin },
@@ -99,11 +102,26 @@ const mainNavItems = computed<NavItem[]>(() => {
     if (role === 'tutor') {
         return [
             { title: 'Dashboard', href: '/tutor/dashboard', icon: LayoutGrid },
+            { title: 'Browse Jobs', href: '/jobs', icon: FileText },
+            { title: 'My Applications', href: '/tutor/job-applications', icon: FolderOpen },
+            {
+                title: 'Notifications',
+                href: '/tutor/notifications',
+                icon: Bell,
+                badge: unreadNotificationCount.value > 0 ? unreadNotificationCount.value : undefined,
+            },
         ];
     }
 
     return [
         { title: 'Dashboard', href: '/guardian/dashboard', icon: LayoutGrid },
+        { title: 'Jobs', href: '/guardian/jobs', icon: FileText },
+        {
+            title: 'Notifications',
+            href: '/guardian/notifications',
+            icon: Bell,
+            badge: unreadNotificationCount.value > 0 ? unreadNotificationCount.value : undefined,
+        },
     ];
 });
 
