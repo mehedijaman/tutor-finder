@@ -18,6 +18,7 @@ class SlugService
         string $base,
         int|string|null $ignoreId = null,
         bool $withTrashed = true,
+        array $scope = [],
     ): string {
         $normalizedBase = Str::slug($base);
 
@@ -28,7 +29,7 @@ class SlugService
         $slug = $normalizedBase;
         $suffix = 2;
 
-        while ($this->slugExists($modelClass, $slug, $ignoreId, $withTrashed)) {
+        while ($this->slugExists($modelClass, $slug, $ignoreId, $withTrashed, $scope)) {
             $slug = "{$normalizedBase}-{$suffix}";
             $suffix++;
         }
@@ -46,6 +47,7 @@ class SlugService
         string $slug,
         int|string|null $ignoreId,
         bool $withTrashed,
+        array $scope,
     ): bool {
         $query = $modelClass::query();
 
@@ -55,6 +57,10 @@ class SlugService
 
         if ($ignoreId !== null) {
             $query->whereKeyNot($ignoreId);
+        }
+
+        foreach ($scope as $column => $value) {
+            $query->where($column, $value);
         }
 
         return $query

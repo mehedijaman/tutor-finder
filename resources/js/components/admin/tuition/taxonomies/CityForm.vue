@@ -1,0 +1,116 @@
+<script setup>
+import { Link, useForm } from '@inertiajs/vue3';
+import { toRef } from 'vue';
+import InputError from '@/components/InputError.vue';
+import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+const props = defineProps({
+    action: { type: String, required: true },
+    method: { type: String, default: 'post' },
+    submitLabel: { type: String, required: true },
+    cancelHref: { type: String, default: '/admin/tuition/taxonomies/cities' },
+    countries: { type: Array, default: () => [] },
+    statusOptions: { type: Array, default: () => [] },
+    initial: {
+        type: Object,
+        default: () => ({
+            country_id: null,
+            name: '',
+            slug: '',
+            status: 'active',
+        }),
+    },
+});
+
+const defaultCountryId = props.initial.country_id ?? props.countries[0]?.id ?? null;
+
+const form = useForm({
+    country_id: defaultCountryId,
+    name: props.initial.name ?? '',
+    slug: props.initial.slug ?? '',
+    status: props.initial.status ?? 'active',
+});
+
+const isInitiallyAuto = (() => {
+    const sourceName = String(props.initial.name ?? '');
+    const currentSlug = String(props.initial.slug ?? '');
+
+    if (currentSlug === '') {
+        return true;
+    }
+
+    return slugify(sourceName) === currentSlug;
+})();
+
+const { autoSlug, onManualSlugInput, toggleAutoSlug } = useAutoSlug(toRef(form, 'name'), toRef(form, 'slug'), {
+    initiallyAuto: isInitiallyAuto,
+});
+
+function submit() {
+    if (props.method.toLowerCase() === 'put') {
+        form
+            .transform((data) => ({
+                ...data,
+                _method: 'put',
+            }))
+            .post(props.action, { preserveScroll: true });
+
+        return;
+    }
+
+    form.post(props.action, { preserveScroll: true });
+}
+</script>
+
+<template>
+    <form class="space-y-6" @submit.prevent="submit">
+        <section class="grid gap-4 rounded-xl border bg-white p-4">
+            <h2 class="text-lg font-semibold">City Details</h2>
+
+            <div class="grid gap-2">
+                <Label for="city-country">Country</Label>
+                <select id="city-country" v-model="form.country_id" class="h-10 rounded-md border px-3 text-sm" required>
+                    <option v-for="country in countries" :key="country.id" :value="country.id">
+                        {{ country.name }}
+                    </option>
+                </select>
+                <InputError :message="form.errors.country_id" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="city-name">Name</Label>
+                <Input id="city-name" v-model="form.name" type="text" required />
+                <InputError :message="form.errors.name" />
+            </div>
+
+            <div class="grid gap-2">
+                <div class="flex items-center justify-between gap-3">
+                    <Label for="city-slug">Slug</Label>
+                    <Button type="button" size="sm" variant="outline" @click="toggleAutoSlug">
+                        Auto: {{ autoSlug ? 'On' : 'Off' }}
+                    </Button>
+                </div>
+                <Input id="city-slug" :model-value="form.slug" type="text" @update:model-value="onManualSlugInput" />
+                <InputError :message="form.errors.slug" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="city-status">Status</Label>
+                <select id="city-status" v-model="form.status" class="h-10 rounded-md border px-3 text-sm">
+                    <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                    </option>
+                </select>
+                <InputError :message="form.errors.status" />
+            </div>
+        </section>
+
+        <div class="flex flex-wrap items-center gap-3">
+            <Button type="submit" :disabled="form.processing">{{ submitLabel }}</Button>
+            <Link :href="cancelHref" class="text-sm text-muted-foreground underline">Cancel</Link>
+        </div>
+    </form>
+</template>

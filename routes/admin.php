@@ -13,6 +13,13 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\Tuition\Taxonomies\AreaController as TaxonomyAreaController;
+use App\Http\Controllers\Admin\Tuition\Taxonomies\CategoryController as TaxonomyCategoryController;
+use App\Http\Controllers\Admin\Tuition\Taxonomies\CityController as TaxonomyCityController;
+use App\Http\Controllers\Admin\Tuition\Taxonomies\CountryController as TaxonomyCountryController;
+use App\Http\Controllers\Admin\Tuition\Taxonomies\SchoolClassController as TaxonomySchoolClassController;
+use App\Http\Controllers\Admin\Tuition\Taxonomies\SubjectController as TaxonomySubjectController;
+use App\Http\Controllers\Admin\Tuition\Taxonomies\TuitionTypeController as TaxonomyTuitionTypeController;
 use App\Http\Controllers\Admin\TutorManagementController;
 use App\Http\Controllers\ImpersonationController;
 use Illuminate\Support\Facades\Route;
@@ -180,6 +187,239 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/posts/recycle-bin/empty', [BlogPostController::class, 'emptyRecycleBin'])
                 ->middleware('permission:blog-post-force-delete')
                 ->name('posts.empty-recycle-bin');
+        });
+
+        Route::prefix('tuition/taxonomies')->name('tuition.taxonomies.')->group(function () {
+            Route::get('/countries', [TaxonomyCountryController::class, 'index'])
+                ->middleware('permission:country-view')
+                ->name('countries.index');
+            Route::get('/countries/create', [TaxonomyCountryController::class, 'create'])
+                ->middleware('permission:country-create')
+                ->name('countries.create');
+            Route::post('/countries', [TaxonomyCountryController::class, 'store'])
+                ->middleware('permission:country-create')
+                ->name('countries.store');
+            Route::get('/countries/{country}/edit', [TaxonomyCountryController::class, 'edit'])
+                ->middleware('permission:country-update')
+                ->name('countries.edit');
+            Route::put('/countries/{country}', [TaxonomyCountryController::class, 'update'])
+                ->middleware('permission:country-update')
+                ->name('countries.update');
+            Route::patch('/countries/{country}/status', [TaxonomyCountryController::class, 'updateStatus'])
+                ->middleware('permission:country-update')
+                ->name('countries.status');
+            Route::delete('/countries/{country}', [TaxonomyCountryController::class, 'destroy'])
+                ->middleware('permission:country-delete')
+                ->name('countries.destroy');
+            Route::patch('/countries/{country}/restore', [TaxonomyCountryController::class, 'restore'])
+                ->middleware('permission:country-restore')
+                ->withTrashed()
+                ->name('countries.restore');
+            Route::delete('/countries/{country}/force', [TaxonomyCountryController::class, 'forceDelete'])
+                ->middleware('permission:country-force-delete')
+                ->withTrashed()
+                ->name('countries.force-delete');
+            Route::delete('/countries/recycle-bin/empty', [TaxonomyCountryController::class, 'emptyRecycleBin'])
+                ->middleware('permission:country-force-delete')
+                ->name('countries.empty-recycle-bin');
+
+            Route::get('/cities', [TaxonomyCityController::class, 'index'])
+                ->middleware('permission:city-view')
+                ->name('cities.index');
+            Route::get('/cities/create', [TaxonomyCityController::class, 'create'])
+                ->middleware('permission:city-create')
+                ->name('cities.create');
+            Route::post('/cities', [TaxonomyCityController::class, 'store'])
+                ->middleware('permission:city-create')
+                ->name('cities.store');
+            Route::get('/cities/{city}/edit', [TaxonomyCityController::class, 'edit'])
+                ->middleware('permission:city-update')
+                ->name('cities.edit');
+            Route::put('/cities/{city}', [TaxonomyCityController::class, 'update'])
+                ->middleware('permission:city-update')
+                ->name('cities.update');
+            Route::patch('/cities/{city}/status', [TaxonomyCityController::class, 'updateStatus'])
+                ->middleware('permission:city-update')
+                ->name('cities.status');
+            Route::delete('/cities/{city}', [TaxonomyCityController::class, 'destroy'])
+                ->middleware('permission:city-delete')
+                ->name('cities.destroy');
+            Route::patch('/cities/{city}/restore', [TaxonomyCityController::class, 'restore'])
+                ->middleware('permission:city-restore')
+                ->withTrashed()
+                ->name('cities.restore');
+            Route::delete('/cities/{city}/force', [TaxonomyCityController::class, 'forceDelete'])
+                ->middleware('permission:city-force-delete')
+                ->withTrashed()
+                ->name('cities.force-delete');
+            Route::delete('/cities/recycle-bin/empty', [TaxonomyCityController::class, 'emptyRecycleBin'])
+                ->middleware('permission:city-force-delete')
+                ->name('cities.empty-recycle-bin');
+
+            Route::get('/areas', [TaxonomyAreaController::class, 'index'])
+                ->middleware('permission:area-view')
+                ->name('areas.index');
+            Route::get('/areas/create', [TaxonomyAreaController::class, 'create'])
+                ->middleware('permission:area-create')
+                ->name('areas.create');
+            Route::post('/areas', [TaxonomyAreaController::class, 'store'])
+                ->middleware('permission:area-create')
+                ->name('areas.store');
+            Route::get('/areas/{area}/edit', [TaxonomyAreaController::class, 'edit'])
+                ->middleware('permission:area-update')
+                ->name('areas.edit');
+            Route::put('/areas/{area}', [TaxonomyAreaController::class, 'update'])
+                ->middleware('permission:area-update')
+                ->name('areas.update');
+            Route::patch('/areas/{area}/status', [TaxonomyAreaController::class, 'updateStatus'])
+                ->middleware('permission:area-update')
+                ->name('areas.status');
+            Route::delete('/areas/{area}', [TaxonomyAreaController::class, 'destroy'])
+                ->middleware('permission:area-delete')
+                ->name('areas.destroy');
+            Route::patch('/areas/{area}/restore', [TaxonomyAreaController::class, 'restore'])
+                ->middleware('permission:area-restore')
+                ->withTrashed()
+                ->name('areas.restore');
+            Route::delete('/areas/{area}/force', [TaxonomyAreaController::class, 'forceDelete'])
+                ->middleware('permission:area-force-delete')
+                ->withTrashed()
+                ->name('areas.force-delete');
+            Route::delete('/areas/recycle-bin/empty', [TaxonomyAreaController::class, 'emptyRecycleBin'])
+                ->middleware('permission:area-force-delete')
+                ->name('areas.empty-recycle-bin');
+
+            Route::get('/categories', [TaxonomyCategoryController::class, 'index'])
+                ->middleware('permission:category-view')
+                ->name('categories.index');
+            Route::get('/categories/create', [TaxonomyCategoryController::class, 'create'])
+                ->middleware('permission:category-create')
+                ->name('categories.create');
+            Route::post('/categories', [TaxonomyCategoryController::class, 'store'])
+                ->middleware('permission:category-create')
+                ->name('categories.store');
+            Route::get('/categories/{category}/edit', [TaxonomyCategoryController::class, 'edit'])
+                ->middleware('permission:category-update')
+                ->name('categories.edit');
+            Route::put('/categories/{category}', [TaxonomyCategoryController::class, 'update'])
+                ->middleware('permission:category-update')
+                ->name('categories.update');
+            Route::patch('/categories/{category}/status', [TaxonomyCategoryController::class, 'updateStatus'])
+                ->middleware('permission:category-update')
+                ->name('categories.status');
+            Route::delete('/categories/{category}', [TaxonomyCategoryController::class, 'destroy'])
+                ->middleware('permission:category-delete')
+                ->name('categories.destroy');
+            Route::patch('/categories/{category}/restore', [TaxonomyCategoryController::class, 'restore'])
+                ->middleware('permission:category-restore')
+                ->withTrashed()
+                ->name('categories.restore');
+            Route::delete('/categories/{category}/force', [TaxonomyCategoryController::class, 'forceDelete'])
+                ->middleware('permission:category-force-delete')
+                ->withTrashed()
+                ->name('categories.force-delete');
+            Route::delete('/categories/recycle-bin/empty', [TaxonomyCategoryController::class, 'emptyRecycleBin'])
+                ->middleware('permission:category-force-delete')
+                ->name('categories.empty-recycle-bin');
+
+            Route::get('/classes', [TaxonomySchoolClassController::class, 'index'])
+                ->middleware('permission:class-view')
+                ->name('classes.index');
+            Route::get('/classes/create', [TaxonomySchoolClassController::class, 'create'])
+                ->middleware('permission:class-create')
+                ->name('classes.create');
+            Route::post('/classes', [TaxonomySchoolClassController::class, 'store'])
+                ->middleware('permission:class-create')
+                ->name('classes.store');
+            Route::get('/classes/{schoolClass}/edit', [TaxonomySchoolClassController::class, 'edit'])
+                ->middleware('permission:class-update')
+                ->name('classes.edit');
+            Route::put('/classes/{schoolClass}', [TaxonomySchoolClassController::class, 'update'])
+                ->middleware('permission:class-update')
+                ->name('classes.update');
+            Route::patch('/classes/{schoolClass}/status', [TaxonomySchoolClassController::class, 'updateStatus'])
+                ->middleware('permission:class-update')
+                ->name('classes.status');
+            Route::delete('/classes/{schoolClass}', [TaxonomySchoolClassController::class, 'destroy'])
+                ->middleware('permission:class-delete')
+                ->name('classes.destroy');
+            Route::patch('/classes/{schoolClass}/restore', [TaxonomySchoolClassController::class, 'restore'])
+                ->middleware('permission:class-restore')
+                ->withTrashed()
+                ->name('classes.restore');
+            Route::delete('/classes/{schoolClass}/force', [TaxonomySchoolClassController::class, 'forceDelete'])
+                ->middleware('permission:class-force-delete')
+                ->withTrashed()
+                ->name('classes.force-delete');
+            Route::delete('/classes/recycle-bin/empty', [TaxonomySchoolClassController::class, 'emptyRecycleBin'])
+                ->middleware('permission:class-force-delete')
+                ->name('classes.empty-recycle-bin');
+
+            Route::get('/subjects', [TaxonomySubjectController::class, 'index'])
+                ->middleware('permission:subject-view')
+                ->name('subjects.index');
+            Route::get('/subjects/create', [TaxonomySubjectController::class, 'create'])
+                ->middleware('permission:subject-create')
+                ->name('subjects.create');
+            Route::post('/subjects', [TaxonomySubjectController::class, 'store'])
+                ->middleware('permission:subject-create')
+                ->name('subjects.store');
+            Route::get('/subjects/{subject}/edit', [TaxonomySubjectController::class, 'edit'])
+                ->middleware('permission:subject-update')
+                ->name('subjects.edit');
+            Route::put('/subjects/{subject}', [TaxonomySubjectController::class, 'update'])
+                ->middleware('permission:subject-update')
+                ->name('subjects.update');
+            Route::patch('/subjects/{subject}/status', [TaxonomySubjectController::class, 'updateStatus'])
+                ->middleware('permission:subject-update')
+                ->name('subjects.status');
+            Route::delete('/subjects/{subject}', [TaxonomySubjectController::class, 'destroy'])
+                ->middleware('permission:subject-delete')
+                ->name('subjects.destroy');
+            Route::patch('/subjects/{subject}/restore', [TaxonomySubjectController::class, 'restore'])
+                ->middleware('permission:subject-restore')
+                ->withTrashed()
+                ->name('subjects.restore');
+            Route::delete('/subjects/{subject}/force', [TaxonomySubjectController::class, 'forceDelete'])
+                ->middleware('permission:subject-force-delete')
+                ->withTrashed()
+                ->name('subjects.force-delete');
+            Route::delete('/subjects/recycle-bin/empty', [TaxonomySubjectController::class, 'emptyRecycleBin'])
+                ->middleware('permission:subject-force-delete')
+                ->name('subjects.empty-recycle-bin');
+
+            Route::get('/tuition-types', [TaxonomyTuitionTypeController::class, 'index'])
+                ->middleware('permission:tuition-type-view')
+                ->name('tuition-types.index');
+            Route::get('/tuition-types/create', [TaxonomyTuitionTypeController::class, 'create'])
+                ->middleware('permission:tuition-type-create')
+                ->name('tuition-types.create');
+            Route::post('/tuition-types', [TaxonomyTuitionTypeController::class, 'store'])
+                ->middleware('permission:tuition-type-create')
+                ->name('tuition-types.store');
+            Route::get('/tuition-types/{tuitionType}/edit', [TaxonomyTuitionTypeController::class, 'edit'])
+                ->middleware('permission:tuition-type-update')
+                ->name('tuition-types.edit');
+            Route::put('/tuition-types/{tuitionType}', [TaxonomyTuitionTypeController::class, 'update'])
+                ->middleware('permission:tuition-type-update')
+                ->name('tuition-types.update');
+            Route::patch('/tuition-types/{tuitionType}/status', [TaxonomyTuitionTypeController::class, 'updateStatus'])
+                ->middleware('permission:tuition-type-update')
+                ->name('tuition-types.status');
+            Route::delete('/tuition-types/{tuitionType}', [TaxonomyTuitionTypeController::class, 'destroy'])
+                ->middleware('permission:tuition-type-delete')
+                ->name('tuition-types.destroy');
+            Route::patch('/tuition-types/{tuitionType}/restore', [TaxonomyTuitionTypeController::class, 'restore'])
+                ->middleware('permission:tuition-type-restore')
+                ->withTrashed()
+                ->name('tuition-types.restore');
+            Route::delete('/tuition-types/{tuitionType}/force', [TaxonomyTuitionTypeController::class, 'forceDelete'])
+                ->middleware('permission:tuition-type-force-delete')
+                ->withTrashed()
+                ->name('tuition-types.force-delete');
+            Route::delete('/tuition-types/recycle-bin/empty', [TaxonomyTuitionTypeController::class, 'emptyRecycleBin'])
+                ->middleware('permission:tuition-type-force-delete')
+                ->name('tuition-types.empty-recycle-bin');
         });
 
         Route::get('/users', [AdminUserController::class, 'index'])
