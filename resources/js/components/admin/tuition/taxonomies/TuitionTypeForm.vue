@@ -2,16 +2,19 @@
 import { Link, useForm } from '@inertiajs/vue3';
 import { toRef } from 'vue';
 import InputError from '@/components/InputError.vue';
-import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 
 const props = defineProps({
     action: { type: String, required: true },
     method: { type: String, default: 'post' },
     submitLabel: { type: String, required: true },
-    cancelHref: { type: String, default: '/admin/tuition/taxonomies/tuition-types' },
+    cancelHref: {
+        type: String,
+        default: '/admin/tuition/taxonomies/tuition-types',
+    },
     statusOptions: { type: Array, default: () => [] },
     initial: {
         type: Object,
@@ -44,18 +47,20 @@ const isInitiallyAuto = (() => {
     return slugify(sourceName) === currentSlug;
 })();
 
-const { autoSlug, onManualSlugInput, toggleAutoSlug } = useAutoSlug(toRef(form, 'name'), toRef(form, 'slug'), {
-    initiallyAuto: isInitiallyAuto,
-});
+const { autoSlug, onManualSlugInput, toggleAutoSlug } = useAutoSlug(
+    toRef(form, 'name'),
+    toRef(form, 'slug'),
+    {
+        initiallyAuto: isInitiallyAuto,
+    },
+);
 
 function submit() {
     if (props.method.toLowerCase() === 'put') {
-        form
-            .transform((data) => ({
-                ...data,
-                _method: 'put',
-            }))
-            .post(props.action, { preserveScroll: true });
+        form.transform((data) => ({
+            ...data,
+            _method: 'put',
+        })).post(props.action, { preserveScroll: true });
 
         return;
     }
@@ -71,14 +76,24 @@ function submit() {
 
             <div class="grid gap-2">
                 <Label for="tuition-type-name">Name</Label>
-                <Input id="tuition-type-name" v-model="form.name" type="text" required />
+                <Input
+                    id="tuition-type-name"
+                    v-model="form.name"
+                    type="text"
+                    required
+                />
                 <InputError :message="form.errors.name" />
             </div>
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between gap-3">
                     <Label for="tuition-type-slug">Slug</Label>
-                    <Button type="button" size="sm" variant="outline" @click="toggleAutoSlug">
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        @click="toggleAutoSlug"
+                    >
                         Auto: {{ autoSlug ? 'On' : 'Off' }}
                     </Button>
                 </div>
@@ -93,15 +108,28 @@ function submit() {
 
             <div class="grid gap-2">
                 <Label for="tuition-type-description">Description</Label>
-                <textarea id="tuition-type-description" v-model="form.description" rows="4" class="rounded-md border px-3 py-2 text-sm"></textarea>
+                <textarea
+                    id="tuition-type-description"
+                    v-model="form.description"
+                    rows="4"
+                    class="rounded-md border px-3 py-2 text-sm"
+                ></textarea>
                 <InputError :message="form.errors.description" />
             </div>
 
             <div class="grid gap-2 sm:grid-cols-2">
                 <div class="grid gap-2">
                     <Label for="tuition-type-status">Status</Label>
-                    <select id="tuition-type-status" v-model="form.status" class="h-10 rounded-md border px-3 text-sm">
-                        <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                    <select
+                        id="tuition-type-status"
+                        v-model="form.status"
+                        class="h-10 rounded-md border px-3 text-sm"
+                    >
+                        <option
+                            v-for="option in statusOptions"
+                            :key="option.value"
+                            :value="option.value"
+                        >
                             {{ option.label }}
                         </option>
                     </select>
@@ -110,15 +138,26 @@ function submit() {
 
                 <div class="grid gap-2">
                     <Label for="tuition-type-sort-order">Sort Order</Label>
-                    <Input id="tuition-type-sort-order" v-model.number="form.sort_order" type="number" min="0" />
+                    <Input
+                        id="tuition-type-sort-order"
+                        v-model.number="form.sort_order"
+                        type="number"
+                        min="0"
+                    />
                     <InputError :message="form.errors.sort_order" />
                 </div>
             </div>
         </section>
 
         <div class="flex flex-wrap items-center gap-3">
-            <Button type="submit" :disabled="form.processing">{{ submitLabel }}</Button>
-            <Link :href="cancelHref" class="text-sm text-muted-foreground underline">Cancel</Link>
+            <Button type="submit" :disabled="form.processing">{{
+                submitLabel
+            }}</Button>
+            <Link
+                :href="cancelHref"
+                class="text-sm text-muted-foreground underline"
+                >Cancel</Link
+            >
         </div>
     </form>
 </template>

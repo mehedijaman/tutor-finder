@@ -12,10 +12,21 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
     <AuthLayout title="Admin login" description="Sign in to the admin panel">
         <Head title="Admin Login" />
 
-        <Form action="/admin/login" method="post" class="space-y-4" #default="{ errors, processing }">
+        <Form
+            action="/admin/login"
+            method="post"
+            class="space-y-4"
+            #default="{ errors, processing }"
+        >
             <div class="grid gap-2">
                 <Label for="email">Email</Label>
-                <Input id="email" name="email" type="email" required autofocus />
+                <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    autofocus
+                />
                 <InputError :message="errors.email" />
             </div>
 
@@ -30,7 +41,9 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
                 <span>Remember me</span>
             </Label>
 
-            <Button type="submit" class="w-full" :disabled="processing">Login to Admin</Button>
+            <Button type="submit" class="w-full" :disabled="processing"
+                >Login to Admin</Button
+            >
         </Form>
     </AuthLayout>
 </template>

@@ -1,4 +1,5 @@
-import { onBeforeUnmount, ref, type Ref, watch } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
+import type { Ref } from 'vue';
 
 type AutoSlugOptions = {
     delay?: number;

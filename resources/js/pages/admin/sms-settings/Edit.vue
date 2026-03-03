@@ -29,7 +29,11 @@ const breadcrumbs = [
             <div class="space-y-6">
                 <div class="flex items-center justify-between">
                     <h1 class="text-2xl font-semibold">Edit SMS Setting</h1>
-                    <Link href="/settings/sms" class="text-sm text-muted-foreground underline">Back</Link>
+                    <Link
+                        href="/settings/sms"
+                        class="text-sm text-muted-foreground underline"
+                        >Back</Link
+                    >
                 </div>
 
                 <SmsSettingForm

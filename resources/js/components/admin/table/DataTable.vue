@@ -1,7 +1,7 @@
 <script setup>
-import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-vue-next';
+import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
 
 const props = defineProps({
@@ -150,13 +150,11 @@ function formatPaginationLabel(label) {
             v-if="links.length > 3"
             class="flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3"
         >
-            <template v-for="(link, index) in links" :key="`${index}-${link.label}`">
-                <Button
-                    v-if="!link.url"
-                    variant="outline"
-                    size="sm"
-                    disabled
-                >
+            <template
+                v-for="(link, index) in links"
+                :key="`${index}-${link.label}`"
+            >
+                <Button v-if="!link.url" variant="outline" size="sm" disabled>
                     {{ formatPaginationLabel(link.label) }}
                 </Button>
 
@@ -165,7 +163,11 @@ function formatPaginationLabel(label) {
                     :href="link.url"
                     preserve-scroll
                     class="inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs"
-                    :class="link.active ? 'bg-primary text-primary-foreground' : 'bg-white hover:bg-muted'"
+                    :class="
+                        link.active
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-white hover:bg-muted'
+                    "
                 >
                     {{ formatPaginationLabel(link.label) }}
                 </Link>

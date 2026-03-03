@@ -62,7 +62,9 @@ const columns = [
 
 const search = ref(props.filters.q ?? '');
 const statusFilter = ref(props.filters.status || 'all');
-const guardianFilter = ref(props.filters.guardian_id ? String(props.filters.guardian_id) : 'all');
+const guardianFilter = ref(
+    props.filters.guardian_id ? String(props.filters.guardian_id) : 'all',
+);
 const sortBy = ref(props.filters.sort || 'updated_at');
 const direction = ref(props.filters.direction || 'desc');
 
@@ -90,45 +92,60 @@ const statusLabelMap = {
     closed: 'Closed',
 };
 
-watch(() => props.filters.q, (value) => {
-    const normalized = value ?? '';
+watch(
+    () => props.filters.q,
+    (value) => {
+        const normalized = value ?? '';
 
-    if (search.value !== normalized) {
-        search.value = normalized;
-    }
-});
+        if (search.value !== normalized) {
+            search.value = normalized;
+        }
+    },
+);
 
-watch(() => props.filters.status, (value) => {
-    const normalized = value || 'all';
+watch(
+    () => props.filters.status,
+    (value) => {
+        const normalized = value || 'all';
 
-    if (statusFilter.value !== normalized) {
-        statusFilter.value = normalized;
-    }
-});
+        if (statusFilter.value !== normalized) {
+            statusFilter.value = normalized;
+        }
+    },
+);
 
-watch(() => props.filters.guardian_id, (value) => {
-    const normalized = value ? String(value) : 'all';
+watch(
+    () => props.filters.guardian_id,
+    (value) => {
+        const normalized = value ? String(value) : 'all';
 
-    if (guardianFilter.value !== normalized) {
-        guardianFilter.value = normalized;
-    }
-});
+        if (guardianFilter.value !== normalized) {
+            guardianFilter.value = normalized;
+        }
+    },
+);
 
-watch(() => props.filters.sort, (value) => {
-    const normalized = value || 'updated_at';
+watch(
+    () => props.filters.sort,
+    (value) => {
+        const normalized = value || 'updated_at';
 
-    if (sortBy.value !== normalized) {
-        sortBy.value = normalized;
-    }
-});
+        if (sortBy.value !== normalized) {
+            sortBy.value = normalized;
+        }
+    },
+);
 
-watch(() => props.filters.direction, (value) => {
-    const normalized = value || 'desc';
+watch(
+    () => props.filters.direction,
+    (value) => {
+        const normalized = value || 'desc';
 
-    if (direction.value !== normalized) {
-        direction.value = normalized;
-    }
-});
+        if (direction.value !== normalized) {
+            direction.value = normalized;
+        }
+    },
+);
 
 watch(search, (value) => {
     if (searchDebounceTimer) {
@@ -172,8 +189,13 @@ function applyFilters(overrides = {}) {
         {
             trash: props.filters.trash ? 1 : 0,
             q: search.value,
-            status: presetStatus.value ? '' : statusFilter.value === 'all' ? '' : statusFilter.value,
-            guardian_id: guardianFilter.value === 'all' ? '' : guardianFilter.value,
+            status: presetStatus.value
+                ? ''
+                : statusFilter.value === 'all'
+                  ? ''
+                  : statusFilter.value,
+            guardian_id:
+                guardianFilter.value === 'all' ? '' : guardianFilter.value,
             sort: sortBy.value,
             direction: direction.value,
             ...overrides,
@@ -194,7 +216,11 @@ function actionItemsForRow(row) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
@@ -250,13 +276,15 @@ function openConfirm(action, row = null) {
 
     if (action === 'approve') {
         confirmTitle.value = 'Approve Job';
-        confirmDescription.value = 'This will move the job from pending to live.';
+        confirmDescription.value =
+            'This will move the job from pending to live.';
         confirmLabel.value = 'Approve';
     }
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Job';
-        confirmDescription.value = 'This will restore the job from recycle bin.';
+        confirmDescription.value =
+            'This will restore the job from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -269,7 +297,8 @@ function openConfirm(action, row = null) {
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently delete all trashed jobs.';
+        confirmDescription.value =
+            'This will permanently delete all trashed jobs.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
@@ -307,7 +336,10 @@ function runConfirmedAction() {
 
         router.patch(`/admin/jobs/${row.id}/status`, {
             status: nextStatus,
-            reason: nextStatus === 'cancelled' ? 'Cancelled by admin from listing.' : '',
+            reason:
+                nextStatus === 'cancelled'
+                    ? 'Cancelled by admin from listing.'
+                    : '',
         });
     }
 
@@ -341,32 +373,51 @@ function runConfirmedAction() {
                 <div class="space-y-1">
                     <h1 class="text-2xl font-semibold">{{ pageTitle }}</h1>
                     <p class="text-sm text-muted-foreground">
-                        Total: {{ counts.total_count ?? 0 }} |
-                        Pending: {{ counts.pending_count ?? 0 }} |
-                        Live: {{ counts.live_count ?? 0 }} |
-                        Confirmed: {{ counts.confirmed_count ?? 0 }} |
-                        Cancelled: {{ counts.cancelled_count ?? 0 }} |
-                        Trash: {{ counts.trash_count ?? 0 }}
+                        Total: {{ counts.total_count ?? 0 }} | Pending:
+                        {{ counts.pending_count ?? 0 }} | Live:
+                        {{ counts.live_count ?? 0 }} | Confirmed:
+                        {{ counts.confirmed_count ?? 0 }} | Cancelled:
+                        {{ counts.cancelled_count ?? 0 }} | Trash:
+                        {{ counts.trash_count ?? 0 }}
                     </p>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <Link :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`" class="rounded-md border px-4 py-2 text-sm">
+                    <Link
+                        :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
+                        class="rounded-md border px-4 py-2 text-sm"
+                    >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
 
-                    <Button v-if="filters.trash" type="button" variant="destructive" @click="openConfirm('empty-recycle-bin')">
+                    <Button
+                        v-if="filters.trash"
+                        type="button"
+                        variant="destructive"
+                        @click="openConfirm('empty-recycle-bin')"
+                    >
                         Empty Recycle Bin
                     </Button>
 
-                    <Link v-if="!filters.trash" href="/admin/jobs/create" class="rounded-md bg-black px-4 py-2 text-sm text-white">
+                    <Link
+                        v-if="!filters.trash"
+                        href="/admin/jobs/create"
+                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                    >
                         Create Job
                     </Link>
                 </div>
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-5">
-                <Input v-model="search" type="text" placeholder="Search jobs" class="sm:col-span-2" />
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-5"
+            >
+                <Input
+                    v-model="search"
+                    type="text"
+                    placeholder="Search jobs"
+                    class="sm:col-span-2"
+                />
 
                 <Select v-if="!presetStatus" v-model="statusFilter">
                     <SelectTrigger>
@@ -374,7 +425,11 @@ function runConfirmedAction() {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem v-for="status in statusOptions" :key="status.value" :value="status.value">
+                        <SelectItem
+                            v-for="status in statusOptions"
+                            :key="status.value"
+                            :value="status.value"
+                        >
                             {{ status.label }}
                         </SelectItem>
                     </SelectContent>
@@ -386,7 +441,11 @@ function runConfirmedAction() {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All guardians</SelectItem>
-                        <SelectItem v-for="guardian in guardianOptions" :key="guardian.id" :value="String(guardian.id)">
+                        <SelectItem
+                            v-for="guardian in guardianOptions"
+                            :key="guardian.id"
+                            :value="String(guardian.id)"
+                        >
                             {{ guardian.name }}
                         </SelectItem>
                     </SelectContent>
@@ -401,7 +460,9 @@ function runConfirmedAction() {
                         <SelectItem value="created_at">Created At</SelectItem>
                         <SelectItem value="title">Title</SelectItem>
                         <SelectItem value="status">Status</SelectItem>
-                        <SelectItem value="published_at">Published At</SelectItem>
+                        <SelectItem value="published_at"
+                            >Published At</SelectItem
+                        >
                         <SelectItem value="expires_at">Expires At</SelectItem>
                     </SelectContent>
                 </Select>
@@ -417,16 +478,32 @@ function runConfirmedAction() {
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No jobs found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No jobs found."
+            >
                 <template #cell-status="{ row }">
-                    <Badge :variant="row.status === 'live' ? 'default' : 'secondary'">{{ row.status }}</Badge>
+                    <Badge
+                        :variant="
+                            row.status === 'live' ? 'default' : 'secondary'
+                        "
+                        >{{ row.status }}</Badge
+                    >
                 </template>
 
-                <template #cell-published_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
-                <template #cell-expires_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
+                <template #cell-published_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
+                <template #cell-expires_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
 
                 <template #cell-actions="{ row }">
-                    <RowActionsDropdown :actions="actionItemsForRow(row)" @select="(action) => handleRowAction(action, row)" />
+                    <RowActionsDropdown
+                        :actions="actionItemsForRow(row)"
+                        @select="(action) => handleRowAction(action, row)"
+                    />
                 </template>
             </DataTable>
         </div>

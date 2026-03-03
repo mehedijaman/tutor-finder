@@ -55,7 +55,11 @@ function buildDownloadUrl(backup) {
 }
 
 function deleteBackup(backup) {
-    if (!window.confirm(`Delete backup file "${backup.name}"? This action cannot be undone.`)) {
+    if (
+        !window.confirm(
+            `Delete backup file "${backup.name}"? This action cannot be undone.`,
+        )
+    ) {
         return;
     }
 
@@ -179,39 +183,82 @@ function deleteBackup(backup) {
                                 :key="`${destination.backup_name}-${destination.disk}`"
                                 class="border-t align-top"
                             >
-                                <td class="px-4 py-3">{{ destination.backup_name }}</td>
-                                <td class="px-4 py-3">{{ destination.disk }}</td>
                                 <td class="px-4 py-3">
-                                    <span :class="destination.reachable ? 'text-emerald-700' : 'text-rose-700'">
-                                        {{ destination.reachable ? 'Yes' : 'No' }}
+                                    {{ destination.backup_name }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {{ destination.disk }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        :class="
+                                            destination.reachable
+                                                ? 'text-emerald-700'
+                                                : 'text-rose-700'
+                                        "
+                                    >
+                                        {{
+                                            destination.reachable ? 'Yes' : 'No'
+                                        }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span :class="destination.healthy ? 'text-emerald-700' : 'text-rose-700'">
-                                        {{ destination.healthy ? 'Healthy' : 'Unhealthy' }}
+                                    <span
+                                        :class="
+                                            destination.healthy
+                                                ? 'text-emerald-700'
+                                                : 'text-rose-700'
+                                        "
+                                    >
+                                        {{
+                                            destination.healthy
+                                                ? 'Healthy'
+                                                : 'Unhealthy'
+                                        }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3">{{ destination.total_backups }}</td>
                                 <td class="px-4 py-3">
-                                    <div>{{ destination.newest_backup_at || '—' }}</div>
-                                    <div class="text-xs text-muted-foreground">{{ destination.newest_backup_age }}</div>
+                                    {{ destination.total_backups }}
                                 </td>
-                                <td class="px-4 py-3">{{ destination.used_storage }}</td>
                                 <td class="px-4 py-3">
-                                    <div v-if="destination.failures?.length" class="space-y-1">
+                                    <div>
+                                        {{
+                                            destination.newest_backup_at || '—'
+                                        }}
+                                    </div>
+                                    <div class="text-xs text-muted-foreground">
+                                        {{ destination.newest_backup_age }}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    {{ destination.used_storage }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div
+                                        v-if="destination.failures?.length"
+                                        class="space-y-1"
+                                    >
                                         <p
-                                            v-for="(failure, index) in destination.failures"
+                                            v-for="(
+                                                failure, index
+                                            ) in destination.failures"
                                             :key="`${destination.disk}-${index}`"
                                             class="text-xs text-rose-700"
                                         >
-                                            {{ failure.check }}: {{ failure.message }}
+                                            {{ failure.check }}:
+                                            {{ failure.message }}
                                         </p>
                                     </div>
-                                    <span v-else class="text-muted-foreground">—</span>
+                                    <span v-else class="text-muted-foreground"
+                                        >—</span
+                                    >
                                 </td>
                             </tr>
                             <tr v-if="!hasDestinations" class="border-t">
-                                <td class="px-4 py-6 text-center text-muted-foreground" colspan="8">
+                                <td
+                                    class="px-4 py-6 text-center text-muted-foreground"
+                                    colspan="8"
+                                >
                                     No monitored backup destinations found.
                                 </td>
                             </tr>
@@ -244,12 +291,20 @@ function deleteBackup(backup) {
                                 :key="`${backup.disk}-${backup.path}`"
                                 class="border-t"
                             >
-                                <td class="px-4 py-3 font-mono text-xs">{{ backup.name }}</td>
-                                <td class="px-4 py-3">{{ backup.backup_name }}</td>
+                                <td class="px-4 py-3 font-mono text-xs">
+                                    {{ backup.name }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {{ backup.backup_name }}
+                                </td>
                                 <td class="px-4 py-3">{{ backup.disk }}</td>
                                 <td class="px-4 py-3">{{ backup.size }}</td>
-                                <td class="px-4 py-3">{{ backup.created_at }}</td>
-                                <td class="px-4 py-3 text-muted-foreground">{{ backup.age }}</td>
+                                <td class="px-4 py-3">
+                                    {{ backup.created_at }}
+                                </td>
+                                <td class="px-4 py-3 text-muted-foreground">
+                                    {{ backup.age }}
+                                </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2">
                                         <a
@@ -273,7 +328,10 @@ function deleteBackup(backup) {
                                 </td>
                             </tr>
                             <tr v-if="!hasBackupFiles" class="border-t">
-                                <td class="px-4 py-6 text-center text-muted-foreground" colspan="7">
+                                <td
+                                    class="px-4 py-6 text-center text-muted-foreground"
+                                    colspan="7"
+                                >
                                     No backup files are currently available.
                                 </td>
                             </tr>

@@ -2,9 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import TutorLayout from '@/layouts/TutorLayout.vue';
 
-const breadcrumbs = [
-    { title: 'Tutor Dashboard', href: '/tutor/dashboard' },
-];
+const breadcrumbs = [{ title: 'Tutor Dashboard', href: '/tutor/dashboard' }];
 </script>
 
 <template>

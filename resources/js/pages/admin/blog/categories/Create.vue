@@ -26,7 +26,10 @@ const initialValues = {
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between gap-3">
                 <h1 class="text-2xl font-semibold">Create Blog Category</h1>
-                <Link href="/admin/blog/categories" class="text-sm text-muted-foreground underline">
+                <Link
+                    href="/admin/blog/categories"
+                    class="text-sm text-muted-foreground underline"
+                >
                     Back
                 </Link>
             </div>

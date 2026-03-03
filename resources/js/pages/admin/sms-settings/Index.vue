@@ -1,9 +1,9 @@
 <script setup>
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
-import InputError from '@/components/InputError.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
+import InputError from '@/components/InputError.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -212,37 +212,63 @@ function submitTestSms() {
                     <template #cell-credential_keys="{ row }">
                         <div class="space-y-1">
                             <div class="text-sm">
-                                {{ row.configured_keys_count ?? row.credential_keys?.length ?? 0 }}/{{ row.required_keys_count ?? 0 }}
+                                {{
+                                    row.configured_keys_count ??
+                                    row.credential_keys?.length ??
+                                    0
+                                }}/{{ row.required_keys_count ?? 0 }}
                                 required keys configured
                             </div>
                             <div class="text-xs text-muted-foreground">
-                                {{ row.credential_keys?.length ? row.credential_keys.join(', ') : 'No keys configured' }}
+                                {{
+                                    row.credential_keys?.length
+                                        ? row.credential_keys.join(', ')
+                                        : 'No keys configured'
+                                }}
                             </div>
                         </div>
                     </template>
 
                     <template #cell-has_complete_credentials="{ row }">
                         <div class="space-y-1">
-                            <Badge :variant="row.has_complete_credentials ? 'default' : 'destructive'">
-                                {{ row.has_complete_credentials ? 'Ready' : 'Incomplete' }}
+                            <Badge
+                                :variant="
+                                    row.has_complete_credentials
+                                        ? 'default'
+                                        : 'destructive'
+                                "
+                            >
+                                {{
+                                    row.has_complete_credentials
+                                        ? 'Ready'
+                                        : 'Incomplete'
+                                }}
                             </Badge>
                             <div
-                                v-if="!row.has_complete_credentials && row.missing_required_keys?.length"
+                                v-if="
+                                    !row.has_complete_credentials &&
+                                    row.missing_required_keys?.length
+                                "
                                 class="text-xs text-rose-700"
                             >
-                                Missing: {{ row.missing_required_keys.join(', ') }}
+                                Missing:
+                                {{ row.missing_required_keys.join(', ') }}
                             </div>
                         </div>
                     </template>
 
                     <template #cell-is_active="{ row }">
-                        <Badge :variant="row.is_active ? 'default' : 'secondary'">
+                        <Badge
+                            :variant="row.is_active ? 'default' : 'secondary'"
+                        >
                             {{ row.is_active ? 'Active' : 'Inactive' }}
                         </Badge>
                     </template>
 
                     <template #cell-is_default="{ row }">
-                        <Badge :variant="row.is_default ? 'default' : 'secondary'">
+                        <Badge
+                            :variant="row.is_default ? 'default' : 'secondary'"
+                        >
                             {{ row.is_default ? 'Default' : 'No' }}
                         </Badge>
                     </template>
@@ -260,12 +286,16 @@ function submitTestSms() {
                 </DataTable>
             </div>
 
-            <Dialog :open="isTestSmsModalOpen" @update:open="handleTestSmsModalOpenChange">
+            <Dialog
+                :open="isTestSmsModalOpen"
+                @update:open="handleTestSmsModalOpenChange"
+            >
                 <DialogContent>
                     <DialogHeader class="space-y-2">
                         <DialogTitle>Send Test SMS</DialogTitle>
                         <DialogDescription>
-                            Send a test message using the current default active SMS gateway.
+                            Send a test message using the current default active
+                            SMS gateway.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -304,7 +334,10 @@ function submitTestSms() {
                             >
                                 Cancel
                             </Button>
-                            <Button type="submit" :disabled="testSmsForm.processing">
+                            <Button
+                                type="submit"
+                                :disabled="testSmsForm.processing"
+                            >
                                 Send SMS
                             </Button>
                         </DialogFooter>

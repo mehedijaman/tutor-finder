@@ -2,9 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
-const breadcrumbs = [
-    { title: 'Admin Dashboard', href: '/admin/dashboard' },
-];
+const breadcrumbs = [{ title: 'Admin Dashboard', href: '/admin/dashboard' }];
 </script>
 
 <template>
@@ -20,19 +18,34 @@ const breadcrumbs = [
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
-                <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/admin/users">
+                <Link
+                    class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50"
+                    href="/admin/users"
+                >
                     Manage Admin Users
                 </Link>
-                <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/admin/roles">
+                <Link
+                    class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50"
+                    href="/admin/roles"
+                >
                     Manage Roles
                 </Link>
-                <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/admin/tutors">
+                <Link
+                    class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50"
+                    href="/admin/tutors"
+                >
                     Manage Tutors
                 </Link>
-                <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/admin/guardians">
+                <Link
+                    class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50"
+                    href="/admin/guardians"
+                >
                     Manage Guardians
                 </Link>
-                <Link class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50" href="/settings/sms">
+                <Link
+                    class="rounded-lg border bg-white p-4 text-sm hover:bg-muted/50"
+                    href="/settings/sms"
+                >
                     SMS Settings
                 </Link>
             </div>

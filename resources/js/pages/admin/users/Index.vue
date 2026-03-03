@@ -106,28 +106,32 @@ function openConfirm(action, row = null) {
 
     if (action === 'delete') {
         confirmTitle.value = 'Delete Admin User';
-        confirmDescription.value = 'This will move the admin user to recycle bin.';
+        confirmDescription.value =
+            'This will move the admin user to recycle bin.';
         confirmLabel.value = 'Delete';
         confirmDestructive.value = true;
     }
 
     if (action === 'force-delete') {
         confirmTitle.value = 'Permanently Delete Admin User';
-        confirmDescription.value = 'This action is irreversible and removes the user permanently.';
+        confirmDescription.value =
+            'This action is irreversible and removes the user permanently.';
         confirmLabel.value = 'Permanently Delete';
         confirmDestructive.value = true;
     }
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently delete all trashed admin users.';
+        confirmDescription.value =
+            'This will permanently delete all trashed admin users.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Admin User';
-        confirmDescription.value = 'This will restore the admin user from recycle bin.';
+        confirmDescription.value =
+            'This will restore the admin user from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -179,22 +183,34 @@ function actionItemsForRow(row) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
     return [
         { key: 'edit', label: 'Edit' },
-        { key: 'impersonate', label: 'Impersonate', show: canImpersonateRow(row) },
+        {
+            key: 'impersonate',
+            label: 'Impersonate',
+            show: canImpersonateRow(row),
+        },
         { key: 'delete', label: 'Delete', destructive: true },
     ];
 }
 
 function canImpersonateRow(row) {
     const currentUserId = page.props.auth?.user?.id;
-    const isImpersonating = Boolean(page.props.auth?.impersonation?.is_impersonating);
+    const isImpersonating = Boolean(
+        page.props.auth?.impersonation?.is_impersonating,
+    );
 
-    return !isImpersonating && row.id !== currentUserId && row.status === 'active';
+    return (
+        !isImpersonating && row.id !== currentUserId && row.status === 'active'
+    );
 }
 
 function handleRowAction(actionKey, row) {
@@ -208,7 +224,11 @@ function handleRowAction(actionKey, row) {
         return;
     }
 
-    if (actionKey === 'delete' || actionKey === 'force-delete' || actionKey === 'restore') {
+    if (
+        actionKey === 'delete' ||
+        actionKey === 'force-delete' ||
+        actionKey === 'restore'
+    ) {
         openConfirm(actionKey, row);
     }
 }
@@ -221,12 +241,20 @@ function handleRowAction(actionKey, row) {
         <div class="space-y-4 p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h1 class="text-2xl font-semibold">
-                    {{ filters.trash ? 'Admin Users Recycle Bin' : 'Admin Users' }}
+                    {{
+                        filters.trash
+                            ? 'Admin Users Recycle Bin'
+                            : 'Admin Users'
+                    }}
                 </h1>
 
                 <div class="flex items-center gap-2">
                     <Link
-                        :href="filters.trash ? '/admin/users' : '/admin/users?trash=1'"
+                        :href="
+                            filters.trash
+                                ? '/admin/users'
+                                : '/admin/users?trash=1'
+                        "
                         class="rounded-md border px-4 py-2 text-sm"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}

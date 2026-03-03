@@ -41,10 +41,12 @@ const addresses = ref(
 );
 const socialRows = ref(
     Object.entries(props.siteSettingsFull.social_details ?? {}).length
-        ? Object.entries(props.siteSettingsFull.social_details).map(([platform, url]) => ({
-              platform,
-              url,
-          }))
+        ? Object.entries(props.siteSettingsFull.social_details).map(
+              ([platform, url]) => ({
+                  platform,
+                  url,
+              }),
+          )
         : [{ platform: '', url: '' }],
 );
 
@@ -197,13 +199,22 @@ onBeforeUnmount(() => {
 
                         <div class="grid gap-2">
                             <Label for="site_name">Site Name</Label>
-                            <Input id="site_name" v-model="form.site_name" type="text" required />
+                            <Input
+                                id="site_name"
+                                v-model="form.site_name"
+                                type="text"
+                                required
+                            />
                             <InputError :message="form.errors.site_name" />
                         </div>
 
                         <div class="grid gap-2">
                             <Label for="slogan">Slogan</Label>
-                            <Input id="slogan" v-model="form.slogan" type="text" />
+                            <Input
+                                id="slogan"
+                                v-model="form.slogan"
+                                type="text"
+                            />
                             <InputError :message="form.errors.slogan" />
                         </div>
 
@@ -229,14 +240,29 @@ onBeforeUnmount(() => {
                                 alt="Site Logo"
                                 class="h-14 w-14 rounded-md border object-cover"
                             />
-                            <div v-else class="flex h-14 w-14 items-center justify-center rounded-md border text-sm text-muted-foreground">
+                            <div
+                                v-else
+                                class="flex h-14 w-14 items-center justify-center rounded-md border text-sm text-muted-foreground"
+                            >
                                 No Logo
                             </div>
 
-                            <Input type="file" accept="image/*" @change="onLogoChange" />
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                @change="onLogoChange"
+                            />
 
-                            <Button type="button" variant="outline" @click="toggleRemoveLogo">
-                                {{ form.remove_logo ? 'Keep Existing Logo' : 'Remove Logo' }}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                @click="toggleRemoveLogo"
+                            >
+                                {{
+                                    form.remove_logo
+                                        ? 'Keep Existing Logo'
+                                        : 'Remove Logo'
+                                }}
                             </Button>
                         </div>
 
@@ -247,7 +273,12 @@ onBeforeUnmount(() => {
                     <section class="grid gap-4 rounded-xl border bg-white p-4">
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">Phone Numbers</h2>
-                            <Button type="button" variant="outline" @click="addPhoneNumber">Add</Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                @click="addPhoneNumber"
+                                >Add</Button
+                            >
                         </div>
 
                         <div
@@ -255,18 +286,33 @@ onBeforeUnmount(() => {
                             :key="`phone-${index}`"
                             class="grid gap-2 md:grid-cols-[1fr_auto]"
                         >
-                            <Input v-model="phoneNumbers[index]" type="text" placeholder="+15550000000" />
-                            <Button type="button" variant="ghost" @click="removePhoneNumber(index)">
+                            <Input
+                                v-model="phoneNumbers[index]"
+                                type="text"
+                                placeholder="+15550000000"
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                @click="removePhoneNumber(index)"
+                            >
                                 Remove
                             </Button>
-                            <InputError :message="form.errors[`phone_numbers.${index}`]" />
+                            <InputError
+                                :message="form.errors[`phone_numbers.${index}`]"
+                            />
                         </div>
                     </section>
 
                     <section class="grid gap-4 rounded-xl border bg-white p-4">
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">Emails</h2>
-                            <Button type="button" variant="outline" @click="addEmail">Add</Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                @click="addEmail"
+                                >Add</Button
+                            >
                         </div>
 
                         <div
@@ -274,18 +320,33 @@ onBeforeUnmount(() => {
                             :key="`email-${index}`"
                             class="grid gap-2 md:grid-cols-[1fr_auto]"
                         >
-                            <Input v-model="emails[index]" type="email" placeholder="hello@example.com" />
-                            <Button type="button" variant="ghost" @click="removeEmail(index)">
+                            <Input
+                                v-model="emails[index]"
+                                type="email"
+                                placeholder="hello@example.com"
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                @click="removeEmail(index)"
+                            >
                                 Remove
                             </Button>
-                            <InputError :message="form.errors[`emails.${index}`]" />
+                            <InputError
+                                :message="form.errors[`emails.${index}`]"
+                            />
                         </div>
                     </section>
 
                     <section class="grid gap-4 rounded-xl border bg-white p-4">
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">Addresses</h2>
-                            <Button type="button" variant="outline" @click="addAddress">Add</Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                @click="addAddress"
+                                >Add</Button
+                            >
                         </div>
 
                         <div
@@ -293,22 +354,57 @@ onBeforeUnmount(() => {
                             :key="`address-${index}`"
                             class="space-y-2 rounded-lg border p-3"
                         >
-                            <Input v-model="addresses[index].label" type="text" placeholder="Label (Head Office)" />
-                            <Input v-model="addresses[index].address" type="text" placeholder="Address" />
-                            <Input v-model="addresses[index].map_url" type="url" placeholder="Map URL" />
-                            <Button type="button" variant="ghost" @click="removeAddress(index)">
+                            <Input
+                                v-model="addresses[index].label"
+                                type="text"
+                                placeholder="Label (Head Office)"
+                            />
+                            <Input
+                                v-model="addresses[index].address"
+                                type="text"
+                                placeholder="Address"
+                            />
+                            <Input
+                                v-model="addresses[index].map_url"
+                                type="url"
+                                placeholder="Map URL"
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                @click="removeAddress(index)"
+                            >
                                 Remove
                             </Button>
-                            <InputError :message="form.errors[`addresses.${index}.label`]" />
-                            <InputError :message="form.errors[`addresses.${index}.address`]" />
-                            <InputError :message="form.errors[`addresses.${index}.map_url`]" />
+                            <InputError
+                                :message="
+                                    form.errors[`addresses.${index}.label`]
+                                "
+                            />
+                            <InputError
+                                :message="
+                                    form.errors[`addresses.${index}.address`]
+                                "
+                            />
+                            <InputError
+                                :message="
+                                    form.errors[`addresses.${index}.map_url`]
+                                "
+                            />
                         </div>
                     </section>
 
                     <section class="grid gap-4 rounded-xl border bg-white p-4">
                         <div class="flex items-center justify-between gap-3">
-                            <h2 class="text-lg font-semibold">Social Details</h2>
-                            <Button type="button" variant="outline" @click="addSocial">Add</Button>
+                            <h2 class="text-lg font-semibold">
+                                Social Details
+                            </h2>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                @click="addSocial"
+                                >Add</Button
+                            >
                         </div>
 
                         <div
@@ -316,32 +412,72 @@ onBeforeUnmount(() => {
                             :key="`social-${index}`"
                             class="space-y-2 rounded-lg border p-3"
                         >
-                            <Input v-model="socialRows[index].platform" type="text" placeholder="Platform (facebook)" />
-                            <Input v-model="socialRows[index].url" type="url" placeholder="https://..." />
-                            <Button type="button" variant="ghost" @click="removeSocial(index)">
+                            <Input
+                                v-model="socialRows[index].platform"
+                                type="text"
+                                placeholder="Platform (facebook)"
+                            />
+                            <Input
+                                v-model="socialRows[index].url"
+                                type="url"
+                                placeholder="https://..."
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                @click="removeSocial(index)"
+                            >
                                 Remove
                             </Button>
-                            <InputError :message="form.errors[`social_details.${index}.platform`]" />
-                            <InputError :message="form.errors[`social_details.${index}.url`]" />
+                            <InputError
+                                :message="
+                                    form.errors[
+                                        `social_details.${index}.platform`
+                                    ]
+                                "
+                            />
+                            <InputError
+                                :message="
+                                    form.errors[`social_details.${index}.url`]
+                                "
+                            />
                         </div>
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4 md:grid-cols-3">
+                    <section
+                        class="grid gap-4 rounded-xl border bg-white p-4 md:grid-cols-3"
+                    >
                         <div class="grid gap-2">
-                            <Label for="trade_licence_no">Trade Licence No</Label>
-                            <Input id="trade_licence_no" v-model="form.trade_licence_no" type="text" />
-                            <InputError :message="form.errors.trade_licence_no" />
+                            <Label for="trade_licence_no"
+                                >Trade Licence No</Label
+                            >
+                            <Input
+                                id="trade_licence_no"
+                                v-model="form.trade_licence_no"
+                                type="text"
+                            />
+                            <InputError
+                                :message="form.errors.trade_licence_no"
+                            />
                         </div>
 
                         <div class="grid gap-2">
                             <Label for="tin_no">TIN No</Label>
-                            <Input id="tin_no" v-model="form.tin_no" type="text" />
+                            <Input
+                                id="tin_no"
+                                v-model="form.tin_no"
+                                type="text"
+                            />
                             <InputError :message="form.errors.tin_no" />
                         </div>
 
                         <div class="grid gap-2">
                             <Label for="bin_no">BIN No</Label>
-                            <Input id="bin_no" v-model="form.bin_no" type="text" />
+                            <Input
+                                id="bin_no"
+                                v-model="form.bin_no"
+                                type="text"
+                            />
                             <InputError :message="form.errors.bin_no" />
                         </div>
                     </section>

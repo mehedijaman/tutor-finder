@@ -37,12 +37,16 @@ const columns = [
     { key: 'name', label: 'Name', sortable: true },
     { key: 'phone', label: 'Phone', sortable: true },
     { key: 'status', label: 'Status', sortable: true },
+    { key: 'verification_status', label: 'Verification', sortable: false },
     { key: 'created_at', label: 'Created', sortable: true },
     { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap' },
 ];
 
 const search = ref(props.filters.search ?? '');
 const statusFilter = ref(props.filters.status ? props.filters.status : 'all');
+const verificationFilter = ref(
+    props.filters.verification ? props.filters.verification : 'all',
+);
 const confirmOpen = ref(false);
 const confirmTitle = ref('');
 const confirmDescription = ref('');
@@ -54,6 +58,21 @@ const resetPasswordUser = ref(null);
 let searchDebounceTimer = null;
 
 const formErrors = computed(() => page.props.errors ?? {});
+const verificationScopeLabel = computed(() => {
+    if (verificationFilter.value === 'pending') {
+        return 'Pending';
+    }
+
+    if (verificationFilter.value === 'unverified') {
+        return 'Unverified';
+    }
+
+    if (verificationFilter.value === 'verified') {
+        return 'Verified';
+    }
+
+    return 'All';
+});
 
 watch(
     () => props.filters.search,
@@ -73,6 +92,17 @@ watch(
 
         if (normalized !== statusFilter.value) {
             statusFilter.value = normalized;
+        }
+    },
+);
+
+watch(
+    () => props.filters.verification,
+    (value) => {
+        const normalized = value ? value : 'all';
+
+        if (normalized !== verificationFilter.value) {
+            verificationFilter.value = normalized;
         }
     },
 );
@@ -97,6 +127,18 @@ watch(statusFilter, (value) => {
     applyFilters({ status: value === 'all' ? '' : value, page: 1 });
 });
 
+watch(verificationFilter, (value) => {
+    const currentVerification = props.filters.verification
+        ? props.filters.verification
+        : 'all';
+
+    if (currentVerification === value) {
+        return;
+    }
+
+    applyFilters({ verification: value === 'all' ? '' : value, page: 1 });
+});
+
 onBeforeUnmount(() => {
     if (searchDebounceTimer) {
         clearTimeout(searchDebounceTimer);
@@ -110,6 +152,10 @@ function applyFilters(overrides = {}) {
             trash: props.filters.trash ? 1 : 0,
             search: search.value,
             status: statusFilter.value === 'all' ? '' : statusFilter.value,
+            verification:
+                verificationFilter.value === 'all'
+                    ? ''
+                    : verificationFilter.value,
             sort: props.filters.sort ?? 'created_at',
             direction: props.filters.direction ?? 'desc',
             ...overrides,
@@ -140,28 +186,32 @@ function openConfirm(action, row = null) {
 
     if (action === 'delete') {
         confirmTitle.value = 'Delete Guardian';
-        confirmDescription.value = 'This will move the guardian to recycle bin.';
+        confirmDescription.value =
+            'This will move the guardian to recycle bin.';
         confirmLabel.value = 'Delete';
         confirmDestructive.value = true;
     }
 
     if (action === 'force-delete') {
         confirmTitle.value = 'Permanently Delete Guardian';
-        confirmDescription.value = 'This action is irreversible and removes the guardian permanently.';
+        confirmDescription.value =
+            'This action is irreversible and removes the guardian permanently.';
         confirmLabel.value = 'Permanently Delete';
         confirmDestructive.value = true;
     }
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently delete all trashed guardians.';
+        confirmDescription.value =
+            'This will permanently delete all trashed guardians.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Guardian';
-        confirmDescription.value = 'This will restore the guardian from recycle bin.';
+        confirmDescription.value =
+            'This will restore the guardian from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -173,7 +223,8 @@ function openConfirm(action, row = null) {
 
     if (action === 'suspend') {
         confirmTitle.value = 'Suspend Guardian';
-        confirmDescription.value = 'Suspend user will prevent login and dashboard access.';
+        confirmDescription.value =
+            'Suspend user will prevent login and dashboard access.';
         confirmLabel.value = 'Suspend';
         confirmDestructive.value = true;
     }
@@ -182,6 +233,19 @@ function openConfirm(action, row = null) {
         confirmTitle.value = 'Unsuspend Guardian';
         confirmDescription.value = 'Unsuspend will re-enable access.';
         confirmLabel.value = 'Unsuspend';
+    }
+
+    if (action === 'verification-approve') {
+        confirmTitle.value = 'Approve Verification';
+        confirmDescription.value = 'Approve this verification request now?';
+        confirmLabel.value = 'Approve';
+    }
+
+    if (action === 'verification-invoice') {
+        confirmTitle.value = 'Generate Invoice';
+        confirmDescription.value =
+            'Generate verification invoice for this request?';
+        confirmLabel.value = 'Generate';
     }
 
     confirmOpen.value = true;
@@ -219,26 +283,81 @@ function runConfirmedAction() {
     }
 
     if (action === 'suspend' && row) {
-        router.patch(`/admin/guardians/${row.id}/status`, { status: 'suspended' });
+        router.patch(`/admin/guardians/${row.id}/status`, {
+            status: 'suspended',
+        });
     }
 
     if (action === 'unsuspend' && row) {
         router.patch(`/admin/guardians/${row.id}/status`, { status: 'active' });
     }
 
+    if (action === 'verification-approve' && row?.verification_request_id) {
+        router.patch(
+            `/admin/verifications/${row.verification_request_id}/approve`,
+        );
+    }
+
+    if (action === 'verification-invoice' && row?.verification_request_id) {
+        router.post(
+            `/admin/verifications/${row.verification_request_id}/invoice`,
+        );
+    }
+
     confirmOpen.value = false;
     resetConfirmState();
+}
+
+function verificationActionsForRow(row) {
+    if (
+        verificationFilter.value !== 'pending' ||
+        !row.verification_request_id
+    ) {
+        return [];
+    }
+
+    const actions = [
+        { key: 'verification-view', label: 'Verification Details' },
+    ];
+
+    if (row.verification_request_status === 'pending') {
+        actions.push({
+            key: 'verification-approve',
+            label: 'Approve Verification',
+        });
+    }
+
+    const canGenerateInvoice =
+        ['pending', 'approved'].includes(row.verification_request_status) &&
+        (!row.verification_invoice_status ||
+            ['failed', 'cancelled', 'void'].includes(
+                row.verification_invoice_status,
+            ));
+
+    if (canGenerateInvoice) {
+        actions.push({
+            key: 'verification-invoice',
+            label: 'Generate Invoice',
+        });
+    }
+
+    return actions;
 }
 
 function actionItemsForRow(row) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
     return [
+        ...verificationActionsForRow(row),
         { key: 'view', label: 'View' },
         { key: 'edit', label: 'Edit' },
         {
@@ -246,19 +365,32 @@ function actionItemsForRow(row) {
             label: row.status === 'active' ? 'Suspend' : 'Unsuspend',
         },
         { key: 'reset-password', label: 'Reset Password' },
-        { key: 'impersonate', label: 'Impersonate', show: canImpersonateRow(row) },
+        {
+            key: 'impersonate',
+            label: 'Impersonate',
+            show: canImpersonateRow(row),
+        },
         { key: 'delete', label: 'Delete', destructive: true },
     ];
 }
 
 function canImpersonateRow(row) {
     const currentUserId = page.props.auth?.user?.id;
-    const isImpersonating = Boolean(page.props.auth?.impersonation?.is_impersonating);
+    const isImpersonating = Boolean(
+        page.props.auth?.impersonation?.is_impersonating,
+    );
 
-    return !isImpersonating && row.id !== currentUserId && row.status === 'active';
+    return (
+        !isImpersonating && row.id !== currentUserId && row.status === 'active'
+    );
 }
 
 function handleRowAction(actionKey, row) {
+    if (actionKey === 'verification-view' && row.verification_request_id) {
+        router.visit(`/admin/verifications/${row.verification_request_id}`);
+        return;
+    }
+
     if (actionKey === 'view') {
         router.visit(`/admin/guardians/${row.id}`);
         return;
@@ -285,7 +417,9 @@ function handleRowAction(actionKey, row) {
         actionKey === 'delete' ||
         actionKey === 'force-delete' ||
         actionKey === 'suspend' ||
-        actionKey === 'unsuspend'
+        actionKey === 'unsuspend' ||
+        actionKey === 'verification-approve' ||
+        actionKey === 'verification-invoice'
     ) {
         openConfirm(actionKey, row);
     }
@@ -296,14 +430,18 @@ function submitResetPassword(payload) {
         return;
     }
 
-    router.put(`/admin/guardians/${resetPasswordUser.value.id}/password`, payload, {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => {
-            resetPasswordOpen.value = false;
-            resetPasswordUser.value = null;
+    router.put(
+        `/admin/guardians/${resetPasswordUser.value.id}/password`,
+        payload,
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                resetPasswordOpen.value = false;
+                resetPasswordUser.value = null;
+            },
         },
-    });
+    );
 }
 
 function closeResetPasswordDialog() {
@@ -319,12 +457,20 @@ function closeResetPasswordDialog() {
         <div class="space-y-4 p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h1 class="text-2xl font-semibold">
-                    {{ filters.trash ? 'Guardian Recycle Bin' : 'Guardians' }}
+                    {{
+                        filters.trash
+                            ? 'Guardian Recycle Bin'
+                            : `Guardians (${verificationScopeLabel})`
+                    }}
                 </h1>
 
                 <div class="flex items-center gap-2">
                     <Link
-                        :href="filters.trash ? '/admin/guardians' : '/admin/guardians?trash=1'"
+                        :href="
+                            filters.trash
+                                ? '/admin/guardians'
+                                : '/admin/guardians?trash=1'
+                        "
                         class="rounded-md border px-4 py-2 text-sm"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
@@ -350,7 +496,31 @@ function closeResetPasswordDialog() {
                 </div>
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-2">
+            <div
+                v-if="$page.props.flash?.status"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+            >
+                {{ $page.props.flash.status }}
+            </div>
+
+            <div
+                v-if="
+                    $page.props.errors?.verification ||
+                    $page.props.errors?.invoice ||
+                    $page.props.errors?.user
+                "
+                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            >
+                {{
+                    $page.props.errors.verification ||
+                    $page.props.errors.invoice ||
+                    $page.props.errors.user
+                }}
+            </div>
+
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3"
+            >
                 <div class="grid gap-2">
                     <Label for="guardian-search">Search</Label>
                     <Input
@@ -371,7 +541,26 @@ function closeResetPasswordDialog() {
                             <SelectItem value="all">All status</SelectItem>
                             <SelectItem value="active">Active</SelectItem>
                             <SelectItem value="suspended">Suspended</SelectItem>
-                            <SelectItem value="pending_verification">Pending</SelectItem>
+                            <SelectItem value="pending_verification"
+                                >Pending</SelectItem
+                            >
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div class="grid gap-2">
+                    <Label>Verification</Label>
+                    <Select v-model="verificationFilter">
+                        <SelectTrigger>
+                            <SelectValue placeholder="All verifications" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="unverified"
+                                >Unverified</SelectItem
+                            >
+                            <SelectItem value="verified">Verified</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -387,6 +576,10 @@ function closeResetPasswordDialog() {
             >
                 <template #cell-created_at="{ value }">
                     {{ value ? new Date(value).toLocaleString() : '—' }}
+                </template>
+
+                <template #cell-verification_status="{ value }">
+                    {{ value || 'unverified' }}
                 </template>
 
                 <template #cell-actions="{ row }">

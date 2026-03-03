@@ -2,10 +2,10 @@
 import { Link, useForm } from '@inertiajs/vue3';
 import { toRef } from 'vue';
 import InputError from '@/components/InputError.vue';
-import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 
 const props = defineProps({
     action: {
@@ -59,14 +59,12 @@ const { autoSlug, onManualSlugInput, toggleAutoSlug } = useAutoSlug(
 
 const submit = () => {
     if (props.method.toLowerCase() === 'put') {
-        form
-            .transform((data) => ({
-                ...data,
-                _method: 'put',
-            }))
-            .post(props.action, {
-                preserveScroll: true,
-            });
+        form.transform((data) => ({
+            ...data,
+            _method: 'put',
+        })).post(props.action, {
+            preserveScroll: true,
+        });
 
         return;
     }
@@ -91,7 +89,12 @@ const submit = () => {
             <div class="grid gap-2">
                 <div class="flex items-center justify-between gap-3">
                     <Label for="tag-slug">Slug</Label>
-                    <Button type="button" size="sm" variant="outline" @click="toggleAutoSlug">
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        @click="toggleAutoSlug"
+                    >
                         Auto: {{ autoSlug ? 'On' : 'Off' }}
                     </Button>
                 </div>
@@ -106,7 +109,11 @@ const submit = () => {
 
             <div class="grid gap-2">
                 <Label for="tag-status">Status</Label>
-                <select id="tag-status" v-model="form.status" class="h-10 rounded-md border px-3 text-sm">
+                <select
+                    id="tag-status"
+                    v-model="form.status"
+                    class="h-10 rounded-md border px-3 text-sm"
+                >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
@@ -118,7 +125,10 @@ const submit = () => {
             <Button type="submit" :disabled="form.processing">
                 {{ submitLabel }}
             </Button>
-            <Link :href="cancelHref" class="text-sm text-muted-foreground underline">
+            <Link
+                :href="cancelHref"
+                class="text-sm text-muted-foreground underline"
+            >
                 Cancel
             </Link>
         </div>

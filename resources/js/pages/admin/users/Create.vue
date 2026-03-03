@@ -31,10 +31,19 @@ const breadcrumbs = [
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-semibold">Create Admin User</h1>
-                <Link href="/admin/users" class="text-sm text-muted-foreground underline">Back</Link>
+                <Link
+                    href="/admin/users"
+                    class="text-sm text-muted-foreground underline"
+                    >Back</Link
+                >
             </div>
 
-            <Form action="/admin/users" method="post" class="space-y-6" #default="{ errors, processing }">
+            <Form
+                action="/admin/users"
+                method="post"
+                class="space-y-6"
+                #default="{ errors, processing }"
+            >
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
@@ -50,13 +59,25 @@ const breadcrumbs = [
 
                     <div class="grid gap-2">
                         <Label for="password">Password</Label>
-                        <Input id="password" name="password" type="password" required />
+                        <Input
+                            id="password"
+                            name="password"
+                            type="password"
+                            required
+                        />
                         <InputError :message="errors.password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation">Confirm password</Label>
-                        <Input id="password_confirmation" name="password_confirmation" type="password" required />
+                        <Label for="password_confirmation"
+                            >Confirm password</Label
+                        >
+                        <Input
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            type="password"
+                            required
+                        />
                         <InputError :message="errors.password_confirmation" />
                     </div>
                 </div>
@@ -65,8 +86,16 @@ const breadcrumbs = [
                     <div class="rounded-lg border p-4">
                         <h2 class="mb-3 text-sm font-medium">Roles</h2>
                         <div class="space-y-2">
-                            <label v-for="role in roles" :key="role" class="flex items-center gap-2 text-sm">
-                                <Checkbox :id="`role-${role}`" name="roles[]" :value="role" />
+                            <label
+                                v-for="role in roles"
+                                :key="role"
+                                class="flex items-center gap-2 text-sm"
+                            >
+                                <Checkbox
+                                    :id="`role-${role}`"
+                                    name="roles[]"
+                                    :value="role"
+                                />
                                 <span>{{ role }}</span>
                             </label>
                         </div>
@@ -74,10 +103,20 @@ const breadcrumbs = [
                     </div>
 
                     <div class="rounded-lg border p-4">
-                        <h2 class="mb-3 text-sm font-medium">Direct Permissions</h2>
+                        <h2 class="mb-3 text-sm font-medium">
+                            Direct Permissions
+                        </h2>
                         <div class="space-y-2">
-                            <label v-for="permission in permissions" :key="permission" class="flex items-center gap-2 text-sm">
-                                <Checkbox :id="`permission-${permission}`" name="permissions[]" :value="permission" />
+                            <label
+                                v-for="permission in permissions"
+                                :key="permission"
+                                class="flex items-center gap-2 text-sm"
+                            >
+                                <Checkbox
+                                    :id="`permission-${permission}`"
+                                    name="permissions[]"
+                                    :value="permission"
+                                />
                                 <span>{{ permission }}</span>
                             </label>
                         </div>
@@ -85,7 +124,9 @@ const breadcrumbs = [
                     </div>
                 </div>
 
-                <Button type="submit" :disabled="processing">Create Admin</Button>
+                <Button type="submit" :disabled="processing"
+                    >Create Admin</Button
+                >
             </Form>
         </div>
     </AdminLayout>

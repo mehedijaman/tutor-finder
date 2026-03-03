@@ -1,18 +1,8 @@
 <script setup lang="ts">
-import {
-    computed,
-    nextTick,
-    onBeforeUnmount,
-    onMounted,
-    ref,
-    watch,
-} from 'vue';
-import { Editor, EditorContent } from '@tiptap/vue-3';
-import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Highlight from '@tiptap/extension-highlight';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
-import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Table from '@tiptap/extension-table';
@@ -21,6 +11,8 @@ import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
+import StarterKit from '@tiptap/starter-kit';
+import { Editor, EditorContent } from '@tiptap/vue-3';
 import {
     AlignCenter,
     AlignJustify,
@@ -58,6 +50,14 @@ import {
     Undo2,
     Unlink,
 } from 'lucide-vue-next';
+import {
+    computed,
+    nextTick,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch,
+} from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -313,9 +313,10 @@ async function uploadSingleImage(
             body: formData,
         });
 
-        const payload = (await response.json().catch(() => null)) as
-            | { url?: string; message?: string }
-            | null;
+        const payload = (await response.json().catch(() => null)) as {
+            url?: string;
+            message?: string;
+        } | null;
 
         if (!response.ok) {
             throw new Error(payload?.message ?? 'Image upload failed.');
@@ -383,9 +384,9 @@ async function initializeEditor(): Promise<void> {
                     return false;
                 }
 
-                const files = Array.from(event.dataTransfer?.files ?? []).filter(
-                    (file) => file.type.startsWith('image/'),
-                );
+                const files = Array.from(
+                    event.dataTransfer?.files ?? [],
+                ).filter((file) => file.type.startsWith('image/'));
 
                 if (files.length === 0) {
                     return false;
@@ -398,14 +399,17 @@ async function initializeEditor(): Promise<void> {
                     top: event.clientY,
                 });
 
-                void uploadAndInsertImages(files, resolvedPosition?.pos ?? null);
+                void uploadAndInsertImages(
+                    files,
+                    resolvedPosition?.pos ?? null,
+                );
 
                 return true;
             },
             handlePaste: (_view, event) => {
-                const files = Array.from(event.clipboardData?.files ?? []).filter(
-                    (file) => file.type.startsWith('image/'),
-                );
+                const files = Array.from(
+                    event.clipboardData?.files ?? [],
+                ).filter((file) => file.type.startsWith('image/'));
 
                 if (files.length === 0) {
                     return false;
@@ -458,22 +462,31 @@ async function buildExtensions(): Promise<unknown[]> {
         '@tiptap/extension-placeholder',
     );
 
-    if (placeholderExtension.loaded && placeholderExtension.extension !== null) {
+    if (
+        placeholderExtension.loaded &&
+        placeholderExtension.extension !== null
+    ) {
         extensions.push(
-            (placeholderExtension.extension as ConfigurableExtension).configure({
-                placeholder: props.placeholder,
-            }),
+            (placeholderExtension.extension as ConfigurableExtension).configure(
+                {
+                    placeholder: props.placeholder,
+                },
+            ),
         );
     }
 
-    const taskListExtension = await loadOptionalExtension('@tiptap/extension-task-list');
-    const taskItemExtension = await loadOptionalExtension('@tiptap/extension-task-item');
+    const taskListExtension = await loadOptionalExtension(
+        '@tiptap/extension-task-list',
+    );
+    const taskItemExtension = await loadOptionalExtension(
+        '@tiptap/extension-task-item',
+    );
 
     if (
-        taskListExtension.loaded
-        && taskItemExtension.loaded
-        && taskListExtension.extension !== null
-        && taskItemExtension.extension !== null
+        taskListExtension.loaded &&
+        taskItemExtension.loaded &&
+        taskListExtension.extension !== null &&
+        taskItemExtension.extension !== null
     ) {
         taskListEnabled.value = true;
         extensions.push(taskListExtension.extension);
@@ -497,8 +510,8 @@ async function buildExtensions(): Promise<unknown[]> {
     );
 
     if (
-        characterCountExtension.loaded
-        && characterCountExtension.extension !== null
+        characterCountExtension.loaded &&
+        characterCountExtension.extension !== null
     ) {
         characterCountEnabled.value = true;
         extensions.push(characterCountExtension.extension);
@@ -539,8 +552,25 @@ async function loadOptionalExtension(
                             size="icon-sm"
                             variant="outline"
                             :class="{ [buttonActiveClass]: isActive('bold') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleBold().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleBold().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleBold()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleBold()
+                                        .run(),
+                                )
+                            "
                         >
                             <Bold class="size-4" />
                             <span class="sr-only">Bold</span>
@@ -556,8 +586,25 @@ async function loadOptionalExtension(
                             size="icon-sm"
                             variant="outline"
                             :class="{ [buttonActiveClass]: isActive('italic') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleItalic().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleItalic().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleItalic()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleItalic()
+                                        .run(),
+                                )
+                            "
                         >
                             <Italic class="size-4" />
                             <span class="sr-only">Italic</span>
@@ -572,9 +619,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('underline') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleUnderline().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleUnderline().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('underline'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleUnderline()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleUnderline()
+                                        .run(),
+                                )
+                            "
                         >
                             <UnderlineIcon class="size-4" />
                             <span class="sr-only">Underline</span>
@@ -590,8 +656,25 @@ async function loadOptionalExtension(
                             size="icon-sm"
                             variant="outline"
                             :class="{ [buttonActiveClass]: isActive('strike') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleStrike().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleStrike().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleStrike()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleStrike()
+                                        .run(),
+                                )
+                            "
                         >
                             <Strikethrough class="size-4" />
                             <span class="sr-only">Strike</span>
@@ -607,8 +690,25 @@ async function loadOptionalExtension(
                             size="icon-sm"
                             variant="outline"
                             :class="{ [buttonActiveClass]: isActive('code') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleCode().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleCode().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleCode()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleCode()
+                                        .run(),
+                                )
+                            "
                         >
                             <Code2 class="size-4" />
                             <span class="sr-only">Inline Code</span>
@@ -623,9 +723,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('highlight') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleHighlight().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleHighlight().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('highlight'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleHighlight()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleHighlight()
+                                        .run(),
+                                )
+                            "
                         >
                             <Highlighter class="size-4" />
                             <span class="sr-only">Highlight</span>
@@ -640,9 +759,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('subscript') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleSubscript().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleSubscript().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('subscript'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleSubscript()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleSubscript()
+                                        .run(),
+                                )
+                            "
                         >
                             <SubscriptIcon class="size-4" />
                             <span class="sr-only">Subscript</span>
@@ -657,9 +795,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('superscript') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleSuperscript().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleSuperscript().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('superscript'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleSuperscript()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleSuperscript()
+                                        .run(),
+                                )
+                            "
                         >
                             <SuperscriptIcon class="size-4" />
                             <span class="sr-only">Superscript</span>
@@ -676,9 +833,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('paragraph') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().setParagraph().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().setParagraph().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('paragraph'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .setParagraph()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setParagraph()
+                                        .run(),
+                                )
+                            "
                         >
                             <Pilcrow class="size-4" />
                             <span class="sr-only">Paragraph</span>
@@ -696,10 +872,11 @@ async function loadOptionalExtension(
                                     size="icon-sm"
                                     variant="outline"
                                     :class="{
-                                        [buttonActiveClass]: isActive('heading', { level: 1 })
-                                            || isActive('heading', { level: 2 })
-                                            || isActive('heading', { level: 3 })
-                                            || isActive('heading', { level: 4 }),
+                                        [buttonActiveClass]:
+                                            isActive('heading', { level: 1 }) ||
+                                            isActive('heading', { level: 2 }) ||
+                                            isActive('heading', { level: 3 }) ||
+                                            isActive('heading', { level: 4 }),
                                     }"
                                 >
                                     <Heading class="size-4" />
@@ -710,19 +887,59 @@ async function loadOptionalExtension(
                         <TooltipContent>Headings</TooltipContent>
                     </Tooltip>
                     <DropdownMenuContent align="start" class="w-40">
-                        <DropdownMenuItem @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().setHeading({ level: 1 }).run())">
+                        <DropdownMenuItem
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setHeading({ level: 1 })
+                                        .run(),
+                                )
+                            "
+                        >
                             <Heading1 class="mr-2 size-4" />
                             H1
                         </DropdownMenuItem>
-                        <DropdownMenuItem @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().setHeading({ level: 2 }).run())">
+                        <DropdownMenuItem
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setHeading({ level: 2 })
+                                        .run(),
+                                )
+                            "
+                        >
                             <Heading2 class="mr-2 size-4" />
                             H2
                         </DropdownMenuItem>
-                        <DropdownMenuItem @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().setHeading({ level: 3 }).run())">
+                        <DropdownMenuItem
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setHeading({ level: 3 })
+                                        .run(),
+                                )
+                            "
+                        >
                             <Heading3 class="mr-2 size-4" />
                             H3
                         </DropdownMenuItem>
-                        <DropdownMenuItem @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().setHeading({ level: 4 }).run())">
+                        <DropdownMenuItem
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setHeading({ level: 4 })
+                                        .run(),
+                                )
+                            "
+                        >
                             <Heading4 class="mr-2 size-4" />
                             H4
                         </DropdownMenuItem>
@@ -735,9 +952,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('blockquote') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleBlockquote().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleBlockquote().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('blockquote'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleBlockquote()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleBlockquote()
+                                        .run(),
+                                )
+                            "
                         >
                             <Quote class="size-4" />
                             <span class="sr-only">Blockquote</span>
@@ -752,9 +988,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('codeBlock') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleCodeBlock().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleCodeBlock().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('codeBlock'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleCodeBlock()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleCodeBlock()
+                                        .run(),
+                                )
+                            "
                         >
                             <SquareCode class="size-4" />
                             <span class="sr-only">Code Block</span>
@@ -769,8 +1024,25 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().setHardBreak().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().setHardBreak().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .setHardBreak()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setHardBreak()
+                                        .run(),
+                                )
+                            "
                         >
                             <CornerDownLeft class="size-4" />
                             <span class="sr-only">Hard Break</span>
@@ -785,8 +1057,25 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().setHorizontalRule().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().setHorizontalRule().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .setHorizontalRule()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setHorizontalRule()
+                                        .run(),
+                                )
+                            "
                         >
                             <Minus class="size-4" />
                             <span class="sr-only">Horizontal Rule</span>
@@ -803,9 +1092,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('bulletList') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleBulletList().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleBulletList().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('bulletList'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleBulletList()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleBulletList()
+                                        .run(),
+                                )
+                            "
                         >
                             <List class="size-4" />
                             <span class="sr-only">Bullet List</span>
@@ -820,9 +1128,28 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('orderedList') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleOrderedList().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleOrderedList().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('orderedList'),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleOrderedList()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleOrderedList()
+                                        .run(),
+                                )
+                            "
                         >
                             <ListOrdered class="size-4" />
                             <span class="sr-only">Ordered List</span>
@@ -837,16 +1164,40 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive('taskList') }"
-                            :disabled="!taskListEnabled || !canRun((currentEditor) => currentEditor.can().chain().focus().toggleTaskList().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().toggleTaskList().run())"
+                            :class="{
+                                [buttonActiveClass]: isActive('taskList'),
+                            }"
+                            :disabled="
+                                !taskListEnabled ||
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleTaskList()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleTaskList()
+                                        .run(),
+                                )
+                            "
                         >
                             <ListTodo class="size-4" />
                             <span class="sr-only">Task List</span>
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                        {{ taskListEnabled ? 'Task List' : 'Task List (extension unavailable)' }}
+                        {{
+                            taskListEnabled
+                                ? 'Task List'
+                                : 'Task List (extension unavailable)'
+                        }}
                     </TooltipContent>
                 </Tooltip>
 
@@ -858,9 +1209,30 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive({ textAlign: 'left' }) }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().setTextAlign('left').run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().setTextAlign('left').run())"
+                            :class="{
+                                [buttonActiveClass]: isActive({
+                                    textAlign: 'left',
+                                }),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('left')
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('left')
+                                        .run(),
+                                )
+                            "
                         >
                             <AlignLeft class="size-4" />
                             <span class="sr-only">Align Left</span>
@@ -875,9 +1247,30 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive({ textAlign: 'center' }) }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().setTextAlign('center').run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().setTextAlign('center').run())"
+                            :class="{
+                                [buttonActiveClass]: isActive({
+                                    textAlign: 'center',
+                                }),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('center')
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('center')
+                                        .run(),
+                                )
+                            "
                         >
                             <AlignCenter class="size-4" />
                             <span class="sr-only">Align Center</span>
@@ -892,9 +1285,30 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive({ textAlign: 'right' }) }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().setTextAlign('right').run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().setTextAlign('right').run())"
+                            :class="{
+                                [buttonActiveClass]: isActive({
+                                    textAlign: 'right',
+                                }),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('right')
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('right')
+                                        .run(),
+                                )
+                            "
                         >
                             <AlignRight class="size-4" />
                             <span class="sr-only">Align Right</span>
@@ -909,9 +1323,30 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :class="{ [buttonActiveClass]: isActive({ textAlign: 'justify' }) }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().setTextAlign('justify').run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().setTextAlign('justify').run())"
+                            :class="{
+                                [buttonActiveClass]: isActive({
+                                    textAlign: 'justify',
+                                }),
+                            }"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('justify')
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign('justify')
+                                        .run(),
+                                )
+                            "
                         >
                             <AlignJustify class="size-4" />
                             <span class="sr-only">Justify</span>
@@ -929,7 +1364,16 @@ async function loadOptionalExtension(
                             size="icon-sm"
                             variant="outline"
                             :class="{ [buttonActiveClass]: isActive('link') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().extendMarkRange('link').run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .extendMarkRange('link')
+                                        .run(),
+                                )
+                            "
                             @click="openLinkDialog"
                         >
                             <Link2 class="size-4" />
@@ -945,7 +1389,16 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().unsetLink().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .unsetLink()
+                                        .run(),
+                                )
+                            "
                             @click="removeLink"
                         >
                             <Unlink class="size-4" />
@@ -964,7 +1417,10 @@ async function loadOptionalExtension(
                             :disabled="isUploadingImage"
                             @click="triggerImagePicker"
                         >
-                            <Loader2 v-if="isUploadingImage" class="size-4 animate-spin" />
+                            <Loader2
+                                v-if="isUploadingImage"
+                                class="size-4 animate-spin"
+                            />
                             <ImagePlus v-else class="size-4" />
                             <span class="sr-only">Insert Image</span>
                         </Button>
@@ -981,8 +1437,33 @@ async function loadOptionalExtension(
                             size="icon-sm"
                             variant="outline"
                             :class="{ [buttonActiveClass]: isActive('table') }"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .insertTable({
+                                            rows: 3,
+                                            cols: 3,
+                                            withHeaderRow: true,
+                                        })
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .insertTable({
+                                            rows: 3,
+                                            cols: 3,
+                                            withHeaderRow: true,
+                                        })
+                                        .run(),
+                                )
+                            "
                         >
                             <Table2 class="size-4" />
                             <span class="sr-only">Insert Table</span>
@@ -1011,52 +1492,188 @@ async function loadOptionalExtension(
 
                     <DropdownMenuContent align="start" class="w-56">
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().addRowBefore().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().addRowBefore().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .addRowBefore()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .addRowBefore()
+                                        .run(),
+                                )
+                            "
                         >
                             Add Row Above
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().addRowAfter().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().addRowAfter().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .addRowAfter()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .addRowAfter()
+                                        .run(),
+                                )
+                            "
                         >
                             Add Row Below
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().addColumnBefore().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().addColumnBefore().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .addColumnBefore()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .addColumnBefore()
+                                        .run(),
+                                )
+                            "
                         >
                             Add Column Left
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().addColumnAfter().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().addColumnAfter().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .addColumnAfter()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .addColumnAfter()
+                                        .run(),
+                                )
+                            "
                         >
                             Add Column Right
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().deleteRow().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().deleteRow().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .deleteRow()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .deleteRow()
+                                        .run(),
+                                )
+                            "
                         >
                             Delete Row
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().deleteColumn().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().deleteColumn().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .deleteColumn()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .deleteColumn()
+                                        .run(),
+                                )
+                            "
                         >
                             Delete Column
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().toggleHeaderRow().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().toggleHeaderRow().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .toggleHeaderRow()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .toggleHeaderRow()
+                                        .run(),
+                                )
+                            "
                         >
                             Toggle Header Row
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().deleteTable().run())"
-                            @select.prevent="runCommand((currentEditor) => currentEditor.chain().focus().deleteTable().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .deleteTable()
+                                        .run(),
+                                )
+                            "
+                            @select.prevent="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .deleteTable()
+                                        .run(),
+                                )
+                            "
                             class="text-destructive"
                         >
                             <Trash2 class="mr-2 size-4" />
@@ -1073,8 +1690,27 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().unsetAllMarks().clearNodes().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().unsetAllMarks().clearNodes().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .unsetAllMarks()
+                                        .clearNodes()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor
+                                        .chain()
+                                        .focus()
+                                        .unsetAllMarks()
+                                        .clearNodes()
+                                        .run(),
+                                )
+                            "
                         >
                             <Eraser class="size-4" />
                             <span class="sr-only">Clear Formatting</span>
@@ -1089,8 +1725,21 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().undo().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().undo().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .undo()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor.chain().focus().undo().run(),
+                                )
+                            "
                         >
                             <Undo2 class="size-4" />
                             <span class="sr-only">Undo</span>
@@ -1105,8 +1754,21 @@ async function loadOptionalExtension(
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            :disabled="!canRun((currentEditor) => currentEditor.can().chain().focus().redo().run())"
-                            @click="runCommand((currentEditor) => currentEditor.chain().focus().redo().run())"
+                            :disabled="
+                                !canRun((currentEditor) =>
+                                    currentEditor
+                                        .can()
+                                        .chain()
+                                        .focus()
+                                        .redo()
+                                        .run(),
+                                )
+                            "
+                            @click="
+                                runCommand((currentEditor) =>
+                                    currentEditor.chain().focus().redo().run(),
+                                )
+                            "
                         >
                             <Redo2 class="size-4" />
                             <span class="sr-only">Redo</span>
@@ -1121,22 +1783,25 @@ async function loadOptionalExtension(
                     accept="image/*"
                     class="hidden"
                     @change="handleImageInput"
-                >
+                />
             </div>
         </TooltipProvider>
 
         <EditorContent :editor="editor" />
 
-        <div class="flex flex-wrap items-center justify-between gap-2 border-t bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
-            <p>
-                Tip: paste or drag images directly into the editor to upload.
-            </p>
+        <div
+            class="flex flex-wrap items-center justify-between gap-2 border-t bg-muted/20 px-3 py-2 text-xs text-muted-foreground"
+        >
+            <p>Tip: paste or drag images directly into the editor to upload.</p>
             <p v-if="characterCount !== null">
                 Characters: {{ characterCount }}
             </p>
         </div>
 
-        <div v-if="uploadError" class="border-t border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+        <div
+            v-if="uploadError"
+            class="border-t border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive"
+        >
             {{ uploadError }}
         </div>
     </div>
@@ -1163,7 +1828,11 @@ async function loadOptionalExtension(
             </div>
 
             <DialogFooter class="gap-2">
-                <Button type="button" variant="outline" @click="linkDialogOpen = false">
+                <Button
+                    type="button"
+                    variant="outline"
+                    @click="linkDialogOpen = false"
+                >
                     Cancel
                 </Button>
                 <Button
@@ -1176,9 +1845,7 @@ async function loadOptionalExtension(
                 >
                     Remove Link
                 </Button>
-                <Button type="button" @click="saveLink">
-                    Save Link
-                </Button>
+                <Button type="button" @click="saveLink"> Save Link </Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

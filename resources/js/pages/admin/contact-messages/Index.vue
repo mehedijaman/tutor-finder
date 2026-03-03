@@ -31,7 +31,9 @@ const props = defineProps({
     },
 });
 
-const breadcrumbs = [{ title: 'Contact Messages', href: '/admin/contact-messages' }];
+const breadcrumbs = [
+    { title: 'Contact Messages', href: '/admin/contact-messages' },
+];
 const baseUrl = '/admin/contact-messages';
 
 const columns = [
@@ -197,7 +199,8 @@ function runConfirmedAction() {
                 <div class="space-y-1">
                     <h1 class="text-2xl font-semibold">Contact Messages</h1>
                     <p class="text-sm text-muted-foreground">
-                        Open: {{ counts.open ?? 0 }} | Closed: {{ counts.closed ?? 0 }} | Total: {{ counts.all ?? 0 }}
+                        Open: {{ counts.open ?? 0 }} | Closed:
+                        {{ counts.closed ?? 0 }} | Total: {{ counts.all ?? 0 }}
                     </p>
                 </div>
             </div>
@@ -209,7 +212,9 @@ function runConfirmedAction() {
                 {{ $page.props.flash.status }}
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-2">
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-2"
+            >
                 <div class="grid gap-2">
                     <Label for="contact-search">Search</Label>
                     <Input
@@ -244,7 +249,11 @@ function runConfirmedAction() {
                 @sort="handleSort"
             >
                 <template #cell-status="{ row }">
-                    <Badge :variant="row.status === 'open' ? 'default' : 'secondary'">
+                    <Badge
+                        :variant="
+                            row.status === 'open' ? 'default' : 'secondary'
+                        "
+                    >
                         {{ row.status }}
                     </Badge>
                 </template>

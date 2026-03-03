@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\GuardianManagementController;
+use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Tuition\JobController as TuitionJobController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Admin\Tuition\Taxonomies\SchoolClassController as Taxon
 use App\Http\Controllers\Admin\Tuition\Taxonomies\SubjectController as TaxonomySubjectController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\TuitionTypeController as TaxonomyTuitionTypeController;
 use App\Http\Controllers\Admin\TutorManagementController;
+use App\Http\Controllers\Admin\VerificationRequestController;
 use App\Http\Controllers\ImpersonationController;
 use Illuminate\Support\Facades\Route;
 
@@ -590,6 +592,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/tutors', [TutorManagementController::class, 'index'])
             ->middleware('permission:tutor-view')
             ->name('tutors.index');
+        Route::get('/tutors/create', [TutorManagementController::class, 'create'])
+            ->middleware('permission:tutor-create')
+            ->name('tutors.create');
+        Route::post('/tutors', [TutorManagementController::class, 'store'])
+            ->middleware('permission:tutor-create')
+            ->name('tutors.store');
         Route::delete('/tutors/recycle-bin/empty', [TutorManagementController::class, 'emptyRecycleBin'])
             ->middleware('permission:tutor-delete')
             ->name('tutors.empty-recycle-bin');
@@ -626,6 +634,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/guardians', [GuardianManagementController::class, 'index'])
             ->middleware('permission:guardian-view')
             ->name('guardians.index');
+        Route::get('/guardians/create', [GuardianManagementController::class, 'create'])
+            ->middleware('permission:guardian-create')
+            ->name('guardians.create');
+        Route::post('/guardians', [GuardianManagementController::class, 'store'])
+            ->middleware('permission:guardian-create')
+            ->name('guardians.store');
         Route::delete('/guardians/recycle-bin/empty', [GuardianManagementController::class, 'emptyRecycleBin'])
             ->middleware('permission:guardian-delete')
             ->name('guardians.empty-recycle-bin');
@@ -658,6 +672,34 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->middleware('permission:guardian-delete')
             ->withTrashed()
             ->name('guardians.force-delete');
+
+        Route::get('/verifications', [VerificationRequestController::class, 'index'])
+            ->middleware('permission:verification-request-view')
+            ->name('verifications.index');
+        Route::get('/profile-verification/pending', [VerificationRequestController::class, 'pendingProfiles'])
+            ->middleware('permission:verification-request-view')
+            ->name('profile-verification.pending');
+        Route::get('/profile-verification/unverified', [VerificationRequestController::class, 'unverifiedProfiles'])
+            ->middleware('permission:verification-request-view')
+            ->name('profile-verification.unverified');
+        Route::get('/profile-verification/verified', [VerificationRequestController::class, 'verifiedProfiles'])
+            ->middleware('permission:verification-request-view')
+            ->name('profile-verification.verified');
+        Route::get('/verifications/{verificationRequest}', [VerificationRequestController::class, 'show'])
+            ->middleware('permission:verification-request-view')
+            ->name('verifications.show');
+        Route::patch('/verifications/{verificationRequest}/approve', [VerificationRequestController::class, 'approve'])
+            ->middleware('permission:verification-request-update')
+            ->name('verifications.approve');
+        Route::patch('/verifications/{verificationRequest}/reject', [VerificationRequestController::class, 'reject'])
+            ->middleware('permission:verification-request-update')
+            ->name('verifications.reject');
+        Route::post('/verifications/{verificationRequest}/invoice', [VerificationRequestController::class, 'createInvoice'])
+            ->middleware('permission:invoice-create')
+            ->name('verifications.invoice');
+        Route::patch('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])
+            ->middleware('permission:invoice-update')
+            ->name('invoices.mark-paid');
 
     });
 });

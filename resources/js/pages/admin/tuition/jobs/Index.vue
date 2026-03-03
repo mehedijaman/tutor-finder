@@ -41,7 +41,9 @@ const columns = [
 
 const search = ref(props.filters.q ?? '');
 const statusFilter = ref(props.filters.status || 'all');
-const guardianFilter = ref(props.filters.guardian_id ? String(props.filters.guardian_id) : 'all');
+const guardianFilter = ref(
+    props.filters.guardian_id ? String(props.filters.guardian_id) : 'all',
+);
 const confirmOpen = ref(false);
 const confirmTitle = ref('Confirm Action');
 const confirmDescription = ref('');
@@ -50,29 +52,38 @@ const confirmDestructive = ref(false);
 const pendingAction = ref(null);
 let searchDebounceTimer = null;
 
-watch(() => props.filters.q, (value) => {
-    const normalized = value ?? '';
+watch(
+    () => props.filters.q,
+    (value) => {
+        const normalized = value ?? '';
 
-    if (search.value !== normalized) {
-        search.value = normalized;
-    }
-});
+        if (search.value !== normalized) {
+            search.value = normalized;
+        }
+    },
+);
 
-watch(() => props.filters.status, (value) => {
-    const normalized = value || 'all';
+watch(
+    () => props.filters.status,
+    (value) => {
+        const normalized = value || 'all';
 
-    if (statusFilter.value !== normalized) {
-        statusFilter.value = normalized;
-    }
-});
+        if (statusFilter.value !== normalized) {
+            statusFilter.value = normalized;
+        }
+    },
+);
 
-watch(() => props.filters.guardian_id, (value) => {
-    const normalized = value ? String(value) : 'all';
+watch(
+    () => props.filters.guardian_id,
+    (value) => {
+        const normalized = value ? String(value) : 'all';
 
-    if (guardianFilter.value !== normalized) {
-        guardianFilter.value = normalized;
-    }
-});
+        if (guardianFilter.value !== normalized) {
+            guardianFilter.value = normalized;
+        }
+    },
+);
 
 watch(search, (value) => {
     if (searchDebounceTimer) {
@@ -105,7 +116,8 @@ function applyFilters(overrides = {}) {
             trash: props.filters.trash ? 1 : 0,
             q: search.value,
             status: statusFilter.value === 'all' ? '' : statusFilter.value,
-            guardian_id: guardianFilter.value === 'all' ? '' : guardianFilter.value,
+            guardian_id:
+                guardianFilter.value === 'all' ? '' : guardianFilter.value,
             ...overrides,
         },
         {
@@ -120,7 +132,11 @@ function actionItemsForRow(row) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
@@ -190,7 +206,8 @@ function openConfirm(action, row = null) {
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Job';
-        confirmDescription.value = 'This will restore the job from recycle bin.';
+        confirmDescription.value =
+            'This will restore the job from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -203,7 +220,8 @@ function openConfirm(action, row = null) {
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently delete all trashed jobs.';
+        confirmDescription.value =
+            'This will permanently delete all trashed jobs.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
@@ -264,29 +282,52 @@ function runConfirmedAction() {
         <div class="space-y-6 p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold">{{ filters.trash ? 'Job Recycle Bin' : 'Tuition Jobs' }}</h1>
+                    <h1 class="text-2xl font-semibold">
+                        {{ filters.trash ? 'Job Recycle Bin' : 'Tuition Jobs' }}
+                    </h1>
                     <p class="text-sm text-muted-foreground">
-                        Active: {{ counts.active ?? 0 }} | Pending: {{ counts.pending ?? 0 }} | Live: {{ counts.live ?? 0 }} | Trash: {{ counts.trash ?? 0 }}
+                        Active: {{ counts.active ?? 0 }} | Pending:
+                        {{ counts.pending ?? 0 }} | Live:
+                        {{ counts.live ?? 0 }} | Trash: {{ counts.trash ?? 0 }}
                     </p>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <Link :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`" class="rounded-md border px-4 py-2 text-sm">
+                    <Link
+                        :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
+                        class="rounded-md border px-4 py-2 text-sm"
+                    >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
 
-                    <Button v-if="filters.trash" type="button" variant="destructive" @click="openConfirm('empty-recycle-bin')">
+                    <Button
+                        v-if="filters.trash"
+                        type="button"
+                        variant="destructive"
+                        @click="openConfirm('empty-recycle-bin')"
+                    >
                         Empty Recycle Bin
                     </Button>
 
-                    <Link v-if="!filters.trash" href="/admin/tuition/jobs/create" class="rounded-md bg-black px-4 py-2 text-sm text-white">
+                    <Link
+                        v-if="!filters.trash"
+                        href="/admin/tuition/jobs/create"
+                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                    >
                         Create Job
                     </Link>
                 </div>
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Input v-model="search" type="text" placeholder="Search jobs" class="sm:col-span-2" />
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-4"
+            >
+                <Input
+                    v-model="search"
+                    type="text"
+                    placeholder="Search jobs"
+                    class="sm:col-span-2"
+                />
 
                 <Select v-model="statusFilter">
                     <SelectTrigger>
@@ -294,7 +335,11 @@ function runConfirmedAction() {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem v-for="status in statusOptions" :key="status.value" :value="status.value">
+                        <SelectItem
+                            v-for="status in statusOptions"
+                            :key="status.value"
+                            :value="status.value"
+                        >
                             {{ status.label }}
                         </SelectItem>
                     </SelectContent>
@@ -306,23 +351,43 @@ function runConfirmedAction() {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All guardians</SelectItem>
-                        <SelectItem v-for="guardian in guardianOptions" :key="guardian.id" :value="String(guardian.id)">
+                        <SelectItem
+                            v-for="guardian in guardianOptions"
+                            :key="guardian.id"
+                            :value="String(guardian.id)"
+                        >
                             {{ guardian.name }}
                         </SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No jobs found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No jobs found."
+            >
                 <template #cell-status="{ row }">
-                    <Badge :variant="row.status === 'live' ? 'default' : 'secondary'">{{ row.status }}</Badge>
+                    <Badge
+                        :variant="
+                            row.status === 'live' ? 'default' : 'secondary'
+                        "
+                        >{{ row.status }}</Badge
+                    >
                 </template>
 
-                <template #cell-published_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
-                <template #cell-expires_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
+                <template #cell-published_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
+                <template #cell-expires_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
 
                 <template #cell-actions="{ row }">
-                    <RowActionsDropdown :actions="actionItemsForRow(row)" @select="(action) => handleRowAction(action, row)" />
+                    <RowActionsDropdown
+                        :actions="actionItemsForRow(row)"
+                        @select="(action) => handleRowAction(action, row)"
+                    />
                 </template>
             </DataTable>
         </div>

@@ -31,7 +31,11 @@ const breadcrumbs = [
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between gap-3">
                 <h1 class="text-2xl font-semibold">Edit Tuition Job</h1>
-                <Link href="/admin/tuition/jobs" class="text-sm text-muted-foreground underline">Back</Link>
+                <Link
+                    href="/admin/tuition/jobs"
+                    class="text-sm text-muted-foreground underline"
+                    >Back</Link
+                >
             </div>
 
             <JobForm

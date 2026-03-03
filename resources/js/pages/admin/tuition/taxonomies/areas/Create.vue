@@ -21,7 +21,11 @@ const breadcrumbs = [
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between gap-3">
                 <h1 class="text-2xl font-semibold">Create Area</h1>
-                <Link href="/admin/tuition/taxonomies/areas" class="text-sm text-muted-foreground underline">Back</Link>
+                <Link
+                    href="/admin/tuition/taxonomies/areas"
+                    class="text-sm text-muted-foreground underline"
+                    >Back</Link
+                >
             </div>
 
             <AreaForm

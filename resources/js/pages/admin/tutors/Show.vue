@@ -42,20 +42,37 @@ function toggleStatus() {
 
             <div class="rounded-xl border bg-white p-4 text-sm">
                 <p><span class="font-medium">Name:</span> {{ tutor.name }}</p>
-                <p><span class="font-medium">Email:</span> {{ tutor.email || '—' }}</p>
-                <p><span class="font-medium">Phone:</span> {{ tutor.phone || '—' }}</p>
-                <p><span class="font-medium">Status:</span> {{ tutor.status }}</p>
-                <p><span class="font-medium">Phone verified:</span> {{ tutor.phone_verified_at || 'No' }}</p>
+                <p>
+                    <span class="font-medium">Email:</span>
+                    {{ tutor.email || '—' }}
+                </p>
+                <p>
+                    <span class="font-medium">Phone:</span>
+                    {{ tutor.phone || '—' }}
+                </p>
+                <p>
+                    <span class="font-medium">Status:</span> {{ tutor.status }}
+                </p>
+                <p>
+                    <span class="font-medium">Phone verified:</span>
+                    {{ tutor.phone_verified_at || 'No' }}
+                </p>
             </div>
 
             <Button type="button" @click="confirmOpen = true">
-                {{ tutor.status === 'active' ? 'Suspend Tutor' : 'Unsuspend Tutor' }}
+                {{
+                    tutor.status === 'active'
+                        ? 'Suspend Tutor'
+                        : 'Unsuspend Tutor'
+                }}
             </Button>
         </div>
 
         <ConfirmDialog
             v-model:open="confirmOpen"
-            :title="tutor.status === 'active' ? 'Suspend Tutor' : 'Unsuspend Tutor'"
+            :title="
+                tutor.status === 'active' ? 'Suspend Tutor' : 'Unsuspend Tutor'
+            "
             :description="
                 tutor.status === 'active'
                     ? 'Suspend user will prevent login and dashboard access.'

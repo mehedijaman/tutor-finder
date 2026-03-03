@@ -130,7 +130,9 @@ function formatProperties(value) {
                 </template>
 
                 <template #cell-properties="{ value }">
-                    <span class="inline-block max-w-xs truncate font-mono text-xs text-muted-foreground">
+                    <span
+                        class="inline-block max-w-xs truncate font-mono text-xs text-muted-foreground"
+                    >
                         {{ formatProperties(value) }}
                     </span>
                 </template>

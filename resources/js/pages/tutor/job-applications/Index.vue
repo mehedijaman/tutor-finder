@@ -20,7 +20,9 @@ const props = defineProps({
     statusOptions: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'My Applications', href: '/tutor/job-applications' }];
+const breadcrumbs = [
+    { title: 'My Applications', href: '/tutor/job-applications' },
+];
 const baseUrl = '/tutor/job-applications';
 
 const columns = [
@@ -129,10 +131,16 @@ function closeConfirm() {
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="text-2xl font-semibold">My Applications</h1>
-                    <p class="text-sm text-muted-foreground">Track job applications and latest guardian feedback.</p>
+                    <p class="text-sm text-muted-foreground">
+                        Track job applications and latest guardian feedback.
+                    </p>
                 </div>
 
-                <Link href="/jobs" class="text-sm text-muted-foreground underline">Browse Jobs</Link>
+                <Link
+                    href="/jobs"
+                    class="text-sm text-muted-foreground underline"
+                    >Browse Jobs</Link
+                >
             </div>
 
             <div
@@ -142,21 +150,31 @@ function closeConfirm() {
                 {{ $page.props.flash.status }}
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
                 <Select v-model="statusFilter">
                     <SelectTrigger>
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
+                        <SelectItem
+                            v-for="option in statusOptions"
+                            :key="option.value"
+                            :value="option.value"
+                        >
                             {{ option.label }}
                         </SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No job applications found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No job applications found."
+            >
                 <template #cell-job_title="{ row }">
                     <Link
                         v-if="row.job.slug"
@@ -166,7 +184,9 @@ function closeConfirm() {
                         {{ row.job.title }}
                     </Link>
                     <p v-else class="font-medium">{{ row.job.title }}</p>
-                    <p class="text-xs text-muted-foreground">{{ row.job.city_name || 'Unknown city' }}</p>
+                    <p class="text-xs text-muted-foreground">
+                        {{ row.job.city_name || 'Unknown city' }}
+                    </p>
                 </template>
 
                 <template #cell-job_status="{ row }">
@@ -181,11 +201,18 @@ function closeConfirm() {
                     {{ value ? `BDT ${value}` : '—' }}
                 </template>
 
-                <template #cell-created_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
-                <template #cell-reviewed_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
+                <template #cell-created_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
+                <template #cell-reviewed_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
 
                 <template #cell-actions="{ row }">
-                    <RowActionsDropdown :actions="actionItems(row)" @select="(action) => handleAction(action, row)" />
+                    <RowActionsDropdown
+                        :actions="actionItems(row)"
+                        @select="(action) => handleAction(action, row)"
+                    />
                 </template>
             </DataTable>
         </div>

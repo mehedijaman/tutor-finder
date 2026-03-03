@@ -25,9 +25,11 @@ defineProps<{
 
 const { isCurrentUrl } = useCurrentUrl();
 
-const hasChildren = (item: NavItem): boolean => (item.children?.length ?? 0) > 0;
+const hasChildren = (item: NavItem): boolean =>
+    (item.children?.length ?? 0) > 0;
 
-const isChildActive = (item: NavItem): boolean => item.children?.some((child) => isCurrentUrl(child.href)) ?? false;
+const isChildActive = (item: NavItem): boolean =>
+    item.children?.some((child) => isCurrentUrl(child.href)) ?? false;
 </script>
 
 <template>
@@ -55,7 +57,9 @@ const isChildActive = (item: NavItem): boolean => item.children?.some((child) =>
                                 >
                                     {{ item.badge }}
                                 </span>
-                                <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                <ChevronRight
+                                    class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                                />
                             </SidebarMenuButton>
                         </CollapsibleTrigger>
 
@@ -69,7 +73,10 @@ const isChildActive = (item: NavItem): boolean => item.children?.some((child) =>
                                         as-child
                                         :is-active="isCurrentUrl(child.href)"
                                     >
-                                        <a v-if="child.fullPage" :href="child.href">
+                                        <a
+                                            v-if="child.fullPage"
+                                            :href="child.href"
+                                        >
                                             <component :is="child.icon" />
                                             <span>{{ child.title }}</span>
                                             <span

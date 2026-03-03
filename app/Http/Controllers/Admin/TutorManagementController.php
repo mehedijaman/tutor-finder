@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ManagedUserPasswordResetRequest;
+use App\Http\Requests\Admin\ManagedUserStoreRequest;
 use App\Http\Requests\Admin\ManagedUserUpdateRequest;
 use App\Http\Requests\Admin\UserStatusUpdateRequest;
 use App\Models\User;
@@ -15,6 +16,21 @@ use Inertia\Response;
 
 class TutorManagementController extends Controller
 {
+    /**
+     * Map verification scope to concrete user statuses.
+     *
+     * @var array<string, list<string>>
+     */
+    private const VERIFICATION_SCOPES = [
+        'pending' => [
+            User::VERIFICATION_STATUS_PENDING,
+            User::VERIFICATION_STATUS_APPROVED,
+            User::VERIFICATION_STATUS_INVOICED,
+        ],
+        'unverified' => [User::VERIFICATION_STATUS_UNVERIFIED],
+        'verified' => [User::VERIFICATION_STATUS_VERIFIED],
+    ];
+
     /**
      * Display tutors with filters.
      */
@@ -35,13 +51,19 @@ class TutorManagementController extends Controller
         $filters = [
             'search' => trim($request->string('search')->toString()),
             'status' => $request->string('status')->toString(),
+            'verification' => strtolower(trim($request->string('verification')->toString())),
             'trash' => $request->boolean('trash'),
             'sort' => $sort,
             'direction' => $direction,
         ];
 
+        if (! in_array($filters['verification'], ['pending', 'unverified', 'verified'], true)) {
+            $filters['verification'] = 'all';
+        }
+
         $items = User::query()
             ->where('role', 'tutor')
+            ->with(['latestVerificationRequest.invoice'])
             ->when($filters['trash'], fn ($query) => $query->onlyTrashed())
             ->when($filters['search'] !== '', function ($query) use ($filters): void {
                 $search = $filters['search'];
@@ -54,23 +76,66 @@ class TutorManagementController extends Controller
                 });
             })
             ->when($filters['status'] !== '', fn ($query) => $query->where('status', $filters['status']))
+            ->when(
+                $filters['verification'] !== 'all',
+                fn ($query) => $query->whereIn('verification_status', self::VERIFICATION_SCOPES[$filters['verification']]),
+            )
             ->orderBy($sort, $direction)
             ->paginate(15)
             ->withQueryString()
-            ->through(fn (User $user) => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'status' => $user->status,
-                'created_at' => $user->created_at?->toDateTimeString(),
-                'deleted_at' => $user->deleted_at?->toDateTimeString(),
-            ]);
+            ->through(function (User $user): array {
+                $latestVerificationRequest = $user->latestVerificationRequest;
+
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'status' => $user->status,
+                    'verification_status' => $user->verification_status,
+                    'verification_request_id' => $latestVerificationRequest?->id,
+                    'verification_request_status' => $latestVerificationRequest?->status,
+                    'verification_submitted_at' => $latestVerificationRequest?->submitted_at?->toDateTimeString(),
+                    'verification_invoice_status' => $latestVerificationRequest?->invoice?->status,
+                    'created_at' => $user->created_at?->toDateTimeString(),
+                    'deleted_at' => $user->deleted_at?->toDateTimeString(),
+                ];
+            });
 
         return inertia('admin/tutors/Index', [
             'items' => $items,
             'filters' => $filters,
         ]);
+    }
+
+    /**
+     * Show the create tutor screen.
+     */
+    public function create(): Response
+    {
+        return inertia('admin/tutors/Create');
+    }
+
+    /**
+     * Store a new tutor account.
+     */
+    public function store(ManagedUserStoreRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        User::query()->create([
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'password' => Hash::make($validated['password']),
+            'role' => 'tutor',
+            'status' => $validated['status'],
+            'verification_status' => User::VERIFICATION_STATUS_UNVERIFIED,
+            'verification_type' => null,
+            'verified_at' => null,
+        ]);
+
+        return redirect()->route('admin.tutors.index')->with('status', 'Tutor created successfully.');
     }
 
     /**

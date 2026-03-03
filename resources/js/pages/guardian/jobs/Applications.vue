@@ -23,7 +23,10 @@ const props = defineProps({
 
 const breadcrumbs = [
     { title: 'My Jobs', href: '/guardian/jobs' },
-    { title: 'Applications', href: `/guardian/jobs/${props.job.id}/applications` },
+    {
+        title: 'Applications',
+        href: `/guardian/jobs/${props.job.id}/applications`,
+    },
 ];
 
 const baseUrl = `/guardian/jobs/${props.job.id}/applications`;
@@ -83,25 +86,28 @@ function actionItems(row) {
         {
             key: 'confirm',
             label: 'Confirm Engagement',
-            show: job.status === 'live'
-                && row.status === 'shortlisted'
-                && !row.is_selected
-                && !job.selected_application_id,
+            show:
+                job.status === 'live' &&
+                row.status === 'shortlisted' &&
+                !row.is_selected &&
+                !job.selected_application_id,
         },
         {
             key: 'shortlist',
             label: 'Shortlist',
-            show: job.status === 'live'
-                && !job.selected_application_id
-                && !['shortlisted', 'withdrawn'].includes(row.status),
+            show:
+                job.status === 'live' &&
+                !job.selected_application_id &&
+                !['shortlisted', 'withdrawn'].includes(row.status),
         },
         {
             key: 'reject',
             label: 'Reject',
             destructive: true,
-            show: job.status === 'live'
-                && !job.selected_application_id
-                && !['rejected', 'withdrawn'].includes(row.status),
+            show:
+                job.status === 'live' &&
+                !job.selected_application_id &&
+                !['rejected', 'withdrawn'].includes(row.status),
         },
     ];
 }
@@ -132,7 +138,10 @@ function confirmStatusUpdate() {
         router.patch(
             `${baseUrl}/${pendingRow.value.id}/status`,
             {
-                status: pendingAction.value === 'shortlist' ? 'shortlisted' : 'rejected',
+                status:
+                    pendingAction.value === 'shortlist'
+                        ? 'shortlisted'
+                        : 'rejected',
                 guardian_note: '',
             },
             {
@@ -155,7 +164,9 @@ function confirmTitle() {
         return 'Confirm tutor engagement';
     }
 
-    return pendingAction.value === 'shortlist' ? 'Shortlist tutor' : 'Reject tutor';
+    return pendingAction.value === 'shortlist'
+        ? 'Shortlist tutor'
+        : 'Reject tutor';
 }
 
 function confirmDescription() {
@@ -184,14 +195,25 @@ function confirmLabel() {
         <div class="space-y-6 p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-2xl font-semibold">Applications for {{ job.title }}</h1>
-                    <p class="text-sm text-muted-foreground">Review tutors and shortlist the best fit.</p>
-                    <p v-if="job.status === 'confirmed'" class="mt-1 text-xs font-medium text-emerald-700">
+                    <h1 class="text-2xl font-semibold">
+                        Applications for {{ job.title }}
+                    </h1>
+                    <p class="text-sm text-muted-foreground">
+                        Review tutors and shortlist the best fit.
+                    </p>
+                    <p
+                        v-if="job.status === 'confirmed'"
+                        class="mt-1 text-xs font-medium text-emerald-700"
+                    >
                         This job has already been confirmed.
                     </p>
                 </div>
 
-                <Link href="/guardian/jobs" class="text-sm text-muted-foreground underline">Back to Jobs</Link>
+                <Link
+                    href="/guardian/jobs"
+                    class="text-sm text-muted-foreground underline"
+                    >Back to Jobs</Link
+                >
             </div>
 
             <div
@@ -201,29 +223,51 @@ function confirmLabel() {
                 {{ $page.props.flash.status }}
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
                 <Select v-model="statusFilter">
                     <SelectTrigger>
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
+                        <SelectItem
+                            v-for="option in statusOptions"
+                            :key="option.value"
+                            :value="option.value"
+                        >
                             {{ option.label }}
                         </SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No applications received yet.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No applications received yet."
+            >
                 <template #cell-tutor_name="{ row }">
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
                             <p class="font-medium">{{ row.tutor.name }}</p>
-                            <Badge v-if="row.is_selected" variant="default">Selected</Badge>
+                            <Badge v-if="row.is_selected" variant="default"
+                                >Selected</Badge
+                            >
                         </div>
-                        <p v-if="row.tutor.email" class="text-xs text-muted-foreground">{{ row.tutor.email }}</p>
-                        <p v-if="row.tutor.phone" class="text-xs text-muted-foreground">{{ row.tutor.phone }}</p>
+                        <p
+                            v-if="row.tutor.email"
+                            class="text-xs text-muted-foreground"
+                        >
+                            {{ row.tutor.email }}
+                        </p>
+                        <p
+                            v-if="row.tutor.phone"
+                            class="text-xs text-muted-foreground"
+                        >
+                            {{ row.tutor.phone }}
+                        </p>
                     </div>
                 </template>
 
@@ -236,11 +280,19 @@ function confirmLabel() {
                 </template>
 
                 <template #cell-cover_letter="{ value }">
-                    <p class="line-clamp-2 max-w-xs text-sm text-muted-foreground">{{ value || '—' }}</p>
+                    <p
+                        class="line-clamp-2 max-w-xs text-sm text-muted-foreground"
+                    >
+                        {{ value || '—' }}
+                    </p>
                 </template>
 
-                <template #cell-created_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
-                <template #cell-reviewed_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
+                <template #cell-created_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
+                <template #cell-reviewed_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
 
                 <template #cell-actions="{ row }">
                     <RowActionsDropdown

@@ -25,8 +25,10 @@ class JobController extends Controller
         $tuitionTypeSlug = trim($request->string('tuition_type')->toString());
         $subjectId = (int) $request->integer('subject_id');
         $cityId = (int) $request->integer('city_id');
+        $tutorGender = trim($request->string('tutor_gender')->toString());
         $minSalary = $request->filled('min_salary') ? (float) $request->input('min_salary') : null;
         $maxSalary = $request->filled('max_salary') ? (float) $request->input('max_salary') : null;
+        $daysPerWeek = $request->filled('days_per_week') ? (int) $request->input('days_per_week') : null;
         $sort = trim($request->string('sort')->toString());
 
         if ($subjectId <= 0) {
@@ -70,6 +72,8 @@ class JobController extends Controller
                 $builder->whereHas('subjects', fn (Builder $subjectQuery) => $subjectQuery->whereKey($subjectId));
             })
             ->when($cityId > 0, fn (Builder $builder) => $builder->where('city_id', $cityId))
+            ->when($tutorGender !== '' && $tutorGender !== 'any', fn (Builder $builder) => $builder->where('tutor_gender', $tutorGender))
+            ->when($daysPerWeek !== null, fn (Builder $builder) => $builder->where('days_per_week', $daysPerWeek))
             ->when($minSalary !== null, fn (Builder $builder) => $builder->where('salary_amount', '>=', $minSalary))
             ->when($maxSalary !== null, fn (Builder $builder) => $builder->where('salary_amount', '<=', $maxSalary));
 
@@ -103,12 +107,15 @@ class JobController extends Controller
 
         return inertia('JobBoard', [
             'jobs' => $jobs,
+            'total' => $jobs->total(),
             'filters' => [
                 'q' => $query,
                 'category' => $categorySlug,
                 'tuition_type' => $tuitionTypeSlug,
                 'subject_id' => $subjectId > 0 ? $subjectId : null,
                 'city_id' => $cityId > 0 ? $cityId : null,
+                'tutor_gender' => $tutorGender,
+                'days_per_week' => $daysPerWeek,
                 'min_salary' => $minSalary,
                 'max_salary' => $maxSalary,
                 'sort' => $sort,
@@ -121,6 +128,20 @@ class JobController extends Controller
                 ['value' => 'newest', 'label' => 'Newest'],
                 ['value' => 'salary_high', 'label' => 'Highest Salary'],
                 ['value' => 'salary_low', 'label' => 'Lowest Salary'],
+            ],
+            'genderOptions' => [
+                ['value' => 'any', 'label' => 'Any'],
+                ['value' => 'male', 'label' => 'Male'],
+                ['value' => 'female', 'label' => 'Female'],
+            ],
+            'daysOptions' => [
+                ['value' => '1', 'label' => '1 Day/Week'],
+                ['value' => '2', 'label' => '2 Days/Week'],
+                ['value' => '3', 'label' => '3 Days/Week'],
+                ['value' => '4', 'label' => '4 Days/Week'],
+                ['value' => '5', 'label' => '5 Days/Week'],
+                ['value' => '6', 'label' => '6 Days/Week'],
+                ['value' => '7', 'label' => '7 Days/Week'],
             ],
         ]);
     }

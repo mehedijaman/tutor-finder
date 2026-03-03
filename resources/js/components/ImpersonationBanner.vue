@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 
 const page = usePage();
 
-const isImpersonating = computed<boolean>(() => Boolean(page.props.auth?.impersonation?.is_impersonating));
+const isImpersonating = computed<boolean>(() =>
+    Boolean(page.props.auth?.impersonation?.is_impersonating),
+);
 </script>
 
 <template>

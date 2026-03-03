@@ -23,7 +23,9 @@ const props = defineProps({
     statusOptions: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'Tuition Types', href: '/admin/tuition/taxonomies/tuition-types' }];
+const breadcrumbs = [
+    { title: 'Tuition Types', href: '/admin/tuition/taxonomies/tuition-types' },
+];
 const baseUrl = '/admin/tuition/taxonomies/tuition-types';
 
 const columns = [
@@ -45,21 +47,27 @@ const confirmDestructive = ref(false);
 const pendingAction = ref(null);
 let searchDebounceTimer = null;
 
-watch(() => props.filters.q, (value) => {
-    const normalized = value ?? '';
+watch(
+    () => props.filters.q,
+    (value) => {
+        const normalized = value ?? '';
 
-    if (normalized !== search.value) {
-        search.value = normalized;
-    }
-});
+        if (normalized !== search.value) {
+            search.value = normalized;
+        }
+    },
+);
 
-watch(() => props.filters.status, (value) => {
-    const normalized = value || 'all';
+watch(
+    () => props.filters.status,
+    (value) => {
+        const normalized = value || 'all';
 
-    if (normalized !== statusFilter.value) {
-        statusFilter.value = normalized;
-    }
-});
+        if (normalized !== statusFilter.value) {
+            statusFilter.value = normalized;
+        }
+    },
+);
 
 watch(search, (value) => {
     if (searchDebounceTimer) {
@@ -107,7 +115,8 @@ function openConfirm(action, row = null, payload = {}) {
 
     if (action === 'delete') {
         confirmTitle.value = 'Delete Tuition Type';
-        confirmDescription.value = 'This will move the tuition type to recycle bin.';
+        confirmDescription.value =
+            'This will move the tuition type to recycle bin.';
         confirmLabel.value = 'Delete';
         confirmDestructive.value = true;
     }
@@ -115,7 +124,9 @@ function openConfirm(action, row = null, payload = {}) {
     if (action === 'status') {
         const nextStatus = payload.status;
         const isDeactivate = nextStatus === 'inactive';
-        confirmTitle.value = isDeactivate ? 'Deactivate Tuition Type' : 'Activate Tuition Type';
+        confirmTitle.value = isDeactivate
+            ? 'Deactivate Tuition Type'
+            : 'Activate Tuition Type';
         confirmDescription.value = isDeactivate
             ? 'This tuition type will become inactive.'
             : 'This tuition type will become active.';
@@ -124,7 +135,8 @@ function openConfirm(action, row = null, payload = {}) {
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Tuition Type';
-        confirmDescription.value = 'This will restore the tuition type from recycle bin.';
+        confirmDescription.value =
+            'This will restore the tuition type from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -137,7 +149,8 @@ function openConfirm(action, row = null, payload = {}) {
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently remove all trashed tuition types.';
+        confirmDescription.value =
+            'This will permanently remove all trashed tuition types.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
@@ -161,21 +174,30 @@ function runConfirmedAction() {
     }
 
     if (action === 'status' && row) {
-        router.patch(`/admin/tuition/taxonomies/tuition-types/${row.id}/status`, {
-            status: payload.status,
-        });
+        router.patch(
+            `/admin/tuition/taxonomies/tuition-types/${row.id}/status`,
+            {
+                status: payload.status,
+            },
+        );
     }
 
     if (action === 'restore' && row) {
-        router.patch(`/admin/tuition/taxonomies/tuition-types/${row.id}/restore`);
+        router.patch(
+            `/admin/tuition/taxonomies/tuition-types/${row.id}/restore`,
+        );
     }
 
     if (action === 'force-delete' && row) {
-        router.delete(`/admin/tuition/taxonomies/tuition-types/${row.id}/force`);
+        router.delete(
+            `/admin/tuition/taxonomies/tuition-types/${row.id}/force`,
+        );
     }
 
     if (action === 'empty-recycle-bin') {
-        router.delete('/admin/tuition/taxonomies/tuition-types/recycle-bin/empty');
+        router.delete(
+            '/admin/tuition/taxonomies/tuition-types/recycle-bin/empty',
+        );
     }
 
     confirmOpen.value = false;
@@ -186,13 +208,20 @@ function actionItemsForRow(row) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
     return [
         { key: 'edit', label: 'Edit' },
-        { key: 'status', label: row.status === 'active' ? 'Deactivate' : 'Activate' },
+        {
+            key: 'status',
+            label: row.status === 'active' ? 'Deactivate' : 'Activate',
+        },
         { key: 'delete', label: 'Delete', destructive: true },
     ];
 }
@@ -211,7 +240,11 @@ function handleRowAction(actionKey, row) {
         return;
     }
 
-    if (actionKey === 'delete' || actionKey === 'restore' || actionKey === 'force-delete') {
+    if (
+        actionKey === 'delete' ||
+        actionKey === 'restore' ||
+        actionKey === 'force-delete'
+    ) {
         openConfirm(actionKey, row);
     }
 }
@@ -224,27 +257,55 @@ function handleRowAction(actionKey, row) {
         <div class="space-y-6 p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold">{{ filters.trash ? 'Tuition Type Recycle Bin' : 'Tuition Types' }}</h1>
-                    <p class="text-sm text-muted-foreground">Active: {{ counts.active ?? 0 }} | Trash: {{ counts.trash ?? 0 }}</p>
+                    <h1 class="text-2xl font-semibold">
+                        {{
+                            filters.trash
+                                ? 'Tuition Type Recycle Bin'
+                                : 'Tuition Types'
+                        }}
+                    </h1>
+                    <p class="text-sm text-muted-foreground">
+                        Active: {{ counts.active ?? 0 }} | Trash:
+                        {{ counts.trash ?? 0 }}
+                    </p>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <Link :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`" class="rounded-md border px-4 py-2 text-sm">
+                    <Link
+                        :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
+                        class="rounded-md border px-4 py-2 text-sm"
+                    >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
 
-                    <Button v-if="filters.trash" type="button" variant="destructive" @click="openConfirm('empty-recycle-bin')">
+                    <Button
+                        v-if="filters.trash"
+                        type="button"
+                        variant="destructive"
+                        @click="openConfirm('empty-recycle-bin')"
+                    >
                         Empty Recycle Bin
                     </Button>
 
-                    <Link v-if="!filters.trash" href="/admin/tuition/taxonomies/tuition-types/create" class="rounded-md bg-black px-4 py-2 text-sm text-white">
+                    <Link
+                        v-if="!filters.trash"
+                        href="/admin/tuition/taxonomies/tuition-types/create"
+                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                    >
                         Create Tuition Type
                     </Link>
                 </div>
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3">
-                <Input v-model="search" type="text" placeholder="Search by name, slug, or description" class="sm:col-span-2" />
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
+                <Input
+                    v-model="search"
+                    type="text"
+                    placeholder="Search by name, slug, or description"
+                    class="sm:col-span-2"
+                />
 
                 <Select v-model="statusFilter">
                     <SelectTrigger>
@@ -252,22 +313,40 @@ function handleRowAction(actionKey, row) {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Statuses</SelectItem>
-                        <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
+                        <SelectItem
+                            v-for="option in statusOptions"
+                            :key="option.value"
+                            :value="option.value"
+                        >
                             {{ option.label }}
                         </SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No tuition types found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No tuition types found."
+            >
                 <template #cell-status="{ row }">
-                    <Badge :variant="row.status === 'active' ? 'default' : 'secondary'">{{ row.status }}</Badge>
+                    <Badge
+                        :variant="
+                            row.status === 'active' ? 'default' : 'secondary'
+                        "
+                        >{{ row.status }}</Badge
+                    >
                 </template>
 
-                <template #cell-updated_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
+                <template #cell-updated_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
 
                 <template #cell-actions="{ row }">
-                    <RowActionsDropdown :actions="actionItemsForRow(row)" @select="(action) => handleRowAction(action, row)" />
+                    <RowActionsDropdown
+                        :actions="actionItemsForRow(row)"
+                        @select="(action) => handleRowAction(action, row)"
+                    />
                 </template>
             </DataTable>
         </div>

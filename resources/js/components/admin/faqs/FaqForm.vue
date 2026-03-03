@@ -53,14 +53,12 @@ const form = useForm({
 
 function submit() {
     if (props.method.toLowerCase() === 'put') {
-        form
-            .transform((data) => ({
-                ...data,
-                _method: 'put',
-            }))
-            .post(props.action, {
-                preserveScroll: true,
-            });
+        form.transform((data) => ({
+            ...data,
+            _method: 'put',
+        })).post(props.action, {
+            preserveScroll: true,
+        });
 
         return;
     }
@@ -74,12 +72,19 @@ function submit() {
 <template>
     <form class="space-y-6" @submit.prevent="submit">
         <div class="grid gap-6 lg:grid-cols-12">
-            <section class="grid gap-4 rounded-xl border bg-white p-4 lg:col-span-8">
+            <section
+                class="grid gap-4 rounded-xl border bg-white p-4 lg:col-span-8"
+            >
                 <h2 class="text-lg font-semibold">FAQ Content</h2>
 
                 <div class="grid gap-2">
                     <Label for="faq-question">Question</Label>
-                    <Input id="faq-question" v-model="form.question" type="text" required />
+                    <Input
+                        id="faq-question"
+                        v-model="form.question"
+                        type="text"
+                        required
+                    />
                     <InputError :message="form.errors.question" />
                 </div>
 
@@ -99,7 +104,11 @@ function submit() {
 
                     <div class="grid gap-2">
                         <Label for="faq-audience">Audience</Label>
-                        <select id="faq-audience" v-model="form.audience" class="h-10 rounded-md border px-3 text-sm">
+                        <select
+                            id="faq-audience"
+                            v-model="form.audience"
+                            class="h-10 rounded-md border px-3 text-sm"
+                        >
                             <option
                                 v-for="option in audienceOptions"
                                 :key="option.value"
@@ -113,7 +122,11 @@ function submit() {
 
                     <div class="grid gap-2">
                         <Label for="faq-status">Status</Label>
-                        <select id="faq-status" v-model="form.status" class="h-10 rounded-md border px-3 text-sm">
+                        <select
+                            id="faq-status"
+                            v-model="form.status"
+                            class="h-10 rounded-md border px-3 text-sm"
+                        >
                             <option
                                 v-for="option in statusOptions"
                                 :key="option.value"
@@ -141,7 +154,10 @@ function submit() {
                     <Button type="submit" :disabled="form.processing">
                         {{ submitLabel }}
                     </Button>
-                    <Link :href="cancelHref" class="text-sm text-muted-foreground underline">
+                    <Link
+                        :href="cancelHref"
+                        class="text-sm text-muted-foreground underline"
+                    >
                         Cancel
                     </Link>
                 </section>

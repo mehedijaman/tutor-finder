@@ -44,6 +44,8 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'guardian-password-reset',
             'site-setting-view',
             'site-setting-update',
+            'payment-setting-view',
+            'payment-setting-update',
             'activity-log-view',
             'backup-view',
             'backup-run',
@@ -81,6 +83,11 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'job-restore',
             'job-force-delete',
             'job-approve',
+            'verification-request-view',
+            'verification-request-update',
+            'invoice-view',
+            'invoice-create',
+            'invoice-update',
         )->values()->all();
 
         Permission::query()

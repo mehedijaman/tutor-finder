@@ -35,22 +35,36 @@ export function useSiteSettings() {
     const siteSettings = computed<SharedSiteSettings>(() => {
         const rawSettings = page.props.siteSettings;
 
-        if (! rawSettings || typeof rawSettings !== 'object') {
+        if (!rawSettings || typeof rawSettings !== 'object') {
             return defaultSiteSettings;
         }
 
-        const socialDetails = (rawSettings as { social_details?: unknown }).social_details;
+        const socialDetails = (rawSettings as { social_details?: unknown })
+            .social_details;
         const normalizedSocialDetails =
-            socialDetails && typeof socialDetails === 'object' && ! Array.isArray(socialDetails)
+            socialDetails &&
+            typeof socialDetails === 'object' &&
+            !Array.isArray(socialDetails)
                 ? (socialDetails as Record<string, string>)
                 : {};
 
         return {
-            site_name: String((rawSettings as { site_name?: unknown }).site_name ?? defaultSiteSettings.site_name),
-            logo_url: normalizeNullableString((rawSettings as { logo_url?: unknown }).logo_url),
-            primary_phone: normalizeNullableString((rawSettings as { primary_phone?: unknown }).primary_phone),
-            primary_email: normalizeNullableString((rawSettings as { primary_email?: unknown }).primary_email),
-            primary_address: normalizeNullableString((rawSettings as { primary_address?: unknown }).primary_address),
+            site_name: String(
+                (rawSettings as { site_name?: unknown }).site_name ??
+                    defaultSiteSettings.site_name,
+            ),
+            logo_url: normalizeNullableString(
+                (rawSettings as { logo_url?: unknown }).logo_url,
+            ),
+            primary_phone: normalizeNullableString(
+                (rawSettings as { primary_phone?: unknown }).primary_phone,
+            ),
+            primary_email: normalizeNullableString(
+                (rawSettings as { primary_email?: unknown }).primary_email,
+            ),
+            primary_address: normalizeNullableString(
+                (rawSettings as { primary_address?: unknown }).primary_address,
+            ),
             social_details: normalizedSocialDetails,
         };
     });

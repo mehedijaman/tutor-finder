@@ -122,11 +122,16 @@ function onAction(action, row) {
                 <div class="space-y-1">
                     <h1 class="text-2xl font-semibold">Notifications</h1>
                     <p class="text-sm text-muted-foreground">
-                        Unread: {{ counts.unread ?? 0 }} | Total: {{ counts.all ?? 0 }}
+                        Unread: {{ counts.unread ?? 0 }} | Total:
+                        {{ counts.all ?? 0 }}
                     </p>
                 </div>
 
-                <Button variant="outline" :disabled="(counts.unread ?? 0) === 0" @click="markAllAsRead">
+                <Button
+                    variant="outline"
+                    :disabled="(counts.unread ?? 0) === 0"
+                    @click="markAllAsRead"
+                >
                     Mark All as Read
                 </Button>
             </div>
@@ -138,7 +143,9 @@ function onAction(action, row) {
                 {{ $page.props.flash.status }}
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
                 <Select v-model="statusFilter">
                     <SelectTrigger>
                         <SelectValue placeholder="All status" />
@@ -151,16 +158,26 @@ function onAction(action, row) {
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No notifications found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No notifications found."
+            >
                 <template #cell-message="{ value }">
-                    <p class="line-clamp-2 max-w-xl text-sm text-muted-foreground">{{ value || '—' }}</p>
+                    <p
+                        class="line-clamp-2 max-w-xl text-sm text-muted-foreground"
+                    >
+                        {{ value || '—' }}
+                    </p>
                 </template>
 
                 <template #cell-event="{ value }">
                     <Badge variant="outline">{{ value }}</Badge>
                 </template>
 
-                <template #cell-created_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
+                <template #cell-created_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
 
                 <template #cell-read_at="{ value }">
                     <Badge :variant="value ? 'secondary' : 'default'">
@@ -169,7 +186,10 @@ function onAction(action, row) {
                 </template>
 
                 <template #cell-actions="{ row }">
-                    <RowActionsDropdown :actions="actionItems(row)" @select="(action) => onAction(action, row)" />
+                    <RowActionsDropdown
+                        :actions="actionItems(row)"
+                        @select="(action) => onAction(action, row)"
+                    />
                 </template>
             </DataTable>
         </div>

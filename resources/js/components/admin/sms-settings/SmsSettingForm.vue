@@ -1,6 +1,6 @@
 <script setup>
-import { computed, watch } from 'vue';
 import { Link, useForm } from '@inertiajs/vue3';
+import { computed, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -61,12 +61,18 @@ const form = useForm({
 });
 
 const selectedProvider = computed(() => {
-    return props.providers.find((provider) => provider.name === form.provider) ?? null;
+    return (
+        props.providers.find((provider) => provider.name === form.provider) ??
+        null
+    );
 });
 
 const selectedProviderFieldMap = computed(() => {
     return Object.fromEntries(
-        (selectedProvider.value?.fields ?? []).map((field) => [field.key, field]),
+        (selectedProvider.value?.fields ?? []).map((field) => [
+            field.key,
+            field,
+        ]),
     );
 });
 
@@ -83,7 +89,9 @@ const synchronizeCredentialItems = () => {
     const existingMap = Object.fromEntries(
         (form.credential_items ?? []).map((item) => [
             String(item?.key ?? ''),
-            item?.value === null || item?.value === undefined ? '' : String(item.value),
+            item?.value === null || item?.value === undefined
+                ? ''
+                : String(item.value),
         ]),
     );
 
@@ -134,20 +142,16 @@ const submit = () => {
     };
 
     if (props.method.toLowerCase() === 'put') {
-        form
-            .transform(() => payload)
-            .put(props.action, {
-                preserveScroll: true,
-            });
+        form.transform(() => payload).put(props.action, {
+            preserveScroll: true,
+        });
 
         return;
     }
 
-    form
-        .transform(() => payload)
-        .post(props.action, {
-            preserveScroll: true,
-        });
+    form.transform(() => payload).post(props.action, {
+        preserveScroll: true,
+    });
 };
 </script>
 
@@ -187,28 +191,37 @@ const submit = () => {
             </div>
         </div>
 
-        <div class="rounded-xl border bg-muted/20 p-4 text-sm text-muted-foreground">
+        <div
+            class="rounded-xl border bg-muted/20 p-4 text-sm text-muted-foreground"
+        >
             <p class="font-medium text-foreground">Credential Requirements</p>
             <p v-if="selectedProvider">
                 Required: {{ requiredKeysSummary || 'None' }}.
             </p>
-            <p v-else>
-                Select a provider to view required credentials.
-            </p>
+            <p v-else>Select a provider to view required credentials.</p>
             <p class="mt-1">
-                Based on `xenon/laravelbdsms` provider documentation and published `config/sms.php`.
+                Based on `xenon/laravelbdsms` provider documentation and
+                published `config/sms.php`.
             </p>
         </div>
 
         <div class="space-y-3">
             <div class="flex items-center justify-between gap-3">
                 <h3 class="text-lg font-semibold">Credentials</h3>
-                <Button type="button" variant="outline" size="sm" @click="addCustomCredential">
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    @click="addCustomCredential"
+                >
                     Add Custom Field
                 </Button>
             </div>
 
-            <div v-if="form.credential_items.length === 0" class="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+            <div
+                v-if="form.credential_items.length === 0"
+                class="rounded-lg border border-dashed p-4 text-sm text-muted-foreground"
+            >
                 No credential rows yet. Select a provider or add custom fields.
             </div>
 
@@ -224,7 +237,9 @@ const submit = () => {
                         v-model="item.key"
                         type="text"
                         :readonly="isSchemaCredentialKey(item.key)"
-                        :class="isSchemaCredentialKey(item.key) ? 'bg-muted' : ''"
+                        :class="
+                            isSchemaCredentialKey(item.key) ? 'bg-muted' : ''
+                        "
                         placeholder="api_key"
                     />
                     <p
@@ -233,24 +248,42 @@ const submit = () => {
                     >
                         Required
                     </p>
-                    <InputError :message="form.errors[`credential_items.${index}.key`]" />
+                    <InputError
+                        :message="form.errors[`credential_items.${index}.key`]"
+                    />
                 </div>
 
                 <div class="space-y-2">
                     <Label :for="`credential-value-${index}`">
-                        {{ selectedProviderFieldMap[item.key]?.label || 'Value' }}
+                        {{
+                            selectedProviderFieldMap[item.key]?.label || 'Value'
+                        }}
                     </Label>
                     <Input
                         :id="`credential-value-${index}`"
                         v-model="item.value"
-                        :type="selectedProviderFieldMap[item.key]?.sensitive ? 'password' : 'text'"
-                        :placeholder="selectedProviderFieldMap[item.key]?.placeholder || 'Enter value'"
+                        :type="
+                            selectedProviderFieldMap[item.key]?.sensitive
+                                ? 'password'
+                                : 'text'
+                        "
+                        :placeholder="
+                            selectedProviderFieldMap[item.key]?.placeholder ||
+                            'Enter value'
+                        "
                         autocomplete="off"
                     />
                     <p class="text-xs text-muted-foreground">
-                        {{ selectedProviderFieldMap[item.key]?.description || 'Custom credential field.' }}
+                        {{
+                            selectedProviderFieldMap[item.key]?.description ||
+                            'Custom credential field.'
+                        }}
                     </p>
-                    <InputError :message="form.errors[`credential_items.${index}.value`]" />
+                    <InputError
+                        :message="
+                            form.errors[`credential_items.${index}.value`]
+                        "
+                    />
                 </div>
 
                 <div class="flex items-end justify-end">
@@ -273,12 +306,20 @@ const submit = () => {
 
         <div class="grid gap-3 rounded-lg border p-4">
             <label class="flex items-center gap-2 text-sm">
-                <input v-model="form.is_active" type="checkbox" class="h-4 w-4 rounded border">
+                <input
+                    v-model="form.is_active"
+                    type="checkbox"
+                    class="h-4 w-4 rounded border"
+                />
                 <span>Active</span>
             </label>
 
             <label class="flex items-center gap-2 text-sm">
-                <input v-model="form.is_default" type="checkbox" class="h-4 w-4 rounded border">
+                <input
+                    v-model="form.is_default"
+                    type="checkbox"
+                    class="h-4 w-4 rounded border"
+                />
                 <span>Set as default</span>
             </label>
 
@@ -290,7 +331,10 @@ const submit = () => {
             <Button type="submit" :disabled="form.processing">
                 {{ submitLabel }}
             </Button>
-            <Link :href="cancelHref" class="text-sm text-muted-foreground underline">
+            <Link
+                :href="cancelHref"
+                class="text-sm text-muted-foreground underline"
+            >
                 Cancel
             </Link>
         </div>

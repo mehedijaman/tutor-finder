@@ -1,5 +1,172 @@
-<laravel-boost-guidelines>
-=== foundation rules ===
+# Agent Guidelines for Tutor Finder
+
+This document provides guidelines for AI agents working on this Laravel + Vue.js application.
+
+## Build / Lint / Test Commands
+
+### Running Tests
+
+```bash
+# Run all tests
+php artisan test
+
+# Run all tests (compact output)
+php artisan test --compact
+
+# Run a single test by name
+php artisan test --filter=testName
+
+# Run a specific test file
+php artisan test tests/Feature/ExampleTest.php
+
+# Run unit tests only
+php artisan test --unit
+
+# Run feature tests only
+php artisan test --feature
+```
+
+### Linting
+
+```bash
+# PHP (Pint) - Fix style issues
+composer lint
+# or: vendor/bin/pint --parallel
+
+# PHP - Check only (no fixes)
+vendor/bin/pint --parallel --test
+
+# JavaScript/TypeScript (ESLint) - Fix issues
+npm run lint
+
+# JavaScript - Check only
+npm run lint:check
+```
+
+### Formatting
+
+```bash
+# Prettier (Vue/JS) - Fix formatting
+npm run format
+
+# Prettier - Check only
+npm run format:check
+```
+
+### Type Checking
+
+```bash
+# Vue TypeScript check
+npm run types:check
+```
+
+### Full CI Check
+
+```bash
+# Runs lint, format check, types check, and tests
+composer ci:check
+# or: npm run lint:check && npm run format:check && npm run types:check && php artisan test
+```
+
+### Development Servers
+
+```bash
+# Full dev stack (server, queue, logs, vite)
+composer run dev
+
+# SSR dev stack
+composer run dev:ssr
+
+# Manual
+php artisan serve
+npm run dev
+```
+
+## Code Style Guidelines
+
+### PHP
+
+- Use Laravel Pint with Laravel preset (`pint.json` uses `"preset": "laravel"`)
+- Always use curly braces for control structures, even single-line bodies
+- Use PHP 8 constructor property promotion
+- Always use explicit return type declarations
+- Use appropriate PHP type hints for parameters
+- Enum keys should be TitleCase (e.g., `FavoritePerson`, `Monthly`)
+- Prefer PHPDoc blocks over inline comments
+
+### TypeScript / Vue
+
+- Use `type` imports (not `interface` for imports):
+    ```typescript
+    import type { User } from '@/types';
+    import { usePage } from '@inertiajs/vue3';
+    ```
+- Import order (enforced by ESLint):
+    1. Built-in (node built-ins)
+    2. External packages (@inertiajs, vue, etc.)
+    3. Internal (@/, ~/)
+    4. Parent imports (../)
+    5. Sibling imports (./)
+    6. Index imports (./index)
+- Alphabetize imports within groups (case-insensitive)
+
+### Naming Conventions
+
+- Variables/methods: camelCase (`isRegisteredForDiscounts`, not `discount()`)
+- Classes: PascalCase
+- Components: PascalCase (e.g., `AppSidebar.vue`, `UserMenuContent.vue`)
+- Database tables: snake_case
+- Routes: kebab-case
+
+### Error Handling
+
+- Use Laravel exceptions for application errors
+- Use Form Request classes for validation (not inline validation in controllers)
+- Wrap async operations in try-catch when needed
+- Use `dd()` or Laravel tinker for debugging
+
+### Database / Eloquent
+
+- Use Eloquent relationships with return type hints
+- Avoid `DB::`; prefer `Model::query()`
+- Use eager loading to prevent N+1 queries
+- When modifying columns in migrations, include all attributes
+- Use `casts()` method on models (not `$casts` property)
+
+### Vue Components
+
+- Must have a single root element
+- Use `<script setup lang="ts">` syntax
+- Use TypeScript for all props and reactive data
+- Use composition API with `ref`, `computed`, `watch`
+
+### CSS / Tailwind
+
+- Use Tailwind CSS v4 utilities
+- Use `cn()` helper (clsx + tailwind-merge) for conditional classes
+- Follow existing component patterns in `resources/js/components/ui/`
+
+## Project Structure
+
+- Vue components: `resources/js/components/`
+- Pages: `resources/js/pages/`
+- Types: `resources/js/types/`
+- Composables: `resources/js/composables/`
+- Controllers: `app/Http/Controllers/`
+- Models: `app/Models/`
+- Migrations: `database/migrations/`
+- Tests: `tests/` (Pest)
+
+## Key Packages
+
+- Laravel 12 + Inertia v2 + Vue 3
+- Fortify for authentication
+- Wayfinder for route types
+- Pest for testing
+- Tailwind CSS v4
+- Reka UI components
+
+---
 
 # Laravel Boost Guidelines
 
@@ -124,6 +291,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Use appropriate PHP type hints for method parameters.
 
 <!-- Explicit Return Types and Method Params -->
+
 ```php
 protected function isAccessible(User $user, ?string $path = null): bool
 {
@@ -279,6 +447,7 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 # Inertia + Vue
 
 Vue components must have a single root element.
+
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
 === tailwindcss/core rules ===

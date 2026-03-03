@@ -108,21 +108,24 @@ function openConfirm(action, row = null) {
 
     if (action === 'force-delete') {
         confirmTitle.value = 'Permanently Delete Role';
-        confirmDescription.value = 'This action is irreversible and removes the role permanently.';
+        confirmDescription.value =
+            'This action is irreversible and removes the role permanently.';
         confirmLabel.value = 'Permanently Delete';
         confirmDestructive.value = true;
     }
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently delete all trashed roles.';
+        confirmDescription.value =
+            'This will permanently delete all trashed roles.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Role';
-        confirmDescription.value = 'This will restore the role from recycle bin.';
+        confirmDescription.value =
+            'This will restore the role from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -174,7 +177,11 @@ function actionItemsForRow() {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
@@ -190,7 +197,11 @@ function handleRowAction(actionKey, row) {
         return;
     }
 
-    if (actionKey === 'delete' || actionKey === 'force-delete' || actionKey === 'restore') {
+    if (
+        actionKey === 'delete' ||
+        actionKey === 'force-delete' ||
+        actionKey === 'restore'
+    ) {
         openConfirm(actionKey, row);
     }
 }
@@ -208,7 +219,11 @@ function handleRowAction(actionKey, row) {
 
                 <div class="flex items-center gap-2">
                     <Link
-                        :href="filters.trash ? '/admin/roles' : '/admin/roles?trash=1'"
+                        :href="
+                            filters.trash
+                                ? '/admin/roles'
+                                : '/admin/roles?trash=1'
+                        "
                         class="rounded-md border px-4 py-2 text-sm"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}

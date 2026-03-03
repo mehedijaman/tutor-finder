@@ -19,7 +19,9 @@ type Props = {
 
 const page = usePage();
 
-const isImpersonating = computed<boolean>(() => Boolean(page.props.auth?.impersonation?.is_impersonating));
+const isImpersonating = computed<boolean>(() =>
+    Boolean(page.props.auth?.impersonation?.is_impersonating),
+);
 
 const handleLogout = () => {
     router.flushAll();

@@ -29,7 +29,12 @@ import { store } from '@/routes/register';
                     <Label>Register as</Label>
                     <div class="flex items-center gap-6 rounded-md border p-3">
                         <label class="flex items-center gap-2 text-sm">
-                            <input type="radio" name="role" value="guardian" checked />
+                            <input
+                                type="radio"
+                                name="role"
+                                value="guardian"
+                                checked
+                            />
                             <span>Guardian</span>
                         </label>
                         <label class="flex items-center gap-2 text-sm">

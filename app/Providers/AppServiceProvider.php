@@ -7,6 +7,8 @@ use App\Services\Sms\GatewaySmsSender;
 use App\Services\Sms\LogSmsSender;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -66,13 +68,39 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting(): void
     {
-        RateLimiter::for('otp-verify', function ($request) {
+        RateLimiter::for('otp-verify', function (Request $request) {
             $userId = $request->user()?->id ?? 'guest';
 
-            return Limit::perMinute(10)->by('otp-verify:'.$userId.'|'.$request->ip());
+            return Limit::perMinute(10)
+                ->by('otp-verify:'.$userId.'|'.$request->ip())
+                ->response(function (Request $request, array $headers): RedirectResponse {
+                    $retryAfter = max(1, (int) ($headers['Retry-After'] ?? 60));
+
+                    return redirect()
+                        ->back(303)
+                        ->withErrors([
+                            'code' => "Too many verification attempts. Please wait {$retryAfter} seconds and try again.",
+                        ]);
+                });
         });
 
-        RateLimiter::for('contact-form', function ($request) {
+        RateLimiter::for('otp-resend', function (Request $request) {
+            $userId = $request->user()?->id ?? 'guest';
+
+            return Limit::perMinute(3)
+                ->by('otp-resend:'.$userId.'|'.$request->ip())
+                ->response(function (Request $request, array $headers): RedirectResponse {
+                    $retryAfter = max(1, (int) ($headers['Retry-After'] ?? 60));
+
+                    return redirect()
+                        ->back(303)
+                        ->withErrors([
+                            'resend' => "Please wait {$retryAfter} seconds before requesting another code.",
+                        ]);
+                });
+        });
+
+        RateLimiter::for('contact-form', function (Request $request) {
             $identifier = trim((string) $request->input('email'));
 
             if ($identifier === '') {

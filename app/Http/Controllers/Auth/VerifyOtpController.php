@@ -100,4 +100,20 @@ class VerifyOtpController extends Controller
 
         return redirect(RoleRedirector::destinationFor($user));
     }
+
+    /**
+     * Resend the OTP code.
+     */
+    public function resend(Request $request, OtpService $otpService): RedirectResponse
+    {
+        $user = $request->user();
+
+        if (! $user instanceof User) {
+            return redirect('/login');
+        }
+
+        $otpService->issueForRegistration($user, $request, false);
+
+        return redirect()->route('otp.verify')->with('status', 'A new verification code has been sent to your phone.');
+    }
 }

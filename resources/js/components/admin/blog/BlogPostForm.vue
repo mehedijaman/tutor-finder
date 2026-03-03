@@ -2,13 +2,12 @@
 import { Link, useForm } from '@inertiajs/vue3';
 import { Loader2, Plus, Search, X } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, ref, toRef, watch } from 'vue';
-import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import CreateCategoryDialog from '@/components/admin/blog/CreateCategoryDialog.vue';
 import CreateTagDialog from '@/components/admin/blog/CreateTagDialog.vue';
 import MetaBoxCard from '@/components/admin/blog/MetaBoxCard.vue';
 import TiptapEditor from '@/components/admin/blog/TiptapEditor.vue';
+import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import InputError from '@/components/InputError.vue';
-import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +19,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 
 const props = defineProps({
     action: {
@@ -268,7 +268,9 @@ function toggleTagSelection(tagId) {
     }
 
     if (isTagSelected(normalizedId)) {
-        form.tag_ids = form.tag_ids.filter((value) => Number(value) !== normalizedId);
+        form.tag_ids = form.tag_ids.filter(
+            (value) => Number(value) !== normalizedId,
+        );
 
         return;
     }
@@ -361,12 +363,10 @@ function submit() {
     };
 
     if (isEditMode.value) {
-        form
-            .transform(() => ({
-                ...payload,
-                _method: 'put',
-            }))
-            .post(props.action, options);
+        form.transform(() => ({
+            ...payload,
+            _method: 'put',
+        })).post(props.action, options);
 
         return;
     }
@@ -404,7 +404,9 @@ onBeforeUnmount(() => {
                         </div>
 
                         <div class="grid gap-2">
-                            <div class="flex items-center justify-between gap-3">
+                            <div
+                                class="flex items-center justify-between gap-3"
+                            >
                                 <Label for="post-slug">Slug</Label>
                                 <Button
                                     type="button"
@@ -428,7 +430,9 @@ onBeforeUnmount(() => {
                         </div>
 
                         <div class="grid gap-2">
-                            <div class="flex items-center justify-between gap-3">
+                            <div
+                                class="flex items-center justify-between gap-3"
+                            >
                                 <Label for="post-summary">Summary</Label>
                                 <span class="text-xs text-muted-foreground">
                                     {{ summaryLength }}/1000
@@ -456,7 +460,8 @@ onBeforeUnmount(() => {
                     <CardContent class="space-y-3 px-5 py-5">
                         <TiptapEditor v-model="form.content" />
                         <p class="text-xs text-muted-foreground">
-                            Tip: paste or drag images directly into the editor to upload.
+                            Tip: paste or drag images directly into the editor
+                            to upload.
                         </p>
                         <InputError :message="form.errors.content" />
                     </CardContent>
@@ -542,7 +547,10 @@ onBeforeUnmount(() => {
                     </div>
                 </MetaBoxCard>
 
-                <MetaBoxCard title="Categories" description="Choose one or more categories.">
+                <MetaBoxCard
+                    title="Categories"
+                    description="Choose one or more categories."
+                >
                     <div class="flex items-center justify-between gap-2">
                         <Badge variant="secondary">
                             Selected {{ selectedCategoryCount }}
@@ -571,7 +579,7 @@ onBeforeUnmount(() => {
                                 class="h-4 w-4 rounded border"
                                 :checked="isCategorySelected(category.id)"
                                 @change="toggleCategorySelection(category.id)"
-                            >
+                            />
                             <span>{{ category.name }}</span>
                         </label>
                     </div>
@@ -586,11 +594,16 @@ onBeforeUnmount(() => {
                     <InputError
                         v-for="(message, index) in form.errors"
                         :key="`category-error-${index}`"
-                        :message="index.startsWith('category_ids.') ? message : ''"
+                        :message="
+                            index.startsWith('category_ids.') ? message : ''
+                        "
                     />
                 </MetaBoxCard>
 
-                <MetaBoxCard title="Tags" description="Assign searchable labels for this post.">
+                <MetaBoxCard
+                    title="Tags"
+                    description="Assign searchable labels for this post."
+                >
                     <div class="flex items-center justify-between gap-2">
                         <Badge variant="secondary">
                             Selected {{ selectedTagCount }}
@@ -605,7 +618,10 @@ onBeforeUnmount(() => {
                         </Button>
                     </div>
 
-                    <div v-if="selectedTags.length" class="flex flex-wrap gap-2">
+                    <div
+                        v-if="selectedTags.length"
+                        class="flex flex-wrap gap-2"
+                    >
                         <button
                             v-for="tag in selectedTags"
                             :key="`selected-tag-${tag.id}`"
@@ -644,7 +660,7 @@ onBeforeUnmount(() => {
                                 class="h-4 w-4 rounded border"
                                 :checked="isTagSelected(tag.id)"
                                 @change="toggleTagSelection(tag.id)"
-                            >
+                            />
                             <span>{{ tag.name }}</span>
                         </label>
                     </div>
@@ -663,7 +679,10 @@ onBeforeUnmount(() => {
                     />
                 </MetaBoxCard>
 
-                <MetaBoxCard title="Cover Image" description="Shown on blog list and post header.">
+                <MetaBoxCard
+                    title="Cover Image"
+                    description="Shown on blog list and post header."
+                >
                     <div
                         v-if="coverPreviewUrl"
                         class="overflow-hidden rounded-md border bg-muted/20"
@@ -672,7 +691,7 @@ onBeforeUnmount(() => {
                             :src="coverPreviewUrl"
                             alt="Post Cover"
                             class="h-40 w-full object-cover"
-                        >
+                        />
                     </div>
                     <div
                         v-else
@@ -681,16 +700,27 @@ onBeforeUnmount(() => {
                         No cover image selected.
                     </div>
 
-                    <Input type="file" accept="image/*" @change="onCoverChange" />
+                    <Input
+                        type="file"
+                        accept="image/*"
+                        @change="onCoverChange"
+                    />
                     <p class="text-xs text-muted-foreground">
                         JPG, PNG, WEBP. Maximum 4MB.
                     </p>
 
-                    <div v-if="form.remove_cover" class="space-y-2 rounded-md border border-amber-200 bg-amber-50 p-3">
+                    <div
+                        v-if="form.remove_cover"
+                        class="space-y-2 rounded-md border border-amber-200 bg-amber-50 p-3"
+                    >
                         <p class="text-sm text-amber-900">
                             Cover image will be removed when you save this post.
                         </p>
-                        <Button type="button" variant="outline" @click="keepCover">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            @click="keepCover"
+                        >
                             Keep Current Cover
                         </Button>
                     </div>
@@ -707,15 +737,24 @@ onBeforeUnmount(() => {
                     <InputError :message="form.errors.remove_cover" />
                 </MetaBoxCard>
 
-                <MetaBoxCard title="SEO" description="Fallback uses title and summary when empty.">
+                <MetaBoxCard
+                    title="SEO"
+                    description="Fallback uses title and summary when empty."
+                >
                     <div class="grid gap-2">
                         <Label for="post-meta-title">Meta Title</Label>
-                        <Input id="post-meta-title" v-model="form.meta_title" type="text" />
+                        <Input
+                            id="post-meta-title"
+                            v-model="form.meta_title"
+                            type="text"
+                        />
                         <InputError :message="form.errors.meta_title" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="post-meta-description">Meta Description</Label>
+                        <Label for="post-meta-description"
+                            >Meta Description</Label
+                        >
                         <textarea
                             id="post-meta-description"
                             v-model="form.meta_description"

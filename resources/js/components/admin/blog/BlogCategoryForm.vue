@@ -2,10 +2,10 @@
 import { Link, useForm } from '@inertiajs/vue3';
 import { ref, toRef } from 'vue';
 import InputError from '@/components/InputError.vue';
-import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
 
 const props = defineProps({
     action: {
@@ -91,15 +91,13 @@ const toggleRemoveImage = () => {
 
 const submit = () => {
     if (props.method.toLowerCase() === 'put') {
-        form
-            .transform((data) => ({
-                ...data,
-                _method: 'put',
-            }))
-            .post(props.action, {
-                preserveScroll: true,
-                forceFormData: true,
-            });
+        form.transform((data) => ({
+            ...data,
+            _method: 'put',
+        })).post(props.action, {
+            preserveScroll: true,
+            forceFormData: true,
+        });
 
         return;
     }
@@ -118,14 +116,24 @@ const submit = () => {
 
             <div class="grid gap-2">
                 <Label for="category-name">Name</Label>
-                <Input id="category-name" v-model="form.name" type="text" required />
+                <Input
+                    id="category-name"
+                    v-model="form.name"
+                    type="text"
+                    required
+                />
                 <InputError :message="form.errors.name" />
             </div>
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between gap-3">
                     <Label for="category-slug">Slug</Label>
-                    <Button type="button" size="sm" variant="outline" @click="toggleAutoSlug">
+                    <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        @click="toggleAutoSlug"
+                    >
                         Auto: {{ autoSlug ? 'On' : 'Off' }}
                     </Button>
                 </div>
@@ -151,7 +159,11 @@ const submit = () => {
 
             <div class="grid gap-2">
                 <Label for="category-status">Status</Label>
-                <select id="category-status" v-model="form.status" class="h-10 rounded-md border px-3 text-sm">
+                <select
+                    id="category-status"
+                    v-model="form.status"
+                    class="h-10 rounded-md border px-3 text-sm"
+                >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
@@ -169,7 +181,10 @@ const submit = () => {
                     alt="Category Image"
                     class="h-14 w-14 rounded-md border object-cover"
                 />
-                <div v-else class="flex h-14 w-14 items-center justify-center rounded-md border text-xs text-muted-foreground">
+                <div
+                    v-else
+                    class="flex h-14 w-14 items-center justify-center rounded-md border text-xs text-muted-foreground"
+                >
                     No Image
                 </div>
 
@@ -181,7 +196,11 @@ const submit = () => {
                     variant="outline"
                     @click="toggleRemoveImage"
                 >
-                    {{ form.remove_image ? 'Keep Existing Image' : 'Remove Image' }}
+                    {{
+                        form.remove_image
+                            ? 'Keep Existing Image'
+                            : 'Remove Image'
+                    }}
                 </Button>
             </div>
 
@@ -197,7 +216,11 @@ const submit = () => {
 
             <div class="grid gap-2">
                 <Label for="category-meta-title">Meta Title</Label>
-                <Input id="category-meta-title" v-model="form.meta_title" type="text" />
+                <Input
+                    id="category-meta-title"
+                    v-model="form.meta_title"
+                    type="text"
+                />
                 <InputError :message="form.errors.meta_title" />
             </div>
 
@@ -217,7 +240,10 @@ const submit = () => {
             <Button type="submit" :disabled="form.processing">
                 {{ submitLabel }}
             </Button>
-            <Link :href="cancelHref" class="text-sm text-muted-foreground underline">
+            <Link
+                :href="cancelHref"
+                class="text-sm text-muted-foreground underline"
+            >
                 Cancel
             </Link>
         </div>

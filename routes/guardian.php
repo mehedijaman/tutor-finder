@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Guardian\DashboardController as GuardianDashboardController;
+use App\Http\Controllers\Guardian\GuardianProfileController;
+use App\Http\Controllers\Guardian\GuardianVerificationController;
 use App\Http\Controllers\Guardian\JobApplicationController;
 use App\Http\Controllers\Guardian\NotificationController;
 use App\Http\Controllers\Guardian\TuitionJobController;
@@ -21,6 +23,10 @@ Route::prefix('guardian')
             ->name('jobs.applications.status');
         Route::patch('/jobs/{tuitionJob}/applications/{tuitionJobApplication}/confirm', [JobApplicationController::class, 'confirm'])
             ->name('jobs.applications.confirm');
+        Route::get('/profile', [GuardianProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [GuardianProfileController::class, 'update'])->name('profile.update');
+        Route::get('/verification', [GuardianVerificationController::class, 'show'])->name('verification.show');
+        Route::post('/verification/request', [GuardianVerificationController::class, 'store'])->name('verification.request');
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
         Route::patch('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

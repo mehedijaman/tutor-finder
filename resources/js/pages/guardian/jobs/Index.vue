@@ -105,7 +105,9 @@ function applyFilters(overrides = {}) {
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="text-2xl font-semibold">My Jobs</h1>
-                    <p class="text-sm text-muted-foreground">Track and manage your job postings.</p>
+                    <p class="text-sm text-muted-foreground">
+                        Track and manage your job postings.
+                    </p>
                 </div>
 
                 <Button as-child>
@@ -113,8 +115,15 @@ function applyFilters(overrides = {}) {
                 </Button>
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3">
-                <Input v-model="search" type="text" placeholder="Search by title or slug" class="sm:col-span-2" />
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
+                <Input
+                    v-model="search"
+                    type="text"
+                    placeholder="Search by title or slug"
+                    class="sm:col-span-2"
+                />
 
                 <Select v-model="statusFilter">
                     <SelectTrigger>
@@ -122,26 +131,46 @@ function applyFilters(overrides = {}) {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem v-for="status in statusOptions" :key="status.value" :value="status.value">
+                        <SelectItem
+                            v-for="status in statusOptions"
+                            :key="status.value"
+                            :value="status.value"
+                        >
                             {{ status.label }}
                         </SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No jobs found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No jobs found."
+            >
                 <template #cell-status="{ row }">
-                    <Badge :variant="row.status === 'live' ? 'default' : 'secondary'">{{ row.status }}</Badge>
+                    <Badge
+                        :variant="
+                            row.status === 'live' ? 'default' : 'secondary'
+                        "
+                        >{{ row.status }}</Badge
+                    >
                 </template>
 
                 <template #cell-applications_count="{ row }">
-                    <Link :href="`/guardian/jobs/${row.id}/applications`" class="text-sm font-medium text-blue-600 hover:underline">
+                    <Link
+                        :href="`/guardian/jobs/${row.id}/applications`"
+                        class="text-sm font-medium text-blue-600 hover:underline"
+                    >
                         {{ row.applications_count ?? 0 }}
                     </Link>
                 </template>
 
-                <template #cell-published_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
-                <template #cell-expires_at="{ value }">{{ value ? new Date(value).toLocaleString() : '—' }}</template>
+                <template #cell-published_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
+                <template #cell-expires_at="{ value }">{{
+                    value ? new Date(value).toLocaleString() : '—'
+                }}</template>
             </DataTable>
         </div>
     </GuardianLayout>

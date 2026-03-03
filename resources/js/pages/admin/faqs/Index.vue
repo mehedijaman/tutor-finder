@@ -126,7 +126,8 @@ function applyFilters(overrides = {}) {
         {
             trash: props.filters.trash ? 1 : 0,
             q: search.value,
-            audience: audienceFilter.value === 'all' ? '' : audienceFilter.value,
+            audience:
+                audienceFilter.value === 'all' ? '' : audienceFilter.value,
             status: statusFilter.value === 'all' ? '' : statusFilter.value,
             ...overrides,
         },
@@ -165,7 +166,8 @@ function openConfirm(action, row = null, payload = {}) {
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore FAQ';
-        confirmDescription.value = 'This will restore the FAQ from recycle bin.';
+        confirmDescription.value =
+            'This will restore the FAQ from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -178,7 +180,8 @@ function openConfirm(action, row = null, payload = {}) {
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently remove all trashed FAQs.';
+        confirmDescription.value =
+            'This will permanently remove all trashed FAQs.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
@@ -227,7 +230,11 @@ function actionItemsForRow(row) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
@@ -256,7 +263,11 @@ function handleRowAction(actionKey, row) {
         return;
     }
 
-    if (actionKey === 'delete' || actionKey === 'restore' || actionKey === 'force-delete') {
+    if (
+        actionKey === 'delete' ||
+        actionKey === 'restore' ||
+        actionKey === 'force-delete'
+    ) {
         openConfirm(actionKey, row);
     }
 }
@@ -279,13 +290,18 @@ function formatAudience(value) {
                         {{ filters.trash ? 'FAQ Recycle Bin' : 'FAQs' }}
                     </h1>
                     <p class="text-sm text-muted-foreground">
-                        Active: {{ counts.active ?? 0 }} | Trash: {{ counts.trash ?? 0 }}
+                        Active: {{ counts.active ?? 0 }} | Trash:
+                        {{ counts.trash ?? 0 }}
                     </p>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <Link
-                        :href="filters.trash ? '/admin/faqs' : '/admin/faqs?trash=1'"
+                        :href="
+                            filters.trash
+                                ? '/admin/faqs'
+                                : '/admin/faqs?trash=1'
+                        "
                         class="rounded-md border px-4 py-2 text-sm"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
@@ -317,7 +333,9 @@ function formatAudience(value) {
                 {{ $page.props.flash.status }}
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3">
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3"
+            >
                 <div class="grid gap-2 md:col-span-1">
                     <Label for="faq-search">Search</Label>
                     <Input
@@ -383,7 +401,11 @@ function formatAudience(value) {
                 </template>
 
                 <template #cell-status="{ row }">
-                    <Badge :variant="row.status === 'active' ? 'default' : 'secondary'">
+                    <Badge
+                        :variant="
+                            row.status === 'active' ? 'default' : 'secondary'
+                        "
+                    >
                         {{ row.status }}
                     </Badge>
                 </template>

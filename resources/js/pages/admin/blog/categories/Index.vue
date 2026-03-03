@@ -24,7 +24,9 @@ const props = defineProps({
     },
 });
 
-const breadcrumbs = [{ title: 'Blog Categories', href: '/admin/blog/categories' }];
+const breadcrumbs = [
+    { title: 'Blog Categories', href: '/admin/blog/categories' },
+];
 const baseUrl = '/admin/blog/categories';
 
 const columns = [
@@ -108,14 +110,16 @@ function openConfirm(action, row = null) {
 
     if (action === 'delete') {
         confirmTitle.value = 'Delete Category';
-        confirmDescription.value = 'This will move the category to recycle bin.';
+        confirmDescription.value =
+            'This will move the category to recycle bin.';
         confirmLabel.value = 'Delete';
         confirmDestructive.value = true;
     }
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Category';
-        confirmDescription.value = 'This will restore the category from recycle bin.';
+        confirmDescription.value =
+            'This will restore the category from recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -128,7 +132,8 @@ function openConfirm(action, row = null) {
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently remove all trashed categories.';
+        confirmDescription.value =
+            'This will permanently remove all trashed categories.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
@@ -171,7 +176,11 @@ function actionItemsForRow() {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
@@ -187,7 +196,11 @@ function handleRowAction(actionKey, row) {
         return;
     }
 
-    if (actionKey === 'delete' || actionKey === 'restore' || actionKey === 'force-delete') {
+    if (
+        actionKey === 'delete' ||
+        actionKey === 'restore' ||
+        actionKey === 'force-delete'
+    ) {
         openConfirm(actionKey, row);
     }
 }
@@ -201,16 +214,25 @@ function handleRowAction(actionKey, row) {
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
                     <h1 class="text-2xl font-semibold">
-                        {{ filters.trash ? 'Category Recycle Bin' : 'Blog Categories' }}
+                        {{
+                            filters.trash
+                                ? 'Category Recycle Bin'
+                                : 'Blog Categories'
+                        }}
                     </h1>
                     <p class="text-sm text-muted-foreground">
-                        Active: {{ counts.active ?? 0 }} | Trash: {{ counts.trash ?? 0 }}
+                        Active: {{ counts.active ?? 0 }} | Trash:
+                        {{ counts.trash ?? 0 }}
                     </p>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <Link
-                        :href="filters.trash ? '/admin/blog/categories' : '/admin/blog/categories?trash=1'"
+                        :href="
+                            filters.trash
+                                ? '/admin/blog/categories'
+                                : '/admin/blog/categories?trash=1'
+                        "
                         class="rounded-md border px-4 py-2 text-sm"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
@@ -253,7 +275,11 @@ function handleRowAction(actionKey, row) {
                 @sort="handleSort"
             >
                 <template #cell-status="{ row }">
-                    <Badge :variant="row.status === 'active' ? 'default' : 'secondary'">
+                    <Badge
+                        :variant="
+                            row.status === 'active' ? 'default' : 'secondary'
+                        "
+                    >
                         {{ row.status }}
                     </Badge>
                 </template>

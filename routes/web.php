@@ -7,12 +7,16 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Public\TutorController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'index'])->name('home');
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
 Route::get('/jobs/{slug}', [JobController::class, 'show'])->name('jobs.show');
+Route::get('/tutors', [TutorController::class, 'index'])->name('tutors');
+Route::get('/tutors/{id}', [TutorController::class, 'show'])->name('tutors.show');
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
@@ -28,10 +32,26 @@ Route::middleware('auth')->group(function () {
     Route::post('/verify-otp', [VerifyOtpController::class, 'store'])
         ->middleware('throttle:otp-verify')
         ->name('otp.verify.store');
+    Route::post('/verify-otp/resend', [VerifyOtpController::class, 'resend'])
+        ->middleware('throttle:otp-resend')
+        ->name('otp.verify.resend');
 
     Route::get('/dashboard', RoleDashboardRedirectController::class)->name('dashboard');
     Route::post('/impersonation/leave', [ImpersonationController::class, 'destroy'])->name('impersonation.leave');
+
+    Route::post('/payment/bkash/{invoice}', [PaymentController::class, 'startBkash'])
+        ->whereNumber('invoice')
+        ->name('payment.bkash.start');
+    Route::post('/payment/sslcommerz/{invoice}', [PaymentController::class, 'startSslCommerz'])
+        ->whereNumber('invoice')
+        ->name('payment.sslcommerz.start');
 });
+
+Route::get('/payment/bkash/callback', [PaymentController::class, 'bkashCallback'])->name('payment.bkash.callback');
+Route::post('/payment/sslcommerz/ipn', [PaymentController::class, 'sslIpn'])->name('payment.sslcommerz.ipn');
+Route::get('/payment/sslcommerz/success', [PaymentController::class, 'sslSuccess'])->name('payment.sslcommerz.success');
+Route::get('/payment/sslcommerz/fail', [PaymentController::class, 'sslFail'])->name('payment.sslcommerz.fail');
+Route::get('/payment/sslcommerz/cancel', [PaymentController::class, 'sslCancel'])->name('payment.sslcommerz.cancel');
 
 require __DIR__.'/tutor.php';
 require __DIR__.'/guardian.php';

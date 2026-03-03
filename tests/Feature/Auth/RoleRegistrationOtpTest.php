@@ -75,3 +75,55 @@ it('shows local debug otp on verify page when app env is local', function () {
             ->where('localOtp', config('otp.testing_code')),
         );
 });
+
+it('resend otp route is available for pending users', function () {
+    $user = User::factory()
+        ->guardian()
+        ->pendingVerification()
+        ->create();
+
+    $response = $this
+        ->actingAs($user)
+        ->post(route('otp.verify.resend'));
+
+    $response
+        ->assertRedirect(route('otp.verify', absolute: false))
+        ->assertSessionHas('status', 'A new verification code has been sent to your phone.');
+});
+
+it('returns a validation error when otp verify throttle is exceeded', function () {
+    $user = User::factory()
+        ->guardian()
+        ->pendingVerification()
+        ->create();
+
+    for ($attempt = 0; $attempt < 10; $attempt++) {
+        $response = $this
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.91'])
+            ->actingAs($user)
+            ->from(route('otp.verify', absolute: false))
+            ->post(route('otp.verify.store'), [
+                'code' => '000000',
+            ]);
+
+        $response
+            ->assertRedirect(route('otp.verify', absolute: false))
+            ->assertSessionHasErrors('code');
+    }
+
+    $throttledResponse = $this
+        ->withServerVariables(['REMOTE_ADDR' => '127.0.0.91'])
+        ->actingAs($user)
+        ->from(route('otp.verify', absolute: false))
+        ->post(route('otp.verify.store'), [
+            'code' => '000000',
+        ]);
+
+    $throttledResponse
+        ->assertRedirect(route('otp.verify', absolute: false))
+        ->assertSessionHasErrors('code');
+
+    $errorMessage = session('errors')?->get('code')[0] ?? null;
+
+    expect($errorMessage)->toContain('Too many verification attempts.');
+});

@@ -48,8 +48,12 @@ function updateStatus() {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-4 p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <h1 class="text-2xl font-semibold">Contact Message #{{ message.id }}</h1>
-                <Link href="/admin/contact-messages" class="text-sm underline">Back to messages</Link>
+                <h1 class="text-2xl font-semibold">
+                    Contact Message #{{ message.id }}
+                </h1>
+                <Link href="/admin/contact-messages" class="text-sm underline"
+                    >Back to messages</Link
+                >
             </div>
 
             <div
@@ -67,7 +71,13 @@ function updateStatus() {
                     </div>
                     <div>
                         <p class="text-muted-foreground">Status</p>
-                        <Badge :variant="message.status === 'open' ? 'default' : 'secondary'">
+                        <Badge
+                            :variant="
+                                message.status === 'open'
+                                    ? 'default'
+                                    : 'secondary'
+                            "
+                        >
                             {{ message.status }}
                         </Badge>
                     </div>
@@ -85,11 +95,21 @@ function updateStatus() {
                     </div>
                     <div>
                         <p class="text-muted-foreground">Received</p>
-                        <p class="font-medium">{{ message.created_at ? new Date(message.created_at).toLocaleString() : '—' }}</p>
+                        <p class="font-medium">
+                            {{
+                                message.created_at
+                                    ? new Date(
+                                          message.created_at,
+                                      ).toLocaleString()
+                                    : '—'
+                            }}
+                        </p>
                     </div>
                     <div class="md:col-span-2">
                         <p class="text-muted-foreground">Message</p>
-                        <div class="mt-1 whitespace-pre-wrap rounded-md bg-slate-50 p-3 text-slate-800">
+                        <div
+                            class="mt-1 rounded-md bg-slate-50 p-3 whitespace-pre-wrap text-slate-800"
+                        >
                             {{ message.message }}
                         </div>
                     </div>
@@ -99,13 +119,19 @@ function updateStatus() {
                     </div>
                     <div>
                         <p class="text-muted-foreground">User Agent</p>
-                        <p class="font-medium break-all">{{ message.user_agent || '—' }}</p>
+                        <p class="font-medium break-all">
+                            {{ message.user_agent || '—' }}
+                        </p>
                     </div>
                 </div>
 
                 <div class="mt-5">
                     <Button type="button" @click="openStatusDialog">
-                        {{ message.status === 'closed' ? 'Reopen Message' : 'Mark as Closed' }}
+                        {{
+                            message.status === 'closed'
+                                ? 'Reopen Message'
+                                : 'Mark as Closed'
+                        }}
                     </Button>
                 </div>
             </section>
@@ -113,13 +139,19 @@ function updateStatus() {
 
         <ConfirmDialog
             v-model:open="confirmOpen"
-            :title="message.status === 'closed' ? 'Reopen message' : 'Mark as closed'"
+            :title="
+                message.status === 'closed'
+                    ? 'Reopen message'
+                    : 'Mark as closed'
+            "
             :description="
                 message.status === 'closed'
                     ? 'This message will be marked as open.'
                     : 'This message will be marked as closed.'
             "
-            :confirm-label="message.status === 'closed' ? 'Reopen' : 'Mark Closed'"
+            :confirm-label="
+                message.status === 'closed' ? 'Reopen' : 'Mark Closed'
+            "
             @confirm="updateStatus"
         />
     </AdminLayout>

@@ -3,9 +3,6 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { Home, Moon, Sun } from 'lucide-vue-next';
 import { computed } from 'vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
-import UserMenuContent from '@/components/UserMenuContent.vue';
-import { useAppearance } from '@/composables/useAppearance';
-import { useInitials } from '@/composables/useInitials';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +11,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import UserMenuContent from '@/components/UserMenuContent.vue';
+import { useAppearance } from '@/composables/useAppearance';
+import { useInitials } from '@/composables/useInitials';
 import type { BreadcrumbItem } from '@/types';
 
 withDefaults(
@@ -79,7 +79,9 @@ function toggleAppearance(): void {
                                 :src="user.avatar"
                                 :alt="user.name"
                             />
-                            <AvatarFallback class="rounded-full bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
+                            <AvatarFallback
+                                class="rounded-full bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
+                            >
                                 {{ getInitials(user.name) }}
                             </AvatarFallback>
                         </Avatar>

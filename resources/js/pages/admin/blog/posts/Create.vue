@@ -39,14 +39,19 @@ const initialValues = {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-white px-5 py-4">
+            <div
+                class="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-white px-5 py-4"
+            >
                 <div>
                     <h1 class="text-2xl font-semibold">Create Blog Post</h1>
                     <p class="text-sm text-muted-foreground">
                         Draft and publish your new article from one workspace.
                     </p>
                 </div>
-                <Link href="/admin/blog/posts" class="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline">
+                <Link
+                    href="/admin/blog/posts"
+                    class="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
+                >
                     Back to Posts
                 </Link>
             </div>

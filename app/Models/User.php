@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,6 +17,20 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasRoles, ImpersonateModel, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+
+    public const VERIFICATION_STATUS_UNVERIFIED = 'unverified';
+
+    public const VERIFICATION_STATUS_PENDING = 'pending';
+
+    public const VERIFICATION_STATUS_APPROVED = 'approved';
+
+    public const VERIFICATION_STATUS_INVOICED = 'invoiced';
+
+    public const VERIFICATION_STATUS_VERIFIED = 'verified';
+
+    public const VERIFICATION_STATUS_REJECTED = 'rejected';
+
+    public const VERIFICATION_STATUS_CANCELLED = 'cancelled';
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +46,9 @@ class User extends Authenticatable
         'status',
         'phone_verified_at',
         'email_verified_at',
+        'verified_at',
+        'verification_status',
+        'verification_type',
     ];
 
     /**
@@ -55,6 +73,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
+            'verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
@@ -123,5 +142,53 @@ class User extends Authenticatable
     public function reviewedJobApplications(): HasMany
     {
         return $this->hasMany(TuitionJobApplication::class, 'reviewed_by');
+    }
+
+    /**
+     * Get tutor profile for this user.
+     */
+    public function tutorProfile(): HasOne
+    {
+        return $this->hasOne(TutorProfile::class);
+    }
+
+    /**
+     * Get tutor educations for this user.
+     */
+    public function tutorEducations(): HasMany
+    {
+        return $this->hasMany(TutorEducation::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * Get guardian profile for this user.
+     */
+    public function guardianProfile(): HasOne
+    {
+        return $this->hasOne(GuardianProfile::class);
+    }
+
+    /**
+     * Get verification requests of this user.
+     */
+    public function verificationRequests(): HasMany
+    {
+        return $this->hasMany(VerificationRequest::class);
+    }
+
+    /**
+     * Get the latest verification request of this user.
+     */
+    public function latestVerificationRequest(): HasOne
+    {
+        return $this->hasOne(VerificationRequest::class)->latestOfMany();
+    }
+
+    /**
+     * Get invoices of this user.
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

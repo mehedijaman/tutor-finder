@@ -27,14 +27,29 @@ const breadcrumbs = [
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-semibold">Create Role</h1>
-                <Link href="/admin/roles" class="text-sm text-muted-foreground underline">Back</Link>
+                <Link
+                    href="/admin/roles"
+                    class="text-sm text-muted-foreground underline"
+                    >Back</Link
+                >
             </div>
 
-            <Form action="/admin/roles" method="post" class="rounded-xl border bg-white p-4" #default="{ errors, processing }">
+            <Form
+                action="/admin/roles"
+                method="post"
+                class="rounded-xl border bg-white p-4"
+                #default="{ errors, processing }"
+            >
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="grid gap-2">
                         <Label for="name">Role name</Label>
-                        <Input id="name" name="name" type="text" required placeholder="manager" />
+                        <Input
+                            id="name"
+                            name="name"
+                            type="text"
+                            required
+                            placeholder="manager"
+                        />
                         <InputError :message="errors.name" />
                     </div>
                 </div>
@@ -46,12 +61,18 @@ const breadcrumbs = [
                         :key="permission"
                         class="flex items-center gap-2 text-sm"
                     >
-                        <Checkbox :id="`role-perm-${permission}`" name="permissions[]" :value="permission" />
+                        <Checkbox
+                            :id="`role-perm-${permission}`"
+                            name="permissions[]"
+                            :value="permission"
+                        />
                         <span>{{ permission }}</span>
                     </label>
                 </div>
 
-                <Button class="mt-4" type="submit" :disabled="processing">Create Role</Button>
+                <Button class="mt-4" type="submit" :disabled="processing"
+                    >Create Role</Button
+                >
             </Form>
         </div>
     </AdminLayout>

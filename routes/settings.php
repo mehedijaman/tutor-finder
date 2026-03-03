@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PaymentGatewaySettingController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SmsSettingController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -36,6 +37,12 @@ Route::middleware(['auth', 'ensure.role:admin', 'ensure.active'])->group(functio
     Route::put('settings/site', [SiteSettingController::class, 'update'])
         ->middleware('permission:site-setting-update')
         ->name('admin.site-settings.update');
+    Route::get('settings/payment', [PaymentGatewaySettingController::class, 'edit'])
+        ->middleware('permission:payment-setting-view')
+        ->name('admin.payment-settings.edit');
+    Route::put('settings/payment', [PaymentGatewaySettingController::class, 'update'])
+        ->middleware('permission:payment-setting-update')
+        ->name('admin.payment-settings.update');
 
     Route::get('settings/sms', [SmsSettingController::class, 'index'])
         ->middleware('permission:sms-setting-view')

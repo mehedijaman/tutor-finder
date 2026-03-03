@@ -93,7 +93,9 @@ function submit() {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="reset-password-confirmation">Confirm password</Label>
+                    <Label for="reset-password-confirmation"
+                        >Confirm password</Label
+                    >
                     <Input
                         id="reset-password-confirmation"
                         v-model="form.password_confirmation"
@@ -105,7 +107,12 @@ function submit() {
             </div>
 
             <DialogFooter class="gap-2">
-                <Button type="button" variant="outline" :disabled="processing" @click="closeDialog">
+                <Button
+                    type="button"
+                    variant="outline"
+                    :disabled="processing"
+                    @click="closeDialog"
+                >
                     Cancel
                 </Button>
                 <Button type="button" :disabled="processing" @click="submit">

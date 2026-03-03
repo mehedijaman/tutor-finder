@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import AppContent from '@/components/AppContent.vue';
 import AppHeader from '@/components/AppHeader.vue';
-import ImpersonationBanner from '@/components/ImpersonationBanner.vue';
 import AppShell from '@/components/AppShell.vue';
+import ImpersonationBanner from '@/components/ImpersonationBanner.vue';
 import type { BreadcrumbItem } from '@/types';
 
 type Props = {

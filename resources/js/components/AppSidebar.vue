@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import {
     FileText,
@@ -24,6 +23,7 @@ import {
     Bell,
     Briefcase,
 } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -40,7 +40,9 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const page = usePage();
-const unreadNotificationCount = computed(() => Number(page.props.notificationCounts?.unread ?? 0));
+const unreadNotificationCount = computed(() =>
+    Number(page.props.notificationCounts?.unread ?? 0),
+);
 
 const mainNavItems = computed<NavItem[]>(() => {
     const role = page.props.auth?.user?.role;
@@ -48,20 +50,102 @@ const mainNavItems = computed<NavItem[]>(() => {
     if (role === 'admin') {
         return [
             { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
-            { title: 'Tutors', href: '/admin/tutors', icon: GraduationCap },
-            { title: 'Guardians', href: '/admin/guardians', icon: UserRound },
-            { title: 'Contact Messages', href: '/admin/contact-messages', icon: MessagesSquare },
+            {
+                title: 'Tutors',
+                href: '/admin/tutors',
+                icon: GraduationCap,
+                children: [
+                    {
+                        title: 'Create Tutor',
+                        href: '/admin/tutors/create',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Pending',
+                        href: '/admin/tutors?verification=pending',
+                        icon: Shield,
+                    },
+                    {
+                        title: 'Unverified',
+                        href: '/admin/tutors?verification=unverified',
+                        icon: Shield,
+                    },
+                    {
+                        title: 'Verified',
+                        href: '/admin/tutors?verification=verified',
+                        icon: Shield,
+                    },
+                    { title: 'All Tutors', href: '/admin/tutors', icon: Users },
+                ],
+            },
+            {
+                title: 'Guardians',
+                href: '/admin/guardians',
+                icon: UserRound,
+                children: [
+                    {
+                        title: 'Create Guardian',
+                        href: '/admin/guardians/create',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Pending',
+                        href: '/admin/guardians?verification=pending',
+                        icon: Shield,
+                    },
+                    {
+                        title: 'Unverified',
+                        href: '/admin/guardians?verification=unverified',
+                        icon: Shield,
+                    },
+                    {
+                        title: 'Verified',
+                        href: '/admin/guardians?verification=verified',
+                        icon: Shield,
+                    },
+                    {
+                        title: 'All Guardians',
+                        href: '/admin/guardians',
+                        icon: Users,
+                    },
+                ],
+            },
+            {
+                title: 'Contact Messages',
+                href: '/admin/contact-messages',
+                icon: MessagesSquare,
+            },
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             {
                 title: 'Jobs',
                 href: '/admin/jobs',
                 icon: Briefcase,
                 children: [
-                    { title: 'Create Job', href: '/admin/jobs/create', icon: FileText },
-                    { title: 'Pending Jobs', href: '/admin/jobs/pending', icon: FileText },
-                    { title: 'Live Jobs', href: '/admin/jobs/live', icon: FileText },
-                    { title: 'Confirmed Jobs', href: '/admin/jobs/confirmed', icon: FileText },
-                    { title: 'Cancelled Jobs', href: '/admin/jobs/cancelled', icon: FileText },
+                    {
+                        title: 'Create Job',
+                        href: '/admin/jobs/create',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Pending Jobs',
+                        href: '/admin/jobs/pending',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Live Jobs',
+                        href: '/admin/jobs/live',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Confirmed Jobs',
+                        href: '/admin/jobs/confirmed',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Cancelled Jobs',
+                        href: '/admin/jobs/cancelled',
+                        icon: FileText,
+                    },
                     { title: 'All Jobs', href: '/admin/jobs', icon: FileText },
                 ],
             },
@@ -70,13 +154,41 @@ const mainNavItems = computed<NavItem[]>(() => {
                 href: '/admin/tuition/taxonomies/countries',
                 icon: BookOpen,
                 children: [
-                    { title: 'Countries', href: '/admin/tuition/taxonomies/countries', icon: Globe },
-                    { title: 'Cities', href: '/admin/tuition/taxonomies/cities', icon: MapPin },
-                    { title: 'Areas', href: '/admin/tuition/taxonomies/areas', icon: MapPin },
-                    { title: 'Categories', href: '/admin/tuition/taxonomies/categories', icon: FolderOpen },
-                    { title: 'Classes', href: '/admin/tuition/taxonomies/classes', icon: GraduationCap },
-                    { title: 'Subjects', href: '/admin/tuition/taxonomies/subjects', icon: FileText },
-                    { title: 'Tuition Types', href: '/admin/tuition/taxonomies/tuition-types', icon: Tags },
+                    {
+                        title: 'Countries',
+                        href: '/admin/tuition/taxonomies/countries',
+                        icon: Globe,
+                    },
+                    {
+                        title: 'Cities',
+                        href: '/admin/tuition/taxonomies/cities',
+                        icon: MapPin,
+                    },
+                    {
+                        title: 'Areas',
+                        href: '/admin/tuition/taxonomies/areas',
+                        icon: MapPin,
+                    },
+                    {
+                        title: 'Categories',
+                        href: '/admin/tuition/taxonomies/categories',
+                        icon: FolderOpen,
+                    },
+                    {
+                        title: 'Classes',
+                        href: '/admin/tuition/taxonomies/classes',
+                        icon: GraduationCap,
+                    },
+                    {
+                        title: 'Subjects',
+                        href: '/admin/tuition/taxonomies/subjects',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Tuition Types',
+                        href: '/admin/tuition/taxonomies/tuition-types',
+                        icon: Tags,
+                    },
                 ],
             },
             {
@@ -84,8 +196,16 @@ const mainNavItems = computed<NavItem[]>(() => {
                 href: '/admin/blog/posts',
                 icon: Newspaper,
                 children: [
-                    { title: 'Posts', href: '/admin/blog/posts', icon: FileText },
-                    { title: 'Categories', href: '/admin/blog/categories', icon: FolderOpen },
+                    {
+                        title: 'Posts',
+                        href: '/admin/blog/posts',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Categories',
+                        href: '/admin/blog/categories',
+                        icon: FolderOpen,
+                    },
                     { title: 'Tags', href: '/admin/blog/tags', icon: Tags },
                 ],
             },
@@ -104,9 +224,22 @@ const mainNavItems = computed<NavItem[]>(() => {
                 href: '/admin/maintenance',
                 icon: Wrench,
                 children: [
-                    { title: 'Backups', href: '/admin/backups', icon: HardDrive },
-                    { title: 'Activity Logs', href: '/admin/activity-logs', icon: History },
-                    { title: 'Log Viewer', href: '/admin/log-viewer', icon: FileText, fullPage: true },
+                    {
+                        title: 'Backups',
+                        href: '/admin/backups',
+                        icon: HardDrive,
+                    },
+                    {
+                        title: 'Activity Logs',
+                        href: '/admin/activity-logs',
+                        icon: History,
+                    },
+                    {
+                        title: 'Log Viewer',
+                        href: '/admin/log-viewer',
+                        icon: FileText,
+                        fullPage: true,
+                    },
                 ],
             },
         ];
@@ -116,12 +249,25 @@ const mainNavItems = computed<NavItem[]>(() => {
         return [
             { title: 'Dashboard', href: '/tutor/dashboard', icon: LayoutGrid },
             { title: 'Browse Jobs', href: '/jobs', icon: FileText },
-            { title: 'My Applications', href: '/tutor/job-applications', icon: FolderOpen },
+            {
+                title: 'My Applications',
+                href: '/tutor/job-applications',
+                icon: FolderOpen,
+            },
+            { title: 'Profile', href: '/tutor/profile', icon: UserRound },
+            {
+                title: 'Verification',
+                href: '/tutor/verification',
+                icon: Shield,
+            },
             {
                 title: 'Notifications',
                 href: '/tutor/notifications',
                 icon: Bell,
-                badge: unreadNotificationCount.value > 0 ? unreadNotificationCount.value : undefined,
+                badge:
+                    unreadNotificationCount.value > 0
+                        ? unreadNotificationCount.value
+                        : undefined,
             },
         ];
     }
@@ -129,15 +275,19 @@ const mainNavItems = computed<NavItem[]>(() => {
     return [
         { title: 'Dashboard', href: '/guardian/dashboard', icon: LayoutGrid },
         { title: 'Jobs', href: '/guardian/jobs', icon: FileText },
+        { title: 'Profile', href: '/guardian/profile', icon: UserRound },
+        { title: 'Verification', href: '/guardian/verification', icon: Shield },
         {
             title: 'Notifications',
             href: '/guardian/notifications',
             icon: Bell,
-            badge: unreadNotificationCount.value > 0 ? unreadNotificationCount.value : undefined,
+            badge:
+                unreadNotificationCount.value > 0
+                    ? unreadNotificationCount.value
+                    : undefined,
         },
     ];
 });
-
 </script>
 
 <template>
@@ -158,9 +308,9 @@ const mainNavItems = computed<NavItem[]>(() => {
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <!-- <SidebarFooter>
+        <SidebarFooter>
             <NavUser />
-        </SidebarFooter> -->
+        </SidebarFooter>
     </Sidebar>
     <slot />
 </template>

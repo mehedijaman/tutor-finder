@@ -50,6 +50,11 @@ const sidebarNavItems = computed<NavItem[]>(() => {
         });
 
         items.push({
+            title: 'Payment Settings',
+            href: '/settings/payment',
+        });
+
+        items.push({
             title: 'SMS Settings',
             href: '/settings/sms',
         });
@@ -95,7 +100,13 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
             <Separator class="my-6 lg:hidden" />
 
             <div :class="props.fullWidth ? 'flex-1' : 'flex-1 md:max-w-2xl'">
-                <section :class="props.fullWidth ? 'w-full space-y-12' : 'max-w-xl space-y-12'">
+                <section
+                    :class="
+                        props.fullWidth
+                            ? 'w-full space-y-12'
+                            : 'max-w-xl space-y-12'
+                    "
+                >
                     <slot />
                 </section>
             </div>
