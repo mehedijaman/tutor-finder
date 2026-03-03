@@ -33,7 +33,14 @@ class InvoiceController extends Controller
                 'payee:id,name,email,role',
                 'assignment:id,job_id,tutor_user_id',
                 'assignment.job:id,title,slug',
-                'latestPayment:id,invoice_id,gateway,provider_txn_id,status,created_at',
+                'latestPayment' => fn ($query) => $query->select([
+                    'payments.id',
+                    'payments.invoice_id',
+                    'payments.gateway',
+                    'payments.provider_txn_id',
+                    'payments.status',
+                    'payments.created_at',
+                ]),
             ])
             ->when($search !== '', function (Builder $builder) use ($search): void {
                 $builder->where(function (Builder $query) use ($search): void {

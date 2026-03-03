@@ -22,7 +22,14 @@ class FinanceController extends Controller
         }
 
         $items = Invoice::query()
-            ->with(['latestPayment:id,invoice_id,gateway,provider_txn_id,status,created_at'])
+            ->with(['latestPayment' => fn ($query) => $query->select([
+                'payments.id',
+                'payments.invoice_id',
+                'payments.gateway',
+                'payments.provider_txn_id',
+                'payments.status',
+                'payments.created_at',
+            ])])
             ->where('payer_user_id', $request->user()?->getAuthIdentifier())
             ->when($status !== '', fn (Builder $builder): Builder => $builder->where('status', $status))
             ->latest('id')
