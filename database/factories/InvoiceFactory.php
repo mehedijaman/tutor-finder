@@ -19,11 +19,20 @@ class InvoiceFactory extends Factory
      */
     public function definition(): array
     {
+        $payer = User::factory()->guardian();
+
         return [
             'invoice_no' => 'INV-'.strtoupper(fake()->unique()->bothify('########')),
             'invoiceable_type' => VerificationRequest::class,
             'invoiceable_id' => VerificationRequest::factory(),
-            'user_id' => User::factory()->guardian(),
+            'user_id' => $payer,
+            'payer_user_id' => $payer,
+            'payee_user_id' => User::factory()->state([
+                'role' => 'platform',
+                'status' => 'active',
+            ]),
+            'type' => Invoice::TYPE_TUTOR_VERIFICATION_FEE,
+            'job_assignment_id' => null,
             'amount' => 500,
             'currency' => 'BDT',
             'status' => Invoice::STATUS_UNPAID,
@@ -57,6 +66,10 @@ class InvoiceFactory extends Factory
 
             $invoice->forceFill([
                 'user_id' => $verificationRequest->user_id,
+                'payer_user_id' => $verificationRequest->user_id,
+                'type' => $verificationRequest->role === VerificationRequest::ROLE_GUARDIAN
+                    ? Invoice::TYPE_GUARDIAN_VERIFICATION_FEE
+                    : Invoice::TYPE_TUTOR_VERIFICATION_FEE,
             ])->save();
         });
     }

@@ -169,6 +169,38 @@ const mainNavItems = computed<NavItem[]>(() => {
                 ],
             },
             {
+                title: 'Finance',
+                href: '/admin/finance/invoices',
+                icon: FileText,
+                children: [
+                    {
+                        title: 'Invoices',
+                        href: '/admin/finance/invoices',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Payments',
+                        href: '/admin/finance/payments',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Escrow',
+                        href: '/admin/finance/invoices?type=online_month1_escrow',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Refund Requests',
+                        href: '/admin/finance/refund-requests',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Ledger',
+                        href: '/admin/finance/ledger',
+                        icon: FileText,
+                    },
+                ],
+            },
+            {
                 title: 'Tuition Taxonomy',
                 href: '/admin/tuition/taxonomies/countries',
                 icon: BookOpen,
@@ -306,6 +338,23 @@ const mainNavItems = computed<NavItem[]>(() => {
                     },
                 ],
             },
+            {
+                title: 'Fees & Refunds',
+                href: '/tutor/finance/invoices',
+                icon: FileText,
+                children: [
+                    {
+                        title: 'Invoices',
+                        href: '/tutor/finance/invoices',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Refund Requests',
+                        href: '/tutor/finance/refunds',
+                        icon: FileText,
+                    },
+                ],
+            },
             { title: 'Profile', href: '/tutor/profile', icon: UserRound },
             {
                 title: 'Verification',
@@ -368,6 +417,11 @@ const mainNavItems = computed<NavItem[]>(() => {
                     icon: FileText,
                 },
             ],
+        },
+        {
+            title: 'Payments & Escrow',
+            href: '/guardian/finance/invoices',
+            icon: FileText,
         },
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
         { title: 'Verification', href: '/guardian/verification', icon: Shield },

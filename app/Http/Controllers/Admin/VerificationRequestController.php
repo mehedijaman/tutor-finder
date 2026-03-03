@@ -7,9 +7,11 @@ use App\Http\Requests\Admin\InvoiceCreateRequest;
 use App\Http\Requests\Admin\VerificationDecisionRequest;
 use App\Models\GuardianProfile;
 use App\Models\Invoice;
+use App\Models\SiteSetting;
 use App\Models\TutorProfile;
 use App\Models\User;
 use App\Models\VerificationRequest;
+use App\Services\Finance\InvoiceLifecycleService;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -231,9 +233,15 @@ class VerificationRequestController extends Controller
                 $admin = $request->user();
                 $lockedRequest = VerificationRequest::query()->with('invoice')->lockForUpdate()->findOrFail($verificationRequest->getKey());
                 $lockedUser = User::query()->lockForUpdate()->findOrFail($lockedRequest->user_id);
+                $siteSetting = SiteSetting::current();
+                $platformOwnerUserId = $siteSetting->platformOwnerUserId();
 
                 if (! in_array($lockedRequest->status, [VerificationRequest::STATUS_PENDING, VerificationRequest::STATUS_APPROVED], true)) {
                     throw new DomainException('Invoice can only be generated for pending or approved requests.');
+                }
+
+                if ($platformOwnerUserId === null) {
+                    throw new DomainException('Platform finance account is not configured. Please update site settings.');
                 }
 
                 if ($lockedRequest->invoice instanceof Invoice) {
@@ -246,10 +254,19 @@ class VerificationRequestController extends Controller
 
                 $amount = isset($validated['amount']) ? (float) $validated['amount'] : (float) $lockedRequest->fee_amount;
                 $currency = $validated['currency'] ?? $lockedRequest->currency;
+                $invoiceType = $lockedRequest->role === VerificationRequest::ROLE_GUARDIAN
+                    ? Invoice::TYPE_GUARDIAN_VERIFICATION_FEE
+                    : Invoice::TYPE_TUTOR_VERIFICATION_FEE;
 
-                $lockedRequest->invoice()->create([
-                    'invoice_no' => $this->generateInvoiceNumber(),
+                app(InvoiceLifecycleService::class)->issue([
+                    'invoice_no' => null,
+                    'invoiceable_type' => VerificationRequest::class,
+                    'invoiceable_id' => $lockedRequest->getKey(),
                     'user_id' => $lockedUser->getKey(),
+                    'payer_user_id' => $lockedUser->getKey(),
+                    'payee_user_id' => $platformOwnerUserId,
+                    'type' => $invoiceType,
+                    'job_assignment_id' => null,
                     'amount' => $amount,
                     'currency' => $currency,
                     'status' => Invoice::STATUS_UNPAID,
@@ -287,18 +304,6 @@ class VerificationRequestController extends Controller
             VerificationRequest::STATUS_REJECTED,
             VerificationRequest::STATUS_CANCELLED,
         ];
-    }
-
-    /**
-     * Generate unique invoice number.
-     */
-    private function generateInvoiceNumber(): string
-    {
-        do {
-            $candidate = 'INV-'.now()->format('Ymd').'-'.str_pad((string) random_int(1, 999999), 6, '0', STR_PAD_LEFT);
-        } while (Invoice::query()->where('invoice_no', $candidate)->exists());
-
-        return $candidate;
     }
 
     /**

@@ -88,6 +88,12 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'invoice-view',
             'invoice-create',
             'invoice-update',
+            'finance-invoice-view',
+            'finance-payment-view',
+            'finance-refund-view',
+            'finance-refund-decide',
+            'finance-refund-pay',
+            'finance-ledger-view',
         )->values()->all();
 
         Permission::query()

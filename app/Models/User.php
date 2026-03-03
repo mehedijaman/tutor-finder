@@ -191,4 +191,36 @@ class User extends Authenticatable
     {
         return $this->hasMany(Invoice::class);
     }
+
+    /**
+     * Get invoices where user is payer.
+     */
+    public function payerInvoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'payer_user_id');
+    }
+
+    /**
+     * Get invoices where user is payee.
+     */
+    public function payeeInvoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'payee_user_id');
+    }
+
+    /**
+     * Get ledger entries where user is owner.
+     */
+    public function ledgerEntries(): HasMany
+    {
+        return $this->hasMany(WalletLedgerEntry::class, 'owner_user_id');
+    }
+
+    /**
+     * Get refund requests submitted by this user.
+     */
+    public function refundRequests(): HasMany
+    {
+        return $this->hasMany(RefundRequest::class, 'requested_by_user_id');
+    }
 }

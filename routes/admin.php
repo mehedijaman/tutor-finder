@@ -11,6 +11,10 @@ use App\Http\Controllers\Admin\BlogUploadController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\Finance\InvoiceController as FinanceInvoiceController;
+use App\Http\Controllers\Admin\Finance\LedgerController as FinanceLedgerController;
+use App\Http\Controllers\Admin\Finance\PaymentController as FinancePaymentController;
+use App\Http\Controllers\Admin\Finance\RefundRequestController as FinanceRefundRequestController;
 use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
@@ -706,6 +710,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])
             ->middleware('permission:invoice-update')
             ->name('invoices.mark-paid');
+
+        Route::prefix('finance')->name('finance.')->group(function () {
+            Route::get('/invoices', [FinanceInvoiceController::class, 'index'])
+                ->middleware('permission:finance-invoice-view')
+                ->name('invoices.index');
+            Route::get('/payments', [FinancePaymentController::class, 'index'])
+                ->middleware('permission:finance-payment-view')
+                ->name('payments.index');
+            Route::get('/refund-requests', [FinanceRefundRequestController::class, 'index'])
+                ->middleware('permission:finance-refund-view')
+                ->name('refund-requests.index');
+            Route::patch('/refund-requests/{refundRequest}/decision', [FinanceRefundRequestController::class, 'decide'])
+                ->middleware('permission:finance-refund-decide')
+                ->name('refund-requests.decision');
+            Route::patch('/refund-requests/{refundRequest}/mark-paid', [FinanceRefundRequestController::class, 'markPaid'])
+                ->middleware('permission:finance-refund-pay')
+                ->name('refund-requests.mark-paid');
+            Route::get('/ledger', [FinanceLedgerController::class, 'index'])
+                ->middleware('permission:finance-ledger-view')
+                ->name('ledger.index');
+        });
 
     });
 });

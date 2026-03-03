@@ -88,14 +88,14 @@ const canGenerateInvoice = computed(() => {
 
     const status = props.verification.invoice?.status;
 
-    return !status || ['failed', 'cancelled', 'void'].includes(status);
+    return !status || ['void'].includes(status);
 });
 const canMarkPaid = computed(() => {
     const invoiceStatus = props.verification.invoice?.status;
 
     return (
         Boolean(props.verification.invoice?.id) &&
-        ['unpaid', 'processing', 'failed', 'cancelled'].includes(invoiceStatus)
+        ['unpaid', 'draft'].includes(invoiceStatus)
     );
 });
 

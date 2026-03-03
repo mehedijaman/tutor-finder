@@ -134,9 +134,35 @@ function confirmStatusUpdate() {
     const isConfirmAction = pendingAction.value === 'confirm';
 
     if (isConfirmAction) {
+        const escrowRequired = window.confirm(
+            'Require month-1 escrow for this hire? Press OK for Yes, Cancel for No.',
+        );
+        let escrowAmount = null;
+
+        if (escrowRequired) {
+            const entered = window.prompt(
+                'Enter month-1 escrow amount',
+                pendingRow.value.expected_salary_amount || '',
+            );
+
+            if (entered === null || entered.trim() === '') {
+                return;
+            }
+
+            escrowAmount = Number(entered);
+
+            if (!Number.isFinite(escrowAmount) || escrowAmount <= 0) {
+                return;
+            }
+        }
+
         router.patch(
             `${baseUrl}/${pendingRow.value.id}/confirm`,
-            {},
+            {
+                month1_escrow_required: escrowRequired,
+                month1_escrow_amount: escrowAmount,
+                notes: '',
+            },
             {
                 preserveScroll: true,
                 onFinish: resetConfirm,

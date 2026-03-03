@@ -17,7 +17,9 @@ class PaymentController extends Controller
      */
     public function startBkash(Request $request, Invoice $invoice, PaymentManager $paymentManager): RedirectResponse
     {
-        if ($request->user()?->getKey() !== $invoice->user_id) {
+        $payerUserId = (int) ($invoice->payer_user_id ?? $invoice->user_id);
+
+        if ((int) $request->user()?->getKey() !== $payerUserId) {
             abort(403);
         }
 
@@ -86,7 +88,9 @@ class PaymentController extends Controller
      */
     public function startSslCommerz(Request $request, Invoice $invoice, PaymentManager $paymentManager): RedirectResponse
     {
-        if ($request->user()?->getKey() !== $invoice->user_id) {
+        $payerUserId = (int) ($invoice->payer_user_id ?? $invoice->user_id);
+
+        if ((int) $request->user()?->getKey() !== $payerUserId) {
             abort(403);
         }
 
@@ -206,7 +210,7 @@ class PaymentController extends Controller
         }
 
         return Invoice::query()
-            ->with('user')
+            ->with(['user', 'payer'])
             ->where('payment_gateway', Invoice::GATEWAY_SSLCOMMERZ)
             ->where('payment_reference', $tranId)
             ->first();
@@ -224,7 +228,7 @@ class PaymentController extends Controller
         }
 
         return Invoice::query()
-            ->with('user')
+            ->with(['user', 'payer'])
             ->where('payment_gateway', Invoice::GATEWAY_BKASH)
             ->where('payment_reference', $paymentId)
             ->first();
@@ -235,12 +239,24 @@ class PaymentController extends Controller
      */
     private function verificationRedirectPath(?Invoice $invoice): string
     {
-        if (! $invoice instanceof Invoice || ! $invoice->user) {
+        if (! $invoice instanceof Invoice) {
             return '/login';
         }
 
-        return $invoice->user->role === 'tutor'
-            ? '/tutor/verification'
-            : '/guardian/verification';
+        $payer = $invoice->payer ?? $invoice->user;
+
+        if (! $payer) {
+            return '/login';
+        }
+
+        if ($invoice->isVerificationInvoice()) {
+            return $payer->role === 'tutor'
+                ? '/tutor/verification'
+                : '/guardian/verification';
+        }
+
+        return $payer->role === 'tutor'
+            ? '/tutor/finance/invoices'
+            : '/guardian/finance/invoices';
     }
 }

@@ -31,6 +31,11 @@ class SiteSetting extends Model
         'trade_licence_no',
         'tin_no',
         'bin_no',
+        'platform_owner_user_id',
+        'platform_service_fee_rate',
+        'platform_service_fee_due_days',
+        'default_fee_currency',
+        'default_fee_payment_mode',
     ];
 
     /**
@@ -45,6 +50,9 @@ class SiteSetting extends Model
             'emails' => 'array',
             'addresses' => 'array',
             'social_details' => 'array',
+            'platform_owner_user_id' => 'integer',
+            'platform_service_fee_rate' => 'decimal:5',
+            'platform_service_fee_due_days' => 'integer',
         ];
     }
 
@@ -53,9 +61,42 @@ class SiteSetting extends Model
      */
     public static function current(): self
     {
+        $platformOwnerUserId = User::query()
+            ->where('email', 'platform@system.local')
+            ->where('status', 'active')
+            ->value('id');
+
+        $financeDefaults = [
+            'platform_service_fee_rate' => 0.60000,
+            'platform_service_fee_due_days' => 10,
+            'default_fee_currency' => 'BDT',
+            'default_fee_payment_mode' => 'pay_before',
+        ];
+
+        if (is_numeric($platformOwnerUserId)) {
+            $financeDefaults['platform_owner_user_id'] = (int) $platformOwnerUserId;
+        }
+
         $siteSetting = static::query()->find(1);
 
         if ($siteSetting instanceof self) {
+            $updates = [];
+
+            if ($siteSetting->platform_owner_user_id === null && isset($financeDefaults['platform_owner_user_id'])) {
+                $updates['platform_owner_user_id'] = $financeDefaults['platform_owner_user_id'];
+            }
+
+            foreach (['platform_service_fee_rate', 'platform_service_fee_due_days', 'default_fee_currency', 'default_fee_payment_mode'] as $key) {
+                if ($siteSetting->{$key} === null) {
+                    $updates[$key] = $financeDefaults[$key];
+                }
+            }
+
+            if ($updates !== []) {
+                $siteSetting->forceFill($updates)->save();
+                $siteSetting->refresh();
+            }
+
             return $siteSetting;
         }
 
@@ -67,8 +108,32 @@ class SiteSetting extends Model
                 'emails' => [],
                 'addresses' => [],
                 'social_details' => [],
+                ...$financeDefaults,
             ],
         );
+    }
+
+    /**
+     * Resolve active platform owner user id.
+     */
+    public function platformOwnerUserId(): ?int
+    {
+        $platformOwnerUserId = $this->platform_owner_user_id;
+
+        if (! is_numeric($platformOwnerUserId)) {
+            return null;
+        }
+
+        $platformOwner = User::query()
+            ->whereKey((int) $platformOwnerUserId)
+            ->where('status', 'active')
+            ->first();
+
+        if (! $platformOwner instanceof User) {
+            return null;
+        }
+
+        return (int) $platformOwner->id;
     }
 
     /**

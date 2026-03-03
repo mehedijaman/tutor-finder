@@ -262,8 +262,7 @@ function actionItemsForRow(row) {
 
     const canGenerateInvoice =
         ['pending', 'approved'].includes(row.status) &&
-        (!row.invoice_status ||
-            ['failed', 'cancelled', 'void'].includes(row.invoice_status));
+        (!row.invoice_status || ['void'].includes(row.invoice_status));
 
     if (canGenerateInvoice) {
         actions.push({ key: 'invoice', label: 'Generate Invoice' });
@@ -271,9 +270,7 @@ function actionItemsForRow(row) {
 
     const canMarkPaid =
         row.invoice_id &&
-        ['unpaid', 'processing', 'failed', 'cancelled'].includes(
-            row.invoice_status,
-        );
+        ['unpaid', 'draft'].includes(row.invoice_status);
 
     if (canMarkPaid) {
         actions.push({ key: 'mark-paid', label: 'Mark Paid' });
@@ -524,11 +521,7 @@ function submitMarkPaid() {
                                         row.status,
                                     ) &&
                                     (!row.invoice_status ||
-                                        [
-                                            'failed',
-                                            'cancelled',
-                                            'void',
-                                        ].includes(row.invoice_status))
+                                        ['void'].includes(row.invoice_status))
                                 ) {
                                     openInvoiceDialog(row);
                                     return;

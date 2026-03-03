@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Invoice;
+use App\Models\SiteSetting;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
 use App\Models\TuitionJobAssignment;
@@ -138,11 +140,32 @@ it('guardian applications page marks management as locked for expired live jobs'
 
 it('guardian can confirm shortlisted tutor engagement and close other open applications', function () {
     $guardian = User::factory()->guardian()->create();
+    $platformUser = User::factory()->admin()->create([
+        'role' => 'platform',
+        'status' => 'active',
+    ]);
     $selectedTutor = User::factory()->tutor()->create();
     $otherTutor = User::factory()->tutor()->create();
 
+    SiteSetting::query()->updateOrCreate(
+        ['id' => 1],
+        [
+            'site_name' => 'Tutor Finder',
+            'phone_numbers' => [],
+            'emails' => [],
+            'addresses' => [],
+            'social_details' => [],
+            'platform_owner_user_id' => $platformUser->id,
+            'platform_service_fee_rate' => 0.60000,
+            'platform_service_fee_due_days' => 10,
+            'default_fee_currency' => 'BDT',
+            'default_fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
+        ],
+    );
+
     $job = TuitionJob::factory()->live()->create([
         'guardian_id' => $guardian->id,
+        'salary_amount' => 20000,
         'expires_at' => now()->addDays(15),
     ]);
 
@@ -162,7 +185,11 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
         ->patch(route('guardian.jobs.applications.confirm', [
             'tuitionJob' => $job->id,
             'tuitionJobApplication' => $selectedApplication->id,
-        ]))
+        ]), [
+            'month1_escrow_required' => false,
+            'month1_escrow_amount' => null,
+            'notes' => 'Confirming selected tutor.',
+        ])
         ->assertRedirect();
 
     $this->assertDatabaseHas('tuition_jobs', [
@@ -183,6 +210,27 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
     expect($assignment->appointed_at)->not->toBeNull();
     expect($assignment->confirmed_at)->not->toBeNull();
     expect($assignment->appointed_at?->equalTo($assignment->confirmed_at))->toBeTrue();
+    expect((float) $assignment->salary_base_amount)->toBe(20000.0);
+    expect($assignment->salary_base_source)->toBe('job');
+    expect((float) $assignment->service_fee_rate)->toBe(0.6);
+    expect((float) $assignment->service_fee_amount)->toBe(12000.0);
+    expect($assignment->fee_currency)->toBe('BDT');
+    expect($assignment->month1_escrow_required)->toBeFalse();
+
+    $this->assertDatabaseHas('invoices', [
+        'job_assignment_id' => $assignment->id,
+        'type' => Invoice::TYPE_PLATFORM_SERVICE_FEE,
+        'status' => Invoice::STATUS_UNPAID,
+        'payer_user_id' => $selectedTutor->id,
+        'payee_user_id' => $platformUser->id,
+        'amount' => 12000.00,
+        'currency' => 'BDT',
+    ]);
+
+    $this->assertDatabaseMissing('invoices', [
+        'job_assignment_id' => $assignment->id,
+        'type' => Invoice::TYPE_ONLINE_MONTH1_ESCROW,
+    ]);
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $selectedApplication->id,
@@ -201,6 +249,89 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
     expect($selectedTutor->unreadNotifications->first()->data['event'])->toBe('job-engagement-confirmed');
     expect($otherTutor->unreadNotifications)->toHaveCount(1);
     expect($otherTutor->unreadNotifications->first()->data['event'])->toBe('job-application-status-updated');
+});
+
+it('guardian confirm with escrow enabled requires amount and creates escrow invoice', function () {
+    $guardian = User::factory()->guardian()->create();
+    $platformUser = User::factory()->admin()->create([
+        'role' => 'platform',
+        'status' => 'active',
+    ]);
+    $selectedTutor = User::factory()->tutor()->create();
+
+    SiteSetting::query()->updateOrCreate(
+        ['id' => 1],
+        [
+            'site_name' => 'Tutor Finder',
+            'phone_numbers' => [],
+            'emails' => [],
+            'addresses' => [],
+            'social_details' => [],
+            'platform_owner_user_id' => $platformUser->id,
+            'platform_service_fee_rate' => 0.50000,
+            'platform_service_fee_due_days' => 10,
+            'default_fee_currency' => 'BDT',
+            'default_fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
+        ],
+    );
+
+    $job = TuitionJob::factory()->live()->create([
+        'guardian_id' => $guardian->id,
+        'salary_amount' => 10000,
+        'expires_at' => now()->addDays(15),
+    ]);
+
+    $selectedApplication = TuitionJobApplication::factory()->create([
+        'job_id' => $job->id,
+        'tutor_user_id' => $selectedTutor->id,
+        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+    ]);
+
+    $this->actingAs($guardian)
+        ->from(route('guardian.jobs.applications.index', ['tuitionJob' => $job->id]))
+        ->patch(route('guardian.jobs.applications.confirm', [
+            'tuitionJob' => $job->id,
+            'tuitionJobApplication' => $selectedApplication->id,
+        ]), [
+            'month1_escrow_required' => true,
+            'month1_escrow_amount' => null,
+        ])
+        ->assertRedirect(route('guardian.jobs.applications.index', ['tuitionJob' => $job->id], false))
+        ->assertSessionHasErrors(['status']);
+
+    $this->actingAs($guardian)
+        ->patch(route('guardian.jobs.applications.confirm', [
+            'tuitionJob' => $job->id,
+            'tuitionJobApplication' => $selectedApplication->id,
+        ]), [
+            'month1_escrow_required' => true,
+            'month1_escrow_amount' => 7000,
+            'notes' => null,
+        ])
+        ->assertRedirect();
+
+    $assignment = TuitionJobAssignment::query()
+        ->where('job_id', $job->id)
+        ->firstOrFail();
+
+    $this->assertDatabaseHas('invoices', [
+        'job_assignment_id' => $assignment->id,
+        'type' => Invoice::TYPE_PLATFORM_SERVICE_FEE,
+        'status' => Invoice::STATUS_UNPAID,
+        'payer_user_id' => $selectedTutor->id,
+        'amount' => 5000.00,
+        'currency' => 'BDT',
+    ]);
+
+    $this->assertDatabaseHas('invoices', [
+        'job_assignment_id' => $assignment->id,
+        'type' => Invoice::TYPE_ONLINE_MONTH1_ESCROW,
+        'status' => Invoice::STATUS_UNPAID,
+        'payer_user_id' => $guardian->id,
+        'payee_user_id' => $platformUser->id,
+        'amount' => 7000.00,
+        'currency' => 'BDT',
+    ]);
 });
 
 it('guardian cannot confirm engagement from non shortlisted application', function () {

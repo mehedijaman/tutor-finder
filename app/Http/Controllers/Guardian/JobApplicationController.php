@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Guardian;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Guardian\JobApplicationConfirmRequest;
 use App\Http\Requests\Guardian\JobApplicationStatusUpdateRequest;
+use App\Models\Invoice;
+use App\Models\SiteSetting;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
 use App\Models\TuitionJobAssignment;
 use App\Models\User;
 use App\Notifications\JobLifecycleNotification;
+use App\Services\Finance\InvoiceLifecycleService;
 use DomainException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -167,9 +171,10 @@ class JobApplicationController extends Controller
      * @throws ValidationException
      */
     public function confirm(
-        Request $request,
+        JobApplicationConfirmRequest $request,
         TuitionJob $tuitionJob,
         TuitionJobApplication $tuitionJobApplication,
+        InvoiceLifecycleService $invoiceLifecycleService,
     ): RedirectResponse {
         $this->ensureOwnership($request, $tuitionJob);
 
@@ -181,9 +186,19 @@ class JobApplicationController extends Controller
         $selectedTutorId = null;
         $otherTutorIds = [];
         $confirmedAt = now();
+        $validated = $request->validated();
 
         try {
-            DB::transaction(function () use ($tuitionJob, $tuitionJobApplication, $guardian, $confirmedAt, &$selectedTutorId, &$otherTutorIds): void {
+            DB::transaction(function () use (
+                $tuitionJob,
+                $tuitionJobApplication,
+                $guardian,
+                $confirmedAt,
+                $validated,
+                $invoiceLifecycleService,
+                &$selectedTutorId,
+                &$otherTutorIds
+            ): void {
                 $guardianId = (int) $guardian?->getAuthIdentifier();
                 $lockedJob = TuitionJob::query()
                     ->whereKey($tuitionJob->id)
@@ -211,7 +226,39 @@ class JobApplicationController extends Controller
                     throw new DomainException('Only shortlisted applications can be confirmed.');
                 }
 
-                TuitionJobAssignment::query()->create([
+                $siteSetting = SiteSetting::current();
+                $platformOwnerUserId = $siteSetting->platformOwnerUserId();
+
+                if ($platformOwnerUserId === null) {
+                    throw new DomainException('Platform finance account is not configured.');
+                }
+
+                $salaryBaseAmount = (float) ($lockedJob->salary_amount ?? 0);
+                $salaryBaseSource = 'job';
+
+                if ($salaryBaseAmount <= 0 && $lockedApplication->expected_salary_amount !== null) {
+                    $salaryBaseAmount = (float) $lockedApplication->expected_salary_amount;
+                    $salaryBaseSource = 'application';
+                }
+
+                if ($salaryBaseAmount <= 0) {
+                    throw new DomainException('Unable to resolve salary base for service fee calculation.');
+                }
+
+                $serviceFeeRate = (float) ($siteSetting->platform_service_fee_rate ?? 0.60000);
+                $serviceFeeAmount = round($salaryBaseAmount * $serviceFeeRate, 2);
+                $feeDueDays = (int) ($siteSetting->platform_service_fee_due_days ?? 10);
+                $feeDueAt = $confirmedAt->copy()->addDays(max($feeDueDays, 0));
+                $feeCurrency = strtoupper(trim((string) ($siteSetting->default_fee_currency ?? 'BDT')));
+                $feePaymentMode = trim((string) ($siteSetting->default_fee_payment_mode ?? TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE));
+                $escrowRequired = (bool) ($validated['month1_escrow_required'] ?? false);
+                $escrowAmount = $escrowRequired ? (float) ($validated['month1_escrow_amount'] ?? 0) : 0.0;
+
+                if ($escrowRequired && $escrowAmount <= 0) {
+                    throw new DomainException('Escrow amount is required when escrow is enabled.');
+                }
+
+                $assignment = TuitionJobAssignment::query()->create([
                     'job_id' => $lockedJob->id,
                     'tutor_user_id' => $lockedApplication->tutor_user_id,
                     /**
@@ -227,21 +274,77 @@ class JobApplicationController extends Controller
                     'reported_within_24h' => false,
                     'duration_type' => TuitionJobAssignment::DURATION_LONG_TERM,
                     'short_term_months' => null,
-                    'service_fee_rate' => null,
-                    'service_fee_amount' => null,
-                    'fee_currency' => 'BDT',
-                    'fee_due_at' => null,
-                    'fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
-                    'month1_escrow_required' => false,
+                    'salary_base_amount' => $salaryBaseAmount,
+                    'salary_base_source' => $salaryBaseSource,
+                    'service_fee_rate' => $serviceFeeRate,
+                    'service_fee_amount' => $serviceFeeAmount,
+                    'fee_currency' => $feeCurrency,
+                    'fee_due_at' => $feeDueAt,
+                    'fee_payment_mode' => $feePaymentMode,
+                    'month1_escrow_required' => $escrowRequired,
                     'month1_escrow_paid_at' => null,
                     'first_month_received_at' => null,
                     'month1_ended_at' => null,
                     'month1_settled_at' => null,
-                    'notes' => null,
+                    'notes' => $validated['notes'] ?? null,
                     'metadata' => [
                         'phase1_timestamps_equal' => true,
+                        'month1_escrow_amount' => $escrowRequired ? $escrowAmount : null,
                     ],
                 ]);
+
+                $hasFinanceInvoices = Invoice::query()
+                    ->where('job_assignment_id', $assignment->id)
+                    ->whereIn('type', [
+                        Invoice::TYPE_PLATFORM_SERVICE_FEE,
+                        Invoice::TYPE_ONLINE_MONTH1_ESCROW,
+                    ])
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($hasFinanceInvoices) {
+                    throw new DomainException('Finance invoices already exist for this assignment.');
+                }
+
+                $invoiceLifecycleService->issue([
+                    'invoice_no' => null,
+                    'invoiceable_type' => TuitionJobAssignment::class,
+                    'invoiceable_id' => $assignment->id,
+                    'user_id' => $assignment->tutor_user_id,
+                    'payer_user_id' => $assignment->tutor_user_id,
+                    'payee_user_id' => $platformOwnerUserId,
+                    'type' => Invoice::TYPE_PLATFORM_SERVICE_FEE,
+                    'job_assignment_id' => $assignment->id,
+                    'amount' => $serviceFeeAmount,
+                    'currency' => $feeCurrency,
+                    'status' => Invoice::STATUS_UNPAID,
+                    'due_at' => $feeDueAt,
+                    'expires_at' => $feeDueAt,
+                    'issued_by' => null,
+                    'issued_at' => $confirmedAt,
+                    'notes' => 'Platform service fee generated on hire confirmation.',
+                ]);
+
+                if ($escrowRequired) {
+                    $invoiceLifecycleService->issue([
+                        'invoice_no' => null,
+                        'invoiceable_type' => TuitionJobAssignment::class,
+                        'invoiceable_id' => $assignment->id,
+                        'user_id' => $guardianId,
+                        'payer_user_id' => $guardianId,
+                        'payee_user_id' => $platformOwnerUserId,
+                        'type' => Invoice::TYPE_ONLINE_MONTH1_ESCROW,
+                        'job_assignment_id' => $assignment->id,
+                        'amount' => $escrowAmount,
+                        'currency' => $feeCurrency,
+                        'status' => Invoice::STATUS_UNPAID,
+                        'due_at' => $confirmedAt,
+                        'expires_at' => $confirmedAt->copy()->addDays(10),
+                        'issued_by' => null,
+                        'issued_at' => $confirmedAt,
+                        'notes' => 'Month-1 escrow invoice generated on hire confirmation.',
+                    ]);
+                }
 
                 $lockedApplication->markConfirmed();
 

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Tutor\DashboardController as TutorDashboardController;
+use App\Http\Controllers\Tutor\FinanceController;
 use App\Http\Controllers\Tutor\JobApplicationController;
 use App\Http\Controllers\Tutor\NotificationController;
+use App\Http\Controllers\Tutor\RefundRequestController;
 use App\Http\Controllers\Tutor\TutorProfileController;
 use App\Http\Controllers\Tutor\TutorVerificationController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +28,9 @@ Route::prefix('tutor')
         Route::put('/profile', [TutorProfileController::class, 'update'])->name('profile.update');
         Route::get('/verification', [TutorVerificationController::class, 'show'])->name('verification.show');
         Route::post('/verification/request', [TutorVerificationController::class, 'store'])->name('verification.request');
+        Route::get('/finance/invoices', [FinanceController::class, 'invoices'])->name('finance.invoices');
+        Route::get('/finance/refunds', [RefundRequestController::class, 'index'])->name('finance.refunds.index');
+        Route::post('/finance/refunds/{assignment}', [RefundRequestController::class, 'store'])->name('finance.refunds.store');
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
         Route::patch('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TuitionJobAssignment extends Model
 {
@@ -55,6 +56,8 @@ class TuitionJobAssignment extends Model
         'reported_within_24h',
         'duration_type',
         'short_term_months',
+        'salary_base_amount',
+        'salary_base_source',
         'service_fee_rate',
         'service_fee_amount',
         'fee_currency',
@@ -82,6 +85,7 @@ class TuitionJobAssignment extends Model
             'cancelled_at' => 'datetime',
             'reported_within_24h' => 'boolean',
             'short_term_months' => 'integer',
+            'salary_base_amount' => 'decimal:2',
             'service_fee_rate' => 'decimal:5',
             'service_fee_amount' => 'decimal:2',
             'fee_due_at' => 'datetime',
@@ -108,5 +112,21 @@ class TuitionJobAssignment extends Model
     public function tutor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tutor_user_id');
+    }
+
+    /**
+     * Get invoices attached to this assignment.
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'job_assignment_id');
+    }
+
+    /**
+     * Get refund requests raised for this assignment.
+     */
+    public function refundRequests(): HasMany
+    {
+        return $this->hasMany(RefundRequest::class, 'job_assignment_id');
     }
 }
