@@ -20,7 +20,9 @@ const props = defineProps({
     statusOptions: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'Refund Requests', href: '/admin/finance/refund-requests' }];
+const breadcrumbs = [
+    { title: 'Refund Requests', href: '/admin/finance/refund-requests' },
+];
 const baseUrl = '/admin/finance/refund-requests';
 
 const q = ref(props.filters.q || '');
@@ -133,7 +135,11 @@ function markPaid(row) {
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No refund requests found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No refund requests found."
+            >
                 <template #cell-job="{ row }">
                     {{ row.job.title || '—' }}
                 </template>

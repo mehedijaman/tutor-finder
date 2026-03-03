@@ -95,35 +95,60 @@ function badgeVariant(status) {
                     </p>
                 </div>
 
-                <Link href="/admin/jobs" class="text-sm text-muted-foreground underline">
+                <Link
+                    href="/admin/jobs"
+                    class="text-sm text-muted-foreground underline"
+                >
                     Back to Jobs
                 </Link>
             </div>
 
-            <div class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
                 <div>
                     <p class="text-xs text-muted-foreground">Job Status</p>
-                    <Badge :variant="job.status === 'live' && job.is_expired ? 'destructive' : 'secondary'">
-                        {{ job.status === 'live' && job.is_expired ? 'expired' : job.status }}
+                    <Badge
+                        :variant="
+                            job.status === 'live' && job.is_expired
+                                ? 'destructive'
+                                : 'secondary'
+                        "
+                    >
+                        {{
+                            job.status === 'live' && job.is_expired
+                                ? 'expired'
+                                : job.status
+                        }}
                     </Badge>
                 </div>
 
                 <div>
                     <p class="text-xs text-muted-foreground">Hiring Outcome</p>
                     <p class="text-sm font-medium">
-                        {{ job.has_assignment ? job.selected_tutor_name || 'Selected tutor' : 'Not finalized' }}
+                        {{
+                            job.has_assignment
+                                ? job.selected_tutor_name || 'Selected tutor'
+                                : 'Not finalized'
+                        }}
                     </p>
                     <p
                         v-if="job.assignment_confirmed_at"
                         class="text-xs text-muted-foreground"
                     >
                         Confirmed:
-                        {{ new Date(job.assignment_confirmed_at).toLocaleString() }}
+                        {{
+                            new Date(
+                                job.assignment_confirmed_at,
+                            ).toLocaleString()
+                        }}
                     </p>
                 </div>
 
                 <div>
-                    <p class="mb-1 text-xs text-muted-foreground">Filter by Status</p>
+                    <p class="mb-1 text-xs text-muted-foreground">
+                        Filter by Status
+                    </p>
                     <Select v-model="statusFilter">
                         <SelectTrigger>
                             <SelectValue placeholder="All statuses" />
@@ -151,12 +176,20 @@ function badgeVariant(status) {
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
                             <p class="font-medium">{{ row.tutor.name }}</p>
-                            <Badge v-if="row.is_selected" variant="default">Selected</Badge>
+                            <Badge v-if="row.is_selected" variant="default"
+                                >Selected</Badge
+                            >
                         </div>
-                        <p v-if="row.tutor.email" class="text-xs text-muted-foreground">
+                        <p
+                            v-if="row.tutor.email"
+                            class="text-xs text-muted-foreground"
+                        >
                             {{ row.tutor.email }}
                         </p>
-                        <p v-if="row.tutor.phone" class="text-xs text-muted-foreground">
+                        <p
+                            v-if="row.tutor.phone"
+                            class="text-xs text-muted-foreground"
+                        >
                             {{ row.tutor.phone }}
                         </p>
                     </div>
@@ -175,12 +208,16 @@ function badgeVariant(status) {
                 </template>
 
                 <template #cell-cover_letter="{ value }">
-                    <p class="line-clamp-2 max-w-xs text-sm text-muted-foreground">
+                    <p
+                        class="line-clamp-2 max-w-xs text-sm text-muted-foreground"
+                    >
                         {{ value || '—' }}
                     </p>
                 </template>
 
-                <template #cell-cancel_reason="{ value }">{{ value || '—' }}</template>
+                <template #cell-cancel_reason="{ value }">{{
+                    value || '—'
+                }}</template>
 
                 <template #cell-created_at="{ value }">
                     {{ value ? new Date(value).toLocaleString() : '—' }}

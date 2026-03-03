@@ -20,7 +20,9 @@ const props = defineProps({
     gatewayOptions: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'Finance Payments', href: '/admin/finance/payments' }];
+const breadcrumbs = [
+    { title: 'Finance Payments', href: '/admin/finance/payments' },
+];
 const baseUrl = '/admin/finance/payments';
 
 const q = ref(props.filters.q || '');
@@ -95,7 +97,11 @@ const columns = [
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No payment attempts found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No payment attempts found."
+            >
                 <template #cell-amount="{ row }">{{ row.amount }}</template>
                 <template #cell-status="{ value }">
                     <Badge
@@ -112,7 +118,9 @@ const columns = [
                 </template>
                 <template #cell-invoice="{ row }">
                     <div>
-                        <p class="font-medium">{{ row.invoice.invoice_no || '—' }}</p>
+                        <p class="font-medium">
+                            {{ row.invoice.invoice_no || '—' }}
+                        </p>
                         <p class="text-xs text-muted-foreground">
                             {{ row.invoice.payer_name || '' }}
                         </p>

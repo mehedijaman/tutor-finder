@@ -269,8 +269,7 @@ function actionItemsForRow(row) {
     }
 
     const canMarkPaid =
-        row.invoice_id &&
-        ['unpaid', 'draft'].includes(row.invoice_status);
+        row.invoice_id && ['unpaid', 'draft'].includes(row.invoice_status);
 
     if (canMarkPaid) {
         actions.push({ key: 'mark-paid', label: 'Mark Paid' });

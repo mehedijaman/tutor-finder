@@ -81,11 +81,7 @@ watch(statusFilter, (value) => {
     router.get(
         baseUrl.value,
         {
-            status: presetStatus.value
-                ? ''
-                : value === 'all'
-                  ? ''
-                  : value,
+            status: presetStatus.value ? '' : value === 'all' ? '' : value,
         },
         {
             preserveState: true,

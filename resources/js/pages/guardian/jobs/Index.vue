@@ -226,10 +226,16 @@ function statusBadge(row) {
                             class="text-xs text-muted-foreground"
                         >
                             Confirmed:
-                            {{ new Date(row.hiring_confirmed_at).toLocaleString() }}
+                            {{
+                                new Date(
+                                    row.hiring_confirmed_at,
+                                ).toLocaleString()
+                            }}
                         </p>
                     </div>
-                    <span v-else class="text-muted-foreground">Not finalized</span>
+                    <span v-else class="text-muted-foreground"
+                        >Not finalized</span
+                    >
                 </template>
 
                 <template #cell-published_at="{ value }">{{

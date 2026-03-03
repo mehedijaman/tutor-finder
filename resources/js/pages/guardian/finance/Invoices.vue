@@ -19,7 +19,9 @@ const props = defineProps({
     statusOptions: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'Payments & Escrow', href: '/guardian/finance/invoices' }];
+const breadcrumbs = [
+    { title: 'Payments & Escrow', href: '/guardian/finance/invoices' },
+];
 const baseUrl = '/guardian/finance/invoices';
 
 const statusFilter = ref(props.filters.status || 'all');
@@ -44,7 +46,10 @@ const columns = [
 ];
 
 function pay(invoiceId, gateway) {
-    const endpoint = gateway === 'bkash' ? `/payment/bkash/${invoiceId}` : `/payment/sslcommerz/${invoiceId}`;
+    const endpoint =
+        gateway === 'bkash'
+            ? `/payment/bkash/${invoiceId}`
+            : `/payment/sslcommerz/${invoiceId}`;
 
     router.post(endpoint, {}, { preserveScroll: true });
 }
@@ -94,8 +99,14 @@ function pay(invoiceId, gateway) {
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No invoices found.">
-                <template #cell-amount="{ row }">{{ row.currency }} {{ row.amount }}</template>
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No invoices found."
+            >
+                <template #cell-amount="{ row }"
+                    >{{ row.currency }} {{ row.amount }}</template
+                >
                 <template #cell-status="{ value }">
                     <Badge
                         :variant="

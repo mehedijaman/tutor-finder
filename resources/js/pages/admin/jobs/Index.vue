@@ -555,7 +555,9 @@ function statusBadge(row) {
                             }}
                         </p>
                     </div>
-                    <span v-else class="text-muted-foreground">Not finalized</span>
+                    <span v-else class="text-muted-foreground"
+                        >Not finalized</span
+                    >
                 </template>
 
                 <template #cell-status="{ row }">

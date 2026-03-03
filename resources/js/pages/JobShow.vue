@@ -1003,7 +1003,9 @@ function getStatusBadgeClass(): string {
                                     >Expected Salary (BDT)</label
                                 >
                                 <input
-                                    v-model="applicationForm.expected_salary_amount"
+                                    v-model="
+                                        applicationForm.expected_salary_amount
+                                    "
                                     type="number"
                                     min="0"
                                     step="100"

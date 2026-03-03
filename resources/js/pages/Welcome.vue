@@ -16,345 +16,227 @@ withDefaults(
 const { siteName } = useSiteSettings();
 </script>
 
-<!--
-    =================================================================
-    UI REFINEMENT CHECKLIST - TutorFinder Homepage
-    =================================================================
-    
-    ✅ Hero Premium Layout
-        - Two-column layout with larger H1
-        - "Tutor" highlighted with brand color
-        - Trust metrics row as stat blocks
-        - Search card with proper elevation
-    
-    ✅ Search Card Polish
-        - Elevated card (rounded-2xl, shadow-sm)
-        - Subject, Class, Location fields
-        - Full-width primary button
-        - Helper text added
-    
-    ✅ Typography Scale
-        - Section titles: text-3xl md:text-4xl font-semibold
-        - Body: text-base leading-relaxed text-gray-600
-        - Proper heading hierarchy
-    
-    ✅ Spacing Consistency
-        - Section py-14 md:py-20
-        - Container max-w-7xl mx-auto px-4 sm:px-6
-        - Consistent card padding p-6 md:p-7
-    
-    ✅ Card Styles Consistent
-        - rounded-2xl
-        - border border-gray-200/70
-        - shadow-sm hover:shadow-md
-        - hover:-translate-y-0.5 transition
-    
-    ✅ Hover/Focus States
-        - Cards: hover shadow + lift
-        - Buttons: hover color shift + active:scale-[0.98]
-        - Inputs: focus ring + border highlight
-        - focus-visible:ring-2 focus-visible:ring-blue-500
-    
-    ✅ Mobile Stacking
-        - Hero single column on mobile
-        - CTAs stacked full width
-        - Buttons min h-11
-        - Section spacing py-10 on mobile
-        - Footer stacked with clear headings
-    
-    ✅ Accessibility
-        - Proper focus states
-        - Minimum tap targets 44px
-        - Semantic HTML
-    
-    ✅ Performance
-        - No heavy assets
-        - Efficient Tailwind classes
-    
-    ✅ Brand Naming Consistency
-        - "Why Choose [siteName]"
-        - Footer uses siteName throughout
-    
-    =================================================================
--->
-
 <template>
     <Head title="Welcome" />
 
     <PublicLayout>
         <!-- Hero Section -->
-        <section class="bg-white py-14 md:py-24">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="grid items-center gap-12 lg:grid-cols-2">
-                    <!-- Left Column - Content -->
-                    <div class="text-center lg:text-left">
-                        <h1
-                            class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl"
+        <section class="relative overflow-hidden bg-white py-14 md:py-20">
+            <div
+                class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.10),_transparent_55%)]"
+            ></div>
+
+            <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-3xl text-center">
+                    <p
+                        class="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium tracking-[0.12em] text-blue-700 uppercase"
+                    >
+                        Verified tutors. Professional hiring.
+                    </p>
+
+                    <h1
+                        class="mt-5 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl md:text-6xl"
+                    >
+                        Find the Right
+                        <span class="text-blue-600">Tutor</span> with
+                        Confidence
+                    </h1>
+
+                    <p
+                        class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg"
+                    >
+                        {{ siteName }} connects families with trusted tutors
+                        through a simple and transparent process.
+                    </p>
+
+                    <div
+                        class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center"
+                    >
+                        <Link
+                            href="/tutors"
+                            class="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-6 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98]"
                         >
-                            Find the Right
-                            <span class="text-blue-600">Tutor</span> for Your
-                            Child
-                        </h1>
-                        <p
-                            class="mx-auto mt-4 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg lg:mx-0"
+                            Find a Tutor
+                        </Link>
+                        <Link
+                            :href="jobs()"
+                            class="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98]"
                         >
-                            Connect with verified tutors for online or in-person
-                            learning. Simple registration, quick bookings, and
-                            progress tracking.
+                            Post a Job
+                        </Link>
+                    </div>
+
+                    <div
+                        class="mt-10 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-3"
+                    >
+                        <div class="rounded-lg bg-slate-50 p-4">
+                            <p class="text-2xl font-semibold text-slate-900">
+                                12k+
+                            </p>
+                            <p class="mt-1 text-xs text-slate-500 uppercase">
+                                Active tutors
+                            </p>
+                        </div>
+                        <div class="rounded-lg bg-slate-50 p-4">
+                            <p class="text-2xl font-semibold text-slate-900">
+                                3k+
+                            </p>
+                            <p class="mt-1 text-xs text-slate-500 uppercase">
+                                Families served
+                            </p>
+                        </div>
+                        <div class="rounded-lg bg-slate-50 p-4">
+                            <p class="text-2xl font-semibold text-slate-900">
+                                4.7/5
+                            </p>
+                            <p class="mt-1 text-xs text-slate-500 uppercase">
+                                Average rating
+                            </p>
+                        </div>
+                    </div>
+
+                    <Link
+                        :href="contact()"
+                        class="mt-4 inline-flex text-sm font-medium text-slate-600 transition hover:text-slate-900"
+                    >
+                        Need help deciding? Contact us.
+                    </Link>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works (Premium / Minimal) -->
+<section class="relative isolate overflow-hidden bg-white py-16 md:py-24">
+    <!-- subtle backdrop -->
+    <div class="pointer-events-none absolute inset-0 -z-10">
+        <div
+            class="absolute left-1/2 top-[-220px] h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-200/35 via-indigo-200/15 to-transparent blur-3xl"
+        ></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-white via-white to-slate-50/40"></div>
+    </div>
+
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mx-auto max-w-3xl text-center">
+            <div class="flex justify-center">
+                <span
+                    class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-slate-700 backdrop-blur"
+                >
+                    <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+                    HOW IT WORKS
+                </span>
+            </div>
+
+            <h2 class="mt-6 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+                Simple steps to find your tutor
+            </h2>
+            <p class="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-slate-600">
+                Get started in minutes with a clear, guided process.
+            </p>
+        </div>
+
+        <!-- Steps -->
+        <div class="relative mt-12">
+            <!-- connector (desktop) -->
+            <div
+                class="pointer-events-none absolute left-1/2 top-[44px] hidden h-px w-[calc(100%-6rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-slate-200 to-transparent md:block"
+            ></div>
+
+            <div class="grid gap-4 md:grid-cols-3 md:gap-6">
+                <!-- Step 1 -->
+                <div class="group relative">
+                    <div
+                        class="h-full rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md md:p-7"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm ring-1 ring-slate-900/10 transition group-hover:bg-slate-800"
+                            >
+                                <span class="text-sm font-semibold tracking-wide">01</span>
+                            </div>
+                            <div class="h-px flex-1 bg-slate-200 md:hidden"></div>
+                        </div>
+
+                        <h3 class="mt-5 text-lg font-semibold text-slate-900">
+                            Post requirement
+                        </h3>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                            Share subject, level, location/online preference, and your schedule.
                         </p>
 
-                        <div
-                            class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
-                        >
-                            <Link
-                                :href="register()"
-                                class="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98]"
-                            >
-                                Find a Tutor
-                            </Link>
-                            <Link
-                                :href="jobs()"
-                                class="focus-visible:-visible:ring-bluering-2 focus-500 inline-flex h-11 items-center justify-center rounded-lg border-2 border-blue-600 px-6 py-3 text-base font-semibold text-blue-600 transition-all duration-200 hover:bg-blue-50 focus-visible:ring-offset-2 active:scale-[0.98]"
-                            >
-                                Post a Job
-                            </Link>
-                        </div>
-
-                        <!-- Trust Metrics -->
-                        <div
-                            class="mt-10 flex flex-wrap items-center justify-center gap-6 border-t border-gray-100 pt-6 lg:justify-start"
-                        >
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-gray-900">
-                                    12k+
-                                </div>
-                                <div class="text-xs text-gray-500">Tutors</div>
-                            </div>
-                            <div
-                                class="hidden h-8 w-px bg-gray-200 sm:block"
-                            ></div>
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-gray-900">
-                                    3k+
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    Families
-                                </div>
-                            </div>
-                            <div
-                                class="hidden h-8 w-px bg-gray-200 sm:block"
-                            ></div>
-                            <div class="text-center">
-                                <div
-                                    class="flex items-center justify-center gap-1"
-                                >
-                                    <span
-                                        class="text-2xl font-bold text-gray-900"
-                                        >4.7</span
-                                    >
-                                    <span class="text-amber-500">★</span>
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    Avg Rating
-                                </div>
-                            </div>
+                        <div class="mt-5 flex items-center gap-2 text-xs font-medium text-slate-500">
+                            <span class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2">2 min</span>
+                            <span class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2">Clear brief</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Right Column - Search Card -->
-                    <div class="mx-auto w-full max-w-md lg:max-w-full">
-                        <div
-                            class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-md transition-all duration-200 hover:shadow-lg md:p-7"
-                        >
-                            <div class="flex items-center gap-2">
-                                <svg
-                                    class="h-5 w-5 text-blue-600"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    />
-                                </svg>
-                                <h3 class="text-lg font-semibold text-gray-900">
-                                    Find Your Perfect Tutor
-                                </h3>
+                <!-- Step 2 -->
+                <div class="group relative">
+                    <div
+                        class="h-full rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md md:p-7"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 transition group-hover:ring-slate-300"
+                            >
+                                <span class="text-sm font-semibold tracking-wide">02</span>
                             </div>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Takes less than 2 minutes
-                            </p>
+                            <div class="h-px flex-1 bg-slate-200 md:hidden"></div>
+                        </div>
 
-                            <form class="mt-5 space-y-4">
-                                <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-700"
-                                        >Subject</label
-                                    >
-                                    <select
-                                        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
-                                    >
-                                        <option value="">Select subject</option>
-                                        <option>Mathematics</option>
-                                        <option>English</option>
-                                        <option>Science</option>
-                                        <option>Physics</option>
-                                        <option>Chemistry</option>
-                                        <option>Biology</option>
-                                    </select>
-                                </div>
+                        <h3 class="mt-5 text-lg font-semibold text-slate-900">
+                            Get matched
+                        </h3>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                            Receive curated tutor options based on your needs and availability.
+                        </p>
 
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label
-                                            class="block text-sm font-medium text-gray-700"
-                                            >Class</label
-                                        >
-                                        <select
-                                            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
-                                        >
-                                            <option value="">Any</option>
-                                            <option>Class 1-5</option>
-                                            <option>Class 6-8</option>
-                                            <option>Class 9-10</option>
-                                            <option>Class 11-12</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label
-                                            class="block text-sm font-medium text-gray-700"
-                                            >Location</label
-                                        >
-                                        <select
-                                            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none"
-                                        >
-                                            <option value="">Any</option>
-                                            <option>Dhaka</option>
-                                            <option>Chittagong</option>
-                                            <option>Online</option>
-                                        </select>
-                                    </div>
-                                </div>
+                        <div class="mt-5 flex items-center gap-2 text-xs font-medium text-slate-500">
+                            <span class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2">Verified</span>
+                            <span class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2">Shortlist</span>
+                        </div>
+                    </div>
+                </div>
 
-                                <button
-                                    type="submit"
-                                    class="h-11 w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-blue-700 hover:shadow-md focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98]"
-                                >
-                                    Search Tutors
-                                </button>
-                            </form>
+                <!-- Step 3 -->
+                <div class="group relative">
+                    <div
+                        class="h-full rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md md:p-7"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 transition group-hover:ring-slate-300"
+                            >
+                                <span class="text-sm font-semibold tracking-wide">03</span>
+                            </div>
+                            <div class="h-px flex-1 bg-slate-200 md:hidden"></div>
+                        </div>
+
+                        <h3 class="mt-5 text-lg font-semibold text-slate-900">
+                            Start learning
+                        </h3>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                            Confirm the tutor, begin sessions, and track progress over time.
+                        </p>
+
+                        <div class="mt-5 flex items-center gap-2 text-xs font-medium text-slate-500">
+                            <span class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2">Secure</span>
+                            <span class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2">Ongoing support</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- How It Works -->
-        <section class="bg-gray-50 py-14 md:py-20">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <p
-                        class="text-sm font-medium tracking-widest text-blue-600 uppercase"
-                    >
-                        How It Works
-                    </p>
-                    <h2
-                        class="mt-2 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl"
-                    >
-                        Simple Steps to Find Your Tutor
-                    </h2>
-                    <p class="mx-auto mt-3 max-w-2xl text-sm text-gray-500">
-                        Get started in minutes with our easy process
-                    </p>
-                </div>
-
-                <div class="mt-12 grid gap-8 sm:grid-cols-3">
-                    <!-- Step 1 -->
-                    <div class="group relative">
-                        <div
-                            class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md md:p-7"
-                        >
-                            <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 transition duration-200 group-hover:bg-blue-600"
-                            >
-                                <span
-                                    class="text-lg font-bold text-blue-600 group-hover:text-white"
-                                    >01</span
-                                >
-                            </div>
-                            <h3
-                                class="mt-4 text-lg font-semibold text-gray-900"
-                            >
-                                Post Requirement
-                            </h3>
-                            <p class="mt-2 text-sm text-gray-500">
-                                Tell us about your learning needs, subject, and
-                                schedule preferences.
-                            </p>
-                        </div>
-                        <!-- Connector line (desktop) -->
-                        <div
-                            class="absolute top-1/2 -right-4 hidden h-0.5 w-8 bg-gray-200 sm:block"
-                        ></div>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="group relative">
-                        <div
-                            class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md md:p-7"
-                        >
-                            <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 transition duration-200 group-hover:bg-blue-600"
-                            >
-                                <span
-                                    class="text-lg font-bold text-blue-600 group-hover:text-white"
-                                    >02</span
-                                >
-                            </div>
-                            <h3
-                                class="mt-4 text-lg font-semibold text-gray-900"
-                            >
-                                Get Matched
-                            </h3>
-                            <p class="mt-2 text-sm text-gray-500">
-                                Receive personalized recommendations from
-                                verified tutors.
-                            </p>
-                        </div>
-                        <div
-                            class="absolute top-1/2 -right-4 hidden h-0.5 w-8 bg-gray-200 sm:block"
-                        ></div>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="group">
-                        <div
-                            class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md md:p-7"
-                        >
-                            <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 transition duration-200 group-hover:bg-blue-600"
-                            >
-                                <span
-                                    class="text-lg font-bold text-blue-600 group-hover:text-white"
-                                    >03</span
-                                >
-                            </div>
-                            <h3
-                                class="mt-4 text-lg font-semibold text-gray-900"
-                            >
-                                Start Learning
-                            </h3>
-                            <p class="mt-2 text-sm text-gray-500">
-                                Begin your tutoring sessions and track progress.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Optional footer micro-copy -->
+        <div class="mt-8 text-center">
+            <p class="text-sm text-slate-600">
+                Transparent matching • No clutter • Mobile-first
+            </p>
+        </div>
+    </div>
+</section>
 
         <!-- Tuition Methods -->
         <section class="bg-white py-14 md:py-20">

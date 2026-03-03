@@ -105,9 +105,7 @@ function actionItems(row) {
         {
             key: 'shortlist',
             label: 'Shortlist',
-            show:
-                canManageApplications.value &&
-                row.status === 'applied',
+            show: canManageApplications.value && row.status === 'applied',
         },
         {
             key: 'cancel',

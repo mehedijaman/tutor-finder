@@ -19,7 +19,9 @@ const props = defineProps({
     referenceTypeOptions: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'Finance Ledger', href: '/admin/finance/ledger' }];
+const breadcrumbs = [
+    { title: 'Finance Ledger', href: '/admin/finance/ledger' },
+];
 const baseUrl = '/admin/finance/ledger';
 
 const q = ref(props.filters.q || '');
@@ -30,7 +32,8 @@ watch([q, referenceType], () => {
         baseUrl,
         {
             q: q.value || '',
-            reference_type: referenceType.value === 'all' ? '' : referenceType.value,
+            reference_type:
+                referenceType.value === 'all' ? '' : referenceType.value,
         },
         { preserveState: true, preserveScroll: true, replace: true },
     );
@@ -61,7 +64,10 @@ const columns = [
             </div>
 
             <div class="grid gap-3 md:grid-cols-2">
-                <Input v-model="q" placeholder="Search journal/reference/owner..." />
+                <Input
+                    v-model="q"
+                    placeholder="Search journal/reference/owner..."
+                />
                 <Select v-model="referenceType">
                     <SelectTrigger>
                         <SelectValue placeholder="All references" />
@@ -79,17 +85,31 @@ const columns = [
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No ledger entries found.">
-                <template #cell-amount="{ row }">{{ row.currency }} {{ row.amount }}</template>
-                <template #cell-owner="{ row }">{{ row.owner.name || '—' }}</template>
-                <template #cell-counterparty="{ row }">{{ row.counterparty.name || '—' }}</template>
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No ledger entries found."
+            >
+                <template #cell-amount="{ row }"
+                    >{{ row.currency }} {{ row.amount }}</template
+                >
+                <template #cell-owner="{ row }">{{
+                    row.owner.name || '—'
+                }}</template>
+                <template #cell-counterparty="{ row }">{{
+                    row.counterparty.name || '—'
+                }}</template>
                 <template #cell-type="{ value }">
-                    <Badge :variant="value === 'credit' ? 'default' : 'secondary'">
+                    <Badge
+                        :variant="value === 'credit' ? 'default' : 'secondary'"
+                    >
                         {{ value }}
                     </Badge>
                 </template>
                 <template #cell-is_reversal="{ row }">
-                    <Badge :variant="row.is_reversal ? 'destructive' : 'outline'">
+                    <Badge
+                        :variant="row.is_reversal ? 'destructive' : 'outline'"
+                    >
                         {{ row.is_reversal ? 'Yes' : 'No' }}
                     </Badge>
                 </template>

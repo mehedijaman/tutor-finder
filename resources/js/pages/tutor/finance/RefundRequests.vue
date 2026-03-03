@@ -21,7 +21,9 @@ const props = defineProps({
     eligibleAssignments: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'Refund Requests', href: '/tutor/finance/refunds' }];
+const breadcrumbs = [
+    { title: 'Refund Requests', href: '/tutor/finance/refunds' },
+];
 const baseUrl = '/tutor/finance/refunds';
 
 const statusFilter = ref(props.filters.status || 'all');
@@ -105,7 +107,9 @@ function submitRefund() {
                                 :key="assignment.id"
                                 :value="String(assignment.id)"
                             >
-                                {{ assignment.job_title }} ({{ assignment.currency }}
+                                {{ assignment.job_title }} ({{
+                                    assignment.currency
+                                }}
                                 {{ assignment.service_fee_amount }})
                             </SelectItem>
                         </SelectContent>
@@ -150,9 +154,17 @@ function submitRefund() {
                     </Select>
                 </div>
 
-                <DataTable :items="items" :columns="columns" empty-text="No refund requests found.">
-                    <template #cell-job="{ row }">{{ row.job.title || '—' }}</template>
-                    <template #cell-amount="{ row }">{{ row.currency }} {{ row.amount }}</template>
+                <DataTable
+                    :items="items"
+                    :columns="columns"
+                    empty-text="No refund requests found."
+                >
+                    <template #cell-job="{ row }">{{
+                        row.job.title || '—'
+                    }}</template>
+                    <template #cell-amount="{ row }"
+                        >{{ row.currency }} {{ row.amount }}</template
+                    >
                     <template #cell-status="{ value }">
                         <Badge
                             :variant="

@@ -20,7 +20,9 @@ const props = defineProps({
     typeOptions: { type: Array, default: () => [] },
 });
 
-const breadcrumbs = [{ title: 'Finance Invoices', href: '/admin/finance/invoices' }];
+const breadcrumbs = [
+    { title: 'Finance Invoices', href: '/admin/finance/invoices' },
+];
 const baseUrl = '/admin/finance/invoices';
 
 const q = ref(props.filters.q || '');
@@ -84,18 +86,28 @@ const columns = [
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All types</SelectItem>
-                        <SelectItem v-for="option in typeOptions" :key="option" :value="option">
+                        <SelectItem
+                            v-for="option in typeOptions"
+                            :key="option"
+                            :value="option"
+                        >
                             {{ option }}
                         </SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
-            <DataTable :items="items" :columns="columns" empty-text="No invoices found.">
+            <DataTable
+                :items="items"
+                :columns="columns"
+                empty-text="No invoices found."
+            >
                 <template #cell-payer="{ row }">
                     <div>
                         <p class="font-medium">{{ row.payer.name || '—' }}</p>
-                        <p class="text-xs text-muted-foreground">{{ row.payer.email || '' }}</p>
+                        <p class="text-xs text-muted-foreground">
+                            {{ row.payer.email || '' }}
+                        </p>
                     </div>
                 </template>
                 <template #cell-amount="{ row }">
@@ -118,7 +130,9 @@ const columns = [
                     <span v-if="!value" class="text-muted-foreground">—</span>
                     <div v-else class="text-xs">
                         <p>{{ value.gateway }} / {{ value.status }}</p>
-                        <p class="text-muted-foreground">{{ value.provider_txn_id || '—' }}</p>
+                        <p class="text-muted-foreground">
+                            {{ value.provider_txn_id || '—' }}
+                        </p>
                     </div>
                 </template>
             </DataTable>
