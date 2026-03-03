@@ -12,118 +12,173 @@ withDefaults(
     },
 );
 
-const { siteName, logoUrl } = useSiteSettings();
+const { siteName, logoUrl, slogan, primaryPhone, primaryEmail } =
+    useSiteSettings();
 </script>
 
 <template>
     <!-- Full Header -->
-    <header
-        v-if="variant === 'full'"
-        class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white"
-    >
+    <div v-if="variant === 'full'" >
         <div
-            class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
+            v-if="primaryPhone || primaryEmail"
+            class="border-b border-gray-200 bg-slate-900 text-slate-100"
         >
-            <!-- Logo -->
-            <Link :href="home()" class="flex items-center gap-2">
-                <img
-                    v-if="logoUrl"
-                    :src="logoUrl"
-                    :alt="siteName"
-                    class="h-9 w-9 rounded-lg object-cover"
-                />
-                <div
-                    v-else
-                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 font-bold text-white"
-                >
-                    {{ siteName.charAt(0).toUpperCase() }}
-                </div>
-                <span class="text-lg font-semibold text-gray-900">{{
-                    siteName
-                }}</span>
-            </Link>
-
-            <!-- Desktop Nav -->
-            <nav
-                class="hidden items-center gap-8 text-sm font-medium text-gray-700 md:flex"
+            <div
+                class="mx-auto flex min-h-9 max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 text-xs sm:px-6"
             >
-                <Link :href="home()" class="hover:text-blue-600">Home</Link>
-                <Link :href="jobs()" class="hover:text-blue-600"
-                    >Find Tutor</Link
+                <span v-if="primaryPhone" class="font-medium"
+                    >Phone: {{ primaryPhone }}</span
                 >
-                <Link :href="jobs()" class="hover:text-blue-600"
-                    >Job Board</Link
+                <span
+                    v-if="primaryPhone && primaryEmail"
+                    class="hidden text-slate-400 sm:inline"
+                    >|</span
                 >
-                <Link :href="contact()" class="hover:text-blue-600">About</Link>
-                <Link :href="contact()" class="hover:text-blue-600"
-                    >Contact</Link
+                <span v-if="primaryEmail" class="font-medium"
+                    >Email: {{ primaryEmail }}</span
                 >
-            </nav>
-
-            <!-- Auth Buttons -->
-            <div class="flex items-center gap-3">
-                <Link
-                    :href="login()"
-                    class="hidden text-sm font-medium text-gray-700 hover:text-blue-600 sm:block"
-                >
-                    Login
-                </Link>
-                <Link
-                    :href="register()"
-                    class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-                >
-                    Join Now
-                </Link>
             </div>
         </div>
-    </header>
 
-    <!-- Simple Header -->
-    <header
-        v-else
-        class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white"
-    >
-        <div
-            class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
-        >
-            <Link :href="home()" class="flex items-center gap-2">
-                <img
-                    v-if="logoUrl"
-                    :src="logoUrl"
-                    :alt="siteName"
-                    class="h-8 w-8 rounded-lg object-cover"
-                />
-                <div
-                    v-else
-                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white"
-                >
-                    {{ siteName.charAt(0).toUpperCase() }}
-                </div>
-                <span class="font-semibold text-gray-900">{{ siteName }}</span>
-            </Link>
-
-            <nav class="flex items-center gap-3 text-sm">
-                <Link
-                    v-if="$page.props.auth.user"
-                    :href="dashboard()"
-                    class="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
-                >
-                    Dashboard
+        <header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white">
+            <div
+                class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
+            >
+                <!-- Logo -->
+                <Link :href="home()" class="flex items-center gap-2.5">
+                    <img
+                        v-if="logoUrl"
+                        :src="logoUrl"
+                        :alt="siteName"
+                        class="h-9 w-9 rounded-lg object-cover"
+                    />
+                    <div
+                        v-else
+                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 font-bold text-white"
+                    >
+                        {{ siteName.charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="flex flex-col leading-tight">
+                        <span class="text-lg font-semibold text-gray-900">{{
+                            siteName
+                        }}</span>
+                        <span v-if="slogan" class="text-[11px] text-gray-500">{{
+                            slogan
+                        }}</span>
+                    </div>
                 </Link>
-                <template v-else>
+
+                <!-- Desktop Nav -->
+                <nav
+                    class="hidden items-center gap-8 text-sm font-medium text-gray-700 md:flex"
+                >
+                    <Link :href="home()" class="hover:text-blue-600">Home</Link>
+                    <Link :href="jobs()" class="hover:text-blue-600"
+                        >Find Tutor</Link
+                    >
+                    <Link :href="jobs()" class="hover:text-blue-600"
+                        >Job Board</Link
+                    >
+                    <Link :href="contact()" class="hover:text-blue-600"
+                        >About</Link
+                    >
+                    <Link :href="contact()" class="hover:text-blue-600"
+                        >Contact</Link
+                    >
+                </nav>
+
+                <!-- Auth Buttons -->
+                <div class="flex items-center gap-3">
                     <Link
                         :href="login()"
-                        class="font-medium text-gray-700 hover:text-blue-600"
-                        >Login</Link
+                        class="hidden text-sm font-medium text-gray-700 hover:text-blue-600 sm:block"
                     >
+                        Login
+                    </Link>
                     <Link
                         :href="register()"
+                        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                    >
+                        Join Now
+                    </Link>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- Simple Header -->
+    <div v-else class="sticky top-0 z-50 w-full">
+        <div
+            v-if="primaryPhone || primaryEmail"
+            class="border-b border-gray-200 bg-slate-900 text-slate-100"
+        >
+            <div
+                class="mx-auto flex min-h-9 max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 text-xs sm:px-6"
+            >
+                <span v-if="primaryPhone" class="font-medium"
+                    >Phone: {{ primaryPhone }}</span
+                >
+                <span
+                    v-if="primaryPhone && primaryEmail"
+                    class="hidden text-slate-400 sm:inline"
+                    >|</span
+                >
+                <span v-if="primaryEmail" class="font-medium"
+                    >Email: {{ primaryEmail }}</span
+                >
+            </div>
+        </div>
+
+        <header class="w-full border-b border-gray-200 bg-white">
+            <div
+                class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6"
+            >
+                <Link :href="home()" class="flex items-center gap-2.5">
+                    <img
+                        v-if="logoUrl"
+                        :src="logoUrl"
+                        :alt="siteName"
+                        class="h-8 w-8 rounded-lg object-cover"
+                    />
+                    <div
+                        v-else
+                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white"
+                    >
+                        {{ siteName.charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="flex flex-col leading-tight">
+                        <span class="font-semibold text-gray-900">{{
+                            siteName
+                        }}</span>
+                        <span v-if="slogan" class="text-[11px] text-gray-500">{{
+                            slogan
+                        }}</span>
+                    </div>
+                </Link>
+
+                <nav class="flex items-center gap-3 text-sm">
+                    <Link
+                        v-if="$page.props.auth.user"
+                        :href="dashboard()"
                         class="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
                     >
-                        Register
+                        Dashboard
                     </Link>
-                </template>
-            </nav>
-        </div>
-    </header>
+                    <template v-else>
+                        <Link
+                            :href="login()"
+                            class="font-medium text-gray-700 hover:text-blue-600"
+                            >Login</Link
+                        >
+                        <Link
+                            :href="register()"
+                            class="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+                        >
+                            Register
+                        </Link>
+                    </template>
+                </nav>
+            </div>
+        </header>
+    </div>
 </template>

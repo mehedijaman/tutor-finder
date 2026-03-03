@@ -10,6 +10,7 @@ it('shares a minimal site settings payload on public pages', function () {
     SiteSetting::factory()->create([
         'id' => 1,
         'site_name' => 'Public Site Name',
+        'slogan' => 'Learn better every day',
         'phone_numbers' => ['+15550000077'],
         'emails' => ['contact@example.com'],
         'addresses' => [
@@ -26,6 +27,7 @@ it('shares a minimal site settings payload on public pages', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('Welcome')
             ->where('siteSettings.site_name', 'Public Site Name')
+            ->where('siteSettings.slogan', 'Learn better every day')
             ->where('siteSettings.primary_phone', '+15550000077')
             ->where('siteSettings.primary_email', 'contact@example.com')
             ->where('siteSettings.primary_address', 'Dhaka, Bangladesh')
@@ -38,6 +40,7 @@ it('shares a minimal site settings payload on public pages', function () {
 
                 expect($data)->toHaveKeys([
                     'site_name',
+                    'slogan',
                     'logo_url',
                     'primary_phone',
                     'primary_email',
@@ -47,7 +50,6 @@ it('shares a minimal site settings payload on public pages', function () {
 
                 expect($data)->not->toHaveKeys([
                     'description',
-                    'slogan',
                     'tin_no',
                     'bin_no',
                     'trade_licence_no',

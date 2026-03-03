@@ -3,6 +3,7 @@ import { computed } from 'vue';
 
 type SharedSiteSettings = {
     site_name: string;
+    slogan: string | null;
     logo_url: string | null;
     primary_phone: string | null;
     primary_email: string | null;
@@ -12,6 +13,7 @@ type SharedSiteSettings = {
 
 const defaultSiteSettings: SharedSiteSettings = {
     site_name: 'Tutor Finder',
+    slogan: null,
     logo_url: null,
     primary_phone: null,
     primary_email: null,
@@ -53,6 +55,9 @@ export function useSiteSettings() {
                 (rawSettings as { site_name?: unknown }).site_name ??
                     defaultSiteSettings.site_name,
             ),
+            slogan: normalizeNullableString(
+                (rawSettings as { slogan?: unknown }).slogan,
+            ),
             logo_url: normalizeNullableString(
                 (rawSettings as { logo_url?: unknown }).logo_url,
             ),
@@ -70,6 +75,7 @@ export function useSiteSettings() {
     });
 
     const siteName = computed(() => siteSettings.value.site_name);
+    const slogan = computed(() => siteSettings.value.slogan);
     const logoUrl = computed(() => siteSettings.value.logo_url);
     const primaryPhone = computed(() => siteSettings.value.primary_phone);
     const primaryEmail = computed(() => siteSettings.value.primary_email);
@@ -79,6 +85,7 @@ export function useSiteSettings() {
     return {
         siteSettings,
         siteName,
+        slogan,
         logoUrl,
         primaryPhone,
         primaryEmail,

@@ -146,12 +146,16 @@ class SiteSetting extends Model
         $siteName = is_string($this->site_name) && trim($this->site_name) !== ''
             ? trim($this->site_name)
             : (string) config('app.name', 'Tutor Finder');
+        $slogan = is_string($this->slogan) && trim($this->slogan) !== ''
+            ? trim($this->slogan)
+            : null;
         $phoneNumbers = $this->normalizeStringList($this->phone_numbers);
         $emails = $this->normalizeStringList($this->emails);
         $addresses = $this->normalizeAddresses($this->addresses);
 
         return [
             'site_name' => $siteName,
+            'slogan' => $slogan,
             'logo_url' => $this->logoUrl(),
             'primary_phone' => $phoneNumbers[0] ?? null,
             'primary_email' => $emails[0] ?? null,
