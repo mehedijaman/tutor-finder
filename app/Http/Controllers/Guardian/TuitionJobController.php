@@ -11,8 +11,10 @@ use App\Models\Country;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\TuitionJob;
+use App\Models\TuitionJobApplication;
 use App\Models\TuitionType;
 use App\Support\SlugService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,19 +25,30 @@ class TuitionJobController extends Controller
     /**
      * Display guardian jobs list.
      */
-    public function index(Request $request): Response
+    public function index(Request $request, ?string $status = null): Response
     {
         $user = $request->user();
         $search = trim($request->string('q')->toString());
-        $status = strtolower(trim($request->string('status')->toString()));
-
-        if (! in_array($status, TuitionJob::statuses(), true)) {
-            $status = '';
-        }
+        $presetStatus = $this->normalizeStatus((string) $status);
+        $queryStatus = $this->normalizeStatus(trim($request->string('status')->toString()));
+        $effectiveStatus = $presetStatus ?: $queryStatus;
 
         $items = TuitionJob::query()
-            ->with(['city:id,name', 'area:id,name', 'category:id,name', 'schoolClass:id,name'])
+            ->with([
+                'city:id,name',
+                'area:id,name',
+                'category:id,name',
+                'schoolClass:id,name',
+                'assignment:id,job_id,tutor_user_id,appointed_at,confirmed_at',
+                'assignment.tutor:id,name',
+            ])
             ->withCount('applications')
+            ->withCount([
+                'applications as open_applications_count' => fn (Builder $builder): Builder => $builder->whereIn('status', [
+                    TuitionJobApplication::STATUS_APPLIED,
+                    TuitionJobApplication::STATUS_SHORTLISTED,
+                ]),
+            ])
             ->where('guardian_id', $user?->getAuthIdentifier())
             ->when($search !== '', function ($builder) use ($search): void {
                 $builder->where(function ($subQuery) use ($search): void {
@@ -44,7 +57,7 @@ class TuitionJobController extends Controller
                         ->orWhere('slug', 'like', "%{$search}%");
                 });
             })
-            ->when($status !== '', fn ($builder) => $builder->where('status', $status))
+            ->when($effectiveStatus !== '', fn ($builder) => $builder->where('status', $effectiveStatus))
             ->latest()
             ->paginate(15)
             ->withQueryString()
@@ -58,6 +71,11 @@ class TuitionJobController extends Controller
                 'city_name' => $job->city?->name,
                 'area_name' => $job->area?->name,
                 'applications_count' => $job->applications_count,
+                'open_applications_count' => $job->open_applications_count,
+                'has_assignment' => $job->assignment !== null,
+                'selected_tutor_name' => $job->assignment?->tutor?->name,
+                'hiring_confirmed_at' => $job->assignment?->confirmed_at?->toDateTimeString(),
+                'is_expired' => $job->status === TuitionJob::STATUS_LIVE && $job->isExpired(),
                 'published_at' => $job->published_at?->toDateTimeString(),
                 'expires_at' => $job->expires_at?->toDateTimeString(),
                 'updated_at' => $job->updated_at?->toDateTimeString(),
@@ -67,10 +85,51 @@ class TuitionJobController extends Controller
             'items' => $items,
             'filters' => [
                 'q' => $search,
-                'status' => $status,
+                'status' => $queryStatus,
+                'preset_status' => $presetStatus,
             ],
             'statusOptions' => $this->statusOptions(),
         ]);
+    }
+
+    /**
+     * Display pending jobs.
+     */
+    public function pending(Request $request): Response
+    {
+        return $this->index($request, TuitionJob::STATUS_PENDING);
+    }
+
+    /**
+     * Display live jobs.
+     */
+    public function live(Request $request): Response
+    {
+        return $this->index($request, TuitionJob::STATUS_LIVE);
+    }
+
+    /**
+     * Display confirmed jobs.
+     */
+    public function confirmed(Request $request): Response
+    {
+        return $this->index($request, TuitionJob::STATUS_CONFIRMED);
+    }
+
+    /**
+     * Display cancelled jobs.
+     */
+    public function cancelled(Request $request): Response
+    {
+        return $this->index($request, TuitionJob::STATUS_CANCELLED);
+    }
+
+    /**
+     * Display closed jobs.
+     */
+    public function closed(Request $request): Response
+    {
+        return $this->index($request, TuitionJob::STATUS_CLOSED);
     }
 
     /**
@@ -293,6 +352,20 @@ class TuitionJobController extends Controller
             ['value' => TuitionJob::STATUS_CANCELLED, 'label' => 'Cancelled'],
             ['value' => TuitionJob::STATUS_CLOSED, 'label' => 'Closed'],
         ];
+    }
+
+    /**
+     * Normalize query or preset status.
+     */
+    private function normalizeStatus(string $status): string
+    {
+        $normalized = strtolower(trim($status));
+
+        if (! in_array($normalized, TuitionJob::statuses(), true)) {
+            return '';
+        }
+
+        return $normalized;
     }
 
     /**

@@ -14,6 +14,11 @@ Route::prefix('tutor')
         Route::redirect('/', '/tutor/dashboard')->name('home');
         Route::get('/dashboard', TutorDashboardController::class)->name('dashboard');
         Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
+        Route::get('/job-applications/applied', [JobApplicationController::class, 'applied'])->name('job-applications.applied');
+        Route::get('/job-applications/shortlisted', [JobApplicationController::class, 'shortlisted'])->name('job-applications.shortlisted');
+        Route::get('/job-applications/appointed', [JobApplicationController::class, 'appointed'])->name('job-applications.appointed');
+        Route::get('/job-applications/confirmed', [JobApplicationController::class, 'confirmed'])->name('job-applications.confirmed');
+        Route::get('/job-applications/cancelled', [JobApplicationController::class, 'cancelled'])->name('job-applications.cancelled');
         Route::post('/jobs/{tuitionJob:slug}/apply', [JobApplicationController::class, 'store'])->name('jobs.apply');
         Route::patch('/job-applications/{tuitionJobApplication}/withdraw', [JobApplicationController::class, 'withdraw'])
             ->name('job-applications.withdraw');

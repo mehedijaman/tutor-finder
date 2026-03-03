@@ -7,6 +7,8 @@ use App\Models\Country;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\TuitionJob;
+use App\Models\TuitionJobApplication;
+use App\Models\TuitionJobAssignment;
 use App\Models\TuitionType;
 use App\Models\User;
 use Database\Seeders\AdminRolesAndPermissionsSeeder;
@@ -86,6 +88,9 @@ it('admin can access new jobs routes with status presets', function () {
     createAdminJobFixture($admin, TuitionJob::STATUS_LIVE);
     createAdminJobFixture($admin, TuitionJob::STATUS_CONFIRMED);
     createAdminJobFixture($admin, TuitionJob::STATUS_CANCELLED);
+    createAdminJobFixture($admin, TuitionJob::STATUS_LIVE)->forceFill([
+        'expires_at' => now()->subDay(),
+    ])->save();
 
     $this->actingAs($admin)
         ->get(route('admin.jobs.index'))
@@ -110,6 +115,13 @@ it('admin can access new jobs routes with status presets', function () {
             ->where('filters.preset_status', TuitionJob::STATUS_LIVE));
 
     $this->actingAs($admin)
+        ->get(route('admin.jobs.expired'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('admin/jobs/Index')
+            ->where('filters.preset_status', 'expired'));
+
+    $this->actingAs($admin)
         ->get(route('admin.jobs.confirmed'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
@@ -122,6 +134,23 @@ it('admin can access new jobs routes with status presets', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('admin/jobs/Index')
             ->where('filters.preset_status', TuitionJob::STATUS_CANCELLED));
+
+    $jobWithApplications = createAdminJobFixture($admin, TuitionJob::STATUS_LIVE);
+    $tutor = User::factory()->tutor()->create();
+
+    TuitionJobApplication::factory()->create([
+        'job_id' => $jobWithApplications->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_APPLIED,
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.jobs.applications', $jobWithApplications))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('admin/jobs/Applications')
+            ->where('job.id', $jobWithApplications->id)
+            ->has('items.data', 1));
 
     $editJob = createAdminJobFixture($admin);
 
@@ -152,9 +181,26 @@ it('enforces status transitions and recycle-bin actions on new admin jobs routes
 
     $this->actingAs($admin)
         ->patch(route('admin.jobs.status', $job), ['status' => TuitionJob::STATUS_CONFIRMED])
+        ->assertSessionHasErrors('job');
+
+    TuitionJobAssignment::factory()->create([
+        'job_id' => $job->id,
+        'tutor_user_id' => User::factory()->tutor()->create()->id,
+        'appointed_at' => null,
+        'confirmed_at' => null,
+    ]);
+
+    $this->actingAs($admin)
+        ->patch(route('admin.jobs.status', $job), ['status' => TuitionJob::STATUS_CONFIRMED])
         ->assertRedirect();
 
     expect($job->fresh()->status)->toBe(TuitionJob::STATUS_CONFIRMED);
+    $assignment = TuitionJobAssignment::query()
+        ->where('job_id', $job->id)
+        ->firstOrFail();
+    expect($assignment->appointed_at)->not->toBeNull();
+    expect($assignment->confirmed_at)->not->toBeNull();
+    expect($assignment->appointed_at?->equalTo($assignment->confirmed_at))->toBeTrue();
 
     $this->actingAs($admin)
         ->patch(route('admin.jobs.status', $job), ['status' => TuitionJob::STATUS_CANCELLED])

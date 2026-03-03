@@ -7,7 +7,10 @@ use App\Models\Country;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\TuitionJob;
+use App\Models\TuitionJobApplication;
+use App\Models\TuitionJobAssignment;
 use App\Models\TuitionType;
+use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('shows only live published non-expired non-trashed jobs on public board', function () {
@@ -223,4 +226,53 @@ it('shows job details for live public jobs and hides non public jobs', function 
             ->where('job.slug', $live->slug));
 
     $this->get(route('jobs.show', $pending->slug))->assertNotFound();
+});
+
+it('allows tutor re-apply on job show when existing application is cancelled', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $live = TuitionJob::factory()->live()->create([
+        'guardian_id' => $guardian->id,
+        'published_at' => now()->subHour(),
+        'expires_at' => now()->addDays(2),
+    ]);
+
+    TuitionJobApplication::factory()->create([
+        'job_id' => $live->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'cancel_reason' => 'Previous conflict resolved.',
+    ]);
+
+    $this->actingAs($tutor)
+        ->get(route('jobs.show', $live->slug))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('JobShow')
+            ->where('canApply', true)
+            ->where('application.status', TuitionJobApplication::STATUS_CANCELLED));
+});
+
+it('blocks apply on job show when assignment already exists', function () {
+    $guardian = User::factory()->guardian()->create();
+    $selectedTutor = User::factory()->tutor()->create();
+    $tutor = User::factory()->tutor()->create();
+    $live = TuitionJob::factory()->live()->create([
+        'guardian_id' => $guardian->id,
+        'published_at' => now()->subHour(),
+        'expires_at' => now()->addDays(2),
+    ]);
+
+    TuitionJobAssignment::factory()->create([
+        'job_id' => $live->id,
+        'tutor_user_id' => $selectedTutor->id,
+    ]);
+
+    $this->actingAs($tutor)
+        ->get(route('jobs.show', $live->slug))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('JobShow')
+            ->where('canApply', false)
+            ->where('application', null));
 });

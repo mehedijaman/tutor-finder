@@ -43,9 +43,23 @@ const page = usePage();
 const unreadNotificationCount = computed(() =>
     Number(page.props.notificationCounts?.unread ?? 0),
 );
+const panelContext = computed<'admin' | 'tutor' | 'guardian'>(() => {
+    const role = page.props.auth?.user?.role;
+    const currentPath = new URL(page.url, window.location.origin).pathname;
+
+    if (role === 'admin' || currentPath.startsWith('/admin')) {
+        return 'admin';
+    }
+
+    if (role === 'tutor' || currentPath.startsWith('/tutor')) {
+        return 'tutor';
+    }
+
+    return 'guardian';
+});
 
 const mainNavItems = computed<NavItem[]>(() => {
-    const role = page.props.auth?.user?.role;
+    const role = panelContext.value;
 
     if (role === 'admin') {
         return [
@@ -134,6 +148,11 @@ const mainNavItems = computed<NavItem[]>(() => {
                     {
                         title: 'Live Jobs',
                         href: '/admin/jobs/live',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Expired Jobs',
+                        href: '/admin/jobs/expired',
                         icon: FileText,
                     },
                     {
@@ -250,9 +269,42 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Dashboard', href: '/tutor/dashboard', icon: LayoutGrid },
             { title: 'Browse Jobs', href: '/jobs', icon: FileText },
             {
-                title: 'My Applications',
+                title: 'Application Pipeline',
                 href: '/tutor/job-applications',
                 icon: FolderOpen,
+                isActive: true,
+                children: [
+                    {
+                        title: 'All Applications',
+                        href: '/tutor/job-applications',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Applied',
+                        href: '/tutor/job-applications/applied',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Shortlisted',
+                        href: '/tutor/job-applications/shortlisted',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Appointed',
+                        href: '/tutor/job-applications/appointed',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Confirmed Hires',
+                        href: '/tutor/job-applications/confirmed',
+                        icon: Briefcase,
+                    },
+                    {
+                        title: 'Cancelled',
+                        href: '/tutor/job-applications/cancelled',
+                        icon: FileText,
+                    },
+                ],
             },
             { title: 'Profile', href: '/tutor/profile', icon: UserRound },
             {
@@ -274,7 +326,49 @@ const mainNavItems = computed<NavItem[]>(() => {
 
     return [
         { title: 'Dashboard', href: '/guardian/dashboard', icon: LayoutGrid },
-        { title: 'Jobs', href: '/guardian/jobs', icon: FileText },
+        {
+            title: 'Hiring Pipeline',
+            href: '/guardian/jobs',
+            icon: Briefcase,
+            isActive: true,
+            children: [
+                {
+                    title: 'Post New Job',
+                    href: '/guardian/jobs/create',
+                    icon: FileText,
+                },
+                {
+                    title: 'All Jobs',
+                    href: '/guardian/jobs',
+                    icon: FileText,
+                },
+                {
+                    title: 'Pending Approval',
+                    href: '/guardian/jobs/pending',
+                    icon: FileText,
+                },
+                {
+                    title: 'Live (Applications Open)',
+                    href: '/guardian/jobs/live',
+                    icon: FileText,
+                },
+                {
+                    title: 'Confirmed Hires',
+                    href: '/guardian/jobs/confirmed',
+                    icon: Briefcase,
+                },
+                {
+                    title: 'Cancelled Jobs',
+                    href: '/guardian/jobs/cancelled',
+                    icon: FileText,
+                },
+                {
+                    title: 'Closed Jobs',
+                    href: '/guardian/jobs/closed',
+                    icon: FileText,
+                },
+            ],
+        },
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
         { title: 'Verification', href: '/guardian/verification', icon: Shield },
         {

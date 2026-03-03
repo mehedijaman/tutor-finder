@@ -12,26 +12,28 @@ class TuitionJobApplication extends Model
     /** @use HasFactory<\Database\Factories\TuitionJobApplicationFactory> */
     use HasFactory;
 
-    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPLIED = 'applied';
 
     public const STATUS_SHORTLISTED = 'shortlisted';
 
-    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_APPOINTED = 'appointed';
 
-    public const STATUS_WITHDRAWN = 'withdrawn';
+    public const STATUS_CONFIRMED = 'confirmed';
+
+    public const STATUS_CANCELLED = 'cancelled';
 
     /**
      * @var list<string>
      */
     protected $fillable = [
-        'tuition_job_id',
-        'tutor_id',
+        'job_id',
+        'tutor_user_id',
         'cover_letter',
-        'expected_salary',
+        'expected_salary_amount',
+        'salary_currency',
         'status',
-        'guardian_note',
-        'reviewed_by',
-        'reviewed_at',
+        'cancel_reason',
+        'metadata',
     ];
 
     /**
@@ -42,8 +44,8 @@ class TuitionJobApplication extends Model
     protected function casts(): array
     {
         return [
-            'expected_salary' => 'decimal:2',
-            'reviewed_at' => 'datetime',
+            'expected_salary_amount' => 'decimal:2',
+            'metadata' => 'array',
         ];
     }
 
@@ -52,7 +54,7 @@ class TuitionJobApplication extends Model
      */
     public function tuitionJob(): BelongsTo
     {
-        return $this->belongsTo(TuitionJob::class, 'tuition_job_id');
+        return $this->belongsTo(TuitionJob::class, 'job_id');
     }
 
     /**
@@ -60,65 +62,74 @@ class TuitionJobApplication extends Model
      */
     public function tutor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'tutor_id');
-    }
-
-    /**
-     * Get guardian who reviewed this application.
-     */
-    public function reviewedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'reviewed_by');
+        return $this->belongsTo(User::class, 'tutor_user_id');
     }
 
     /**
      * Mark application as shortlisted by guardian.
      */
-    public function markShortlisted(User $guardian, ?string $guardianNote = null): void
+    public function markShortlisted(): void
     {
-        if ($this->status === self::STATUS_WITHDRAWN) {
-            throw new DomainException('Withdrawn application cannot be shortlisted.');
+        if ($this->status !== self::STATUS_APPLIED) {
+            throw new DomainException('Only applied applications can be shortlisted.');
         }
 
         $this->forceFill([
             'status' => self::STATUS_SHORTLISTED,
-            'guardian_note' => $guardianNote,
-            'reviewed_by' => $guardian->getKey(),
-            'reviewed_at' => now(),
+            'cancel_reason' => null,
         ])->save();
     }
 
     /**
-     * Mark application as rejected by guardian.
+     * Mark application as cancelled by guardian/admin.
      */
-    public function markRejected(User $guardian, ?string $guardianNote = null): void
+    public function markCancelled(?string $reason = null): void
     {
-        if ($this->status === self::STATUS_WITHDRAWN) {
-            throw new DomainException('Withdrawn application cannot be rejected.');
+        if (! in_array($this->status, [
+            self::STATUS_APPLIED,
+            self::STATUS_SHORTLISTED,
+            self::STATUS_APPOINTED,
+            self::STATUS_CONFIRMED,
+        ], true)) {
+            throw new DomainException('Only active applications can be cancelled.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_REJECTED,
-            'guardian_note' => $guardianNote,
-            'reviewed_by' => $guardian->getKey(),
-            'reviewed_at' => now(),
+            'status' => self::STATUS_CANCELLED,
+            'cancel_reason' => $reason,
         ])->save();
     }
 
     /**
-     * Mark application as withdrawn by tutor.
+     * Mark application as confirmed for a selected hire.
      */
-    public function markWithdrawn(): void
+    public function markConfirmed(): void
     {
-        if (in_array($this->status, [self::STATUS_REJECTED, self::STATUS_WITHDRAWN], true)) {
-            throw new DomainException('Rejected or withdrawn application cannot be withdrawn again.');
+        if ($this->status !== self::STATUS_SHORTLISTED) {
+            throw new DomainException('Only shortlisted applications can be confirmed.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_WITHDRAWN,
-            'guardian_note' => null,
-            'reviewed_by' => null,
-            'reviewed_at' => null,
+            'status' => self::STATUS_CONFIRMED,
+            'cancel_reason' => null,
+        ])->save();
+    }
+
+    /**
+     * Mark application back to applied state when tutor re-applies.
+     */
+    public function markApplied(?string $coverLetter, int|float|string|null $expectedSalaryAmount): void
+    {
+        if ($this->status !== self::STATUS_CANCELLED) {
+            throw new DomainException('Only cancelled applications can be re-applied.');
+        }
+
+        $this->forceFill([
+            'status' => self::STATUS_APPLIED,
+            'cover_letter' => $coverLetter,
+            'expected_salary_amount' => $expectedSalaryAmount,
+            'salary_currency' => $this->salary_currency ?: 'BDT',
+            'cancel_reason' => null,
         ])->save();
     }
 
@@ -130,10 +141,11 @@ class TuitionJobApplication extends Model
     public static function statuses(): array
     {
         return [
-            self::STATUS_PENDING,
+            self::STATUS_APPLIED,
             self::STATUS_SHORTLISTED,
-            self::STATUS_REJECTED,
-            self::STATUS_WITHDRAWN,
+            self::STATUS_APPOINTED,
+            self::STATUS_CONFIRMED,
+            self::STATUS_CANCELLED,
         ];
     }
 }

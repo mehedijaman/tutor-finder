@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TuitionJob extends Model
@@ -46,8 +47,6 @@ class TuitionJob extends Model
         'city_id',
         'area_id',
         'guardian_id',
-        'selected_tutor_id',
-        'selected_application_id',
         'location',
         'latitude',
         'longitude',
@@ -98,22 +97,6 @@ class TuitionJob extends Model
     public function guardian(): BelongsTo
     {
         return $this->belongsTo(User::class, 'guardian_id');
-    }
-
-    /**
-     * Get selected tutor for confirmed engagement.
-     */
-    public function selectedTutor(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'selected_tutor_id');
-    }
-
-    /**
-     * Get selected application for confirmed engagement.
-     */
-    public function selectedApplication(): BelongsTo
-    {
-        return $this->belongsTo(TuitionJobApplication::class, 'selected_application_id');
     }
 
     /**
@@ -178,7 +161,15 @@ class TuitionJob extends Model
      */
     public function applications(): HasMany
     {
-        return $this->hasMany(TuitionJobApplication::class, 'tuition_job_id');
+        return $this->hasMany(TuitionJobApplication::class, 'job_id');
+    }
+
+    /**
+     * Get selected assignment snapshot for this job.
+     */
+    public function assignment(): HasOne
+    {
+        return $this->hasOne(TuitionJobAssignment::class, 'job_id');
     }
 
     /**
@@ -279,8 +270,8 @@ class TuitionJob extends Model
             'published_at' => $this->published_at ?? now(),
             'updated_by' => $admin->getKey(),
             'cancellation_reason' => null,
-            'selected_tutor_id' => null,
-            'selected_application_id' => null,
+            'confirmed_by' => null,
+            'confirmed_at' => null,
         ])->save();
     }
 
@@ -289,6 +280,14 @@ class TuitionJob extends Model
      */
     public function markConfirmed(User $admin): void
     {
+        $this->markConfirmedAt($admin, now());
+    }
+
+    /**
+     * Mark live job as confirmed using a specific timestamp.
+     */
+    public function markConfirmedAt(User $admin, \DateTimeInterface $confirmedAt): void
+    {
         if ($this->status !== self::STATUS_LIVE) {
             throw new DomainException('Only live jobs can be confirmed.');
         }
@@ -296,24 +295,9 @@ class TuitionJob extends Model
         $this->forceFill([
             'status' => self::STATUS_CONFIRMED,
             'confirmed_by' => $admin->getKey(),
-            'confirmed_at' => now(),
+            'confirmed_at' => $confirmedAt,
             'updated_by' => $admin->getKey(),
         ])->save();
-    }
-
-    /**
-     * Alias method for future engagement confirmation flow.
-     */
-    public function confirmEngagement(User $admin, ?TuitionJobApplication $application = null): void
-    {
-        $this->markConfirmed($admin);
-
-        if ($application !== null) {
-            $this->forceFill([
-                'selected_tutor_id' => $application->tutor_id,
-                'selected_application_id' => $application->getKey(),
-            ])->save();
-        }
     }
 
     /**

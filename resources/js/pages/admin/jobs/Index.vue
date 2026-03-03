@@ -37,6 +37,10 @@ const baseUrl = computed(() => {
         return '/admin/jobs/live';
     }
 
+    if (presetStatus.value === 'expired') {
+        return '/admin/jobs/expired';
+    }
+
     if (presetStatus.value === 'confirmed') {
         return '/admin/jobs/confirmed';
     }
@@ -54,6 +58,8 @@ const columns = [
     { key: 'category_name', label: 'Category' },
     { key: 'class_name', label: 'Class' },
     { key: 'city_name', label: 'City' },
+    { key: 'applications_count', label: 'Applications' },
+    { key: 'hiring_outcome', label: 'Hiring Outcome' },
     { key: 'status', label: 'Status' },
     { key: 'published_at', label: 'Published At' },
     { key: 'expires_at', label: 'Expires At' },
@@ -225,6 +231,7 @@ function actionItemsForRow(row) {
     }
 
     const actions = [
+        { key: 'applications', label: 'Applications' },
         { key: 'edit', label: 'Edit' },
         { key: 'delete', label: 'Delete', destructive: true },
     ];
@@ -251,6 +258,12 @@ function actionItemsForRow(row) {
 }
 
 function handleRowAction(actionKey, row) {
+    if (actionKey === 'applications') {
+        router.visit(`/admin/jobs/${row.id}/applications`);
+
+        return;
+    }
+
     if (actionKey === 'edit') {
         router.visit(`/admin/jobs/${row.id}/edit`);
 
@@ -361,6 +374,27 @@ function runConfirmedAction() {
 
     confirmOpen.value = false;
     resetConfirmState();
+}
+
+function statusBadge(row) {
+    if (row.status === 'live' && row.is_expired) {
+        return {
+            label: 'expired',
+            variant: 'destructive',
+        };
+    }
+
+    if (row.status === 'live') {
+        return {
+            label: row.status,
+            variant: 'default',
+        };
+    }
+
+    return {
+        label: row.status,
+        variant: 'secondary',
+    };
 }
 </script>
 
@@ -483,13 +517,51 @@ function runConfirmedAction() {
                 :columns="columns"
                 empty-text="No jobs found."
             >
-                <template #cell-status="{ row }">
-                    <Badge
-                        :variant="
-                            row.status === 'live' ? 'default' : 'secondary'
-                        "
-                        >{{ row.status }}</Badge
+                <template #cell-applications_count="{ row }">
+                    <Link
+                        :href="`/admin/jobs/${row.id}/applications`"
+                        class="text-sm font-medium text-blue-600 hover:underline"
                     >
+                        {{ row.open_applications_count ?? 0 }} open /
+                        {{ row.applications_count ?? 0 }} total
+                    </Link>
+                </template>
+
+                <template #cell-hiring_outcome="{ row }">
+                    <div v-if="row.has_assignment" class="space-y-0.5">
+                        <p class="text-sm font-medium">
+                            {{ row.selected_tutor_name || 'Selected tutor' }}
+                        </p>
+                        <p
+                            v-if="row.assignment_confirmed_at"
+                            class="text-xs text-muted-foreground"
+                        >
+                            Confirmed:
+                            {{
+                                new Date(
+                                    row.assignment_confirmed_at,
+                                ).toLocaleString()
+                            }}
+                        </p>
+                        <p
+                            v-else-if="row.assignment_appointed_at"
+                            class="text-xs text-muted-foreground"
+                        >
+                            Appointed:
+                            {{
+                                new Date(
+                                    row.assignment_appointed_at,
+                                ).toLocaleString()
+                            }}
+                        </p>
+                    </div>
+                    <span v-else class="text-muted-foreground">Not finalized</span>
+                </template>
+
+                <template #cell-status="{ row }">
+                    <Badge :variant="statusBadge(row).variant">
+                        {{ statusBadge(row).label }}
+                    </Badge>
                 </template>
 
                 <template #cell-published_at="{ value }">{{

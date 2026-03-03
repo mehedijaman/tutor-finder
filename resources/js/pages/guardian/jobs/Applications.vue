@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
@@ -34,10 +34,10 @@ const baseUrl = `/guardian/jobs/${props.job.id}/applications`;
 const columns = [
     { key: 'tutor_name', label: 'Tutor' },
     { key: 'status', label: 'Status' },
-    { key: 'expected_salary', label: 'Expected Salary' },
+    { key: 'expected_salary_amount', label: 'Expected Salary' },
     { key: 'cover_letter', label: 'Cover Letter' },
     { key: 'created_at', label: 'Applied At' },
-    { key: 'reviewed_at', label: 'Reviewed At' },
+    { key: 'cancel_reason', label: 'Cancel Reason' },
     { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap' },
 ];
 
@@ -45,6 +45,9 @@ const statusFilter = ref(props.filters.status || 'all');
 const confirmOpen = ref(false);
 const pendingAction = ref(null);
 const pendingRow = ref(null);
+const canManageApplications = computed(
+    () => props.job.can_manage_applications === true,
+);
 
 watch(
     () => props.filters.status,
@@ -70,12 +73,20 @@ watch(statusFilter, (value) => {
 });
 
 function badgeVariant(status) {
-    if (status === 'shortlisted') {
+    if (status === 'confirmed') {
         return 'default';
     }
 
-    if (status === 'pending') {
+    if (status === 'shortlisted' || status === 'appointed') {
         return 'secondary';
+    }
+
+    if (status === 'applied') {
+        return 'outline';
+    }
+
+    if (status === 'cancelled') {
+        return 'destructive';
     }
 
     return 'outline';
@@ -85,29 +96,26 @@ function actionItems(row) {
     return [
         {
             key: 'confirm',
-            label: 'Confirm Engagement',
+            label: 'Confirm Hire',
             show:
-                job.status === 'live' &&
+                canManageApplications.value &&
                 row.status === 'shortlisted' &&
-                !row.is_selected &&
-                !job.selected_application_id,
+                !row.is_selected,
         },
         {
             key: 'shortlist',
             label: 'Shortlist',
             show:
-                job.status === 'live' &&
-                !job.selected_application_id &&
-                !['shortlisted', 'withdrawn'].includes(row.status),
+                canManageApplications.value &&
+                row.status === 'applied',
         },
         {
-            key: 'reject',
-            label: 'Reject',
+            key: 'cancel',
+            label: 'Cancel Application',
             destructive: true,
             show:
-                job.status === 'live' &&
-                !job.selected_application_id &&
-                !['rejected', 'withdrawn'].includes(row.status),
+                canManageApplications.value &&
+                ['applied', 'shortlisted'].includes(row.status),
         },
     ];
 }
@@ -141,8 +149,8 @@ function confirmStatusUpdate() {
                 status:
                     pendingAction.value === 'shortlist'
                         ? 'shortlisted'
-                        : 'rejected',
-                guardian_note: '',
+                        : 'cancelled',
+                cancel_reason: '',
             },
             {
                 preserveScroll: true,
@@ -161,30 +169,30 @@ function resetConfirm() {
 
 function confirmTitle() {
     if (pendingAction.value === 'confirm') {
-        return 'Confirm tutor engagement';
+        return 'Confirm Tutor Hire';
     }
 
     return pendingAction.value === 'shortlist'
         ? 'Shortlist tutor'
-        : 'Reject tutor';
+        : 'Cancel application';
 }
 
 function confirmDescription() {
     if (pendingAction.value === 'confirm') {
-        return 'This will mark the job as confirmed and reject other pending/shortlisted applications.';
+        return 'This will finalize the hire and cancel other open applications.';
     }
 
     return pendingAction.value === 'shortlist'
         ? 'This tutor will be marked as shortlisted for this job.'
-        : 'This tutor application will be marked as rejected.';
+        : 'This tutor application will be cancelled.';
 }
 
 function confirmLabel() {
     if (pendingAction.value === 'confirm') {
-        return 'Confirm Engagement';
+        return 'Confirm Hire';
     }
 
-    return pendingAction.value === 'shortlist' ? 'Shortlist' : 'Reject';
+    return pendingAction.value === 'shortlist' ? 'Shortlist' : 'Cancel';
 }
 </script>
 
@@ -202,7 +210,20 @@ function confirmLabel() {
                         Review tutors and shortlist the best fit.
                     </p>
                     <p
-                        v-if="job.status === 'confirmed'"
+                        v-if="job.has_assignment"
+                        class="mt-1 text-xs font-medium text-emerald-700"
+                    >
+                        Hire finalized with
+                        {{ job.selected_tutor_name || 'selected tutor' }}.
+                    </p>
+                    <p
+                        v-else-if="job.is_expired"
+                        class="mt-1 text-xs font-medium text-amber-700"
+                    >
+                        This job is expired. Application actions are locked.
+                    </p>
+                    <p
+                        v-else-if="job.status === 'confirmed'"
                         class="mt-1 text-xs font-medium text-emerald-700"
                     >
                         This job has already been confirmed.
@@ -241,6 +262,14 @@ function confirmLabel() {
                         </SelectItem>
                     </SelectContent>
                 </Select>
+
+                <div
+                    v-if="job.has_assignment && job.assignment_confirmed_at"
+                    class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800"
+                >
+                    Confirmed at:
+                    {{ new Date(job.assignment_confirmed_at).toLocaleString() }}
+                </div>
             </div>
 
             <DataTable
@@ -275,8 +304,12 @@ function confirmLabel() {
                     <Badge :variant="badgeVariant(value)">{{ value }}</Badge>
                 </template>
 
-                <template #cell-expected_salary="{ value }">
-                    {{ value ? `BDT ${value}` : '—' }}
+                <template #cell-expected_salary_amount="{ row }">
+                    {{
+                        row.expected_salary_amount
+                            ? `${row.salary_currency || 'BDT'} ${row.expected_salary_amount}`
+                            : '—'
+                    }}
                 </template>
 
                 <template #cell-cover_letter="{ value }">
@@ -290,8 +323,8 @@ function confirmLabel() {
                 <template #cell-created_at="{ value }">{{
                     value ? new Date(value).toLocaleString() : '—'
                 }}</template>
-                <template #cell-reviewed_at="{ value }">{{
-                    value ? new Date(value).toLocaleString() : '—'
+                <template #cell-cancel_reason="{ value }">{{
+                    value || '—'
                 }}</template>
 
                 <template #cell-actions="{ row }">
@@ -309,7 +342,7 @@ function confirmLabel() {
         :title="confirmTitle()"
         :description="confirmDescription()"
         :confirm-label="confirmLabel()"
-        :destructive="pendingAction === 'reject' || pendingAction === 'confirm'"
+        :destructive="pendingAction === 'cancel'"
         @confirm="confirmStatusUpdate"
         @cancel="resetConfirm"
     />

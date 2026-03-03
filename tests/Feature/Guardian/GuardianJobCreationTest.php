@@ -84,3 +84,72 @@ it('guardian can view jobs pages and create pending job', function () {
         'subject_id' => $subject->id,
     ]);
 });
+
+it('guardian can access jobs preset routes with status filters', function () {
+    $guardian = User::factory()->guardian()->create();
+
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => TuitionJob::STATUS_PENDING,
+    ]);
+    TuitionJob::factory()->live()->create([
+        'guardian_id' => $guardian->id,
+    ]);
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => TuitionJob::STATUS_CONFIRMED,
+        'published_at' => now()->subDay(),
+        'confirmed_at' => now()->subHour(),
+    ]);
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => TuitionJob::STATUS_CANCELLED,
+    ]);
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => TuitionJob::STATUS_CLOSED,
+        'published_at' => now()->subDay(),
+    ]);
+
+    $this->actingAs($guardian)
+        ->get(route('guardian.jobs.index'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guardian/jobs/Index')
+            ->where('filters.preset_status', ''));
+
+    $this->actingAs($guardian)
+        ->get(route('guardian.jobs.pending'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guardian/jobs/Index')
+            ->where('filters.preset_status', TuitionJob::STATUS_PENDING));
+
+    $this->actingAs($guardian)
+        ->get(route('guardian.jobs.live'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guardian/jobs/Index')
+            ->where('filters.preset_status', TuitionJob::STATUS_LIVE));
+
+    $this->actingAs($guardian)
+        ->get(route('guardian.jobs.confirmed'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guardian/jobs/Index')
+            ->where('filters.preset_status', TuitionJob::STATUS_CONFIRMED));
+
+    $this->actingAs($guardian)
+        ->get(route('guardian.jobs.cancelled'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guardian/jobs/Index')
+            ->where('filters.preset_status', TuitionJob::STATUS_CANCELLED));
+
+    $this->actingAs($guardian)
+        ->get(route('guardian.jobs.closed'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guardian/jobs/Index')
+            ->where('filters.preset_status', TuitionJob::STATUS_CLOSED));
+});

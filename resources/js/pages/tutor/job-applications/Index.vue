@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
@@ -23,15 +23,38 @@ const props = defineProps({
 const breadcrumbs = [
     { title: 'My Applications', href: '/tutor/job-applications' },
 ];
-const baseUrl = '/tutor/job-applications';
+const presetStatus = computed(() => props.filters.preset_status || '');
+const baseUrl = computed(() => {
+    if (presetStatus.value === 'applied') {
+        return '/tutor/job-applications/applied';
+    }
+
+    if (presetStatus.value === 'shortlisted') {
+        return '/tutor/job-applications/shortlisted';
+    }
+
+    if (presetStatus.value === 'appointed') {
+        return '/tutor/job-applications/appointed';
+    }
+
+    if (presetStatus.value === 'confirmed') {
+        return '/tutor/job-applications/confirmed';
+    }
+
+    if (presetStatus.value === 'cancelled') {
+        return '/tutor/job-applications/cancelled';
+    }
+
+    return '/tutor/job-applications';
+});
 
 const columns = [
     { key: 'job_title', label: 'Job' },
     { key: 'job_status', label: 'Job Status' },
     { key: 'status', label: 'Application Status' },
-    { key: 'expected_salary', label: 'Expected Salary' },
+    { key: 'expected_salary_amount', label: 'Expected Salary' },
     { key: 'created_at', label: 'Applied At' },
-    { key: 'reviewed_at', label: 'Reviewed At' },
+    { key: 'cancel_reason', label: 'Cancel Reason' },
     { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap' },
 ];
 
@@ -51,9 +74,19 @@ watch(
 );
 
 watch(statusFilter, (value) => {
+    if (presetStatus.value) {
+        return;
+    }
+
     router.get(
-        baseUrl,
-        { status: value === 'all' ? '' : value },
+        baseUrl.value,
+        {
+            status: presetStatus.value
+                ? ''
+                : value === 'all'
+                  ? ''
+                  : value,
+        },
         {
             preserveState: true,
             preserveScroll: true,
@@ -63,12 +96,20 @@ watch(statusFilter, (value) => {
 });
 
 function badgeVariant(status) {
-    if (status === 'shortlisted') {
+    if (status === 'confirmed') {
         return 'default';
     }
 
-    if (status === 'pending') {
+    if (status === 'shortlisted' || status === 'appointed') {
         return 'secondary';
+    }
+
+    if (status === 'applied') {
+        return 'outline';
+    }
+
+    if (status === 'cancelled') {
+        return 'destructive';
     }
 
     return 'outline';
@@ -79,9 +120,9 @@ function actionItems(row) {
         { key: 'view-job', label: 'View Job', show: !!row.job.slug },
         {
             key: 'withdraw',
-            label: 'Withdraw Application',
+            label: 'Cancel Application',
             destructive: true,
-            show: ['pending', 'shortlisted'].includes(row.status),
+            show: ['applied', 'shortlisted'].includes(row.status),
         },
     ];
 }
@@ -153,7 +194,7 @@ function closeConfirm() {
             <div
                 class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
             >
-                <Select v-model="statusFilter">
+                <Select v-if="!presetStatus" v-model="statusFilter">
                     <SelectTrigger>
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
@@ -197,15 +238,19 @@ function closeConfirm() {
                     <Badge :variant="badgeVariant(value)">{{ value }}</Badge>
                 </template>
 
-                <template #cell-expected_salary="{ value }">
-                    {{ value ? `BDT ${value}` : '—' }}
+                <template #cell-expected_salary_amount="{ row }">
+                    {{
+                        row.expected_salary_amount
+                            ? `${row.salary_currency || 'BDT'} ${row.expected_salary_amount}`
+                            : '—'
+                    }}
                 </template>
 
                 <template #cell-created_at="{ value }">{{
                     value ? new Date(value).toLocaleString() : '—'
                 }}</template>
-                <template #cell-reviewed_at="{ value }">{{
-                    value ? new Date(value).toLocaleString() : '—'
+                <template #cell-cancel_reason="{ value }">{{
+                    value || '—'
                 }}</template>
 
                 <template #cell-actions="{ row }">
@@ -220,9 +265,9 @@ function closeConfirm() {
 
     <ConfirmDialog
         v-model:open="confirmOpen"
-        title="Withdraw application"
-        description="This will withdraw your application for this job."
-        confirm-label="Withdraw"
+        title="Cancel Application"
+        description="This will cancel your application for this job."
+        confirm-label="Cancel Application"
         :destructive="true"
         @confirm="confirmWithdraw"
         @cancel="closeConfirm"

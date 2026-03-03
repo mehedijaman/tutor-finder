@@ -23,9 +23,12 @@ class JobApplicationStoreRequest extends FormRequest
             'cover_letter' => $this->filled('cover_letter')
                 ? trim((string) $this->input('cover_letter'))
                 : null,
-            'expected_salary' => $this->filled('expected_salary')
-                ? (float) $this->input('expected_salary')
+            'expected_salary_amount' => $this->filled('expected_salary_amount')
+                ? (float) $this->input('expected_salary_amount')
                 : null,
+            'salary_currency' => $this->filled('salary_currency')
+                ? strtoupper(trim((string) $this->input('salary_currency')))
+                : 'BDT',
         ]);
     }
 
@@ -38,12 +41,11 @@ class JobApplicationStoreRequest extends FormRequest
     {
         return [
             'cover_letter' => ['nullable', 'string', 'max:5000'],
-            'expected_salary' => ['nullable', 'numeric', 'min:0'],
+            'expected_salary_amount' => ['nullable', 'numeric', 'min:0'],
+            'salary_currency' => ['nullable', 'string', 'size:3'],
             'status' => ['prohibited'],
-            'tutor_id' => ['prohibited'],
-            'tuition_job_id' => ['prohibited'],
-            'reviewed_by' => ['prohibited'],
-            'reviewed_at' => ['prohibited'],
+            'tutor_user_id' => ['prohibited'],
+            'job_id' => ['prohibited'],
         ];
     }
 }

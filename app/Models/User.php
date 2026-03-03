@@ -133,15 +133,15 @@ class User extends Authenticatable
      */
     public function tutorJobApplications(): HasMany
     {
-        return $this->hasMany(TuitionJobApplication::class, 'tutor_id');
+        return $this->hasMany(TuitionJobApplication::class, 'tutor_user_id');
     }
 
     /**
-     * Get tutor applications reviewed by this guardian/admin.
+     * Get tutor assignments where this user is selected as tutor.
      */
-    public function reviewedJobApplications(): HasMany
+    public function tutorJobAssignments(): HasMany
     {
-        return $this->hasMany(TuitionJobApplication::class, 'reviewed_by');
+        return $this->hasMany(TuitionJobAssignment::class, 'tutor_user_id');
     }
 
     /**

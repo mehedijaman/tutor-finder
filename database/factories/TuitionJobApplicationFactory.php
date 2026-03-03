@@ -20,14 +20,14 @@ class TuitionJobApplicationFactory extends Factory
     public function definition(): array
     {
         return [
-            'tuition_job_id' => TuitionJob::factory(),
-            'tutor_id' => User::factory()->tutor(),
+            'job_id' => TuitionJob::factory(),
+            'tutor_user_id' => User::factory()->tutor(),
             'cover_letter' => fake()->paragraph(),
-            'expected_salary' => fake()->numberBetween(5000, 30000),
-            'status' => TuitionJobApplication::STATUS_PENDING,
-            'guardian_note' => null,
-            'reviewed_by' => null,
-            'reviewed_at' => null,
+            'expected_salary_amount' => fake()->numberBetween(5000, 30000),
+            'salary_currency' => 'BDT',
+            'status' => TuitionJobApplication::STATUS_APPLIED,
+            'cancel_reason' => null,
+            'metadata' => null,
         ];
     }
 
@@ -38,18 +38,16 @@ class TuitionJobApplicationFactory extends Factory
     {
         return $this->state(fn (): array => [
             'status' => TuitionJobApplication::STATUS_SHORTLISTED,
-            'reviewed_at' => now(),
         ]);
     }
 
     /**
-     * Indicate that the application is rejected.
+     * Indicate that the application is confirmed.
      */
-    public function rejected(): static
+    public function confirmed(): static
     {
         return $this->state(fn (): array => [
-            'status' => TuitionJobApplication::STATUS_REJECTED,
-            'reviewed_at' => now(),
+            'status' => TuitionJobApplication::STATUS_CONFIRMED,
         ]);
     }
 }

@@ -13,6 +13,7 @@ use App\Models\Country;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\TuitionJob;
+use App\Models\TuitionJobApplication;
 use App\Models\TuitionType;
 use App\Models\User;
 use App\Support\SlugService;
@@ -26,6 +27,8 @@ use Inertia\Response;
 
 class JobController extends Controller
 {
+    private const FILTER_EXPIRED = 'expired';
+
     /**
      * @var array<string, list<string>>
      */
@@ -79,6 +82,7 @@ class JobController extends Controller
 
         $sortColumn = $sortMap[$sort] ?? 'updated_at';
         $effectiveStatus = $presetStatus ?: $queryStatus;
+        $filterExpired = $effectiveStatus === self::FILTER_EXPIRED;
 
         $items = TuitionJob::query()
             ->with([
@@ -89,6 +93,15 @@ class JobController extends Controller
                 'category:id,name',
                 'schoolClass:id,name',
                 'subjects:id,name',
+                'assignment:id,job_id,tutor_user_id,appointed_at,confirmed_at',
+                'assignment.tutor:id,name',
+            ])
+            ->withCount('applications')
+            ->withCount([
+                'applications as open_applications_count' => fn (Builder $builder): Builder => $builder->whereIn('status', [
+                    TuitionJobApplication::STATUS_APPLIED,
+                    TuitionJobApplication::STATUS_SHORTLISTED,
+                ]),
             ])
             ->when($showTrash, fn (Builder $builder): Builder => $builder->onlyTrashed())
             ->when($search !== '', function (Builder $builder) use ($search): void {
@@ -99,7 +112,11 @@ class JobController extends Controller
                         ->orWhereHas('guardian', fn (Builder $guardianQuery): Builder => $guardianQuery->where('name', 'like', "%{$search}%"));
                 });
             })
-            ->when($effectiveStatus !== '', fn (Builder $builder): Builder => $builder->where('status', $effectiveStatus))
+            ->when($effectiveStatus !== '' && ! $filterExpired, fn (Builder $builder): Builder => $builder->where('status', $effectiveStatus))
+            ->when($filterExpired, fn (Builder $builder): Builder => $builder
+                ->where('status', TuitionJob::STATUS_LIVE)
+                ->whereNotNull('expires_at')
+                ->where('expires_at', '<=', now()))
             ->when($guardianId > 0, fn (Builder $builder): Builder => $builder->where('guardian_id', $guardianId))
             ->orderBy($sortColumn, $direction)
             ->orderByDesc('id')
@@ -118,6 +135,14 @@ class JobController extends Controller
                 'city_name' => $job->city?->name,
                 'area_name' => $job->area?->name,
                 'subject_names' => $job->subjects->pluck('name')->values()->all(),
+                'applications_count' => $job->applications_count,
+                'open_applications_count' => $job->open_applications_count,
+                'has_assignment' => $job->assignment !== null,
+                'selected_tutor_user_id' => $job->assignment?->tutor_user_id,
+                'selected_tutor_name' => $job->assignment?->tutor?->name,
+                'assignment_appointed_at' => $job->assignment?->appointed_at?->toDateTimeString(),
+                'assignment_confirmed_at' => $job->assignment?->confirmed_at?->toDateTimeString(),
+                'is_expired' => $job->status === TuitionJob::STATUS_LIVE && $job->isExpired(),
                 'published_at' => $job->published_at?->toDateTimeString(),
                 'expires_at' => $job->expires_at?->toDateTimeString(),
                 'updated_at' => $job->updated_at?->toDateTimeString(),
@@ -138,6 +163,11 @@ class JobController extends Controller
             'counts' => [
                 'pending_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_PENDING)->count(),
                 'live_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_LIVE)->count(),
+                'expired_count' => TuitionJob::query()
+                    ->where('status', TuitionJob::STATUS_LIVE)
+                    ->whereNotNull('expires_at')
+                    ->where('expires_at', '<=', now())
+                    ->count(),
                 'confirmed_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_CONFIRMED)->count(),
                 'cancelled_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_CANCELLED)->count(),
                 'total_count' => TuitionJob::query()->count(),
@@ -174,11 +204,88 @@ class JobController extends Controller
     }
 
     /**
+     * Display expired jobs (computed filter, not a stored status).
+     */
+    public function expired(Request $request): Response
+    {
+        return $this->index($request, self::FILTER_EXPIRED);
+    }
+
+    /**
      * Display cancelled jobs.
      */
     public function cancelled(Request $request): Response
     {
         return $this->index($request, TuitionJob::STATUS_CANCELLED);
+    }
+
+    /**
+     * Display applications and hiring outcome for a specific job.
+     */
+    public function applications(Request $request, TuitionJob $job): Response
+    {
+        $status = strtolower(trim($request->string('status')->toString()));
+
+        if (! in_array($status, TuitionJobApplication::statuses(), true)) {
+            $status = '';
+        }
+
+        $job->loadMissing([
+            'guardian:id,name',
+            'assignment:id,job_id,tutor_user_id,appointed_at,confirmed_at',
+            'assignment.tutor:id,name',
+        ]);
+
+        $items = TuitionJobApplication::query()
+            ->with(['tutor:id,name,email,phone'])
+            ->where('job_id', $job->id)
+            ->when($status !== '', fn (Builder $builder): Builder => $builder->where('status', $status))
+            ->latest()
+            ->paginate(20)
+            ->withQueryString()
+            ->through(fn (TuitionJobApplication $application): array => [
+                'id' => $application->id,
+                'status' => $application->status,
+                'cover_letter' => $application->cover_letter,
+                'expected_salary_amount' => $application->expected_salary_amount,
+                'salary_currency' => $application->salary_currency,
+                'cancel_reason' => $application->cancel_reason,
+                'created_at' => $application->created_at?->toDateTimeString(),
+                'is_selected' => (int) $job->assignment?->tutor_user_id === (int) $application->tutor_user_id,
+                'tutor' => [
+                    'id' => $application->tutor?->id,
+                    'name' => $application->tutor?->name,
+                    'email' => $application->tutor?->email,
+                    'phone' => $application->tutor?->phone,
+                ],
+            ]);
+
+        return inertia('admin/jobs/Applications', [
+            'job' => [
+                'id' => $job->id,
+                'title' => $job->title,
+                'slug' => $job->slug,
+                'status' => $job->status,
+                'guardian_name' => $job->guardian?->name,
+                'is_expired' => $job->status === TuitionJob::STATUS_LIVE && $job->isExpired(),
+                'has_assignment' => $job->assignment !== null,
+                'selected_tutor_user_id' => $job->assignment?->tutor_user_id,
+                'selected_tutor_name' => $job->assignment?->tutor?->name,
+                'assignment_appointed_at' => $job->assignment?->appointed_at?->toDateTimeString(),
+                'assignment_confirmed_at' => $job->assignment?->confirmed_at?->toDateTimeString(),
+            ],
+            'items' => $items,
+            'filters' => [
+                'status' => $status,
+            ],
+            'statusOptions' => [
+                ['value' => TuitionJobApplication::STATUS_APPLIED, 'label' => 'Applied'],
+                ['value' => TuitionJobApplication::STATUS_SHORTLISTED, 'label' => 'Shortlisted'],
+                ['value' => TuitionJobApplication::STATUS_APPOINTED, 'label' => 'Appointed'],
+                ['value' => TuitionJobApplication::STATUS_CONFIRMED, 'label' => 'Confirmed'],
+                ['value' => TuitionJobApplication::STATUS_CANCELLED, 'label' => 'Cancelled'],
+            ],
+        ]);
     }
 
     /**
@@ -368,7 +475,34 @@ class JobController extends Controller
             }
 
             if ($targetStatus === TuitionJob::STATUS_CONFIRMED) {
-                $job->markConfirmed($request->user());
+                DB::transaction(function () use ($job, $request): void {
+                    $lockedJob = TuitionJob::query()
+                        ->whereKey($job->getKey())
+                        ->lockForUpdate()
+                        ->firstOrFail();
+
+                    $assignment = $lockedJob->assignment()
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($assignment === null) {
+                        throw new DomainException('Job cannot be confirmed without an assignment.');
+                    }
+
+                    $confirmedAt = $assignment->confirmed_at ?? now();
+
+                    if ($assignment->appointed_at === null) {
+                        $assignment->appointed_at = $confirmedAt;
+                    }
+
+                    if ($assignment->confirmed_at === null) {
+                        $assignment->confirmed_at = $confirmedAt;
+                    }
+
+                    $assignment->save();
+
+                    $lockedJob->markConfirmedAt($request->user(), $confirmedAt);
+                });
             }
 
             if ($targetStatus === TuitionJob::STATUS_CANCELLED) {
@@ -523,6 +657,10 @@ class JobController extends Controller
     {
         $normalized = strtolower(trim($status));
 
+        if ($normalized === self::FILTER_EXPIRED) {
+            return $normalized;
+        }
+
         if (! in_array($normalized, TuitionJob::statuses(), true)) {
             return '';
         }
@@ -542,6 +680,7 @@ class JobController extends Controller
         return match ($presetStatus) {
             TuitionJob::STATUS_PENDING => 'Pending Jobs',
             TuitionJob::STATUS_LIVE => 'Live Jobs',
+            self::FILTER_EXPIRED => 'Expired Jobs',
             TuitionJob::STATUS_CONFIRMED => 'Confirmed Jobs',
             TuitionJob::STATUS_CANCELLED => 'Cancelled Jobs',
             default => 'All Jobs',
@@ -707,6 +846,7 @@ class JobController extends Controller
         return [
             ['value' => TuitionJob::STATUS_PENDING, 'label' => 'Pending'],
             ['value' => TuitionJob::STATUS_LIVE, 'label' => 'Live'],
+            ['value' => self::FILTER_EXPIRED, 'label' => 'Expired (Live + Past Expiry)'],
             ['value' => TuitionJob::STATUS_CONFIRMED, 'label' => 'Confirmed'],
             ['value' => TuitionJob::STATUS_CANCELLED, 'label' => 'Cancelled'],
             ['value' => TuitionJob::STATUS_CLOSED, 'label' => 'Closed'],

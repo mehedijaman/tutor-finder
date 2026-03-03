@@ -107,12 +107,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/live', [AdminJobController::class, 'live'])
                 ->middleware('permission:job-view')
                 ->name('live');
+            Route::get('/expired', [AdminJobController::class, 'expired'])
+                ->middleware('permission:job-view')
+                ->name('expired');
             Route::get('/confirmed', [AdminJobController::class, 'confirmed'])
                 ->middleware('permission:job-view')
                 ->name('confirmed');
             Route::get('/cancelled', [AdminJobController::class, 'cancelled'])
                 ->middleware('permission:job-view')
                 ->name('cancelled');
+            Route::get('/{job}/applications', [AdminJobController::class, 'applications'])
+                ->middleware('permission:job-view')
+                ->name('applications');
 
             Route::get('/create', [AdminJobController::class, 'create'])
                 ->middleware('permission:job-create')

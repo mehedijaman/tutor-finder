@@ -23,8 +23,8 @@ class JobApplicationStatusUpdateRequest extends FormRequest
     {
         $this->merge([
             'status' => strtolower(trim((string) $this->input('status'))),
-            'guardian_note' => $this->filled('guardian_note')
-                ? trim((string) $this->input('guardian_note'))
+            'cancel_reason' => $this->filled('cancel_reason')
+                ? trim((string) $this->input('cancel_reason'))
                 : null,
         ]);
     }
@@ -40,13 +40,11 @@ class JobApplicationStatusUpdateRequest extends FormRequest
             'status' => [
                 'required',
                 'string',
-                Rule::in([TuitionJobApplication::STATUS_SHORTLISTED, TuitionJobApplication::STATUS_REJECTED]),
+                Rule::in([TuitionJobApplication::STATUS_SHORTLISTED, TuitionJobApplication::STATUS_CANCELLED]),
             ],
-            'guardian_note' => ['nullable', 'string', 'max:5000'],
-            'reviewed_by' => ['prohibited'],
-            'reviewed_at' => ['prohibited'],
-            'tutor_id' => ['prohibited'],
-            'tuition_job_id' => ['prohibited'],
+            'cancel_reason' => ['nullable', 'string', 'max:5000'],
+            'tutor_user_id' => ['prohibited'],
+            'job_id' => ['prohibited'],
         ];
     }
 }

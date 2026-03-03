@@ -30,6 +30,9 @@ const hasChildren = (item: NavItem): boolean =>
 
 const isChildActive = (item: NavItem): boolean =>
     item.children?.some((child) => isCurrentUrl(child.href)) ?? false;
+
+const isParentOpen = (item: NavItem): boolean =>
+    item.isActive === true || isChildActive(item);
 </script>
 
 <template>
@@ -40,13 +43,13 @@ const isChildActive = (item: NavItem): boolean =>
                 <Collapsible
                     v-if="hasChildren(item)"
                     as-child
-                    :default-open="isChildActive(item)"
+                    :default-open="isParentOpen(item)"
                     class="group/collapsible"
                 >
                     <SidebarMenuItem>
                         <CollapsibleTrigger as-child>
                             <SidebarMenuButton
-                                :is-active="isChildActive(item)"
+                                :is-active="isParentOpen(item)"
                                 :tooltip="item.title"
                             >
                                 <component :is="item.icon" />

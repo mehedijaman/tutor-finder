@@ -8,6 +8,7 @@ use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
+use App\Models\TuitionJobAssignment;
 use App\Models\TuitionType;
 use App\Models\User;
 use App\Notifications\JobLifecycleNotification;
@@ -52,14 +53,14 @@ it('tutor can apply to a live job and see it in own applications list', function
     $this->actingAs($tutor)
         ->post(route('tutor.jobs.apply', ['tuitionJob' => $job->slug]), [
             'cover_letter' => 'I have 5 years of tutoring experience.',
-            'expected_salary' => 15000,
+            'expected_salary_amount' => 15000,
         ])
         ->assertRedirect();
 
     $this->assertDatabaseHas('tuition_job_applications', [
-        'tuition_job_id' => $job->id,
-        'tutor_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_PENDING,
+        'job_id' => $job->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_APPLIED,
     ]);
 
     $guardian->refresh();
@@ -74,7 +75,99 @@ it('tutor can apply to a live job and see it in own applications list', function
             ->has('items.data', 1));
 });
 
-it('tutor cannot submit duplicate pending application', function () {
+it('tutor can access application preset routes with status filters', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+
+    $job = TuitionJob::factory()->live()->create([
+        'guardian_id' => $guardian->id,
+        'expires_at' => now()->addDays(7),
+    ]);
+
+    TuitionJobApplication::factory()->create([
+        'job_id' => $job->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_APPLIED,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'job_id' => TuitionJob::factory()->live()->create([
+            'guardian_id' => $guardian->id,
+            'expires_at' => now()->addDays(7),
+        ])->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'job_id' => TuitionJob::factory()->live()->create([
+            'guardian_id' => $guardian->id,
+            'expires_at' => now()->addDays(7),
+        ])->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_APPOINTED,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'job_id' => TuitionJob::factory()->create([
+            'guardian_id' => $guardian->id,
+            'status' => TuitionJob::STATUS_CONFIRMED,
+            'published_at' => now()->subDay(),
+            'confirmed_at' => now()->subHour(),
+        ])->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_CONFIRMED,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'job_id' => TuitionJob::factory()->live()->create([
+            'guardian_id' => $guardian->id,
+            'expires_at' => now()->addDays(7),
+        ])->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_CANCELLED,
+    ]);
+
+    $this->actingAs($tutor)
+        ->get(route('tutor.job-applications.index'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('tutor/job-applications/Index')
+            ->where('filters.preset_status', ''));
+
+    $this->actingAs($tutor)
+        ->get(route('tutor.job-applications.applied'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('tutor/job-applications/Index')
+            ->where('filters.preset_status', TuitionJobApplication::STATUS_APPLIED));
+
+    $this->actingAs($tutor)
+        ->get(route('tutor.job-applications.shortlisted'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('tutor/job-applications/Index')
+            ->where('filters.preset_status', TuitionJobApplication::STATUS_SHORTLISTED));
+
+    $this->actingAs($tutor)
+        ->get(route('tutor.job-applications.appointed'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('tutor/job-applications/Index')
+            ->where('filters.preset_status', TuitionJobApplication::STATUS_APPOINTED));
+
+    $this->actingAs($tutor)
+        ->get(route('tutor.job-applications.confirmed'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('tutor/job-applications/Index')
+            ->where('filters.preset_status', TuitionJobApplication::STATUS_CONFIRMED));
+
+    $this->actingAs($tutor)
+        ->get(route('tutor.job-applications.cancelled'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('tutor/job-applications/Index')
+            ->where('filters.preset_status', TuitionJobApplication::STATUS_CANCELLED));
+});
+
+it('tutor cannot submit duplicate applied application', function () {
     $guardian = User::factory()->guardian()->create();
     $tutor = User::factory()->tutor()->create();
 
@@ -84,9 +177,9 @@ it('tutor cannot submit duplicate pending application', function () {
     ]);
 
     TuitionJobApplication::factory()->create([
-        'tuition_job_id' => $job->id,
-        'tutor_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_PENDING,
+        'job_id' => $job->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_APPLIED,
     ]);
 
     $this->actingAs($tutor)
@@ -96,12 +189,12 @@ it('tutor cannot submit duplicate pending application', function () {
         ->assertSessionHasErrors(['job']);
 });
 
-it('tutor can withdraw own application', function () {
+it('tutor can cancel own application', function () {
     $tutor = User::factory()->tutor()->create();
 
     $application = TuitionJobApplication::factory()->create([
-        'tutor_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_PENDING,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_APPLIED,
     ]);
 
     $this->actingAs($tutor)
@@ -110,12 +203,12 @@ it('tutor can withdraw own application', function () {
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $application->id,
-        'status' => TuitionJobApplication::STATUS_WITHDRAWN,
+        'status' => TuitionJobApplication::STATUS_CANCELLED,
     ]);
 
     $guardian = $application->tuitionJob->guardian->refresh();
     expect($guardian->unreadNotifications)->toHaveCount(1);
-    expect($guardian->unreadNotifications->first()->data['event'])->toBe('job-application-withdrawn');
+    expect($guardian->unreadNotifications->first()->data['event'])->toBe('job-application-cancelled');
 });
 
 it('tutor cannot apply to a confirmed job', function () {
@@ -132,6 +225,60 @@ it('tutor cannot apply to a confirmed job', function () {
     $this->actingAs($tutor)
         ->from(route('jobs.show', $job->slug))
         ->post(route('tutor.jobs.apply', ['tuitionJob' => $job->slug]), [])
+        ->assertSessionHasErrors(['job']);
+});
+
+it('tutor can reapply by updating existing cancelled row', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+
+    $job = TuitionJob::factory()->live()->create([
+        'guardian_id' => $guardian->id,
+        'expires_at' => now()->addDays(5),
+    ]);
+
+    $application = TuitionJobApplication::factory()->create([
+        'job_id' => $job->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'cancel_reason' => 'Cancelled by tutor.',
+    ]);
+
+    $this->actingAs($tutor)
+        ->post(route('tutor.jobs.apply', ['tuitionJob' => $job->slug]), [
+            'cover_letter' => 'Re-applying after schedule change.',
+            'expected_salary_amount' => 18000,
+        ])
+        ->assertRedirect();
+
+    $this->assertDatabaseHas('tuition_job_applications', [
+        'id' => $application->id,
+        'job_id' => $job->id,
+        'tutor_user_id' => $tutor->id,
+        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'cancel_reason' => null,
+    ]);
+});
+
+it('tutor cannot apply when assignment exists for the job', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $selectedTutor = User::factory()->tutor()->create();
+
+    $job = TuitionJob::factory()->live()->create([
+        'guardian_id' => $guardian->id,
+        'expires_at' => now()->addDays(5),
+    ]);
+
+    TuitionJobAssignment::factory()->create([
+        'job_id' => $job->id,
+        'tutor_user_id' => $selectedTutor->id,
+    ]);
+
+    $this->actingAs($tutor)
+        ->from(route('jobs.show', $job->slug))
+        ->post(route('tutor.jobs.apply', ['tuitionJob' => $job->slug]), [])
+        ->assertRedirect(route('jobs.show', $job->slug, absolute: false))
         ->assertSessionHasErrors(['job']);
 });
 

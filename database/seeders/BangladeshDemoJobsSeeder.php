@@ -9,6 +9,7 @@ use App\Models\Country;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\TuitionJob;
+use App\Models\TuitionJobAssignment;
 use App\Models\TuitionType;
 use App\Models\User;
 use App\Support\SlugService;
@@ -441,8 +442,6 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'confirmed_at' => $status === TuitionJob::STATUS_CONFIRMED
                     ? now()->subDays((int) ($jobData['confirmed_days_ago'] ?? 5))
                     : null,
-                'selected_tutor_id' => $status === TuitionJob::STATUS_CONFIRMED ? $selectedTutorId : null,
-                'selected_application_id' => null,
                 'view_count' => (int) ($jobData['view_count'] ?? 0),
             ]);
 
@@ -457,6 +456,27 @@ class BangladeshDemoJobsSeeder extends Seeder
             $this->restoreIfTrashed($job);
 
             $job->subjects()->sync($subjectIds);
+
+            if ($status === TuitionJob::STATUS_CONFIRMED && $selectedTutorId !== null) {
+                $confirmedAt = $job->confirmed_at ?? now();
+
+                TuitionJobAssignment::query()->updateOrCreate(
+                    ['job_id' => $job->id],
+                    [
+                        'tutor_user_id' => $selectedTutorId,
+                        'appointed_at' => $confirmedAt,
+                        'confirmed_at' => $confirmedAt,
+                        'duration_type' => TuitionJobAssignment::DURATION_LONG_TERM,
+                        'fee_currency' => 'BDT',
+                        'fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
+                        'month1_escrow_required' => false,
+                        'reported_within_24h' => false,
+                        'metadata' => ['seed' => 'BangladeshDemoJobsSeeder'],
+                    ],
+                );
+            } else {
+                TuitionJobAssignment::query()->where('job_id', $job->id)->delete();
+            }
         }
     }
 

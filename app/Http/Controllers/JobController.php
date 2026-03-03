@@ -160,6 +160,7 @@ class JobController extends Controller
                 'country:id,name',
                 'city:id,name',
                 'area:id,name',
+                'assignment:id,job_id,tutor_user_id',
             ])
             ->where('slug', $slug)
             ->firstOrFail();
@@ -170,14 +171,14 @@ class JobController extends Controller
 
         if ($user !== null && $user->role === 'tutor') {
             $application = TuitionJobApplication::query()
-                ->where('tuition_job_id', $job->id)
-                ->where('tutor_id', $user->getAuthIdentifier())
+                ->where('job_id', $job->id)
+                ->where('tutor_user_id', $user->getAuthIdentifier())
                 ->first();
 
-            $canApply = ($application === null || in_array($application->status, [
-                TuitionJobApplication::STATUS_REJECTED,
-                TuitionJobApplication::STATUS_WITHDRAWN,
-            ], true))
+            $canApply = $job->status === TuitionJob::STATUS_LIVE
+                && ! $job->isExpired()
+                && $job->assignment === null
+                && ($application === null || $application->status === TuitionJobApplication::STATUS_CANCELLED)
                 && (int) $job->guardian_id !== (int) $user->getAuthIdentifier();
         }
 
@@ -218,7 +219,9 @@ class JobController extends Controller
                 : [
                     'id' => $application->id,
                     'status' => $application->status,
-                    'expected_salary' => $application->expected_salary,
+                    'expected_salary_amount' => $application->expected_salary_amount,
+                    'salary_currency' => $application->salary_currency,
+                    'cancel_reason' => $application->cancel_reason,
                     'created_at' => $application->created_at?->toDateTimeString(),
                 ],
         ]);

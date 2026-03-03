@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,30 @@ const props = defineProps({
 });
 
 const breadcrumbs = [{ title: 'My Jobs', href: '/guardian/jobs' }];
-const baseUrl = '/guardian/jobs';
+const presetStatus = computed(() => props.filters.preset_status || '');
+const baseUrl = computed(() => {
+    if (presetStatus.value === 'pending') {
+        return '/guardian/jobs/pending';
+    }
+
+    if (presetStatus.value === 'live') {
+        return '/guardian/jobs/live';
+    }
+
+    if (presetStatus.value === 'confirmed') {
+        return '/guardian/jobs/confirmed';
+    }
+
+    if (presetStatus.value === 'cancelled') {
+        return '/guardian/jobs/cancelled';
+    }
+
+    if (presetStatus.value === 'closed') {
+        return '/guardian/jobs/closed';
+    }
+
+    return '/guardian/jobs';
+});
 
 const columns = [
     { key: 'title', label: 'Title' },
@@ -30,6 +53,7 @@ const columns = [
     { key: 'class_name', label: 'Class' },
     { key: 'city_name', label: 'City' },
     { key: 'applications_count', label: 'Applications' },
+    { key: 'hiring_status', label: 'Hiring Outcome' },
     { key: 'published_at', label: 'Published At' },
     { key: 'expires_at', label: 'Expires At' },
 ];
@@ -71,6 +95,10 @@ watch(search, (value) => {
 });
 
 watch(statusFilter, (value) => {
+    if (presetStatus.value) {
+        return;
+    }
+
     applyFilters({ status: value === 'all' ? '' : value, page: 1 });
 });
 
@@ -82,10 +110,14 @@ onBeforeUnmount(() => {
 
 function applyFilters(overrides = {}) {
     router.get(
-        baseUrl,
+        baseUrl.value,
         {
             q: search.value,
-            status: statusFilter.value === 'all' ? '' : statusFilter.value,
+            status: presetStatus.value
+                ? ''
+                : statusFilter.value === 'all'
+                  ? ''
+                  : statusFilter.value,
             ...overrides,
         },
         {
@@ -94,6 +126,27 @@ function applyFilters(overrides = {}) {
             replace: true,
         },
     );
+}
+
+function statusBadge(row) {
+    if (row.status === 'live' && row.is_expired) {
+        return {
+            label: 'expired',
+            variant: 'destructive',
+        };
+    }
+
+    if (row.status === 'live') {
+        return {
+            label: row.status,
+            variant: 'default',
+        };
+    }
+
+    return {
+        label: row.status,
+        variant: 'secondary',
+    };
 }
 </script>
 
@@ -125,7 +178,7 @@ function applyFilters(overrides = {}) {
                     class="sm:col-span-2"
                 />
 
-                <Select v-model="statusFilter">
+                <Select v-if="!presetStatus" v-model="statusFilter">
                     <SelectTrigger>
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
@@ -148,12 +201,9 @@ function applyFilters(overrides = {}) {
                 empty-text="No jobs found."
             >
                 <template #cell-status="{ row }">
-                    <Badge
-                        :variant="
-                            row.status === 'live' ? 'default' : 'secondary'
-                        "
-                        >{{ row.status }}</Badge
-                    >
+                    <Badge :variant="statusBadge(row).variant">
+                        {{ statusBadge(row).label }}
+                    </Badge>
                 </template>
 
                 <template #cell-applications_count="{ row }">
@@ -161,8 +211,25 @@ function applyFilters(overrides = {}) {
                         :href="`/guardian/jobs/${row.id}/applications`"
                         class="text-sm font-medium text-blue-600 hover:underline"
                     >
-                        {{ row.applications_count ?? 0 }}
+                        {{ row.open_applications_count ?? 0 }} open /
+                        {{ row.applications_count ?? 0 }} total
                     </Link>
+                </template>
+
+                <template #cell-hiring_status="{ row }">
+                    <div v-if="row.has_assignment" class="space-y-0.5">
+                        <p class="text-sm font-medium">
+                            {{ row.selected_tutor_name || 'Selected tutor' }}
+                        </p>
+                        <p
+                            v-if="row.hiring_confirmed_at"
+                            class="text-xs text-muted-foreground"
+                        >
+                            Confirmed:
+                            {{ new Date(row.hiring_confirmed_at).toLocaleString() }}
+                        </p>
+                    </div>
+                    <span v-else class="text-muted-foreground">Not finalized</span>
                 </template>
 
                 <template #cell-published_at="{ value }">{{

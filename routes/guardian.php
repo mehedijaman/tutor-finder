@@ -15,6 +15,11 @@ Route::prefix('guardian')
         Route::redirect('/', '/guardian/dashboard')->name('home');
         Route::get('/dashboard', GuardianDashboardController::class)->name('dashboard');
         Route::get('/jobs', [TuitionJobController::class, 'index'])->name('jobs.index');
+        Route::get('/jobs/pending', [TuitionJobController::class, 'pending'])->name('jobs.pending');
+        Route::get('/jobs/live', [TuitionJobController::class, 'live'])->name('jobs.live');
+        Route::get('/jobs/confirmed', [TuitionJobController::class, 'confirmed'])->name('jobs.confirmed');
+        Route::get('/jobs/cancelled', [TuitionJobController::class, 'cancelled'])->name('jobs.cancelled');
+        Route::get('/jobs/closed', [TuitionJobController::class, 'closed'])->name('jobs.closed');
         Route::get('/jobs/create', [TuitionJobController::class, 'create'])->name('jobs.create');
         Route::post('/jobs', [TuitionJobController::class, 'store'])->name('jobs.store');
         Route::get('/jobs/{tuitionJob}/applications', [JobApplicationController::class, 'index'])

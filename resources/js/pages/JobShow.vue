@@ -34,7 +34,9 @@ type JobDetail = {
 type ApplicationInfo = {
     id: number;
     status: string;
-    expected_salary: string | null;
+    expected_salary_amount: string | null;
+    salary_currency: string | null;
+    cancel_reason: string | null;
     created_at: string | null;
 };
 
@@ -54,13 +56,18 @@ const page = usePage<{
             role?: string;
         };
     };
+    flash?: {
+        status?: string;
+        success?: string;
+    };
+    errors?: {
+        job?: string;
+    };
 }>();
 
 const viewerRole = computed(() => page.props.auth?.user?.role ?? null);
 const isAuthenticated = computed(() => viewerRole.value !== null);
 const isTutor = computed(() => viewerRole.value === 'tutor');
-const isGuardian = computed(() => viewerRole.value === 'guardian');
-const isAdmin = computed(() => viewerRole.value === 'admin');
 
 const isExpired = computed(() => {
     if (!props.job.expires_at) return false;
@@ -73,9 +80,21 @@ const canApply = computed(() => {
     return props.canApply;
 });
 
+const hasActiveApplication = computed(
+    () =>
+        isTutor.value &&
+        props.application !== null &&
+        props.application.status !== 'cancelled',
+);
+
+const hasCancelledApplication = computed(
+    () => isTutor.value && props.application?.status === 'cancelled',
+);
+
 const applicationForm = useForm({
     cover_letter: '',
-    expected_salary: '',
+    expected_salary_amount: '',
+    salary_currency: 'BDT',
 });
 
 const showApplicationForm = ref(false);
@@ -148,7 +167,7 @@ function submitApplication(): void {
     applicationForm.post(`/tutor/jobs/${props.job.slug}/apply`, {
         preserveScroll: true,
         onSuccess: () => {
-            applicationForm.reset('cover_letter', 'expected_salary');
+            applicationForm.reset('cover_letter', 'expected_salary_amount');
             showApplicationForm.value = false;
         },
     });
@@ -156,10 +175,11 @@ function submitApplication(): void {
 
 function applicationStatusLabel(status: string): string {
     const map: Record<string, string> = {
-        pending: 'Pending',
+        applied: 'Applied',
         shortlisted: 'Shortlisted',
-        rejected: 'Rejected',
-        withdrawn: 'Withdrawn',
+        appointed: 'Appointed',
+        confirmed: 'Confirmed',
+        cancelled: 'Cancelled',
     };
     return map[status.toLowerCase()] ?? status;
 }
@@ -169,12 +189,18 @@ function getStatusBadgeClass(): string {
         return 'bg-red-100 text-red-700 border-red-200';
     }
     if (props.application) {
+        if (props.application.status === 'confirmed') {
+            return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+        }
+
         if (props.application.status === 'shortlisted') {
             return 'bg-emerald-100 text-emerald-700 border-emerald-200';
         }
-        if (props.application.status === 'rejected') {
+
+        if (props.application.status === 'cancelled') {
             return 'bg-red-100 text-red-700 border-red-200';
         }
+
         return 'bg-amber-100 text-amber-700 border-amber-200';
     }
     return 'bg-emerald-100 text-emerald-700 border-emerald-200';
@@ -578,23 +604,22 @@ function getStatusBadgeClass(): string {
                             >
                                 <!-- Flash Messages -->
                                 <div
-                                    v-if="$page.props.flash?.status"
+                                    v-if="page.props.flash?.status"
                                     class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
                                 >
-                                    {{ $page.props.flash.status }}
+                                    {{ page.props.flash.status }}
                                 </div>
                                 <div
-                                    v-if="$page.props.errors?.job"
+                                    v-if="page.props.errors?.job"
                                     class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
                                 >
-                                    {{ $page.props.errors.job }}
+                                    {{ page.props.errors.job }}
                                 </div>
 
                                 <!-- Already Applied -->
                                 <div
                                     v-if="
-                                        isTutor &&
-                                        application &&
+                                        hasActiveApplication &&
                                         !showApplicationForm
                                     "
                                     class="space-y-4"
@@ -609,17 +634,18 @@ function getStatusBadgeClass(): string {
                                             Status:
                                             {{
                                                 applicationStatusLabel(
-                                                    application.status,
+                                                    application?.status || '',
                                                 )
                                             }}
                                         </p>
                                         <p
-                                            v-if="application.created_at"
+                                            v-if="application?.created_at"
                                             class="mt-1 text-xs text-amber-600"
                                         >
                                             {{
                                                 formatDateTime(
-                                                    application.created_at,
+                                                    application?.created_at ||
+                                                        null,
                                                 )
                                             }}
                                         </p>
@@ -630,6 +656,40 @@ function getStatusBadgeClass(): string {
                                     >
                                         View My Applications
                                     </Link>
+                                </div>
+
+                                <div
+                                    v-else-if="
+                                        hasCancelledApplication &&
+                                        canApply &&
+                                        !showApplicationForm
+                                    "
+                                    class="space-y-4"
+                                >
+                                    <div
+                                        class="rounded-lg border border-red-200 bg-red-50 p-4"
+                                    >
+                                        <p class="font-medium text-red-800">
+                                            Previous Application Cancelled
+                                        </p>
+                                        <p class="mt-1 text-sm text-red-700">
+                                            You can submit a new application for
+                                            this job.
+                                        </p>
+                                        <p
+                                            v-if="application?.cancel_reason"
+                                            class="mt-1 text-xs text-red-600"
+                                        >
+                                            Reason:
+                                            {{ application?.cancel_reason }}
+                                        </p>
+                                    </div>
+                                    <button
+                                        @click="showApplicationForm = true"
+                                        class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
+                                    >
+                                        Re-Apply for this Job
+                                    </button>
                                 </div>
 
                                 <!-- Application Form -->
@@ -687,7 +747,7 @@ function getStatusBadgeClass(): string {
                                         >
                                         <input
                                             v-model="
-                                                applicationForm.expected_salary
+                                                applicationForm.expected_salary_amount
                                             "
                                             type="number"
                                             min="0"
@@ -874,7 +934,7 @@ function getStatusBadgeClass(): string {
                         v-else-if="application"
                         class="flex h-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 px-5 text-sm font-medium text-amber-700"
                     >
-                        Applied
+                        {{ applicationStatusLabel(application.status) }}
                     </span>
                     <span
                         v-else
@@ -943,7 +1003,7 @@ function getStatusBadgeClass(): string {
                                     >Expected Salary (BDT)</label
                                 >
                                 <input
-                                    v-model="applicationForm.expected_salary"
+                                    v-model="applicationForm.expected_salary_amount"
                                     type="number"
                                     min="0"
                                     step="100"
