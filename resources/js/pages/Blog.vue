@@ -95,14 +95,18 @@ const formatPaginationLabel = (label: string) =>
     </Head>
 
     <PublicLayout>
-        <div class="min-h-screen bg-slate-50 p-6">
-            <div class="mx-auto max-w-6xl space-y-6">
-                <div class="space-y-2">
-                    <h1 class="text-3xl font-bold">
-                        {{ meta.title || `${siteName} Blog` }}
+        <div class="min-h-screen bg-slate-50 py-12">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="mb-10 text-center sm:text-left">
+                    <h1
+                        class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+                    >
+                        Latest Updates & Articles
                     </h1>
-                    <p class="text-sm text-muted-foreground">
-                        {{ meta.description }}
+                    <p class="mt-3 max-w-2xl text-lg text-slate-600">
+                        Educational tips, platform updates, and success stories
+                        from {{ siteName }}.
                     </p>
                 </div>
 

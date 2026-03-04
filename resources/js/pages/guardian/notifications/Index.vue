@@ -1,6 +1,6 @@
-<script setup>
-import { Head, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+<script setup lang="ts">
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
 import { Badge } from '@/components/ui/badge';
@@ -20,11 +20,21 @@ const props = defineProps({
     counts: { type: Object, default: () => ({}) },
 });
 
+type NotificationRow = {
+    id: number;
+    url?: string | null;
+    read_at?: string | null;
+};
+
 const breadcrumbs = [
     { title: 'Notifications', href: '/guardian/notifications' },
 ];
 const baseUrl = '/guardian/notifications';
 const statusFilter = ref(props.filters.status || 'all');
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
 
 const columns = [
     { key: 'title', label: 'Title' },
@@ -68,7 +78,7 @@ function markAllAsRead() {
     );
 }
 
-function actionItems(row) {
+function actionItems(row: NotificationRow) {
     return [
         {
             key: 'open',
@@ -83,8 +93,10 @@ function actionItems(row) {
     ];
 }
 
-function onAction(action, row) {
+function onAction(action: string, row: NotificationRow): void {
     if (action === 'open' && row.url) {
+        const targetUrl = row.url;
+
         if (!row.read_at) {
             router.patch(
                 `/guardian/notifications/${row.id}/read`,
@@ -92,12 +104,12 @@ function onAction(action, row) {
                 {
                     preserveScroll: true,
                     onSuccess: () => {
-                        router.visit(row.url);
+                        router.visit(targetUrl);
                     },
                 },
             );
         } else {
-            router.visit(row.url);
+            router.visit(targetUrl);
         }
 
         return;
@@ -119,34 +131,40 @@ function onAction(action, row) {
     <Head title="Notifications" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold">Notifications</h1>
-                    <p class="text-sm text-muted-foreground">
-                        Unread: {{ counts.unread ?? 0 }} | Total:
-                        {{ counts.all ?? 0 }}
-                    </p>
-                </div>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            Notifications
+                        </h1>
+                        <p class="text-sm text-muted-foreground">
+                            Unread: {{ counts.unread ?? 0 }} | Total:
+                            {{ counts.all ?? 0 }}
+                        </p>
+                    </div>
 
-                <Button
-                    variant="outline"
-                    :disabled="(counts.unread ?? 0) === 0"
-                    @click="markAllAsRead"
-                >
-                    Mark All as Read
-                </Button>
+                    <Button
+                        variant="outline"
+                        :disabled="(counts.unread ?? 0) === 0"
+                        @click="markAllAsRead"
+                    >
+                        Mark All as Read
+                    </Button>
+                </div>
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Select v-model="statusFilter">
                     <SelectTrigger>

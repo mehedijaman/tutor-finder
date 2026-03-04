@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import {
     ExternalLink,
     Facebook,
@@ -141,6 +141,11 @@ function socialIcon(platform: string): unknown {
     return iconMap[platform.toLowerCase()] ?? Globe;
 }
 
+const page = usePage();
+const successMessage = computed(
+    () => (page.props.flash as { success?: string })?.success,
+);
+
 const form = useForm({
     name: '',
     email: '',
@@ -170,31 +175,41 @@ function submit(): void {
     <Head title="Contact" />
 
     <PublicLayout>
-        <section class="mx-auto max-w-7xl px-4 pb-8">
+        <section class="mx-auto max-w-7xl px-4 pt-4 pb-12 sm:pt-8">
             <div
-                class="rounded-3xl bg-gradient-to-r from-sky-700 to-blue-600 p-8 text-white shadow-sm md:p-10"
+                class="relative overflow-hidden rounded-3xl bg-blue-600 px-6 py-12 text-center shadow-2xl shadow-blue-600/20 sm:px-12 sm:py-16"
             >
-                <p class="text-sm font-semibold text-white/90">
-                    {{ siteName }}
-                </p>
-                <h1 class="mt-2 text-3xl font-extrabold md:text-4xl">
+                <div
+                    class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.blue.400),theme(colors.blue.600))]"
+                />
+
+                <h1
+                    class="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl"
+                >
                     Contact Us
                 </h1>
-                <p class="mt-3 max-w-2xl text-sm text-white/90 md:text-base">
-                    Have a question, feedback, or partnership inquiry? Send us a
-                    message and our team will reply soon.
+                <p
+                    class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-blue-100"
+                >
+                    Have a question or feedback? We'd love to hear from you.
                 </p>
             </div>
         </section>
 
         <main class="mx-auto max-w-7xl px-4 pb-16">
-            <div class="grid gap-8 lg:grid-cols-5 lg:items-start">
-                <aside class="space-y-6 lg:col-span-2">
+            <div class="grid gap-6 lg:grid-cols-5 lg:items-start lg:gap-8">
+                <aside class="space-y-6 lg:sticky lg:top-24 lg:col-span-2">
                     <section
-                        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                     >
-                        <h2 class="text-lg font-semibold">Get in touch</h2>
-                        <p class="mt-2 text-sm text-muted-foreground">
+                        <h2
+                            class="text-lg font-semibold tracking-tight text-slate-900"
+                        >
+                            Get in touch
+                        </h2>
+                        <p
+                            class="mt-2 text-sm leading-relaxed text-muted-foreground"
+                        >
                             Reach us directly through phone, email, or by
                             visiting our office.
                         </p>
@@ -202,19 +217,19 @@ function submit(): void {
                         <div class="mt-6 space-y-5 text-sm">
                             <div>
                                 <p
-                                    class="mb-2 flex items-center gap-2 font-medium"
+                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900"
                                 >
-                                    <Mail class="h-4 w-4 text-sky-600" />
+                                    <Mail class="h-4 w-4 text-blue-600" />
                                     Email
                                 </p>
                                 <ul
                                     v-if="emails.length"
-                                    class="space-y-1 text-muted-foreground"
+                                    class="space-y-1.5 text-muted-foreground"
                                 >
                                     <li v-for="email in emails" :key="email">
                                         <a
                                             :href="`mailto:${email}`"
-                                            class="hover:text-slate-900"
+                                            class="inline-flex items-center break-all transition-colors hover:text-slate-900"
                                             >{{ email }}</a
                                         >
                                     </li>
@@ -226,19 +241,19 @@ function submit(): void {
 
                             <div>
                                 <p
-                                    class="mb-2 flex items-center gap-2 font-medium"
+                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900"
                                 >
                                     <Phone class="h-4 w-4 text-emerald-600" />
                                     Phone
                                 </p>
                                 <ul
                                     v-if="phones.length"
-                                    class="space-y-1 text-muted-foreground"
+                                    class="space-y-1.5 text-muted-foreground"
                                 >
                                     <li v-for="phone in phones" :key="phone">
                                         <a
                                             :href="`tel:${phone}`"
-                                            class="hover:text-slate-900"
+                                            class="inline-flex items-center transition-colors hover:text-slate-900"
                                             >{{ phone }}</a
                                         >
                                     </li>
@@ -250,21 +265,21 @@ function submit(): void {
 
                             <div>
                                 <p
-                                    class="mb-2 flex items-center gap-2 font-medium"
+                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900"
                                 >
                                     <MapPin class="h-4 w-4 text-amber-600" />
                                     Address
                                 </p>
                                 <ul
                                     v-if="addresses.length"
-                                    class="space-y-2 text-muted-foreground"
+                                    class="space-y-2.5 text-muted-foreground"
                                 >
                                     <li
                                         v-for="(address, index) in addresses"
                                         :key="`${address.address}-${index}`"
-                                        class="space-y-1"
+                                        class="rounded-lg border border-slate-100 bg-slate-50/60 p-3"
                                     >
-                                        <p>
+                                        <p class="leading-relaxed">
                                             <span
                                                 v-if="address.label"
                                                 class="font-medium text-slate-900"
@@ -277,7 +292,7 @@ function submit(): void {
                                             :href="address.map_url"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            class="inline-flex items-center gap-1 text-xs text-sky-700 hover:text-sky-900"
+                                            class="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-blue-700 transition-colors hover:text-blue-900"
                                         >
                                             Open map
                                             <ExternalLink class="h-3.5 w-3.5" />
@@ -293,21 +308,21 @@ function submit(): void {
 
                     <section
                         v-if="socialEntries.length"
-                        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                     >
                         <h3
-                            class="text-sm font-semibold tracking-wide text-muted-foreground uppercase"
+                            class="text-sm font-semibold tracking-[0.08em] text-muted-foreground uppercase"
                         >
                             Follow us
                         </h3>
-                        <div class="mt-3 flex flex-wrap gap-2">
+                        <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                             <a
                                 v-for="social in socialEntries"
                                 :key="social.platform"
                                 :href="social.url"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-slate-50"
+                                class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900"
                             >
                                 <component
                                     :is="socialIcon(social.platform)"
@@ -321,21 +336,27 @@ function submit(): void {
 
                 <section class="lg:col-span-3">
                     <div
-                        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 md:p-8"
                     >
-                        <h2 class="text-xl font-semibold">Send a message</h2>
-                        <p class="mt-2 text-sm text-muted-foreground">
+                        <h2
+                            class="text-xl font-semibold tracking-tight text-slate-900"
+                        >
+                            Send a message
+                        </h2>
+                        <p
+                            class="mt-2 text-sm leading-relaxed text-muted-foreground"
+                        >
                             Please provide at least one contact method (email or
                             phone). We usually respond within one business day.
                         </p>
 
                         <div
-                            v-if="$page.props.flash?.success"
+                            v-if="successMessage"
                             role="status"
                             aria-live="polite"
                             class="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
                         >
-                            {{ $page.props.flash.success }}
+                            {{ successMessage }}
                         </div>
 
                         <form class="mt-6 space-y-5" @submit.prevent="submit">
@@ -343,7 +364,7 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="name"
-                                        class="text-sm font-medium"
+                                        class="text-sm font-medium text-slate-800"
                                         >Full name
                                         <span class="text-red-600"
                                             >*</span
@@ -354,7 +375,7 @@ function submit(): void {
                                         v-model="form.name"
                                         type="text"
                                         autocomplete="name"
-                                        class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm ring-offset-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                         placeholder="Your full name"
                                     />
                                     <p
@@ -368,14 +389,14 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="subject"
-                                        class="text-sm font-medium"
+                                        class="text-sm font-medium text-slate-800"
                                         >Subject</label
                                     >
                                     <input
                                         id="subject"
                                         v-model="form.subject"
                                         type="text"
-                                        class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm ring-offset-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                         placeholder="How can we help?"
                                     />
                                     <p
@@ -391,7 +412,7 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="email"
-                                        class="text-sm font-medium"
+                                        class="text-sm font-medium text-slate-800"
                                         >Email</label
                                     >
                                     <input
@@ -399,7 +420,7 @@ function submit(): void {
                                         v-model="form.email"
                                         type="email"
                                         autocomplete="email"
-                                        class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm ring-offset-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                         placeholder="you@example.com"
                                     />
                                     <p
@@ -413,7 +434,7 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="phone"
-                                        class="text-sm font-medium"
+                                        class="text-sm font-medium text-slate-800"
                                         >Phone</label
                                     >
                                     <input
@@ -421,7 +442,7 @@ function submit(): void {
                                         v-model="form.phone"
                                         type="text"
                                         autocomplete="tel"
-                                        class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm ring-offset-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                         placeholder="017XXXXXXXX"
                                     />
                                     <p
@@ -434,7 +455,9 @@ function submit(): void {
                             </div>
 
                             <div>
-                                <label for="message" class="text-sm font-medium"
+                                <label
+                                    for="message"
+                                    class="text-sm font-medium text-slate-800"
                                     >Message
                                     <span class="text-red-600">*</span></label
                                 >
@@ -442,7 +465,7 @@ function submit(): void {
                                     id="message"
                                     v-model="form.message"
                                     rows="6"
-                                    class="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm ring-offset-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                                    class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                     placeholder="Write your message..."
                                 ></textarea>
                                 <p
@@ -467,7 +490,7 @@ function submit(): void {
                             </div>
 
                             <div
-                                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                                class="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between"
                             >
                                 <p class="text-xs text-muted-foreground">
                                     Fields marked with * are required.
@@ -475,7 +498,7 @@ function submit(): void {
                                 <button
                                     type="submit"
                                     :disabled="form.processing"
-                                    class="inline-flex items-center justify-center rounded-lg bg-sky-700 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                    class="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                                 >
                                     <span v-if="form.processing"
                                         >Sending...</span

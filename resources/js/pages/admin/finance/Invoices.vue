@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -55,15 +55,21 @@ const columns = [
     <Head title="Finance Invoices" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="space-y-1">
-                <h1 class="text-2xl font-semibold">Finance Invoices</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Finance Invoices
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Review verification, service fee, and escrow invoices.
                 </p>
             </div>
 
-            <div class="grid gap-3 md:grid-cols-3">
+            <div
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
+            >
                 <Input v-model="q" placeholder="Search invoice/payer/job..." />
                 <Select v-model="statusFilter">
                     <SelectTrigger>

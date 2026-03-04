@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -9,7 +9,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 
-const props = defineProps({
+defineProps({
     open: {
         type: Boolean,
         default: false,

@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import BlogPostForm from '@/components/admin/blog/BlogPostForm.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
-const props = defineProps({
+defineProps({
     categories: {
         type: Array,
         default: () => [],
@@ -38,21 +38,25 @@ const initialValues = {
     <Head title="Create Blog Post" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
+        <div class="space-y-6 p-4 sm:p-6">
             <div
-                class="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-white px-5 py-4"
+                class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
-                <div>
-                    <h1 class="text-2xl font-semibold">Create Blog Post</h1>
-                    <p class="text-sm text-muted-foreground">
+                <div class="space-y-1">
+                    <h1
+                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                    >
+                        Create Blog Post
+                    </h1>
+                    <p class="text-sm text-slate-600">
                         Draft and publish your new article from one workspace.
                     </p>
                 </div>
                 <Link
                     href="/admin/blog/posts"
-                    class="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
+                    class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                 >
-                    Back to Posts
+                    Back
                 </Link>
             </div>
 

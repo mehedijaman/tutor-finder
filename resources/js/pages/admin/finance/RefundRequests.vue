@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -94,10 +94,14 @@ function markPaid(row) {
     <Head title="Refund Requests" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="space-y-1">
-                <h1 class="text-2xl font-semibold">Refund Requests</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Refund Requests
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Review tutor refund requests and process payout decisions.
                 </p>
             </div>
@@ -116,7 +120,9 @@ function markPaid(row) {
                 {{ $page.props.errors.refund }}
             </div>
 
-            <div class="grid gap-3 md:grid-cols-2">
+            <div
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2"
+            >
                 <Input v-model="q" placeholder="Search reason/job/tutor..." />
                 <Select v-model="statusFilter">
                     <SelectTrigger>

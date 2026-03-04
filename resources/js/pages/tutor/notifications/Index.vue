@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -117,23 +117,29 @@ function onAction(action, row) {
     <Head title="Notifications" />
 
     <TutorLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold">Notifications</h1>
-                    <p class="text-sm text-muted-foreground">
-                        Unread: {{ counts.unread ?? 0 }} | Total:
-                        {{ counts.all ?? 0 }}
-                    </p>
-                </div>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            Notifications
+                        </h1>
+                        <p class="text-sm text-muted-foreground">
+                            Unread: {{ counts.unread ?? 0 }} | Total:
+                            {{ counts.all ?? 0 }}
+                        </p>
+                    </div>
 
-                <Button
-                    variant="outline"
-                    :disabled="(counts.unread ?? 0) === 0"
-                    @click="markAllAsRead"
-                >
-                    Mark All as Read
-                </Button>
+                    <Button
+                        variant="outline"
+                        :disabled="(counts.unread ?? 0) === 0"
+                        @click="markAllAsRead"
+                    >
+                        Mark All as Read
+                    </Button>
+                </div>
             </div>
 
             <div
@@ -144,7 +150,7 @@ function onAction(action, row) {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Select v-model="statusFilter">
                     <SelectTrigger>

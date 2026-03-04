@@ -88,18 +88,18 @@ function formatPaginationLabel(label: string): string {
     </Head>
 
     <PublicLayout>
-        <div class="bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-6xl">
+        <div class="min-h-screen bg-slate-50 py-12">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header -->
-                <div class="mb-8">
+                <div class="mb-10 text-center sm:text-left">
                     <h1
                         class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
                     >
-                        Find Tutors
+                        Find Expert Tutors
                     </h1>
-                    <p class="mt-2 text-lg text-slate-600">
-                        Browse and connect with expert tutors for home tuition,
-                        online tutoring, and coaching
+                    <p class="mt-3 max-w-2xl text-lg text-slate-600">
+                        Browse our verified tutors to find the perfect match for
+                        your learning needs.
                     </p>
                 </div>
 

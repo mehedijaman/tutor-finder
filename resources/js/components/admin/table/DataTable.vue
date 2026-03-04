@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -70,21 +70,23 @@ function formatPaginationLabel(label) {
 </script>
 
 <template>
-    <div class="overflow-hidden rounded-xl border bg-white">
+    <div
+        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm"
+    >
         <table class="w-full text-left text-sm">
-            <thead class="bg-muted/40">
+            <thead class="bg-slate-50/80">
                 <tr>
                     <th
                         v-for="column in columns"
                         :key="column.key"
-                        class="px-4 py-3"
+                        class="px-4 py-3.5 text-xs font-semibold tracking-wide text-slate-600 uppercase"
                         :class="column.headerClass"
                     >
                         <Button
                             v-if="column.sortable"
                             variant="ghost"
                             size="sm"
-                            class="-ml-3 h-auto p-0 font-medium"
+                            class="-ml-3 h-auto p-0 text-xs font-semibold tracking-wide text-slate-600 uppercase hover:bg-transparent hover:text-slate-900"
                             @click="toggleSort(column)"
                         >
                             {{ column.label }}
@@ -103,7 +105,7 @@ function formatPaginationLabel(label) {
                     <tr class="border-t">
                         <td
                             :colspan="columns.length"
-                            class="px-4 py-6 text-center text-muted-foreground"
+                            class="px-4 py-8 text-center text-muted-foreground"
                         >
                             Loading...
                         </td>
@@ -114,12 +116,12 @@ function formatPaginationLabel(label) {
                     <tr
                         v-for="row in rows"
                         :key="row[rowKey] ?? row.id"
-                        class="border-t"
+                        class="border-t border-slate-200/70 transition-colors hover:bg-slate-50/60"
                     >
                         <td
                             v-for="column in columns"
                             :key="column.key"
-                            class="px-4 py-3"
+                            class="px-4 py-3.5 align-middle"
                             :class="column.cellClass"
                         >
                             <slot
@@ -148,7 +150,7 @@ function formatPaginationLabel(label) {
 
         <div
             v-if="links.length > 3"
-            class="flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3"
+            class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-200/80 px-4 py-3"
         >
             <template
                 v-for="(link, index) in links"
@@ -162,11 +164,11 @@ function formatPaginationLabel(label) {
                     v-else
                     :href="link.url"
                     preserve-scroll
-                    class="inline-flex h-8 items-center justify-center rounded-md border px-3 text-xs"
+                    class="inline-flex h-8 items-center justify-center rounded-lg border px-3 text-xs font-medium"
                     :class="
                         link.active
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-white hover:bg-muted'
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                     "
                 >
                     {{ formatPaginationLabel(link.label) }}

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -99,12 +99,23 @@ function formatProperties(value) {
     <Head title="Activity Logs" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <h1 class="text-2xl font-semibold">Activity Logs</h1>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900"
+                >
+                    Activity Logs
+                </h1>
+                <p class="text-sm text-slate-600">
+                    Review platform activity events and audit trail entries.
+                </p>
             </div>
 
-            <div class="rounded-xl border bg-white p-4">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+            >
                 <Input
                     v-model="search"
                     type="text"

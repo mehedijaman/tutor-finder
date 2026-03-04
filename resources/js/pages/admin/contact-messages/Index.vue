@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
@@ -194,14 +194,21 @@ function runConfirmedAction() {
     <Head title="Contact Messages" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold">Contact Messages</h1>
-                    <p class="text-sm text-muted-foreground">
-                        Open: {{ counts.open ?? 0 }} | Closed:
-                        {{ counts.closed ?? 0 }} | Total: {{ counts.all ?? 0 }}
-                    </p>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            Contact Messages
+                        </h1>
+                        <p class="text-sm text-muted-foreground">
+                            Open: {{ counts.open ?? 0 }} | Closed:
+                            {{ counts.closed ?? 0 }} | Total:
+                            {{ counts.all ?? 0 }}
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -213,7 +220,7 @@ function runConfirmedAction() {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-2"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2"
             >
                 <div class="grid gap-2">
                     <Label for="contact-search">Search</Label>

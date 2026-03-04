@@ -30,6 +30,7 @@ import NavUser from '@/components/NavUser.vue';
 import {
     Sidebar,
     SidebarContent,
+    SidebarSeparator,
     SidebarFooter,
     SidebarHeader,
     SidebarMenu,
@@ -56,6 +57,27 @@ const panelContext = computed<'admin' | 'tutor' | 'guardian'>(() => {
     }
 
     return 'guardian';
+});
+
+const panelMeta = computed(() => {
+    if (panelContext.value === 'admin') {
+        return {
+            title: 'Admin Panel',
+            subtitle: 'Operations & platform control',
+        };
+    }
+
+    if (panelContext.value === 'tutor') {
+        return {
+            title: 'Tutor Panel',
+            subtitle: 'Applications & teaching workflow',
+        };
+    }
+
+    return {
+        title: 'Guardian Panel',
+        subtitle: 'Hiring pipeline & tutoring progress',
+    };
 });
 
 const mainNavItems = computed<NavItem[]>(() => {
@@ -439,8 +461,12 @@ const mainNavItems = computed<NavItem[]>(() => {
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
+    <Sidebar
+        collapsible="icon"
+        variant="inset"
+        class="bg-sidebar/95 backdrop-blur"
+    >
+        <SidebarHeader class="border-b border-sidebar-border/80 pb-3">
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
@@ -450,13 +476,28 @@ const mainNavItems = computed<NavItem[]>(() => {
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
+
+            <div class="px-2 group-data-[collapsible=icon]:hidden">
+                <p
+                    class="text-xs font-semibold tracking-wide text-sidebar-foreground uppercase"
+                >
+                    {{ panelMeta.title }}
+                </p>
+                <p
+                    class="mt-1 text-xs leading-relaxed text-sidebar-foreground/70"
+                >
+                    {{ panelMeta.subtitle }}
+                </p>
+            </div>
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent class="pt-2">
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarFooter>
+        <SidebarSeparator class="mx-3" />
+
+        <SidebarFooter class="pt-3">
             <NavUser />
         </SidebarFooter>
     </Sidebar>

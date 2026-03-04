@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Link, useForm } from '@inertiajs/vue3';
 import { ref, toRef } from 'vue';
 import InputError from '@/components/InputError.vue';
@@ -111,7 +111,9 @@ const submit = () => {
 
 <template>
     <form class="space-y-6" @submit.prevent="submit">
-        <section class="grid gap-4 rounded-xl border bg-white p-4">
+        <section
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+        >
             <h2 class="text-lg font-semibold">Basic Information</h2>
 
             <div class="grid gap-2">
@@ -171,7 +173,9 @@ const submit = () => {
             </div>
         </section>
 
-        <section class="grid gap-4 rounded-xl border bg-white p-4">
+        <section
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+        >
             <h2 class="text-lg font-semibold">Image</h2>
 
             <div class="flex flex-wrap items-center gap-4">
@@ -208,7 +212,9 @@ const submit = () => {
             <InputError :message="form.errors.remove_image" />
         </section>
 
-        <section class="grid gap-4 rounded-xl border bg-white p-4">
+        <section
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+        >
             <h2 class="text-lg font-semibold">SEO</h2>
             <p class="text-sm text-muted-foreground">
                 If left empty, public pages will use fallback values.
@@ -242,7 +248,7 @@ const submit = () => {
             </Button>
             <Link
                 :href="cancelHref"
-                class="text-sm text-muted-foreground underline"
+                class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
             >
                 Cancel
             </Link>

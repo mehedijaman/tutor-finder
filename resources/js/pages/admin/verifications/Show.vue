@@ -1,5 +1,5 @@
-<script setup>
-import { Head, router } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,14 @@ const props = defineProps({
     },
 });
 
+type EducationSnapshotItem = {
+    id: number;
+    degree?: string | null;
+    institute?: string | null;
+    department?: string | null;
+    graduation_year?: string | number | null;
+    result?: string | null;
+};
 const breadcrumbs = [
     { title: 'Verifications', href: '/admin/verifications' },
     {
@@ -51,7 +59,11 @@ const confirmTitle = ref('Confirm Action');
 const confirmDescription = ref('');
 const confirmLabel = ref('Confirm');
 const confirmDestructive = ref(false);
-const pendingAction = ref(null);
+const pendingAction = ref<'approve' | null>(null);
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
 
 const rejectDialogOpen = ref(false);
 const rejectForm = reactive({
@@ -136,7 +148,7 @@ const timeline = computed(() => {
     return events.filter((event) => event.visible);
 });
 
-function openConfirm(action) {
+function openConfirm(action: 'approve') {
     pendingAction.value = action;
     confirmTitle.value = 'Confirm Action';
     confirmDescription.value = '';
@@ -231,13 +243,17 @@ function submitMarkPaid() {
     <Head :title="`Verification #${verification.id}`" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
+        <div class="space-y-6 p-4 sm:p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-semibold">
+                <div
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                >
+                    <h1
+                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                    >
                         Verification Request #{{ verification.id }}
                     </h1>
-                    <p class="text-sm text-muted-foreground">
+                    <p class="text-sm text-slate-600">
                         {{ verification.role }} verification review
                     </p>
                 </div>
@@ -280,10 +296,10 @@ function submitMarkPaid() {
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
             <div
@@ -300,7 +316,7 @@ function submitMarkPaid() {
             </div>
 
             <section
-                class="grid gap-4 rounded-xl border bg-white p-5 lg:grid-cols-2"
+                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
             >
                 <div class="space-y-2 text-sm">
                     <h2 class="text-lg font-semibold">Request Summary</h2>
@@ -392,7 +408,7 @@ function submitMarkPaid() {
             </section>
 
             <section
-                class="grid gap-4 rounded-xl border bg-white p-5 lg:grid-cols-2"
+                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
             >
                 <div class="space-y-2 text-sm">
                     <h2 class="text-lg font-semibold">Invoice</h2>
@@ -482,7 +498,9 @@ function submitMarkPaid() {
                 </div>
             </section>
 
-            <section class="rounded-xl border bg-white p-5">
+            <section
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
                 <h2 class="text-lg font-semibold">Profile Snapshot</h2>
 
                 <div
@@ -517,7 +535,7 @@ function submitMarkPaid() {
                     >
                         <h3 class="font-semibold">Education Snapshot</h3>
                         <div
-                            v-for="education in educationSnapshot"
+                            v-for="education in educationSnapshot as EducationSnapshotItem[]"
                             :key="education.id"
                             class="rounded-md border px-3 py-2"
                         >

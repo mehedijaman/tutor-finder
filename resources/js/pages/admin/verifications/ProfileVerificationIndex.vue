@@ -1,5 +1,5 @@
-<script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +42,20 @@ const props = defineProps({
     },
 });
 
+type VerificationRow = {
+    id: number;
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    role: 'tutor' | 'guardian' | string;
+    verification_status?: string | null;
+    request_status?: string | null;
+    submitted_at?: string | null;
+    invoice_status?: string | null;
+    invoice_no?: string | null;
+    request_id?: number | null;
+};
+
 const breadcrumbs = [
     {
         title: 'Profile Verification',
@@ -61,7 +75,14 @@ const columns = [
 
 const search = ref(props.filters.q ?? '');
 const roleFilter = ref(props.filters.role || 'all');
-let searchTimer = null;
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+const roleOptionsList = computed<string[]>(
+    () => (props.roleOptions as string[] | undefined) ?? [],
+);
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
 
 const baseUrl = computed(() => {
     if (props.bucket === 'unverified') {
@@ -133,7 +154,9 @@ function applyFilters(overrides = {}) {
     );
 }
 
-function verificationBadgeVariant(status) {
+function verificationBadgeVariant(
+    status: string | null | undefined,
+): 'default' | 'destructive' | 'secondary' | 'outline' {
     if (status === 'verified') {
         return 'default';
     }
@@ -145,7 +168,7 @@ function verificationBadgeVariant(status) {
     return 'outline';
 }
 
-function manageUrl(row) {
+function manageUrl(row: VerificationRow): string {
     if (row.request_id) {
         return `/admin/verifications/${row.request_id}`;
     }
@@ -155,7 +178,7 @@ function manageUrl(row) {
         : `/admin/guardians/${row.id}/edit`;
 }
 
-function actionLabel(row) {
+function actionLabel(row: VerificationRow): string {
     return row.request_id ? 'View Request' : 'View Profile';
 }
 </script>
@@ -164,21 +187,27 @@ function actionLabel(row) {
     <Head :title="title" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="space-y-1">
-                <h1 class="text-2xl font-semibold">{{ title }}</h1>
-                <p class="text-sm text-muted-foreground">{{ description }}</p>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900"
+                >
+                    {{ title }}
+                </h1>
+                <p class="text-sm text-slate-600">{{ description }}</p>
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
             >
                 <div class="grid gap-2 md:col-span-2">
                     <Label for="verification-search">Search</Label>
@@ -199,7 +228,7 @@ function actionLabel(row) {
                         <SelectContent>
                             <SelectItem value="all">All roles</SelectItem>
                             <SelectItem
-                                v-for="role in roleOptions"
+                                v-for="role in roleOptionsList"
                                 :key="role"
                                 :value="role"
                                 >{{ role }}</SelectItem

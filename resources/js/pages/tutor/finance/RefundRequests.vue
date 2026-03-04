@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -72,10 +72,14 @@ function submitRefund() {
     <Head title="Refund Requests" />
 
     <TutorLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="space-y-1">
-                <h1 class="text-2xl font-semibold">Refund Requests</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Refund Requests
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Submit and track service fee refund requests.
                 </p>
             </div>
@@ -94,7 +98,9 @@ function submitRefund() {
                 {{ $page.props.errors.refund }}
             </div>
 
-            <section class="space-y-3 rounded-xl border bg-white p-4">
+            <section
+                class="space-y-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+            >
                 <h2 class="text-base font-semibold">Create Refund Request</h2>
                 <div class="grid gap-3 md:grid-cols-2">
                     <Select v-model="form.assignment_id">
@@ -123,7 +129,7 @@ function submitRefund() {
                 <textarea
                     v-model="form.reason_text"
                     rows="4"
-                    class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    class="w-full rounded-lg border border-slate-300 bg-background px-3 py-2 text-sm"
                     placeholder="Explain why you are requesting a refund..."
                 />
                 <Button
@@ -136,22 +142,28 @@ function submitRefund() {
             </section>
 
             <section class="space-y-3">
-                <div class="max-w-xs">
-                    <Select v-model="statusFilter">
-                        <SelectTrigger>
-                            <SelectValue placeholder="All statuses" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All statuses</SelectItem>
-                            <SelectItem
-                                v-for="option in statusOptions"
-                                :key="option"
-                                :value="option"
-                            >
-                                {{ option }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
+                <div
+                    class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                >
+                    <div class="max-w-xs">
+                        <Select v-model="statusFilter">
+                            <SelectTrigger>
+                                <SelectValue placeholder="All statuses" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all"
+                                    >All statuses</SelectItem
+                                >
+                                <SelectItem
+                                    v-for="option in statusOptions"
+                                    :key="option"
+                                    :value="option"
+                                >
+                                    {{ option }}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
 
                 <DataTable

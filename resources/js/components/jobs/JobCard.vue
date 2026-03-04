@@ -7,7 +7,6 @@ import {
     BookOpen,
     Clock,
     Share2,
-    Filter,
 } from 'lucide-vue-next';
 import { ref } from 'vue';
 

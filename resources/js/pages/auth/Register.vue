@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -26,20 +26,34 @@ import { store } from '@/routes/register';
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label>Register as</Label>
-                    <div class="flex items-center gap-6 rounded-md border p-3">
-                        <label class="flex items-center gap-2 text-sm">
+                    <Label>I want to register as</Label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
                             <input
                                 type="radio"
                                 name="role"
                                 value="guardian"
                                 checked
+                                class="peer sr-only"
                             />
-                            <span>Guardian</span>
+                            <div
+                                class="flex items-center justify-center rounded-xl border-2 border-slate-100 bg-slate-50 py-3 text-sm font-medium text-slate-600 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:border-slate-200 hover:bg-slate-100"
+                            >
+                                Guardian
+                            </div>
                         </label>
-                        <label class="flex items-center gap-2 text-sm">
-                            <input type="radio" name="role" value="tutor" />
-                            <span>Tutor</span>
+                        <label class="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="role"
+                                value="tutor"
+                                class="peer sr-only"
+                            />
+                            <div
+                                class="flex items-center justify-center rounded-xl border-2 border-slate-100 bg-slate-50 py-3 text-sm font-medium text-slate-600 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:border-slate-200 hover:bg-slate-100"
+                            >
+                                Tutor
+                            </div>
                         </label>
                     </div>
                     <InputError :message="errors.role" />
@@ -127,7 +141,7 @@ import { store } from '@/routes/register';
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
+            <div class="text-center text-sm text-slate-600">
                 Already have an account?
                 <TextLink
                     :href="login()"

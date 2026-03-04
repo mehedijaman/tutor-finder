@@ -25,29 +25,35 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
 
 <template>
     <!-- Full Footer -->
-    <footer v-if="variant === 'full'" class="bg-gray-900 text-gray-300">
-        <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-            <div class="grid gap-8 md:grid-cols-4">
+    <footer
+        v-if="variant === 'full'"
+        class="border-t border-slate-800 bg-slate-950 text-slate-300"
+    >
+        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-14">
+            <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
                 <!-- Brand -->
-                <div class="md:col-span-1">
-                    <Link :href="home()" class="flex items-center gap-2">
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <Link :href="home()" class="group flex items-center gap-3">
                         <img
                             v-if="logoUrl"
                             :src="logoUrl"
                             :alt="siteName"
-                            class="h-9 w-9 rounded-lg object-cover"
+                            class="h-10 w-10 rounded-xl object-cover ring-1 ring-white/10"
                         />
                         <div
                             v-else
-                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 font-bold text-white"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-sm"
                         >
                             {{ siteName.charAt(0).toUpperCase() }}
                         </div>
-                        <span class="font-semibold text-white">{{
-                            siteName
-                        }}</span>
+                        <span
+                            class="text-base font-semibold tracking-tight text-white transition-colors group-hover:text-blue-300"
+                            >{{ siteName }}</span
+                        >
                     </Link>
-                    <p class="mt-4 text-sm leading-relaxed text-gray-400">
+                    <p
+                        class="mt-4 max-w-xs text-sm leading-relaxed text-slate-400"
+                    >
                         Connecting students with verified tutors for better
                         learning outcomes.
                     </p>
@@ -55,33 +61,37 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
 
                 <!-- Quick Links -->
                 <div>
-                    <h3 class="mb-4 font-semibold text-white">Quick Links</h3>
-                    <ul class="space-y-2 text-sm">
+                    <h3
+                        class="mb-4 text-sm font-semibold tracking-[0.08em] text-white uppercase"
+                    >
+                        Quick Links
+                    </h3>
+                    <ul class="space-y-2.5 text-sm">
                         <li>
                             <Link
                                 :href="home()"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Home</Link
                             >
                         </li>
                         <li>
                             <Link
                                 :href="jobs()"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Find Tutor</Link
                             >
                         </li>
                         <li>
                             <Link
                                 :href="jobs()"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Job Board</Link
                             >
                         </li>
                         <li>
                             <Link
                                 :href="contact()"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Contact</Link
                             >
                         </li>
@@ -90,26 +100,30 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
 
                 <!-- For -->
                 <div>
-                    <h3 class="mb-4 font-semibold text-white">For</h3>
-                    <ul class="space-y-2 text-sm">
+                    <h3
+                        class="mb-4 text-sm font-semibold tracking-[0.08em] text-white uppercase"
+                    >
+                        For
+                    </h3>
+                    <ul class="space-y-2.5 text-sm">
                         <li>
                             <Link
                                 :href="register()"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Students</Link
                             >
                         </li>
                         <li>
                             <Link
                                 :href="register()"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Guardians</Link
                             >
                         </li>
                         <li>
                             <Link
                                 :href="jobs()"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Tutors</Link
                             >
                         </li>
@@ -118,22 +132,29 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
 
                 <!-- Contact -->
                 <div>
-                    <h3 class="mb-4 font-semibold text-white">Contact</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li v-if="primaryAddress" class="text-gray-400">
+                    <h3
+                        class="mb-4 text-sm font-semibold tracking-[0.08em] text-white uppercase"
+                    >
+                        Contact
+                    </h3>
+                    <ul class="space-y-2.5 text-sm">
+                        <li
+                            v-if="primaryAddress"
+                            class="leading-relaxed text-slate-400"
+                        >
                             {{ primaryAddress }}
                         </li>
                         <li v-if="primaryPhone">
                             <a
                                 :href="`tel:${primaryPhone}`"
-                                class="text-gray-400 hover:text-white"
+                                class="text-slate-400 transition-colors hover:text-white"
                                 >{{ primaryPhone }}</a
                             >
                         </li>
                         <li v-if="primaryEmail">
                             <a
                                 :href="`mailto:${primaryEmail}`"
-                                class="text-gray-400 hover:text-white"
+                                class="break-all text-slate-400 transition-colors hover:text-white"
                                 >{{ primaryEmail }}</a
                             >
                         </li>
@@ -142,21 +163,21 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
             </div>
 
             <div
-                class="mt-10 flex flex-col items-center justify-between gap-4 border-t border-gray-800 pt-6 text-sm md:flex-row"
+                class="mt-10 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-6 text-sm md:flex-row"
             >
-                <p class="text-gray-500">
+                <p class="text-slate-500">
                     © {{ new Date().getFullYear() }} {{ siteName }}. All rights
                     reserved.
                 </p>
-                <div class="flex gap-6">
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
                     <Link
                         :href="privacyPolicy()"
-                        class="text-gray-500 hover:text-white"
+                        class="text-slate-500 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                         >Privacy Policy</Link
                     >
                     <Link
                         :href="termsOfService()"
-                        class="text-gray-500 hover:text-white"
+                        class="text-slate-500 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                         >Terms of Service</Link
                     >
                 </div>
@@ -165,24 +186,24 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
     </footer>
 
     <!-- Simple Footer -->
-    <footer v-else class="border-t border-gray-200 bg-white">
-        <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+    <footer v-else class="border-t border-slate-200 bg-white/95 backdrop-blur">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
             <div
-                class="flex flex-col items-center justify-between gap-4 text-sm sm:flex-row"
+                class="flex flex-col items-center justify-between gap-3 text-sm sm:flex-row sm:gap-4"
             >
-                <p class="text-gray-500">
+                <p class="text-center text-slate-500 sm:text-left">
                     © {{ new Date().getFullYear() }} {{ siteName }}. All rights
                     reserved.
                 </p>
-                <div class="flex gap-6">
+                <div class="flex items-center gap-5">
                     <Link
                         :href="privacyPolicy()"
-                        class="text-gray-600 hover:text-blue-600"
+                        class="font-medium text-slate-600 transition-colors hover:text-blue-700 focus-visible:underline focus-visible:outline-none"
                         >Privacy</Link
                     >
                     <Link
                         :href="termsOfService()"
-                        class="text-gray-600 hover:text-blue-600"
+                        class="font-medium text-slate-600 transition-colors hover:text-blue-700 focus-visible:underline focus-visible:outline-none"
                         >Terms</Link
                     >
                 </div>

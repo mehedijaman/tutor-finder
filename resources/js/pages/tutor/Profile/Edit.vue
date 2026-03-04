@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
@@ -194,19 +194,28 @@ function hasSelected(field, value) {
     <Head title="Tutor Profile" />
 
     <TutorLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-semibold">Tutor Profile</h1>
-                    <p class="text-sm text-muted-foreground">
-                        Update your personal details, education, and tuition
-                        preferences.
-                    </p>
-                </div>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            Tutor Profile
+                        </h1>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            Update your personal details, education, and tuition
+                            preferences.
+                        </p>
+                    </div>
 
-                <Button type="button" variant="outline" @click="addEducation"
-                    >Add Education</Button
-                >
+                    <Button
+                        type="button"
+                        variant="outline"
+                        @click="addEducation"
+                        >Add Education</Button
+                    >
+                </div>
             </div>
 
             <div
@@ -216,7 +225,9 @@ function hasSelected(field, value) {
                 {{ $page.props.flash.status }}
             </div>
 
-            <div class="flex flex-wrap gap-2 rounded-xl border bg-white p-3">
+            <div
+                class="flex flex-wrap gap-2 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm"
+            >
                 <Button
                     v-for="tab in tabs"
                     :key="tab.key"
@@ -232,7 +243,7 @@ function hasSelected(field, value) {
             <form class="space-y-6" @submit.prevent="submit">
                 <section
                     v-if="activeTab === 'personal'"
-                    class="grid gap-4 rounded-xl border bg-white p-5 md:grid-cols-2"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-2"
                 >
                     <div class="grid gap-2">
                         <Label for="name">Full Name</Label>
@@ -294,7 +305,7 @@ function hasSelected(field, value) {
                             id="present_address"
                             v-model="form.present_address"
                             rows="3"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                         ></textarea>
                         <InputError :message="form.errors.present_address" />
                     </div>
@@ -305,7 +316,7 @@ function hasSelected(field, value) {
                             id="permanent_address"
                             v-model="form.permanent_address"
                             rows="3"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                         ></textarea>
                         <InputError :message="form.errors.permanent_address" />
                     </div>
@@ -322,7 +333,7 @@ function hasSelected(field, value) {
                             id="bio"
                             v-model="form.bio"
                             rows="4"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                         ></textarea>
                         <InputError :message="form.errors.bio" />
                     </div>
@@ -330,7 +341,7 @@ function hasSelected(field, value) {
 
                 <section
                     v-if="activeTab === 'education'"
-                    class="space-y-4 rounded-xl border bg-white p-5"
+                    class="space-y-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
                 >
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold">Education History</h2>
@@ -352,7 +363,7 @@ function hasSelected(field, value) {
                     <div
                         v-for="(education, index) in form.educations"
                         :key="education.id ?? `new-${index}`"
-                        class="grid gap-3 rounded-lg border p-4"
+                        class="grid gap-3 rounded-xl border border-slate-200/80 p-4"
                     >
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-semibold">

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { reactive, ref, toRef } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAutoSlug } from '@/composables/useAutoSlug';
 
-const props = defineProps({
+defineProps({
     open: {
         type: Boolean,
         default: false,

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -61,9 +61,18 @@ function submit() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <SettingsLayout full-width>
-            <div class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-semibold">Payment Settings</h1>
+            <div class="space-y-6 p-4 sm:p-6">
+                <div
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                >
+                    <h1
+                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                    >
+                        Payment Settings
+                    </h1>
+                    <p class="mt-1 text-sm text-slate-600">
+                        Configure payment gateways and operational modes.
+                    </p>
                 </div>
 
                 <div
@@ -74,7 +83,9 @@ function submit() {
                 </div>
 
                 <form class="space-y-8" @submit.prevent="submit">
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">bKash</h2>
                             <div class="w-40">
@@ -168,7 +179,9 @@ function submit() {
                         </div>
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">SSLCommerz</h2>
                             <div class="w-40">
@@ -249,7 +262,9 @@ function submit() {
                         </div>
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">
                                 Manual Payment

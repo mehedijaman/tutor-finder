@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -155,9 +155,21 @@ function submitTestSms() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <SettingsLayout full-width>
-            <div class="space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <h1 class="text-2xl font-semibold">SMS Settings</h1>
+            <div class="space-y-6 p-4 sm:p-6">
+                <div
+                    class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                >
+                    <div class="space-y-1">
+                        <h1
+                            class="text-2xl font-semibold tracking-tight text-slate-900"
+                        >
+                            SMS Settings
+                        </h1>
+                        <p class="text-sm text-slate-600">
+                            Manage SMS providers, credentials, and delivery
+                            testing.
+                        </p>
+                    </div>
                     <div class="flex items-center gap-2">
                         <Button
                             v-if="permissions.can_test"
@@ -171,7 +183,7 @@ function submitTestSms() {
                         <Link
                             v-if="permissions.can_create"
                             href="/settings/sms/create"
-                            class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                            class="inline-flex h-9 items-center rounded-md bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-800"
                         >
                             Add SMS Setting
                         </Link>
@@ -192,7 +204,9 @@ function submitTestSms() {
                     {{ errorMessage }}
                 </div>
 
-                <div class="rounded-xl border bg-white p-4">
+                <div
+                    class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                >
                     <Input
                         v-model="search"
                         type="text"

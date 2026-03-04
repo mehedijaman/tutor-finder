@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
@@ -188,13 +188,25 @@ onBeforeUnmount(() => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <SettingsLayout full-width>
-            <div class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-semibold">Site Settings</h1>
+            <div class="space-y-6 p-4 sm:p-6">
+                <div
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                >
+                    <h1
+                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                    >
+                        Site Settings
+                    </h1>
+                    <p class="mt-1 text-sm text-slate-600">
+                        Manage brand identity, contact channels, and social
+                        details.
+                    </p>
                 </div>
 
                 <form class="space-y-8" @submit.prevent="submit">
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <h2 class="text-lg font-semibold">Basic Information</h2>
 
                         <div class="grid gap-2">
@@ -230,7 +242,9 @@ onBeforeUnmount(() => {
                         </div>
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <h2 class="text-lg font-semibold">Logo</h2>
 
                         <div class="flex flex-wrap items-center gap-4">
@@ -270,7 +284,9 @@ onBeforeUnmount(() => {
                         <InputError :message="form.errors.remove_logo" />
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">Phone Numbers</h2>
                             <Button
@@ -304,7 +320,9 @@ onBeforeUnmount(() => {
                         </div>
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">Emails</h2>
                             <Button
@@ -338,7 +356,9 @@ onBeforeUnmount(() => {
                         </div>
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">Addresses</h2>
                             <Button
@@ -394,7 +414,9 @@ onBeforeUnmount(() => {
                         </div>
                     </section>
 
-                    <section class="grid gap-4 rounded-xl border bg-white p-4">
+                    <section
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">
                                 Social Details
@@ -445,7 +467,7 @@ onBeforeUnmount(() => {
                     </section>
 
                     <section
-                        class="grid gap-4 rounded-xl border bg-white p-4 md:grid-cols-3"
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 md:grid-cols-3"
                     >
                         <div class="grid gap-2">
                             <Label for="trade_licence_no"

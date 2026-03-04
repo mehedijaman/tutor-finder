@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -19,6 +19,22 @@ const props = defineProps({
     filters: { type: Object, default: () => ({}) },
     statusOptions: { type: Array, default: () => [] },
 });
+
+type JobStatusOption = {
+    value: string;
+    label: string;
+};
+
+type GuardianJobRow = {
+    id: number;
+    status: string;
+    is_expired?: boolean;
+    open_applications_count?: number;
+    applications_count?: number;
+    has_assignment?: boolean;
+    selected_tutor_name?: string | null;
+    hiring_confirmed_at?: string | null;
+};
 
 const breadcrumbs = [{ title: 'My Jobs', href: '/guardian/jobs' }];
 const presetStatus = computed(() => props.filters.preset_status || '');
@@ -60,7 +76,10 @@ const columns = [
 
 const search = ref(props.filters.q ?? '');
 const statusFilter = ref(props.filters.status || 'all');
-let searchDebounceTimer = null;
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+const statusOptionsList = computed<JobStatusOption[]>(
+    () => (props.statusOptions as JobStatusOption[] | undefined) ?? [],
+);
 
 watch(
     () => props.filters.q,
@@ -128,7 +147,10 @@ function applyFilters(overrides = {}) {
     );
 }
 
-function statusBadge(row) {
+function statusBadge(row: GuardianJobRow): {
+    label: string;
+    variant: 'default' | 'destructive' | 'secondary' | 'outline';
+} {
     if (row.status === 'live' && row.is_expired) {
         return {
             label: 'expired',
@@ -154,22 +176,29 @@ function statusBadge(row) {
     <Head title="My Jobs" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-semibold">My Jobs</h1>
-                    <p class="text-sm text-muted-foreground">
-                        Track and manage your job postings.
-                    </p>
-                </div>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            My Jobs
+                        </h1>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            Track job performance, application volume, and
+                            hiring status.
+                        </p>
+                    </div>
 
-                <Button as-child>
-                    <Link href="/guardian/jobs/create">Post New Job</Link>
-                </Button>
+                    <Button as-child>
+                        <Link href="/guardian/jobs/create">Post New Job</Link>
+                    </Button>
+                </div>
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Input
                     v-model="search"
@@ -185,7 +214,7 @@ function statusBadge(row) {
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
                         <SelectItem
-                            v-for="status in statusOptions"
+                            v-for="status in statusOptionsList"
                             :key="status.value"
                             :value="status.value"
                         >

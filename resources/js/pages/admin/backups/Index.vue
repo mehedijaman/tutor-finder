@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
@@ -78,32 +78,37 @@ function deleteBackup(backup) {
     <Head title="Backup Management" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
+        <div class="space-y-6 p-4 sm:p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-semibold">Backup Management</h1>
-                    <p class="text-sm text-muted-foreground">
+                <div
+                    class="w-full rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                >
+                    <h1
+                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                    >
+                        Backup Management
+                    </h1>
+                    <p class="text-sm text-slate-600">
                         Monitor destination health and run backup operations.
                     </p>
-                </div>
+                    <div class="mt-4 flex items-center gap-2">
+                        <Button
+                            v-if="permissions.can_run"
+                            type="button"
+                            @click="runBackup"
+                        >
+                            Run Backup
+                        </Button>
 
-                <div class="flex items-center gap-2">
-                    <Button
-                        v-if="permissions.can_run"
-                        type="button"
-                        @click="runBackup"
-                    >
-                        Run Backup
-                    </Button>
-
-                    <Button
-                        v-if="permissions.can_clean"
-                        type="button"
-                        variant="outline"
-                        @click="cleanBackups"
-                    >
-                        Run Cleanup
-                    </Button>
+                        <Button
+                            v-if="permissions.can_clean"
+                            type="button"
+                            variant="outline"
+                            @click="cleanBackups"
+                        >
+                            Run Cleanup
+                        </Button>
+                    </div>
                 </div>
             </div>
 

@@ -29,6 +29,19 @@ const { resolvedAppearance, updateAppearance } = useAppearance();
 const { getInitials } = useInitials();
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
+const panelLabel = computed(() => {
+    const role = user.value?.role;
+
+    if (role === 'admin') {
+        return 'Admin Dashboard';
+    }
+
+    if (role === 'tutor') {
+        return 'Tutor Dashboard';
+    }
+
+    return 'Guardian Dashboard';
+});
 
 function toggleAppearance(): void {
     updateAppearance(resolvedAppearance.value === 'dark' ? 'light' : 'dark');
@@ -37,20 +50,30 @@ function toggleAppearance(): void {
 
 <template>
     <header
-        class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/70 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
+        class="sticky top-0 z-20 flex shrink-0 items-center gap-3 border-b border-sidebar-border/70 bg-background/95 px-4 py-3 backdrop-blur transition-[width,height] ease-linear md:px-6"
     >
-        <div class="flex flex-1 items-center gap-2">
+        <div class="flex min-w-0 flex-1 items-center gap-2">
             <SidebarTrigger class="-ml-1" />
-            <template v-if="breadcrumbs && breadcrumbs.length > 0">
-                <Breadcrumbs :breadcrumbs="breadcrumbs" />
-            </template>
+
+            <div class="min-w-0">
+                <p class="truncate text-sm font-semibold tracking-tight">
+                    {{ panelLabel }}
+                </p>
+
+                <div
+                    v-if="breadcrumbs && breadcrumbs.length > 0"
+                    class="mt-0.5 text-xs text-muted-foreground"
+                >
+                    <Breadcrumbs :breadcrumbs="breadcrumbs" />
+                </div>
+            </div>
         </div>
 
         <div class="ml-auto flex items-center gap-2">
             <Button
                 variant="ghost"
                 size="icon"
-                class="h-9 w-9"
+                class="h-9 w-9 rounded-xl"
                 type="button"
                 @click="toggleAppearance"
             >
@@ -59,7 +82,12 @@ function toggleAppearance(): void {
                 <span class="sr-only">Toggle theme</span>
             </Button>
 
-            <Button variant="ghost" size="icon" class="h-9 w-9" as-child>
+            <Button
+                variant="ghost"
+                size="icon"
+                class="h-9 w-9 rounded-xl"
+                as-child
+            >
                 <Link href="/">
                     <Home class="h-4 w-4" />
                     <span class="sr-only">Home</span>

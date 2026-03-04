@@ -32,78 +32,100 @@ defineProps<{
     </Head>
 
     <PublicLayout>
-        <div class="min-h-screen bg-slate-50 p-6">
-            <div class="mx-auto max-w-4xl space-y-6">
-                <Link
-                    href="/blog"
-                    class="inline-block text-sm text-blue-600 hover:underline"
-                >
-                    ← Back to Blog
-                </Link>
-
-                <article class="overflow-hidden rounded-2xl border bg-white">
-                    <img
-                        v-if="post.cover_url"
-                        :src="post.cover_url"
-                        :alt="post.title"
-                        class="h-64 w-full object-cover"
-                    />
-
-                    <div class="space-y-5 p-6 md:p-8">
-                        <div
-                            class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
+        <div class="min-h-screen bg-slate-50 py-12">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <Link
+                        href="/blog"
+                        class="mb-4 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
+                    >
+                        <svg
+                            class="mr-1 h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
                         >
-                            <span
-                                v-for="category in post.categories"
-                                :key="`post-category-${category.slug}`"
-                                class="rounded-full border px-2 py-0.5"
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                            />
+                        </svg>
+                        Back to Blog
+                    </Link>
+                </div>
+
+                <div class="mx-auto max-w-4xl space-y-6">
+                    <article
+                        class="overflow-hidden rounded-2xl border bg-white"
+                    >
+                        <img
+                            v-if="post.cover_url"
+                            :src="post.cover_url"
+                            :alt="post.title"
+                            class="h-64 w-full object-cover"
+                        />
+
+                        <div class="space-y-5 p-6 md:p-8">
+                            <div
+                                class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
                             >
-                                {{ category.name }}
-                            </span>
-                        </div>
+                                <span
+                                    v-for="category in post.categories"
+                                    :key="`post-category-${category.slug}`"
+                                    class="rounded-full border px-2 py-0.5"
+                                >
+                                    {{ category.name }}
+                                </span>
+                            </div>
 
-                        <h1 class="text-3xl font-bold">{{ post.title }}</h1>
+                            <h1 class="text-3xl font-bold">{{ post.title }}</h1>
 
-                        <div class="text-sm text-muted-foreground">
-                            {{ post.author_name || 'Editorial Team' }}
-                            <span class="mx-1">•</span>
-                            {{
-                                post.published_at
-                                    ? new Date(
-                                          post.published_at,
-                                      ).toLocaleDateString()
-                                    : 'Unpublished'
-                            }}
-                        </div>
+                            <div class="text-sm text-muted-foreground">
+                                {{ post.author_name || 'Editorial Team' }}
+                                <span class="mx-1">•</span>
+                                {{
+                                    post.published_at
+                                        ? new Date(
+                                              post.published_at,
+                                          ).toLocaleDateString()
+                                        : 'Unpublished'
+                                }}
+                            </div>
 
-                        <p v-if="post.summary" class="text-muted-foreground">
-                            {{ post.summary }}
-                        </p>
-
-                        <div
-                            class="prose max-w-none"
-                            v-html="post.content"
-                        ></div>
-
-                        <div
-                            v-if="post.tags.length"
-                            class="flex flex-wrap items-center gap-2 pt-3"
-                        >
-                            <span
-                                class="text-sm font-medium text-muted-foreground"
-                                >Tags:</span
+                            <p
+                                v-if="post.summary"
+                                class="text-muted-foreground"
                             >
-                            <Link
-                                v-for="tag in post.tags"
-                                :key="`post-tag-${tag.slug}`"
-                                :href="`/blog?tag=${tag.slug}`"
-                                class="rounded-full border px-2 py-0.5 text-xs hover:bg-muted"
+                                {{ post.summary }}
+                            </p>
+
+                            <div
+                                class="prose max-w-none"
+                                v-html="post.content"
+                            ></div>
+
+                            <div
+                                v-if="post.tags.length"
+                                class="flex flex-wrap items-center gap-2 pt-3"
                             >
-                                {{ tag.name }}
-                            </Link>
+                                <span
+                                    class="text-sm font-medium text-muted-foreground"
+                                    >Tags:</span
+                                >
+                                <Link
+                                    v-for="tag in post.tags"
+                                    :key="`post-tag-${tag.slug}`"
+                                    :href="`/blog?tag=${tag.slug}`"
+                                    class="rounded-full border px-2 py-0.5 text-xs hover:bg-muted"
+                                >
+                                    {{ tag.name }}
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                </article>
+                    </article>
+                </div>
             </div>
         </div>
     </PublicLayout>

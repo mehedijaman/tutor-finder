@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -59,10 +59,14 @@ function pay(invoiceId, gateway) {
     <Head title="Fees & Invoices" />
 
     <TutorLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="space-y-1">
-                <h1 class="text-2xl font-semibold">Fees & Invoices</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Fees & Invoices
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Pay service fees and track invoice/payment states.
                 </p>
             </div>
@@ -81,22 +85,26 @@ function pay(invoiceId, gateway) {
                 {{ $page.props.errors.payment }}
             </div>
 
-            <div class="max-w-xs">
-                <Select v-model="statusFilter">
-                    <SelectTrigger>
-                        <SelectValue placeholder="All statuses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem
-                            v-for="option in statusOptions"
-                            :key="option"
-                            :value="option"
-                        >
-                            {{ option }}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+            >
+                <div class="max-w-xs">
+                    <Select v-model="statusFilter">
+                        <SelectTrigger>
+                            <SelectValue placeholder="All statuses" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All statuses</SelectItem>
+                            <SelectItem
+                                v-for="option in statusOptions"
+                                :key="option"
+                                :value="option"
+                            >
+                                {{ option }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             <DataTable

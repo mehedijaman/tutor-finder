@@ -1,6 +1,6 @@
-<script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+<script setup lang="ts">
+import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,10 @@ const props = defineProps({
 });
 
 const breadcrumbs = [{ title: 'Guardian Profile', href: '/guardian/profile' }];
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
 
 const activeTab = ref('personal');
 
@@ -47,22 +51,28 @@ function submit() {
     <Head title="Guardian Profile" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div>
-                <h1 class="text-2xl font-semibold">Guardian Profile</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Guardian Profile
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Keep your personal and contact information up to date.
                 </p>
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
-            <div class="flex flex-wrap gap-2 rounded-xl border bg-white p-3">
+            <div
+                class="flex flex-wrap gap-2 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm"
+            >
                 <Button
                     type="button"
                     size="sm"
@@ -84,7 +94,7 @@ function submit() {
             <form class="space-y-6" @submit.prevent="submit">
                 <section
                     v-if="activeTab === 'personal'"
-                    class="grid gap-4 rounded-xl border bg-white p-5 md:grid-cols-2"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-2"
                 >
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
@@ -147,7 +157,7 @@ function submit() {
 
                 <section
                     v-if="activeTab === 'contact'"
-                    class="grid gap-4 rounded-xl border bg-white p-5 md:grid-cols-2"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-2"
                 >
                     <div class="grid gap-2">
                         <Label for="phone_alt">Alternative Phone</Label>
@@ -166,7 +176,7 @@ function submit() {
                             id="address"
                             v-model="form.address"
                             rows="4"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                             placeholder="House, road, area"
                         ></textarea>
                         <InputError :message="form.errors.address" />
@@ -178,7 +188,7 @@ function submit() {
                             id="notes"
                             v-model="form.notes"
                             rows="4"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                             placeholder="Additional information"
                         ></textarea>
                         <InputError :message="form.errors.notes" />

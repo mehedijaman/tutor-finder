@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
@@ -60,7 +60,7 @@ const columns = [
 
 const statusFilter = ref(props.filters.status || 'all');
 const confirmOpen = ref(false);
-const pendingRow = ref(null);
+const pendingRow = ref<any>(null);
 
 watch(
     () => props.filters.status,
@@ -91,7 +91,7 @@ watch(statusFilter, (value) => {
     );
 });
 
-function badgeVariant(status) {
+function badgeVariant(status: string): string {
     if (status === 'confirmed') {
         return 'default';
     }
@@ -111,7 +111,7 @@ function badgeVariant(status) {
     return 'outline';
 }
 
-function actionItems(row) {
+function actionItems(row: any): Array<Record<string, unknown>> {
     return [
         { key: 'view-job', label: 'View Job', show: !!row.job.slug },
         {
@@ -123,7 +123,7 @@ function actionItems(row) {
     ];
 }
 
-function handleAction(action, row) {
+function handleAction(action: string, row: any): void {
     if (action === 'view-job') {
         router.visit(`/jobs/${row.job.slug}`);
         return;
@@ -135,7 +135,7 @@ function handleAction(action, row) {
     }
 }
 
-function confirmWithdraw() {
+function confirmWithdraw(): void {
     if (!pendingRow.value) {
         return;
     }
@@ -154,7 +154,7 @@ function confirmWithdraw() {
     confirmOpen.value = false;
 }
 
-function closeConfirm() {
+function closeConfirm(): void {
     confirmOpen.value = false;
     pendingRow.value = null;
 }
@@ -164,31 +164,38 @@ function closeConfirm() {
     <Head title="My Applications" />
 
     <TutorLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-semibold">My Applications</h1>
-                    <p class="text-sm text-muted-foreground">
-                        Track job applications and latest guardian feedback.
-                    </p>
-                </div>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            My Applications
+                        </h1>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            Track job applications and guardian responses from
+                            one timeline.
+                        </p>
+                    </div>
 
-                <Link
-                    href="/jobs"
-                    class="text-sm text-muted-foreground underline"
-                    >Browse Jobs</Link
-                >
+                    <Link
+                        href="/jobs"
+                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        >Browse Jobs</Link
+                    >
+                </div>
             </div>
 
             <div
                 v-if="$page.props.flash?.status"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
                 {{ $page.props.flash.status }}
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Select v-if="!presetStatus" v-model="statusFilter">
                     <SelectTrigger>

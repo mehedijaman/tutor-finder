@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -31,12 +31,23 @@ const breadcrumbs = [
     <Head title="Edit Admin User" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-semibold">Edit Admin User</h1>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="space-y-1">
+                    <h1
+                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                    >
+                        Edit Admin User
+                    </h1>
+                    <p class="text-sm text-slate-600">
+                        Update account details, status, roles, and permissions.
+                    </p>
+                </div>
                 <Link
                     href="/admin/users"
-                    class="text-sm text-muted-foreground underline"
+                    class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >Back</Link
                 >
             </div>
@@ -44,7 +55,7 @@ const breadcrumbs = [
             <Form
                 :action="`/admin/users/${adminUser.id}`"
                 method="put"
-                class="space-y-6"
+                class="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                 #default="{ errors, processing }"
             >
                 <div class="grid gap-4 md:grid-cols-3">
@@ -97,7 +108,7 @@ const breadcrumbs = [
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2">
-                    <div class="rounded-lg border p-4">
+                    <div class="rounded-xl border border-slate-200/80 p-4">
                         <h2 class="mb-3 text-sm font-medium">Roles</h2>
                         <div class="space-y-2">
                             <label
@@ -118,7 +129,7 @@ const breadcrumbs = [
                         <InputError :message="errors.roles" />
                     </div>
 
-                    <div class="rounded-lg border p-4">
+                    <div class="rounded-xl border border-slate-200/80 p-4">
                         <h2 class="mb-3 text-sm font-medium">
                             Direct Permissions
                         </h2>

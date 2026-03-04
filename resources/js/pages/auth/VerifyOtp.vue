@@ -1,27 +1,17 @@
 <script setup lang="ts">
-import { Form, Head, router } from '@inertiajs/vue3';
-import {
-    ArrowLeft,
-    Loader2,
-    MessageSquare,
-    RefreshCw,
-    ShieldCheck,
-} from 'lucide-vue-next';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import { ArrowLeft, Loader2 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import InputError from '@/components/InputError.vue';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
     InputOTP,
     InputOTPGroup,
     InputOTPSlot,
 } from '@/components/ui/input-otp';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { logout, register } from '@/routes';
-import { resend, store } from '@/routes/otp/verify';
+import { resend, store as verifyRoute } from '@/routes/otp/verify'; // Renamed to avoid confusion with form store
 
 type ResendErrorBag = {
     code?: string;
@@ -36,7 +26,11 @@ const props = defineProps<{
 
 const { siteName } = useSiteSettings();
 
-const code = ref('');
+// Use Inertia form helper
+const store = useForm({
+    code: '',
+});
+
 const resendError = ref<string | null>(null);
 const resendTimer = ref(0);
 const isResending = ref(false);
@@ -47,7 +41,7 @@ const RESEND_COOLDOWN_SECONDS = 60;
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 
 const canResend = computed(() => resendTimer.value === 0);
-const canSubmit = computed(() => code.value.length === 6);
+const canSubmit = computed(() => store.code.length === 6);
 const maskedPhone = computed(() => maskPhone(props.phone));
 const resendLabel = computed(() => {
     if (isResending.value) {
@@ -131,7 +125,7 @@ function handleBack(): void {
 
 function fillLocalOtp(): void {
     if (props.localOtp) {
-        code.value = props.localOtp;
+        store.code = props.localOtp;
     }
 }
 
@@ -161,133 +155,119 @@ onUnmounted(() => {
 <template>
     <AuthLayout
         title="Verify your phone number"
-        description="Enter the 6-digit OTP sent to your mobile"
+        :description="`We've sent a 6-digit verification code to ${maskedPhone}`"
     >
         <Head title="Verify OTP" />
 
-        <div class="space-y-6">
-            <Alert class="border-muted">
-                <ShieldCheck class="size-4" />
-                <AlertTitle>Secure verification</AlertTitle>
-                <AlertDescription>
-                    A one-time code was sent to
-                    <span class="font-medium text-foreground">
-                        {{ maskedPhone }}
-                    </span>
-                    for your {{ siteName }} account.
-                </AlertDescription>
-            </Alert>
-
-            <Alert
+        <div class="grid gap-6">
+            <div
                 v-if="status"
-                class="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+                class="rounded-md bg-emerald-50 p-3 text-sm font-medium text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
             >
-                <AlertDescription>{{ status }}</AlertDescription>
-            </Alert>
+                {{ status }}
+            </div>
 
-            <Form
-                v-bind="store.form()"
-                class="space-y-5"
-                reset-on-error
-                @error="code = ''"
-                #default="{ errors, processing }"
+            <form
+                @submit.prevent="
+                    store.post(verifyRoute.url(), { preserveScroll: true })
+                "
+                class="grid gap-6"
             >
-                <input type="hidden" name="code" :value="code" />
-
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <Label for="otp-code">Verification code</Label>
-                        <span class="text-xs text-muted-foreground">
-                            6 digits
-                        </span>
-                    </div>
-                    <div
-                        class="flex justify-center rounded-lg border border-input/70 bg-muted/20 p-3"
-                    >
+                <div class="flex flex-col gap-4">
+                    <div class="flex justify-center">
                         <InputOTP
-                            id="otp-code"
-                            v-model="code"
+                            v-model="store.code"
                             :maxlength="6"
-                            :disabled="processing"
+                            :disabled="store.processing"
                             pattern="^[0-9]+$"
                             autofocus
                         >
                             <InputOTPGroup>
                                 <InputOTPSlot
-                                    v-for="index in 6"
-                                    :key="index"
-                                    :index="index - 1"
-                                    class="h-11 w-11 text-base md:h-12 md:w-12"
+                                    v-for="i in 6"
+                                    :key="i"
+                                    :index="i - 1"
+                                    class="h-12 w-10 text-lg md:h-14 md:w-12"
                                 />
                             </InputOTPGroup>
                         </InputOTP>
                     </div>
-                    <InputError :message="errors.code" />
-                </div>
-
-                <div v-if="localOtp" class="space-y-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        class="w-full justify-between border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                        @click="fillLocalOtp"
+                    <div
+                        v-if="store.errors.code"
+                        class="text-center text-sm font-medium text-red-500"
                     >
-                        <span>Use local debug OTP</span>
-                        <span class="font-mono">{{ localOtp }}</span>
-                    </Button>
+                        {{ store.errors.code }}
+                    </div>
                 </div>
 
-                <Button
-                    type="submit"
-                    class="w-full"
-                    size="lg"
-                    :disabled="processing || !canSubmit"
+                <div class="flex flex-col gap-4">
+                    <Button
+                        type="submit"
+                        class="w-full"
+                        size="lg"
+                        :disabled="store.processing || store.code?.length !== 6"
+                    >
+                        <Loader2
+                            v-if="store.processing"
+                            class="mr-2 h-4 w-4 animate-spin"
+                        />
+                        Verify Account
+                    </Button>
+
+                    <div class="text-center text-sm">
+                        <span class="text-slate-500">Didn't receive code?</span>
+                        <div class="mt-1">
+                            <button
+                                v-if="canResend"
+                                type="button"
+                                class="font-medium text-blue-600 hover:text-blue-500 hover:underline disabled:opacity-50"
+                                @click="handleResend"
+                                :disabled="isResending"
+                            >
+                                <span
+                                    v-if="isResending"
+                                    class="flex items-center gap-1"
+                                >
+                                    <Loader2 class="h-3 w-3 animate-spin" />
+                                    Sending...
+                                </span>
+                                <span v-else>Resend Code</span>
+                            </button>
+                            <span v-else class="font-medium text-slate-400">
+                                Resend in {{ resendTimer }}s
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div
+                v-if="localOtp"
+                class="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3"
+            >
+                <div
+                    class="flex items-center justify-between text-xs text-amber-800"
                 >
-                    <Loader2
-                        v-if="processing"
-                        class="mr-2 h-4 w-4 animate-spin"
-                    />
-                    Verify and continue
-                </Button>
-            </Form>
-
-            <Separator />
-
-            <div class="space-y-3 rounded-lg border bg-muted/20 p-4">
-                <p class="flex items-start gap-2 text-sm text-muted-foreground">
-                    <MessageSquare class="mt-0.5 size-4" />
-                    Didn't receive the code? Request a new one via SMS.
-                </p>
-
-                <Button
-                    variant="secondary"
-                    class="w-full sm:w-auto"
-                    :disabled="!canResend || isResending"
-                    @click="handleResend"
-                >
-                    <RefreshCw
-                        :class="['mr-2 h-4 w-4', isResending && 'animate-spin']"
-                    />
-                    {{ resendLabel }}
-                </Button>
-
-                <p v-if="isResent" class="text-sm text-emerald-600">
-                    A new code has been sent. Please check your phone.
-                </p>
-                <InputError :message="resendError ?? undefined" />
+                    <span class="font-semibold">Development Mode</span>
+                    <button
+                        type="button"
+                        class="font-mono font-bold hover:underline"
+                        @click="store.code = localOtp"
+                    >
+                        Use OTP: {{ localOtp }}
+                    </button>
+                </div>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
+            <div class="mt-2 text-center">
                 <button
                     type="button"
-                    class="inline-flex items-center gap-1 underline decoration-neutral-300 underline-offset-4 transition-colors hover:decoration-current dark:decoration-neutral-600"
-                    :disabled="isReturning"
+                    class="inline-flex items-center gap-2 text-sm text-slate-500 transition-colors hover:text-slate-800"
                     @click="handleBack"
+                    :disabled="isReturning"
                 >
-                    <ArrowLeft
-                        :class="['h-4 w-4', isReturning && 'animate-pulse']"
-                    />
-                    Back
+                    <ArrowLeft class="h-4 w-4" />
+                    Change phone number
                 </button>
             </div>
         </div>

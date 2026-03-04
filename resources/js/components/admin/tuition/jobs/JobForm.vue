@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Link, useForm } from '@inertiajs/vue3';
 import { computed, toRef, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
@@ -212,7 +212,10 @@ function submit() {
             return data;
         }
 
-        const { guardian_id, status, published_at, ...payload } = data;
+        const payload = { ...data };
+        delete payload.guardian_id;
+        delete payload.status;
+        delete payload.published_at;
 
         return payload;
     };
@@ -234,7 +237,9 @@ function submit() {
 
 <template>
     <form class="space-y-6" @submit.prevent="submit">
-        <section class="grid gap-4 rounded-xl border bg-white p-4">
+        <section
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+        >
             <h2 class="text-lg font-semibold">Job Details</h2>
 
             <div class="grid gap-2">
@@ -282,7 +287,7 @@ function submit() {
         </section>
 
         <section
-            class="grid gap-4 rounded-xl border bg-white p-4 lg:grid-cols-2"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
         >
             <h2 class="text-lg font-semibold lg:col-span-2">
                 Taxonomies and Location
@@ -466,7 +471,7 @@ function submit() {
         </section>
 
         <section
-            class="grid gap-4 rounded-xl border bg-white p-4 lg:grid-cols-2"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
         >
             <h2 class="text-lg font-semibold lg:col-span-2">
                 Schedule and Preferences
@@ -577,7 +582,7 @@ function submit() {
         </section>
 
         <section
-            class="grid gap-4 rounded-xl border bg-white p-4 lg:grid-cols-2"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
         >
             <h2 class="text-lg font-semibold lg:col-span-2">
                 Salary and Publishing
@@ -675,7 +680,7 @@ function submit() {
             }}</Button>
             <Link
                 :href="cancelHref"
-                class="text-sm text-muted-foreground underline"
+                class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                 >Cancel</Link
             >
         </div>

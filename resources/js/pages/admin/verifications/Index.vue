@@ -1,5 +1,5 @@
-<script setup>
-import { Head, router } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -44,6 +44,20 @@ const props = defineProps({
     },
 });
 
+type VerificationRow = {
+    id: number;
+    user_name?: string | null;
+    user_email?: string | null;
+    role: string;
+    status: string;
+    submitted_at?: string | null;
+    fee_amount?: string | number | null;
+    currency?: string | null;
+    invoice_status?: string | null;
+    invoice_no?: string | null;
+    invoice_id?: number | null;
+};
+
 const breadcrumbs = [{ title: 'Verifications', href: '/admin/verifications' }];
 const baseUrl = '/admin/verifications';
 
@@ -60,25 +74,37 @@ const columns = [
 const search = ref(props.filters.q ?? '');
 const statusFilter = ref(props.filters.status || 'all');
 const roleFilter = ref(props.filters.role || 'all');
-let searchTimer = null;
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+const statusOptionsList = computed<string[]>(
+    () => (props.statusOptions as string[] | undefined) ?? [],
+);
+const roleOptionsList = computed<string[]>(
+    () => (props.roleOptions as string[] | undefined) ?? [],
+);
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
 
 const confirmOpen = ref(false);
 const confirmTitle = ref('Confirm Action');
 const confirmDescription = ref('');
 const confirmLabel = ref('Confirm');
 const confirmDestructive = ref(false);
-const pendingAction = ref(null);
+const pendingAction = ref<{ action: string; row: VerificationRow } | null>(
+    null,
+);
 
 const rejectDialogOpen = ref(false);
 const rejectForm = reactive({
-    row: null,
+    row: null as VerificationRow | null,
     decision_status: 'rejected',
     reason: '',
 });
 
 const invoiceDialogOpen = ref(false);
 const invoiceForm = reactive({
-    row: null,
+    row: null as VerificationRow | null,
     amount: '',
     currency: 'BDT',
     due_at: '',
@@ -88,7 +114,7 @@ const invoiceForm = reactive({
 
 const markPaidDialogOpen = ref(false);
 const markPaidForm = reactive({
-    row: null,
+    row: null as VerificationRow | null,
     payment_gateway: 'manual',
     payment_method: 'manual',
     payment_reference: '',
@@ -96,7 +122,9 @@ const markPaidForm = reactive({
     notes: '',
 });
 
-const statusBadgeVariant = (status) => {
+const statusBadgeVariant = (
+    status: string | null | undefined,
+): 'default' | 'destructive' | 'secondary' | 'outline' => {
     if (status === 'verified') {
         return 'default';
     }
@@ -194,7 +222,7 @@ function applyFilters(overrides = {}) {
     );
 }
 
-function openConfirm(action, row) {
+function openConfirm(action: string, row: VerificationRow): void {
     pendingAction.value = { action, row };
     confirmTitle.value = 'Confirm Action';
     confirmDescription.value = '';
@@ -249,7 +277,9 @@ function runConfirmedAction() {
     pendingAction.value = null;
 }
 
-function actionItemsForRow(row) {
+function actionItemsForRow(
+    row: VerificationRow,
+): Array<{ key: string; label: string }> {
     const actions = [{ key: 'view', label: 'View' }];
 
     if (row.status === 'pending') {
@@ -269,7 +299,8 @@ function actionItemsForRow(row) {
     }
 
     const canMarkPaid =
-        row.invoice_id && ['unpaid', 'draft'].includes(row.invoice_status);
+        row.invoice_id &&
+        ['unpaid', 'draft'].includes(row.invoice_status ?? '');
 
     if (canMarkPaid) {
         actions.push({ key: 'mark-paid', label: 'Mark Paid' });
@@ -278,7 +309,7 @@ function actionItemsForRow(row) {
     return actions;
 }
 
-function handleAction(action, row) {
+function handleAction(action: string, row: VerificationRow): void {
     if (action === 'view') {
         router.visit(`/admin/verifications/${row.id}`);
         return;
@@ -328,9 +359,9 @@ function submitReject() {
     );
 }
 
-function openInvoiceDialog(row) {
+function openInvoiceDialog(row: VerificationRow): void {
     invoiceForm.row = row;
-    invoiceForm.amount = row.fee_amount;
+    invoiceForm.amount = row.fee_amount ? String(row.fee_amount) : '';
     invoiceForm.currency = row.currency || 'BDT';
     invoiceForm.due_at = '';
     invoiceForm.expires_at = '';
@@ -387,20 +418,24 @@ function submitMarkPaid() {
     <Head title="Verification Requests" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="space-y-1">
-                <h1 class="text-2xl font-semibold">Verification Requests</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Verification Requests
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Review verification requests and manage invoice/payment
                     lifecycle.
                 </p>
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
             <div
@@ -417,7 +452,7 @@ function submitMarkPaid() {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
             >
                 <div class="grid gap-2 md:col-span-2">
                     <Label for="verification-search">Search</Label>
@@ -438,7 +473,7 @@ function submitMarkPaid() {
                         <SelectContent>
                             <SelectItem value="all">All status</SelectItem>
                             <SelectItem
-                                v-for="status in statusOptions"
+                                v-for="status in statusOptionsList"
                                 :key="status"
                                 :value="status"
                                 >{{ status }}</SelectItem
@@ -456,7 +491,7 @@ function submitMarkPaid() {
                         <SelectContent>
                             <SelectItem value="all">All roles</SelectItem>
                             <SelectItem
-                                v-for="role in roleOptions"
+                                v-for="role in roleOptionsList"
                                 :key="role"
                                 :value="role"
                                 >{{ role }}</SelectItem

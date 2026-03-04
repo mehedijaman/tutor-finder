@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Link, useForm } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
@@ -192,7 +192,7 @@ const submit = () => {
         </div>
 
         <div
-            class="rounded-xl border bg-muted/20 p-4 text-sm text-muted-foreground"
+            class="rounded-2xl border border-slate-200/80 bg-slate-50 p-4 text-sm text-slate-600"
         >
             <p class="font-medium text-foreground">Credential Requirements</p>
             <p v-if="selectedProvider">
@@ -304,7 +304,7 @@ const submit = () => {
             <InputError :message="form.errors.credential_items" />
         </div>
 
-        <div class="grid gap-3 rounded-lg border p-4">
+        <div class="grid gap-3 rounded-xl border border-slate-200/80 p-4">
             <label class="flex items-center gap-2 text-sm">
                 <input
                     v-model="form.is_active"
@@ -333,7 +333,7 @@ const submit = () => {
             </Button>
             <Link
                 :href="cancelHref"
-                class="text-sm text-muted-foreground underline"
+                class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
             >
                 Cancel
             </Link>

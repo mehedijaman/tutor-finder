@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PublicFooter from '@/components/public/PublicFooter.vue';
-import PublicNavbar from '@/components/public/PublicNavbar.vue';
+import SiteFooter from '@/components/SiteFooter.vue';
+import SiteHeader from '@/components/SiteHeader.vue';
 
 defineProps<{
     title?: string;
@@ -8,11 +8,13 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex min-h-screen flex-col">
-        <PublicNavbar />
+    <div
+        class="flex min-h-screen flex-col font-sans text-slate-900 antialiased"
+    >
+        <SiteHeader variant="full" />
         <main class="flex-1">
             <slot />
         </main>
-        <PublicFooter />
+        <SiteFooter variant="full" />
     </div>
 </template>

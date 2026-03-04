@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import JobForm from '@/components/admin/tuition/jobs/JobForm.vue';
 import GuardianLayout from '@/layouts/GuardianLayout.vue';
@@ -25,14 +25,20 @@ const breadcrumbs = [
     <Head title="Post Job" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex items-center justify-between gap-3">
-                <h1 class="text-2xl font-semibold">Post a New Job</h1>
-                <Link
-                    href="/guardian/jobs"
-                    class="text-sm text-muted-foreground underline"
-                    >Back</Link
-                >
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex items-center justify-between gap-3">
+                    <h1 class="text-2xl font-semibold tracking-tight">
+                        Post a New Job
+                    </h1>
+                    <Link
+                        href="/guardian/jobs"
+                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        >Back</Link
+                    >
+                </div>
             </div>
 
             <JobForm

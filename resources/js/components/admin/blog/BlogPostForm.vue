@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Link, useForm } from '@inertiajs/vue3';
 import { Loader2, Plus, Search, X } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, ref, toRef, watch } from 'vue';
@@ -472,7 +472,7 @@ onBeforeUnmount(() => {
                 >
                     <Link
                         :href="cancelHref"
-                        class="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
+                        class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >
                         Cancel
                     </Link>

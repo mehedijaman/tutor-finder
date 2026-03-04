@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
@@ -208,7 +208,7 @@ function handleRowAction(actionKey, row) {
     <Head title="Blog Posts" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
+        <div class="space-y-6 p-4 sm:p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
                     <h1 class="text-2xl font-semibold">

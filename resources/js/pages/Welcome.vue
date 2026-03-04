@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { ArrowRight, Home, MonitorPlay, School } from 'lucide-vue-next';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import { contact, jobs, register } from '@/routes';
@@ -48,460 +49,361 @@ const formatAverageRating = (value: number | null): string => {
 
     <PublicLayout>
         <!-- Hero Section -->
-        <section class="relative overflow-hidden bg-white py-14 md:py-20">
+        <section class="relative overflow-hidden py-16 sm:py-24 lg:py-32">
+            <!-- Background Gradients -->
             <div
-                class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.10),_transparent_55%)]"
-            ></div>
+                class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.blue.100),white)] opacity-20"
+            />
+            <div
+                class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl ring-1 shadow-blue-600/10 ring-blue-50 sm:mr-28 lg:mr-0 lg:w-[200%] lg:origin-center"
+            />
 
-            <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                <div class="mx-auto max-w-3xl text-center">
-                    <p
-                        class="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium tracking-[0.12em] text-blue-700 uppercase"
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="relative mx-auto max-w-4xl text-center">
+                    <div
+                        class="mb-6 inline-flex items-center rounded-full border border-blue-200 bg-blue-50/50 px-3 py-1 text-sm font-medium text-blue-800 backdrop-blur-sm"
                     >
-                        Verified tutors. Professional hiring.
-                    </p>
+                        <span
+                            class="mr-2 h-2 w-2 rounded-full bg-blue-600"
+                        ></span>
+                        #1 Trusted Tutoring Platform
+                    </div>
 
                     <h1
-                        class="mt-5 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl md:text-6xl"
+                        class="font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl"
                     >
-                        Find the Right
-                        <span class="text-blue-600">Tutor</span> with Confidence
+                        Master any subject with
+                        <span class="relative whitespace-nowrap text-blue-600">
+                            <span class="relative">expert tutors</span>
+                        </span>
                     </h1>
 
                     <p
-                        class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg"
+                        class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl"
                     >
-                        {{ siteName }} connects families with trusted tutors
-                        through a simple and transparent process.
+                        Connect with verified tutors for in-home or online
+                        learning. Personalized education that fits your schedule
+                        and goals.
                     </p>
 
                     <div
-                        class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center"
+                        class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6"
                     >
                         <Link
                             href="/tutors"
-                            class="inline-flex h-11 items-center justify-center rounded-lg bg-blue-600 px-6 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98]"
+                            class="inline-flex h-12 items-center justify-center rounded-xl bg-blue-600 px-8 text-base font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:shadow-blue-600/30 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
                         >
                             Find a Tutor
                         </Link>
                         <Link
                             :href="jobs()"
-                            class="inline-flex h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98]"
+                            class="inline-flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-8 text-base font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
                         >
-                            Post a Job
+                            Post a Requirement
                         </Link>
                     </div>
 
+                    <!-- Hero Stats -->
                     <div
-                        class="mt-10 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-3"
+                        class="mt-12 grid grid-cols-2 gap-4 rounded-2xl border border-slate-200/60 bg-white/60 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-md sm:grid-cols-4 md:mt-16 lg:mt-20"
                     >
-                        <div class="rounded-lg bg-slate-50 p-4">
-                            <p class="text-2xl font-semibold text-slate-900">
+                        <div class="p-4 text-center">
+                            <p
+                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                            >
                                 {{
                                     formatCompactNumber(
                                         props.heroStats.active_tutors,
                                     )
-                                }}
+                                }}+
                             </p>
-                            <p class="mt-1 text-xs text-slate-500 uppercase">
-                                Active tutors
+                            <p class="mt-1 text-sm font-medium text-slate-500">
+                                Active Tutors
                             </p>
                         </div>
-                        <div class="rounded-lg bg-slate-50 p-4">
-                            <p class="text-2xl font-semibold text-slate-900">
+                        <div class="p-4 text-center">
+                            <p
+                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                            >
                                 {{
                                     formatCompactNumber(
                                         props.heroStats.families_served,
                                     )
-                                }}
+                                }}+
                             </p>
-                            <p class="mt-1 text-xs text-slate-500 uppercase">
-                                Families served
+                            <p class="mt-1 text-sm font-medium text-slate-500">
+                                Students Helped
                             </p>
                         </div>
-                        <div class="rounded-lg bg-slate-50 p-4">
-                            <p class="text-2xl font-semibold text-slate-900">
+                        <div class="p-4 text-center">
+                            <p
+                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                            >
                                 {{
                                     formatAverageRating(
                                         props.heroStats.average_rating,
                                     )
                                 }}
                             </p>
-                            <p class="mt-1 text-xs text-slate-500 uppercase">
-                                Average rating
+                            <p class="mt-1 text-sm font-medium text-slate-500">
+                                Average Rating
+                            </p>
+                        </div>
+                        <div class="p-4 text-center">
+                            <div
+                                class="flex items-center justify-center -space-x-2"
+                            >
+                                <div
+                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-200"
+                                ></div>
+                                <div
+                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-300"
+                                ></div>
+                                <div
+                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-400"
+                                ></div>
+                                <div
+                                    class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-100 text-xs font-bold text-blue-600"
+                                >
+                                    99%
+                                </div>
+                            </div>
+                            <p class="mt-2 text-sm font-medium text-slate-500">
+                                Satisfaction
                             </p>
                         </div>
                     </div>
-
-                    <Link
-                        :href="contact()"
-                        class="mt-4 inline-flex text-sm font-medium text-slate-600 transition hover:text-slate-900"
-                    >
-                        Need help deciding? Contact us.
-                    </Link>
                 </div>
             </div>
         </section>
 
         <!-- How It Works (Premium / Minimal) -->
         <section
-            class="relative isolate overflow-hidden bg-white py-16 md:py-24"
+            class="relative isolate overflow-hidden bg-white py-24 sm:py-32"
         >
-            <!-- subtle backdrop -->
-            <div class="pointer-events-none absolute inset-0 -z-10">
-                <div
-                    class="absolute top-[-220px] left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-b from-blue-200/35 via-indigo-200/15 to-transparent blur-3xl"
-                ></div>
-                <div
-                    class="absolute inset-0 bg-gradient-to-b from-white via-white to-slate-50/40"
-                ></div>
-            </div>
+            <div
+                class="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] [background-size:16px_16px] opacity-50"
+            ></div>
 
-            <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="mx-auto max-w-3xl text-center">
-                    <div class="flex justify-center">
-                        <span
-                            class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-slate-700 backdrop-blur"
-                        >
-                            <span
-                                class="h-1.5 w-1.5 rounded-full bg-blue-600"
-                            ></span>
-                            HOW IT WORKS
-                        </span>
-                    </div>
-
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
                     <h2
-                        class="mt-6 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl"
+                        class="text-base leading-7 font-semibold tracking-widest text-blue-600 uppercase"
                     >
-                        Simple steps to find your tutor
+                        How It Works
                     </h2>
                     <p
-                        class="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-slate-600"
+                        class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
                     >
-                        Get started in minutes with a clear, guided process.
+                        Find your perfect tutor in 3 steps
+                    </p>
+                    <p class="mt-6 text-lg leading-8 text-slate-600">
+                        We've simplified the process to help you get started
+                        quickly and securely.
                     </p>
                 </div>
 
-                <!-- Steps -->
-                <div class="relative mt-12">
-                    <!-- connector (desktop) -->
+                <div
+                    class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3"
+                >
+                    <!-- Step 1 -->
                     <div
-                        class="pointer-events-none absolute top-[44px] left-1/2 hidden h-px w-[calc(100%-6rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-slate-200 to-transparent md:block"
-                    ></div>
-
-                    <div class="grid gap-4 md:grid-cols-3 md:gap-6">
-                        <!-- Step 1 -->
-                        <div class="group relative">
-                            <div
-                                class="h-full rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md md:p-7"
-                            >
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm ring-1 ring-slate-900/10 transition group-hover:bg-slate-800"
-                                    >
-                                        <span
-                                            class="text-sm font-semibold tracking-wide"
-                                            >01</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="h-px flex-1 bg-slate-200 md:hidden"
-                                    ></div>
-                                </div>
-
-                                <h3
-                                    class="mt-5 text-lg font-semibold text-slate-900"
-                                >
-                                    Post requirement
-                                </h3>
-                                <p
-                                    class="mt-2 text-sm leading-relaxed text-slate-600"
-                                >
-                                    Share subject, level, location/online
-                                    preference, and your schedule.
-                                </p>
-
-                                <div
-                                    class="mt-5 flex items-center gap-2 text-xs font-medium text-slate-500"
-                                >
-                                    <span
-                                        class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2"
-                                        >2 min</span
-                                    >
-                                    <span
-                                        class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2"
-                                        >Clear brief</span
-                                    >
-                                </div>
-                            </div>
+                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60"
+                    >
+                        <div
+                            class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg shadow-slate-900/20"
+                        >
+                            <span class="text-xl font-bold">1</span>
                         </div>
-
-                        <!-- Step 2 -->
-                        <div class="group relative">
-                            <div
-                                class="h-full rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md md:p-7"
-                            >
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 transition group-hover:ring-slate-300"
-                                    >
-                                        <span
-                                            class="text-sm font-semibold tracking-wide"
-                                            >02</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="h-px flex-1 bg-slate-200 md:hidden"
-                                    ></div>
-                                </div>
-
-                                <h3
-                                    class="mt-5 text-lg font-semibold text-slate-900"
-                                >
-                                    Get matched
-                                </h3>
-                                <p
-                                    class="mt-2 text-sm leading-relaxed text-slate-600"
-                                >
-                                    Receive curated tutor options based on your
-                                    needs and availability.
-                                </p>
-
-                                <div
-                                    class="mt-5 flex items-center gap-2 text-xs font-medium text-slate-500"
-                                >
-                                    <span
-                                        class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2"
-                                        >Verified</span
-                                    >
-                                    <span
-                                        class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2"
-                                        >Shortlist</span
-                                    >
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Step 3 -->
-                        <div class="group relative">
-                            <div
-                                class="h-full rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md md:p-7"
-                            >
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 transition group-hover:ring-slate-300"
-                                    >
-                                        <span
-                                            class="text-sm font-semibold tracking-wide"
-                                            >03</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="h-px flex-1 bg-slate-200 md:hidden"
-                                    ></div>
-                                </div>
-
-                                <h3
-                                    class="mt-5 text-lg font-semibold text-slate-900"
-                                >
-                                    Start learning
-                                </h3>
-                                <p
-                                    class="mt-2 text-sm leading-relaxed text-slate-600"
-                                >
-                                    Confirm the tutor, begin sessions, and track
-                                    progress over time.
-                                </p>
-
-                                <div
-                                    class="mt-5 flex items-center gap-2 text-xs font-medium text-slate-500"
-                                >
-                                    <span
-                                        class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2"
-                                        >Secure</span
-                                    >
-                                    <span
-                                        class="inline-flex h-5 items-center rounded-full bg-slate-100 px-2"
-                                        >Ongoing support</span
-                                    >
-                                </div>
-                            </div>
-                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">
+                            Post Your Needs
+                        </h3>
+                        <p
+                            class="mt-4 text-base leading-relaxed text-slate-600"
+                        >
+                            Tell us what you're looking for—subject, location,
+                            schedule, and any specific requirements for your
+                            child.
+                        </p>
                     </div>
-                </div>
 
-                <!-- Optional footer micro-copy -->
-                <div class="mt-8 text-center">
-                    <p class="text-sm text-slate-600">
-                        Transparent matching • No clutter • Mobile-first
-                    </p>
+                    <!-- Step 2 -->
+                    <div
+                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60"
+                    >
+                        <div
+                            class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                        >
+                            <span class="text-xl font-bold">2</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">
+                            Get Matched
+                        </h3>
+                        <p
+                            class="mt-4 text-base leading-relaxed text-slate-600"
+                        >
+                            Receive applications from verified tutors. Review
+                            their profiles, ratings, and experience to choose
+                            the best fit.
+                        </p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div
+                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60"
+                    >
+                        <div
+                            class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-900 shadow-lg ring-1 ring-slate-200"
+                        >
+                            <span class="text-xl font-bold">3</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">
+                            Start Learning
+                        </h3>
+                        <p
+                            class="mt-4 text-base leading-relaxed text-slate-600"
+                        >
+                            Connect with your tutor, schedule your first
+                            session, and watch the progress happen. It's that
+                            easy.
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Tuition Methods -->
-        <section class="bg-white py-14 md:py-20">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <p
-                        class="text-sm font-medium tracking-widest text-blue-600 uppercase"
+        <section class="bg-slate-50 py-24 sm:py-32">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <h2
+                        class="text-base leading-7 font-semibold tracking-widest text-blue-600 uppercase"
                     >
                         Tuition Methods
-                    </p>
-                    <h2
-                        class="mt-2 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl"
-                    >
-                        Choose Your Learning Style
                     </h2>
-                    <p class="mx-auto mt-3 max-w-2xl text-sm text-gray-500">
-                        Flexible options to fit your schedule and preferences
+                    <p
+                        class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+                    >
+                        Choose your preferred learning style
+                    </p>
+                    <p class="mt-6 text-lg leading-8 text-slate-600">
+                        We offer flexible options to ensure the best environment
+                        for effective learning.
                     </p>
                 </div>
 
-                <div class="mt-12 grid gap-6 sm:grid-cols-3">
+                <div
+                    class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8"
+                >
+                    <!-- Home Tutoring -->
                     <div
-                        class="group rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                        class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md"
                     >
-                        <div
-                            class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100"
+                        <dt
+                            class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900"
                         >
-                            <svg
-                                class="h-6 w-6 text-blue-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600"
                             >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                                <Home
+                                    class="h-6 w-6 text-white"
+                                    aria-hidden="true"
                                 />
-                            </svg>
-                        </div>
-                        <h3 class="mt-4 text-lg font-semibold text-gray-900">
+                            </div>
                             Home Tutoring
-                        </h3>
-                        <p class="mt-2 text-sm text-gray-500">
-                            Face-to-face sessions at your home for focused,
-                            personalized learning.
-                        </p>
-                        <Link
-                            :href="contact()"
-                            class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
+                        </dt>
+                        <dd
+                            class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600"
                         >
-                            Learn more
-                            <svg
-                                class="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5l7 7-7 7"
-                                />
-                            </svg>
-                        </Link>
+                            <p class="flex-auto">
+                                One-on-one sessions in the comfort of your home.
+                                Perfect for personalized attention and
+                                minimizing distractions.
+                            </p>
+                            <p class="mt-6">
+                                <Link
+                                    :href="contact()"
+                                    class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500"
+                                >
+                                    Learn more
+                                    <ArrowRight class="inline-block h-4 w-4" />
+                                </Link>
+                            </p>
+                        </dd>
                     </div>
 
+                    <!-- Online Tutoring -->
                     <div
-                        class="group rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                        class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md"
                     >
-                        <div
-                            class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100"
+                        <dt
+                            class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900"
                         >
-                            <svg
-                                class="h-6 w-6 text-emerald-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600"
                             >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                <MonitorPlay
+                                    class="h-6 w-6 text-white"
+                                    aria-hidden="true"
                                 />
-                            </svg>
-                        </div>
-                        <h3 class="mt-4 text-lg font-semibold text-gray-900">
+                            </div>
                             Online Tutoring
-                        </h3>
-                        <p class="mt-2 text-sm text-gray-500">
-                            Live video classes with interactive whiteboard and
-                            shared resources.
-                        </p>
-                        <Link
-                            :href="contact()"
-                            class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
+                        </dt>
+                        <dd
+                            class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600"
                         >
-                            Learn more
-                            <svg
-                                class="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5l7 7-7 7"
-                                />
-                            </svg>
-                        </Link>
+                            <p class="flex-auto">
+                                Interactive virtual sessions using modern tools.
+                                Learn from anywhere with verified tutors
+                                nationwide.
+                            </p>
+                            <p class="mt-6">
+                                <Link
+                                    :href="contact()"
+                                    class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500"
+                                >
+                                    Learn more
+                                    <ArrowRight class="inline-block h-4 w-4" />
+                                </Link>
+                            </p>
+                        </dd>
                     </div>
 
+                    <!-- Institute Tutoring -->
                     <div
-                        class="group rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                        class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md"
                     >
-                        <div
-                            class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100"
+                        <dt
+                            class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900"
                         >
-                            <svg
-                                class="h-6 w-6 text-amber-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-600"
                             >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                <School
+                                    class="h-6 w-6 text-white"
+                                    aria-hidden="true"
                                 />
-                            </svg>
-                        </div>
-                        <h3 class="mt-4 text-lg font-semibold text-gray-900">
+                            </div>
                             Institute Tutoring
-                        </h3>
-                        <p class="mt-2 text-sm text-gray-500">
-                            Structured sessions in a dedicated learning
-                            environment.
-                        </p>
-                        <Link
-                            :href="contact()"
-                            class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
+                        </dt>
+                        <dd
+                            class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600"
                         >
-                            Learn more
-                            <svg
-                                class="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5l7 7-7 7"
-                                />
-                            </svg>
-                        </Link>
+                            <p class="flex-auto">
+                                Structured learning in a dedicated facility.
+                                Ideal for small groups and accessing specialized
+                                resources.
+                            </p>
+                            <p class="mt-6">
+                                <Link
+                                    :href="contact()"
+                                    class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500"
+                                >
+                                    Learn more
+                                    <ArrowRight class="inline-block h-4 w-4" />
+                                </Link>
+                            </p>
+                        </dd>
                     </div>
                 </div>
             </div>
@@ -521,14 +423,14 @@ const formatAverageRating = (value: number | null): string => {
                     >
                         What Parents Say
                     </h2>
-                    <p class="mx-auto mt-3 max-w-2xl text-sm text-gray-500">
+                    <p class="mx-auto mt-3 max-w-2xl text-sm text-slate-500">
                         Hear from satisfied parents and guardians
                     </p>
                 </div>
 
                 <div class="mt-12 grid gap-6 sm:grid-cols-3">
                     <div
-                        class="group rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                        class="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                     >
                         <div class="flex items-center gap-1 text-amber-500">
                             <svg
@@ -572,13 +474,13 @@ const formatAverageRating = (value: number | null): string => {
                                 />
                             </svg>
                         </div>
-                        <p class="mt-4 text-sm leading-relaxed text-gray-600">
+                        <p class="mt-4 text-sm leading-relaxed text-slate-600">
                             "Found an excellent math tutor for my son within 2
                             days. The platform made it so easy!"
                         </p>
                         <div class="mt-5 flex items-center gap-3">
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-500"
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-500"
                             >
                                 <svg
                                     class="h-5 w-5"
@@ -591,16 +493,16 @@ const formatAverageRating = (value: number | null): string => {
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">
+                                <p class="text-sm font-medium text-slate-900">
                                     Sarah Rahman
                                 </p>
-                                <p class="text-xs text-gray-500">Parent</p>
+                                <p class="text-xs text-slate-500">Parent</p>
                             </div>
                         </div>
                     </div>
 
                     <div
-                        class="group rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                        class="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                     >
                         <div class="flex items-center gap-1 text-amber-500">
                             <svg
@@ -644,13 +546,13 @@ const formatAverageRating = (value: number | null): string => {
                                 />
                             </svg>
                         </div>
-                        <p class="mt-4 text-sm leading-relaxed text-gray-600">
+                        <p class="mt-4 text-sm leading-relaxed text-slate-600">
                             "Great experience. The tutor is very professional
                             and my daughter has improved significantly."
                         </p>
                         <div class="mt-5 flex items-center gap-3">
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-500"
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-500"
                             >
                                 <svg
                                     class="h-5 w-5"
@@ -663,16 +565,16 @@ const formatAverageRating = (value: number | null): string => {
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">
+                                <p class="text-sm font-medium text-slate-900">
                                     Ahmed Khan
                                 </p>
-                                <p class="text-xs text-gray-500">Parent</p>
+                                <p class="text-xs text-slate-500">Parent</p>
                             </div>
                         </div>
                     </div>
 
                     <div
-                        class="group rounded-2xl border border-gray-200/70 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                        class="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                     >
                         <div class="flex items-center gap-1 text-amber-500">
                             <svg
@@ -716,13 +618,13 @@ const formatAverageRating = (value: number | null): string => {
                                 />
                             </svg>
                         </div>
-                        <p class="mt-4 text-sm leading-relaxed text-gray-600">
+                        <p class="mt-4 text-sm leading-relaxed text-slate-600">
                             "Very trustworthy platform. Felt safe having our
                             child learn with verified tutors."
                         </p>
                         <div class="mt-5 flex items-center gap-3">
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-500"
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-500"
                             >
                                 <svg
                                     class="h-5 w-5"
@@ -735,10 +637,10 @@ const formatAverageRating = (value: number | null): string => {
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-900">
+                                <p class="text-sm font-medium text-slate-900">
                                     Fatima Begum
                                 </p>
-                                <p class="text-xs text-gray-500">Guardian</p>
+                                <p class="text-xs text-slate-500">Guardian</p>
                             </div>
                         </div>
                     </div>
@@ -747,32 +649,41 @@ const formatAverageRating = (value: number | null): string => {
         </section>
 
         <!-- Final CTA -->
-        <section class="bg-blue-600 py-14 md:py-20">
-            <div class="mx-auto max-w-4xl px-4 text-center sm:px-6">
-                <h2
-                    class="text-3xl font-bold tracking-tight text-white sm:text-4xl"
-                >
-                    Start Your Learning Journey Today
-                </h2>
-                <p class="mx-auto mt-4 max-w-xl text-base text-blue-100">
-                    Join thousands of students and tutors already using
-                    {{ siteName }}
-                </p>
+        <section class="bg-slate-50 py-14 md:py-20">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6">
                 <div
-                    class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center"
+                    class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-10 text-center shadow-lg sm:px-8 md:px-12 md:py-14"
                 >
-                    <Link
-                        :href="register()"
-                        class="inline-flex h-11 items-center justify-center rounded-lg bg-white px-6 py-3 text-base font-semibold text-blue-600 shadow-sm transition-all duration-200 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 active:scale-[0.98]"
+                    <div
+                        class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.25),transparent_45%)]"
+                    ></div>
+                    <h2
+                        class="relative text-3xl font-bold tracking-tight text-white sm:text-4xl"
                     >
-                        Register
-                    </Link>
-                    <Link
-                        :href="jobs()"
-                        class="inline-flex h-11 items-center justify-center rounded-lg border-2 border-white px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 active:scale-[0.98]"
+                        Start Your Learning Journey Today
+                    </h2>
+                    <p
+                        class="relative mx-auto mt-4 max-w-xl text-base text-blue-100"
                     >
-                        Browse Jobs
-                    </Link>
+                        Join thousands of students and tutors already using
+                        {{ siteName }}
+                    </p>
+                    <div
+                        class="relative mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center"
+                    >
+                        <Link
+                            :href="register()"
+                            class="inline-flex h-11 items-center justify-center rounded-xl bg-white px-6 py-3 text-base font-semibold text-blue-700 shadow-sm transition-all duration-200 hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 active:scale-[0.98]"
+                        >
+                            Register
+                        </Link>
+                        <Link
+                            :href="jobs()"
+                            class="inline-flex h-11 items-center justify-center rounded-xl border-2 border-white/90 px-6 py-3 text-base font-semibold text-white transition-all duration-200 hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 active:scale-[0.98]"
+                        >
+                            Browse Jobs
+                        </Link>
+                    </div>
                 </div>
             </div>
         </section>

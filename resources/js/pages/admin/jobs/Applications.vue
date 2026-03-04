@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -84,27 +84,31 @@ function badgeVariant(status) {
     <Head :title="`Applications - ${job.title}`" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-semibold">
-                        Applications for {{ job.title }}
-                    </h1>
-                    <p class="text-sm text-muted-foreground">
-                        Guardian: {{ job.guardian_name || '—' }}
-                    </p>
-                </div>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            Applications for {{ job.title }}
+                        </h1>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            Guardian: {{ job.guardian_name || '—' }}
+                        </p>
+                    </div>
 
-                <Link
-                    href="/admin/jobs"
-                    class="text-sm text-muted-foreground underline"
-                >
-                    Back to Jobs
-                </Link>
+                    <Link
+                        href="/admin/jobs"
+                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    >
+                        Back to Jobs
+                    </Link>
+                </div>
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
             >
                 <div>
                     <p class="text-xs text-muted-foreground">Job Status</p>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
@@ -454,45 +454,51 @@ function closeResetPasswordDialog() {
     <Head title="Manage Guardians" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <h1 class="text-2xl font-semibold">
-                    {{
-                        filters.trash
-                            ? 'Guardian Recycle Bin'
-                            : `Guardians (${verificationScopeLabel})`
-                    }}
-                </h1>
-
-                <div class="flex items-center gap-2">
-                    <Link
-                        :href="
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h1 class="text-2xl font-semibold tracking-tight">
+                        {{
                             filters.trash
-                                ? '/admin/guardians'
-                                : '/admin/guardians?trash=1'
-                        "
-                        class="rounded-md border px-4 py-2 text-sm"
-                    >
-                        {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
-                    </Link>
+                                ? 'Guardian Recycle Bin'
+                                : `Guardians (${verificationScopeLabel})`
+                        }}
+                    </h1>
 
-                    <Button
-                        v-if="filters.trash"
-                        type="button"
-                        variant="outline"
-                        @click="openConfirm('restore-all')"
-                    >
-                        Restore All
-                    </Button>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <Link
+                            :href="
+                                filters.trash
+                                    ? '/admin/guardians'
+                                    : '/admin/guardians?trash=1'
+                            "
+                            class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        >
+                            {{
+                                filters.trash ? 'Back to Active' : 'Recycle Bin'
+                            }}
+                        </Link>
 
-                    <Button
-                        v-if="filters.trash"
-                        type="button"
-                        variant="destructive"
-                        @click="openConfirm('empty-recycle-bin')"
-                    >
-                        Empty Recycle Bin
-                    </Button>
+                        <Button
+                            v-if="filters.trash"
+                            type="button"
+                            variant="outline"
+                            @click="openConfirm('restore-all')"
+                        >
+                            Restore All
+                        </Button>
+
+                        <Button
+                            v-if="filters.trash"
+                            type="button"
+                            variant="destructive"
+                            @click="openConfirm('empty-recycle-bin')"
+                        >
+                            Empty Recycle Bin
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -519,7 +525,7 @@ function closeResetPasswordDialog() {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 md:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
             >
                 <div class="grid gap-2">
                     <Label for="guardian-search">Search</Label>

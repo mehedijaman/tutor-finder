@@ -80,18 +80,18 @@ function formatPaginationLabel(label: string): string {
     <Head title="Tutor Job Board" />
 
     <PublicLayout>
-        <div class="bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-6xl">
+        <div class="min-h-screen bg-slate-50 py-12">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header -->
-                <div class="mb-8">
+                <div class="mb-10 text-center sm:text-left">
                     <h1
                         class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
                     >
-                        Find Tuition Jobs
+                        Tuition Job Board
                     </h1>
-                    <p class="mt-2 text-lg text-slate-600">
-                        Discover active tuition opportunities and apply after
-                        reviewing details
+                    <p class="mt-3 max-w-2xl text-lg text-slate-600">
+                        Explore active tuition opportunities and apply to the
+                        ones that match your expertise.
                     </p>
                 </div>
 

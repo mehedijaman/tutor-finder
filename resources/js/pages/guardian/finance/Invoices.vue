@@ -1,6 +1,6 @@
-<script setup>
-import { Head, router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+<script setup lang="ts">
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,13 @@ const breadcrumbs = [
     { title: 'Payments & Escrow', href: '/guardian/finance/invoices' },
 ];
 const baseUrl = '/guardian/finance/invoices';
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
+const statusOptionsList = computed<string[]>(
+    () => (props.statusOptions as string[] | undefined) ?? [],
+);
 
 const statusFilter = ref(props.filters.status || 'all');
 
@@ -45,7 +52,7 @@ const columns = [
     { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap' },
 ];
 
-function pay(invoiceId, gateway) {
+function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
     const endpoint =
         gateway === 'bkash'
             ? `/payment/bkash/${invoiceId}`
@@ -59,19 +66,23 @@ function pay(invoiceId, gateway) {
     <Head title="Payments & Escrow" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-6">
-            <div class="space-y-1">
-                <h1 class="text-2xl font-semibold">Payments & Escrow</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Payments & Escrow
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Pay your verification or escrow invoices from one place.
                 </p>
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
             <div
@@ -81,22 +92,26 @@ function pay(invoiceId, gateway) {
                 {{ $page.props.errors.payment }}
             </div>
 
-            <div class="max-w-xs">
-                <Select v-model="statusFilter">
-                    <SelectTrigger>
-                        <SelectValue placeholder="All statuses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem
-                            v-for="option in statusOptions"
-                            :key="option"
-                            :value="option"
-                        >
-                            {{ option }}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+            >
+                <div class="max-w-xs">
+                    <Select v-model="statusFilter">
+                        <SelectTrigger>
+                            <SelectValue placeholder="All statuses" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All statuses</SelectItem>
+                            <SelectItem
+                                v-for="option in statusOptionsList"
+                                :key="option"
+                                :value="option"
+                            >
+                                {{ option }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             <DataTable

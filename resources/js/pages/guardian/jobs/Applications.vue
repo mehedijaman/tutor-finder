@@ -1,5 +1,5 @@
-<script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -21,6 +21,35 @@ const props = defineProps({
     statusOptions: { type: Array, default: () => [] },
 });
 
+type StatusOption = {
+    value: string;
+    label: string;
+};
+
+type ApplicationRow = {
+    id: number;
+    status: string;
+    is_selected?: boolean;
+    expected_salary_amount?: string | number | null;
+    salary_currency?: string | null;
+    tutor: {
+        name?: string | null;
+        email?: string | null;
+        phone?: string | null;
+    };
+};
+
+type GuardianJob = {
+    id: number;
+    title: string;
+    status?: string;
+    has_assignment?: boolean;
+    selected_tutor_name?: string | null;
+    is_expired?: boolean;
+    assignment_confirmed_at?: string | null;
+    can_manage_applications?: boolean;
+};
+
 const breadcrumbs = [
     { title: 'My Jobs', href: '/guardian/jobs' },
     {
@@ -30,6 +59,14 @@ const breadcrumbs = [
 ];
 
 const baseUrl = `/guardian/jobs/${props.job.id}/applications`;
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
+const statusOptionsList = computed<StatusOption[]>(
+    () => (props.statusOptions as StatusOption[] | undefined) ?? [],
+);
+const currentJob = computed(() => props.job as GuardianJob);
 
 const columns = [
     { key: 'tutor_name', label: 'Tutor' },
@@ -43,10 +80,10 @@ const columns = [
 
 const statusFilter = ref(props.filters.status || 'all');
 const confirmOpen = ref(false);
-const pendingAction = ref(null);
-const pendingRow = ref(null);
+const pendingAction = ref<'confirm' | 'shortlist' | 'cancel' | null>(null);
+const pendingRow = ref<ApplicationRow | null>(null);
 const canManageApplications = computed(
-    () => props.job.can_manage_applications === true,
+    () => currentJob.value.can_manage_applications === true,
 );
 
 watch(
@@ -72,7 +109,9 @@ watch(statusFilter, (value) => {
     );
 });
 
-function badgeVariant(status) {
+function badgeVariant(
+    status: string | null | undefined,
+): 'default' | 'destructive' | 'secondary' | 'outline' {
     if (status === 'confirmed') {
         return 'default';
     }
@@ -92,7 +131,7 @@ function badgeVariant(status) {
     return 'outline';
 }
 
-function actionItems(row) {
+function actionItems(row: ApplicationRow) {
     return [
         {
             key: 'confirm',
@@ -118,7 +157,10 @@ function actionItems(row) {
     ];
 }
 
-function handleAction(action, row) {
+function handleAction(
+    action: 'confirm' | 'shortlist' | 'cancel',
+    row: ApplicationRow,
+) {
     pendingAction.value = action;
     pendingRow.value = row;
     confirmOpen.value = true;
@@ -140,7 +182,7 @@ function confirmStatusUpdate() {
         if (escrowRequired) {
             const entered = window.prompt(
                 'Enter month-1 escrow amount',
-                pendingRow.value.expected_salary_amount || '',
+                String(pendingRow.value.expected_salary_amount ?? ''),
             );
 
             if (entered === null || entered.trim() === '') {
@@ -224,52 +266,56 @@ function confirmLabel() {
     <Head :title="`Applications - ${job.title}`" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h1 class="text-2xl font-semibold">
-                        Applications for {{ job.title }}
-                    </h1>
-                    <p class="text-sm text-muted-foreground">
-                        Review tutors and shortlist the best fit.
-                    </p>
-                    <p
-                        v-if="job.has_assignment"
-                        class="mt-1 text-xs font-medium text-emerald-700"
-                    >
-                        Hire finalized with
-                        {{ job.selected_tutor_name || 'selected tutor' }}.
-                    </p>
-                    <p
-                        v-else-if="job.is_expired"
-                        class="mt-1 text-xs font-medium text-amber-700"
-                    >
-                        This job is expired. Application actions are locked.
-                    </p>
-                    <p
-                        v-else-if="job.status === 'confirmed'"
-                        class="mt-1 text-xs font-medium text-emerald-700"
-                    >
-                        This job has already been confirmed.
-                    </p>
-                </div>
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-2xl font-semibold tracking-tight">
+                            Applications for {{ job.title }}
+                        </h1>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            Review tutors and shortlist the best fit.
+                        </p>
+                        <p
+                            v-if="job.has_assignment"
+                            class="mt-1 text-xs font-medium text-emerald-700"
+                        >
+                            Hire finalized with
+                            {{ job.selected_tutor_name || 'selected tutor' }}.
+                        </p>
+                        <p
+                            v-else-if="job.is_expired"
+                            class="mt-1 text-xs font-medium text-amber-700"
+                        >
+                            This job is expired. Application actions are locked.
+                        </p>
+                        <p
+                            v-else-if="job.status === 'confirmed'"
+                            class="mt-1 text-xs font-medium text-emerald-700"
+                        >
+                            This job has already been confirmed.
+                        </p>
+                    </div>
 
-                <Link
-                    href="/guardian/jobs"
-                    class="text-sm text-muted-foreground underline"
-                    >Back to Jobs</Link
-                >
+                    <Link
+                        href="/guardian/jobs"
+                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        >Back to Jobs</Link
+                    >
+                </div>
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Select v-model="statusFilter">
                     <SelectTrigger>
@@ -278,7 +324,7 @@ function confirmLabel() {
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
                         <SelectItem
-                            v-for="option in statusOptions"
+                            v-for="option in statusOptionsList"
                             :key="option.value"
                             :value="option.value"
                         >

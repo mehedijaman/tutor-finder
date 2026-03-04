@@ -1,5 +1,5 @@
-<script setup>
-import { Head, router } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,10 @@ const props = defineProps({
 });
 
 const breadcrumbs = [{ title: 'Verification', href: '/guardian/verification' }];
+const page = usePage();
+const flashStatus = computed<string | null>(
+    () => (page.props.flash as { status?: string } | undefined)?.status ?? null,
+);
 
 const requestDialogOpen = ref(false);
 
@@ -78,7 +82,7 @@ function requestVerification() {
     );
 }
 
-function startPayment(gateway) {
+function startPayment(gateway: 'bkash' | 'sslcommerz') {
     if (!invoice.value || !canPayInvoice.value) {
         return;
     }
@@ -102,20 +106,24 @@ function startPayment(gateway) {
     <Head title="Guardian Verification" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-6">
-            <div class="space-y-2">
-                <h1 class="text-2xl font-semibold">Guardian Verification</h1>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-6 p-4 sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
+                <h1 class="text-2xl font-semibold tracking-tight">
+                    Guardian Verification
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
                     Submit verification request and pay the invoice using secure
                     gateways.
                 </p>
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
+                v-if="flashStatus"
                 class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
             >
-                {{ $page.props.flash.status }}
+                {{ flashStatus }}
             </div>
 
             <div
@@ -131,7 +139,9 @@ function startPayment(gateway) {
                 }}
             </div>
 
-            <section class="rounded-xl border bg-white p-5">
+            <section
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
+            >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
                         <p class="text-sm text-muted-foreground">
@@ -166,7 +176,9 @@ function startPayment(gateway) {
                 </p>
             </section>
 
-            <section class="rounded-xl border bg-white p-5">
+            <section
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
+            >
                 <h2 class="text-lg font-semibold">Invoice</h2>
 
                 <p v-if="!invoice" class="mt-3 text-sm text-muted-foreground">

@@ -36,8 +36,11 @@ const isParentOpen = (item: NavItem): boolean =>
 </script>
 
 <template>
-    <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+    <SidebarGroup class="px-2 py-1">
+        <SidebarGroupLabel
+            class="px-2 text-[11px] font-semibold tracking-[0.08em] text-sidebar-foreground/65 uppercase"
+            >Navigation</SidebarGroupLabel
+        >
         <SidebarMenu>
             <template v-for="item in items" :key="item.title">
                 <Collapsible
