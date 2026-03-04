@@ -22,6 +22,11 @@ import {
     Key,
     Bell,
     Briefcase,
+    ClipboardCheck,
+    Mail,
+    MessageSquare,
+    CreditCard,
+    Settings,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -143,6 +148,33 @@ const mainNavItems = computed<NavItem[]>(() => {
                         title: 'All Guardians',
                         href: '/admin/guardians',
                         icon: Users,
+                    },
+                ],
+            },
+            {
+                title: 'Verifications',
+                href: '/admin/verifications',
+                icon: ClipboardCheck,
+                children: [
+                    {
+                        title: 'All Requests',
+                        href: '/admin/verifications',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Pending Profiles',
+                        href: '/admin/profile-verification/pending',
+                        icon: Shield,
+                    },
+                    {
+                        title: 'Unverified Profiles',
+                        href: '/admin/profile-verification/unverified',
+                        icon: Shield,
+                    },
+                    {
+                        title: 'Verified Profiles',
+                        href: '/admin/profile-verification/verified',
+                        icon: Shield,
                     },
                 ],
             },
@@ -283,6 +315,33 @@ const mainNavItems = computed<NavItem[]>(() => {
                 ],
             },
             { title: 'Settings', href: '/settings', icon: Cog },
+            {
+                title: 'Admin Settings',
+                href: '/settings/site',
+                icon: Settings,
+                children: [
+                    {
+                        title: 'Site Settings',
+                        href: '/settings/site',
+                        icon: Cog,
+                    },
+                    {
+                        title: 'Payment Settings',
+                        href: '/settings/payment',
+                        icon: CreditCard,
+                    },
+                    {
+                        title: 'SMS Settings',
+                        href: '/settings/sms',
+                        icon: MessageSquare,
+                    },
+                    {
+                        title: 'SMTP Settings',
+                        href: '/settings/smtp',
+                        icon: Mail,
+                    },
+                ],
+            },
             {
                 title: 'Access Control',
                 href: '/admin/maintenance',
