@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers\Guardian;
 
+use App\Enums\ApplicationStatus;
+use App\Enums\JobStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guardian\Tuition\JobStoreRequest;
-use App\Models\Area;
-use App\Models\Category;
-use App\Models\City;
-use App\Models\Country;
-use App\Models\SchoolClass;
-use App\Models\Subject;
 use App\Models\TuitionJob;
-use App\Models\TuitionJobApplication;
-use App\Models\TuitionType;
+use App\Services\Job\JobFormOptionService;
 use App\Support\SlugService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -22,6 +17,10 @@ use Inertia\Response;
 
 class TuitionJobController extends Controller
 {
+    public function __construct(
+        private readonly JobFormOptionService $formOptionService,
+    ) {}
+
     /**
      * Display guardian jobs list.
      */
@@ -45,8 +44,8 @@ class TuitionJobController extends Controller
             ->withCount('applications')
             ->withCount([
                 'applications as open_applications_count' => fn (Builder $builder): Builder => $builder->whereIn('status', [
-                    TuitionJobApplication::STATUS_APPLIED,
-                    TuitionJobApplication::STATUS_SHORTLISTED,
+                    ApplicationStatus::Applied,
+                    ApplicationStatus::Shortlisted,
                 ]),
             ])
             ->where('guardian_id', $user?->getAuthIdentifier())
@@ -75,7 +74,7 @@ class TuitionJobController extends Controller
                 'has_assignment' => $job->assignment !== null,
                 'selected_tutor_name' => $job->assignment?->tutor?->name,
                 'hiring_confirmed_at' => $job->assignment?->confirmed_at?->toDateTimeString(),
-                'is_expired' => $job->status === TuitionJob::STATUS_LIVE && $job->isExpired(),
+                'is_expired' => $job->status === JobStatus::Live && $job->isExpired(),
                 'published_at' => $job->published_at?->toDateTimeString(),
                 'expires_at' => $job->expires_at?->toDateTimeString(),
                 'updated_at' => $job->updated_at?->toDateTimeString(),
@@ -97,7 +96,7 @@ class TuitionJobController extends Controller
      */
     public function pending(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_PENDING);
+        return $this->index($request, JobStatus::Pending->value);
     }
 
     /**
@@ -105,7 +104,7 @@ class TuitionJobController extends Controller
      */
     public function live(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_LIVE);
+        return $this->index($request, JobStatus::Live->value);
     }
 
     /**
@@ -113,7 +112,7 @@ class TuitionJobController extends Controller
      */
     public function confirmed(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_CONFIRMED);
+        return $this->index($request, JobStatus::Confirmed->value);
     }
 
     /**
@@ -121,7 +120,7 @@ class TuitionJobController extends Controller
      */
     public function cancelled(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_CANCELLED);
+        return $this->index($request, JobStatus::Cancelled->value);
     }
 
     /**
@@ -129,7 +128,7 @@ class TuitionJobController extends Controller
      */
     public function closed(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_CLOSED);
+        return $this->index($request, JobStatus::Closed->value);
     }
 
     /**
@@ -138,15 +137,15 @@ class TuitionJobController extends Controller
     public function create(): Response
     {
         return inertia('guardian/jobs/Create', [
-            'tuitionTypes' => $this->activeTuitionTypes(),
-            'categories' => $this->activeCategories(),
-            'schoolClasses' => $this->activeSchoolClasses(),
-            'countries' => $this->activeCountries(),
-            'cities' => $this->activeCities(),
-            'areas' => $this->activeAreas(),
-            'subjects' => $this->activeSubjects(),
-            'genderOptions' => $this->genderOptions(),
-            'dayOptions' => $this->dayOptions(),
+            'tuitionTypes' => $this->formOptionService->activeTuitionTypes(),
+            'categories' => $this->formOptionService->activeCategories(),
+            'schoolClasses' => $this->formOptionService->activeSchoolClasses(),
+            'countries' => $this->formOptionService->activeCountries(),
+            'cities' => $this->formOptionService->activeCities(),
+            'areas' => $this->formOptionService->activeAreas(),
+            'subjects' => $this->formOptionService->activeSubjects(),
+            'genderOptions' => $this->formOptionService->genderOptions(),
+            'dayOptions' => $this->formOptionService->dayOptions(),
         ]);
     }
 
@@ -190,7 +189,7 @@ class TuitionJobController extends Controller
                 'salary_amount' => $validated['salary_amount'] ?? null,
                 'salary_currency' => $validated['salary_currency'] ?: 'BDT',
                 'salary_negotiable' => (bool) $validated['salary_negotiable'],
-                'status' => TuitionJob::STATUS_PENDING,
+                'status' => JobStatus::Pending,
                 'cancellation_reason' => null,
                 'published_at' => null,
                 'expires_at' => $validated['expires_at'] ?? null,
@@ -209,136 +208,6 @@ class TuitionJobController extends Controller
     }
 
     /**
-     * Get active tuition types.
-     *
-     * @return array<int, array{id: int, name: string}>
-     */
-    private function activeTuitionTypes(): array
-    {
-        return TuitionType::query()
-            ->where('status', TuitionType::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (TuitionType $tuitionType): array => [
-                'id' => $tuitionType->id,
-                'name' => $tuitionType->name,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active categories.
-     *
-     * @return array<int, array{id: int, name: string}>
-     */
-    private function activeCategories(): array
-    {
-        return Category::query()
-            ->where('status', Category::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (Category $category): array => [
-                'id' => $category->id,
-                'name' => $category->name,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active school classes.
-     *
-     * @return array<int, array{id: int, name: string, category_id: int}>
-     */
-    private function activeSchoolClasses(): array
-    {
-        return SchoolClass::query()
-            ->where('status', SchoolClass::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'category_id'])
-            ->map(fn (SchoolClass $schoolClass): array => [
-                'id' => $schoolClass->id,
-                'name' => $schoolClass->name,
-                'category_id' => $schoolClass->category_id,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active countries.
-     *
-     * @return array<int, array{id: int, name: string}>
-     */
-    private function activeCountries(): array
-    {
-        return Country::query()
-            ->where('status', Country::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (Country $country): array => [
-                'id' => $country->id,
-                'name' => $country->name,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active cities.
-     *
-     * @return array<int, array{id: int, name: string, country_id: int}>
-     */
-    private function activeCities(): array
-    {
-        return City::query()
-            ->where('status', City::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'country_id'])
-            ->map(fn (City $city): array => [
-                'id' => $city->id,
-                'name' => $city->name,
-                'country_id' => $city->country_id,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active areas.
-     *
-     * @return array<int, array{id: int, name: string, city_id: int}>
-     */
-    private function activeAreas(): array
-    {
-        return Area::query()
-            ->where('status', Area::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'city_id'])
-            ->map(fn (Area $area): array => [
-                'id' => $area->id,
-                'name' => $area->name,
-                'city_id' => $area->city_id,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active subjects.
-     *
-     * @return array<int, array{id: int, name: string, class_id: int}>
-     */
-    private function activeSubjects(): array
-    {
-        return Subject::query()
-            ->where('status', Subject::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'class_id'])
-            ->map(fn (Subject $subject): array => [
-                'id' => $subject->id,
-                'name' => $subject->name,
-                'class_id' => $subject->class_id,
-            ])
-            ->all();
-    }
-
-    /**
      * Get status options for guardian list.
      *
      * @return array<int, array{value: string, label: string}>
@@ -346,11 +215,11 @@ class TuitionJobController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => TuitionJob::STATUS_PENDING, 'label' => 'Pending'],
-            ['value' => TuitionJob::STATUS_LIVE, 'label' => 'Live'],
-            ['value' => TuitionJob::STATUS_CONFIRMED, 'label' => 'Confirmed'],
-            ['value' => TuitionJob::STATUS_CANCELLED, 'label' => 'Cancelled'],
-            ['value' => TuitionJob::STATUS_CLOSED, 'label' => 'Closed'],
+            ['value' => JobStatus::Pending, 'label' => 'Pending'],
+            ['value' => JobStatus::Live, 'label' => 'Live'],
+            ['value' => JobStatus::Confirmed, 'label' => 'Confirmed'],
+            ['value' => JobStatus::Cancelled, 'label' => 'Cancelled'],
+            ['value' => JobStatus::Closed, 'label' => 'Closed'],
         ];
     }
 
@@ -361,42 +230,10 @@ class TuitionJobController extends Controller
     {
         $normalized = strtolower(trim($status));
 
-        if (! in_array($normalized, TuitionJob::statuses(), true)) {
+        if (JobStatus::tryFrom($normalized) === null) {
             return '';
         }
 
         return $normalized;
-    }
-
-    /**
-     * Get gender options.
-     *
-     * @return array<int, array{value: string, label: string}>
-     */
-    private function genderOptions(): array
-    {
-        return [
-            ['value' => TuitionJob::GENDER_ANY, 'label' => 'Any'],
-            ['value' => TuitionJob::GENDER_MALE, 'label' => 'Male'],
-            ['value' => TuitionJob::GENDER_FEMALE, 'label' => 'Female'],
-        ];
-    }
-
-    /**
-     * Get selectable tuition days.
-     *
-     * @return array<int, array{value: string, label: string}>
-     */
-    private function dayOptions(): array
-    {
-        return [
-            ['value' => 'sun', 'label' => 'Sunday'],
-            ['value' => 'mon', 'label' => 'Monday'],
-            ['value' => 'tue', 'label' => 'Tuesday'],
-            ['value' => 'wed', 'label' => 'Wednesday'],
-            ['value' => 'thu', 'label' => 'Thursday'],
-            ['value' => 'fri', 'label' => 'Friday'],
-            ['value' => 'sat', 'label' => 'Saturday'],
-        ];
     }
 }

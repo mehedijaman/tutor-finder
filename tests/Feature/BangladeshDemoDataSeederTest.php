@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -49,7 +50,7 @@ it('seeds bangladesh-focused taxonomy users and tuition jobs', function () {
         ->first();
 
     expect($job)->not->toBeNull();
-    expect($job?->guardian?->role)->toBe('guardian');
+    expect($job?->guardian?->role)->toBe(UserRole::Guardian);
     expect($job?->city?->name)->toBe('Dhaka');
     expect($job?->subjects->pluck('name')->all())->toContain('Mathematics');
 

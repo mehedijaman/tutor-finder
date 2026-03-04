@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,16 +12,6 @@ class Payment extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory;
-
-    public const STATUS_PENDING = 'pending';
-
-    public const STATUS_PAID = 'paid';
-
-    public const STATUS_FAILED = 'failed';
-
-    public const STATUS_CANCELLED = 'cancelled';
-
-    public const STATUS_REFUNDED = 'refunded';
 
     /**
      * @var list<string>
@@ -39,6 +31,8 @@ class Payment extends Model
     protected function casts(): array
     {
         return [
+            'status' => PaymentStatus::class,
+            'gateway' => PaymentGatewayType::class,
             'amount' => 'decimal:2',
             'provider_payload' => 'array',
         ];
@@ -53,16 +47,10 @@ class Payment extends Model
     }
 
     /**
-     * @return list<string>
+     * @return list<PaymentStatus>
      */
     public static function statuses(): array
     {
-        return [
-            self::STATUS_PENDING,
-            self::STATUS_PAID,
-            self::STATUS_FAILED,
-            self::STATUS_CANCELLED,
-            self::STATUS_REFUNDED,
-        ];
+        return PaymentStatus::cases();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Responses\Auth;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Models\User;
 use App\Services\Otp\OtpService;
 use App\Support\Auth\RoleRedirector;
@@ -22,7 +24,7 @@ class LoginResponse implements LoginResponseContract
             return redirect('/login');
         }
 
-        if ($user->status === 'pending_verification' && in_array($user->role, ['guardian', 'tutor'], true)) {
+        if ($user->status === UserStatus::PendingVerification && in_array($user->role, [UserRole::Guardian, UserRole::Tutor], true)) {
             $this->otpService->issueForRegistration($user, $request, true);
         }
 

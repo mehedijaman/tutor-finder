@@ -2,6 +2,7 @@
 
 namespace App\Services\Finance;
 
+use App\Enums\LedgerEntryType;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\RefundRequest;
@@ -98,7 +99,7 @@ class LedgerJournalService
         WalletLedgerEntry::query()->create([
             'journal_uuid' => $journalUuid,
             'owner_user_id' => $ownerDebitUserId,
-            'type' => WalletLedgerEntry::TYPE_DEBIT,
+            'type' => LedgerEntryType::Debit,
             'amount' => $amount,
             'currency' => $normalizedCurrency,
             'reference_type' => $referenceType,
@@ -113,7 +114,7 @@ class LedgerJournalService
         WalletLedgerEntry::query()->create([
             'journal_uuid' => $journalUuid,
             'owner_user_id' => $ownerCreditUserId,
-            'type' => WalletLedgerEntry::TYPE_CREDIT,
+            'type' => LedgerEntryType::Credit,
             'amount' => $amount,
             'currency' => $normalizedCurrency,
             'reference_type' => $referenceType,

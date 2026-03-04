@@ -2,6 +2,8 @@
 
 namespace App\Support\Auth;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Models\User;
 
 class RoleRedirector
@@ -11,13 +13,13 @@ class RoleRedirector
      */
     public static function destinationFor(User $user): string
     {
-        if ($user->status === 'pending_verification') {
+        if ($user->status === UserStatus::PendingVerification) {
             return '/verify-otp';
         }
 
         return match ($user->role) {
-            'tutor' => '/tutor/dashboard',
-            'admin' => '/admin/dashboard',
+            UserRole::Tutor => '/tutor/dashboard',
+            UserRole::Admin => '/admin/dashboard',
             default => '/guardian/dashboard',
         };
     }

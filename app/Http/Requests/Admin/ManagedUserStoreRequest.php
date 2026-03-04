@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\UserStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -28,7 +29,7 @@ class ManagedUserStoreRequest extends FormRequest
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'phone' => ['nullable', 'string', 'max:30', Rule::unique('users', 'phone')],
             'password' => ['required', 'string', Password::default(), 'confirmed'],
-            'status' => ['required', Rule::in(['active', 'suspended', 'pending_verification'])],
+            'status' => ['required', Rule::in([UserStatus::Active, UserStatus::Suspended, UserStatus::PendingVerification])],
         ];
     }
 }

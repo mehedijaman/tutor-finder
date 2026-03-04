@@ -2,6 +2,11 @@
 
 namespace App\Services\Finance;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
+use App\Enums\RefundStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\RefundRequest;
@@ -34,8 +39,8 @@ class RefundWorkflowService
 
             $serviceFeeInvoice = Invoice::query()
                 ->where('job_assignment_id', $lockedAssignment->id)
-                ->where('type', Invoice::TYPE_PLATFORM_SERVICE_FEE)
-                ->where('status', Invoice::STATUS_PAID)
+                ->where('type', InvoiceType::PlatformServiceFee)
+                ->where('status', InvoiceStatus::Paid)
                 ->lockForUpdate()
                 ->first();
 
@@ -45,7 +50,7 @@ class RefundWorkflowService
 
             $hasPending = RefundRequest::query()
                 ->where('job_assignment_id', $lockedAssignment->id)
-                ->where('status', RefundRequest::STATUS_PENDING)
+                ->where('status', RefundStatus::Pending)
                 ->lockForUpdate()
                 ->exists();
 
@@ -58,7 +63,7 @@ class RefundWorkflowService
                 'requested_by_user_id' => $tutor->getKey(),
                 'reason_text' => $reasonText,
                 'requested_at' => now(),
-                'status' => RefundRequest::STATUS_PENDING,
+                'status' => RefundStatus::Pending,
                 'amount' => $serviceFeeInvoice->amount,
                 'currency' => $serviceFeeInvoice->currency,
                 'decision_by_admin_id' => null,
@@ -81,12 +86,12 @@ class RefundWorkflowService
                 ->lockForUpdate()
                 ->findOrFail($refundRequest->getKey());
 
-            if ($lockedRequest->status !== RefundRequest::STATUS_PENDING) {
+            if ($lockedRequest->status !== RefundStatus::Pending) {
                 throw new DomainException('Only pending refund requests can be approved.');
             }
 
             $lockedRequest->forceFill([
-                'status' => RefundRequest::STATUS_APPROVED,
+                'status' => RefundStatus::Approved,
                 'decision_by_admin_id' => $admin->getKey(),
                 'decision_note' => $decisionNote,
                 'decided_at' => now(),
@@ -107,12 +112,12 @@ class RefundWorkflowService
                 ->lockForUpdate()
                 ->findOrFail($refundRequest->getKey());
 
-            if ($lockedRequest->status !== RefundRequest::STATUS_PENDING) {
+            if ($lockedRequest->status !== RefundStatus::Pending) {
                 throw new DomainException('Only pending refund requests can be rejected.');
             }
 
             $lockedRequest->forceFill([
-                'status' => RefundRequest::STATUS_REJECTED,
+                'status' => RefundStatus::Rejected,
                 'decision_by_admin_id' => $admin->getKey(),
                 'decision_note' => $decisionNote,
                 'decided_at' => now(),
@@ -135,14 +140,14 @@ class RefundWorkflowService
                 ->lockForUpdate()
                 ->findOrFail($refundRequest->getKey());
 
-            if ($lockedRequest->status !== RefundRequest::STATUS_APPROVED) {
+            if ($lockedRequest->status !== RefundStatus::Approved) {
                 throw new DomainException('Only approved refund requests can be marked paid.');
             }
 
             $serviceFeeInvoice = Invoice::query()
                 ->where('job_assignment_id', $lockedRequest->job_assignment_id)
-                ->where('type', Invoice::TYPE_PLATFORM_SERVICE_FEE)
-                ->where('status', Invoice::STATUS_PAID)
+                ->where('type', InvoiceType::PlatformServiceFee)
+                ->where('status', InvoiceStatus::Paid)
                 ->lockForUpdate()
                 ->first();
 
@@ -152,10 +157,10 @@ class RefundWorkflowService
 
             $payoutPayment = Payment::query()->create([
                 'invoice_id' => $serviceFeeInvoice->id,
-                'gateway' => $paymentContext['gateway'] ?? Invoice::GATEWAY_MANUAL,
+                'gateway' => $paymentContext['gateway'] ?? PaymentGatewayType::Manual,
                 'provider_txn_id' => $paymentContext['provider_txn_id'] ?? ('REFUND-'.$lockedRequest->id.'-'.now()->timestamp),
                 'amount' => $lockedRequest->amount ?? $serviceFeeInvoice->amount,
-                'status' => Payment::STATUS_REFUNDED,
+                'status' => PaymentStatus::Refunded,
                 'provider_payload' => [
                     'admin_id' => $admin->getKey(),
                     'note' => $paymentContext['note'] ?? null,
@@ -163,7 +168,7 @@ class RefundWorkflowService
             ]);
 
             $lockedRequest->forceFill([
-                'status' => RefundRequest::STATUS_PAID,
+                'status' => RefundStatus::Paid,
                 'decision_by_admin_id' => $admin->getKey(),
                 'decision_note' => $paymentContext['note'] ?? $lockedRequest->decision_note,
                 'decided_at' => $lockedRequest->decided_at ?? now(),

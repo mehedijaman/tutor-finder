@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\PaymentGatewayType;
+use App\Enums\UserRole;
 use App\Models\Invoice;
 use App\Services\Payments\PaymentManager;
 use DomainException;
@@ -17,14 +20,10 @@ class PaymentController extends Controller
      */
     public function startBkash(Request $request, Invoice $invoice, PaymentManager $paymentManager): RedirectResponse
     {
-        $payerUserId = (int) ($invoice->payer_user_id ?? $invoice->user_id);
-
-        if ((int) $request->user()?->getKey() !== $payerUserId) {
-            abort(403);
-        }
+        $this->authorize('pay', $invoice);
 
         try {
-            $response = $paymentManager->createPayment($invoice, Invoice::GATEWAY_BKASH);
+            $response = $paymentManager->createPayment($invoice, PaymentGatewayType::Bkash->value);
         } catch (DomainException $exception) {
             return redirect()->back()->withErrors([
                 'payment' => $exception->getMessage(),
@@ -52,7 +51,7 @@ class PaymentController extends Controller
             if ($invoice instanceof Invoice) {
                 $paymentManager->markInvoiceFailure(
                     $invoice,
-                    $status === 'cancel' ? Invoice::STATUS_CANCELLED : Invoice::STATUS_FAILED,
+                    $status === 'cancel' ? InvoiceStatus::Cancelled : InvoiceStatus::Failed,
                     ['callback' => $request->all()],
                 );
             }
@@ -88,14 +87,10 @@ class PaymentController extends Controller
      */
     public function startSslCommerz(Request $request, Invoice $invoice, PaymentManager $paymentManager): RedirectResponse
     {
-        $payerUserId = (int) ($invoice->payer_user_id ?? $invoice->user_id);
-
-        if ((int) $request->user()?->getKey() !== $payerUserId) {
-            abort(403);
-        }
+        $this->authorize('pay', $invoice);
 
         try {
-            $response = $paymentManager->createPayment($invoice, Invoice::GATEWAY_SSLCOMMERZ);
+            $response = $paymentManager->createPayment($invoice, PaymentGatewayType::Sslcommerz->value);
         } catch (DomainException $exception) {
             return redirect()->back()->withErrors([
                 'payment' => $exception->getMessage(),
@@ -147,7 +142,7 @@ class PaymentController extends Controller
         $invoice = $this->resolveSslInvoice($request);
 
         if ($invoice instanceof Invoice) {
-            $paymentManager->markInvoiceFailure($invoice, Invoice::STATUS_FAILED, [
+            $paymentManager->markInvoiceFailure($invoice, InvoiceStatus::Failed, [
                 'callback' => $request->all(),
             ]);
         }
@@ -165,7 +160,7 @@ class PaymentController extends Controller
         $invoice = $this->resolveSslInvoice($request);
 
         if ($invoice instanceof Invoice) {
-            $paymentManager->markInvoiceFailure($invoice, Invoice::STATUS_CANCELLED, [
+            $paymentManager->markInvoiceFailure($invoice, InvoiceStatus::Cancelled, [
                 'callback' => $request->all(),
             ]);
         }
@@ -211,7 +206,7 @@ class PaymentController extends Controller
 
         return Invoice::query()
             ->with(['user', 'payer'])
-            ->where('payment_gateway', Invoice::GATEWAY_SSLCOMMERZ)
+            ->where('payment_gateway', PaymentGatewayType::Sslcommerz)
             ->where('payment_reference', $tranId)
             ->first();
     }
@@ -229,7 +224,7 @@ class PaymentController extends Controller
 
         return Invoice::query()
             ->with(['user', 'payer'])
-            ->where('payment_gateway', Invoice::GATEWAY_BKASH)
+            ->where('payment_gateway', PaymentGatewayType::Bkash)
             ->where('payment_reference', $paymentId)
             ->first();
     }
@@ -250,12 +245,12 @@ class PaymentController extends Controller
         }
 
         if ($invoice->isVerificationInvoice()) {
-            return $payer->role === 'tutor'
+            return $payer->role === UserRole::Tutor
                 ? '/tutor/verification'
                 : '/guardian/verification';
         }
 
-        return $payer->role === 'tutor'
+        return $payer->role === UserRole::Tutor
             ? '/tutor/finance/invoices'
             : '/guardian/finance/invoices';
     }

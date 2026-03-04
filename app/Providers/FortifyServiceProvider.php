@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Enums\UserStatus;
 use App\Http\Responses\Auth\LoginResponse;
 use App\Http\Responses\Auth\RegisterResponse;
 use App\Models\User;
@@ -80,7 +81,7 @@ class FortifyServiceProvider extends ServiceProvider
                 return null;
             }
 
-            if ($user->status === 'suspended') {
+            if ($user->status === UserStatus::Suspended) {
                 return null;
             }
 

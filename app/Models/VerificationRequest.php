@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,22 +15,6 @@ class VerificationRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\VerificationRequestFactory> */
     use HasFactory, SoftDeletes;
-
-    public const ROLE_TUTOR = 'tutor';
-
-    public const ROLE_GUARDIAN = 'guardian';
-
-    public const STATUS_PENDING = 'pending';
-
-    public const STATUS_APPROVED = 'approved';
-
-    public const STATUS_INVOICED = 'invoiced';
-
-    public const STATUS_VERIFIED = 'verified';
-
-    public const STATUS_REJECTED = 'rejected';
-
-    public const STATUS_CANCELLED = 'cancelled';
 
     /**
      * @var list<string>
@@ -54,6 +40,8 @@ class VerificationRequest extends Model
     protected function casts(): array
     {
         return [
+            'role' => VerificationRole::class,
+            'status' => VerificationStatus::class,
             'fee_amount' => 'decimal:2',
             'submitted_at' => 'datetime',
             'reviewed_at' => 'datetime',
@@ -90,12 +78,12 @@ class VerificationRequest extends Model
      */
     public function markApproved(User $admin): void
     {
-        if ($this->status !== self::STATUS_PENDING) {
+        if ($this->status !== VerificationStatus::Pending) {
             throw new DomainException('Only pending requests can be approved.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_APPROVED,
+            'status' => VerificationStatus::Approved,
             'reviewed_by' => $admin->getKey(),
             'reviewed_at' => now(),
             'decision_reason' => null,
@@ -105,13 +93,13 @@ class VerificationRequest extends Model
     /**
      * Mark request rejected or cancelled.
      */
-    public function markDecision(string $status, string $reason, User $admin): void
+    public function markDecision(VerificationStatus $status, string $reason, User $admin): void
     {
-        if (! in_array($status, [self::STATUS_REJECTED, self::STATUS_CANCELLED], true)) {
+        if (! in_array($status, [VerificationStatus::Rejected, VerificationStatus::Cancelled], true)) {
             throw new DomainException('Invalid verification decision status.');
         }
 
-        if (in_array($this->status, [self::STATUS_VERIFIED, self::STATUS_CANCELLED], true)) {
+        if (in_array($this->status, [VerificationStatus::Verified, VerificationStatus::Cancelled], true)) {
             throw new DomainException('This request can no longer be updated.');
         }
 
@@ -128,12 +116,12 @@ class VerificationRequest extends Model
      */
     public function markInvoiced(User $admin): void
     {
-        if (! in_array($this->status, [self::STATUS_PENDING, self::STATUS_APPROVED], true)) {
+        if (! in_array($this->status, [VerificationStatus::Pending, VerificationStatus::Approved], true)) {
             throw new DomainException('Invoice can be generated only for pending or approved requests.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_INVOICED,
+            'status' => VerificationStatus::Invoiced,
             'reviewed_by' => $admin->getKey(),
             'reviewed_at' => now(),
         ])->save();
@@ -145,7 +133,7 @@ class VerificationRequest extends Model
     public function markVerified(?User $reviewer = null): void
     {
         $this->forceFill([
-            'status' => self::STATUS_VERIFIED,
+            'status' => VerificationStatus::Verified,
             'reviewed_by' => $reviewer?->getKey() ?? $this->reviewed_by,
             'reviewed_at' => now(),
         ])->save();
@@ -154,14 +142,10 @@ class VerificationRequest extends Model
     /**
      * Get active statuses for duplicate guard.
      *
-     * @return list<string>
+     * @return list<VerificationStatus>
      */
     public static function activeStatuses(): array
     {
-        return [
-            self::STATUS_PENDING,
-            self::STATUS_APPROVED,
-            self::STATUS_INVOICED,
-        ];
+        return VerificationStatus::activeStatuses();
     }
 }

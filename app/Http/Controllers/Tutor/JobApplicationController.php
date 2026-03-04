@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Tutor;
 
+use App\Enums\ApplicationStatus;
+use App\Events\ApplicationSubmitted;
+use App\Events\ApplicationWithdrawn;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tutor\JobApplicationStoreRequest;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
-use App\Notifications\JobLifecycleNotification;
+use App\Services\Job\ApplicationService;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Response;
 
@@ -61,11 +63,11 @@ class JobApplicationController extends Controller
                 'preset_status' => $presetStatus,
             ],
             'statusOptions' => [
-                ['value' => TuitionJobApplication::STATUS_APPLIED, 'label' => 'Applied'],
-                ['value' => TuitionJobApplication::STATUS_SHORTLISTED, 'label' => 'Shortlisted'],
-                ['value' => TuitionJobApplication::STATUS_APPOINTED, 'label' => 'Appointed'],
-                ['value' => TuitionJobApplication::STATUS_CONFIRMED, 'label' => 'Confirmed'],
-                ['value' => TuitionJobApplication::STATUS_CANCELLED, 'label' => 'Cancelled'],
+                ['value' => ApplicationStatus::Applied, 'label' => 'Applied'],
+                ['value' => ApplicationStatus::Shortlisted, 'label' => 'Shortlisted'],
+                ['value' => ApplicationStatus::Appointed, 'label' => 'Appointed'],
+                ['value' => ApplicationStatus::Confirmed, 'label' => 'Confirmed'],
+                ['value' => ApplicationStatus::Cancelled, 'label' => 'Cancelled'],
             ],
         ]);
     }
@@ -75,7 +77,7 @@ class JobApplicationController extends Controller
      */
     public function applied(Request $request): Response
     {
-        return $this->index($request, TuitionJobApplication::STATUS_APPLIED);
+        return $this->index($request, ApplicationStatus::Applied->value);
     }
 
     /**
@@ -83,7 +85,7 @@ class JobApplicationController extends Controller
      */
     public function shortlisted(Request $request): Response
     {
-        return $this->index($request, TuitionJobApplication::STATUS_SHORTLISTED);
+        return $this->index($request, ApplicationStatus::Shortlisted->value);
     }
 
     /**
@@ -91,7 +93,7 @@ class JobApplicationController extends Controller
      */
     public function appointed(Request $request): Response
     {
-        return $this->index($request, TuitionJobApplication::STATUS_APPOINTED);
+        return $this->index($request, ApplicationStatus::Appointed->value);
     }
 
     /**
@@ -99,7 +101,7 @@ class JobApplicationController extends Controller
      */
     public function confirmed(Request $request): Response
     {
-        return $this->index($request, TuitionJobApplication::STATUS_CONFIRMED);
+        return $this->index($request, ApplicationStatus::Confirmed->value);
     }
 
     /**
@@ -107,7 +109,7 @@ class JobApplicationController extends Controller
      */
     public function cancelled(Request $request): Response
     {
-        return $this->index($request, TuitionJobApplication::STATUS_CANCELLED);
+        return $this->index($request, ApplicationStatus::Cancelled->value);
     }
 
     /**
@@ -115,80 +117,23 @@ class JobApplicationController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(JobApplicationStoreRequest $request, TuitionJob $tuitionJob): RedirectResponse
-    {
+    public function store(
+        JobApplicationStoreRequest $request,
+        TuitionJob $tuitionJob,
+        ApplicationService $applicationService,
+    ): RedirectResponse {
         $tutor = $request->user();
-        $application = null;
-        $resubmitted = false;
 
-        DB::transaction(function () use ($request, $tuitionJob, $tutor, &$application, &$resubmitted): void {
-            $lockedJob = TuitionJob::query()
-                ->whereKey($tuitionJob->id)
-                ->lockForUpdate()
-                ->firstOrFail();
+        $result = $applicationService->submit($tuitionJob, $tutor, [
+            'cover_letter' => $request->validated('cover_letter'),
+            'expected_salary_amount' => $request->validated('expected_salary_amount'),
+            'salary_currency' => $request->validated('salary_currency'),
+        ]);
 
-            $this->ensureJobCanBeApplied($lockedJob);
+        $application = $result['application'];
+        $resubmitted = $result['resubmitted'];
 
-            if ((int) $lockedJob->guardian_id === (int) $tutor?->getAuthIdentifier()) {
-                throw ValidationException::withMessages([
-                    'job' => 'You cannot apply to your own job posting.',
-                ]);
-            }
-
-            $application = TuitionJobApplication::query()
-                ->where('job_id', $lockedJob->id)
-                ->where('tutor_user_id', $tutor?->getAuthIdentifier())
-                ->lockForUpdate()
-                ->first();
-
-            if ($application !== null) {
-                if ($application->status !== TuitionJobApplication::STATUS_CANCELLED) {
-                    throw ValidationException::withMessages([
-                        'job' => 'You have already applied to this job.',
-                    ]);
-                }
-
-                $application->markApplied(
-                    $request->validated('cover_letter'),
-                    $request->validated('expected_salary_amount'),
-                );
-                $application->forceFill([
-                    'salary_currency' => $request->validated('salary_currency') ?? 'BDT',
-                ])->save();
-                $resubmitted = true;
-
-                return;
-            }
-
-            $application = TuitionJobApplication::query()->create([
-                'job_id' => $lockedJob->id,
-                'tutor_user_id' => $tutor?->getAuthIdentifier(),
-                'cover_letter' => $request->validated('cover_letter'),
-                'expected_salary_amount' => $request->validated('expected_salary_amount'),
-                'salary_currency' => $request->validated('salary_currency') ?? 'BDT',
-                'status' => TuitionJobApplication::STATUS_APPLIED,
-                'cancel_reason' => null,
-                'metadata' => null,
-            ]);
-        });
-
-        $event = $resubmitted ? 'job-application-resubmitted' : 'job-application-submitted';
-        $title = $resubmitted ? 'Application Resubmitted' : 'New Job Application';
-        $message = $resubmitted
-            ? "{$tutor?->name} reapplied for {$tuitionJob->title}."
-            : "{$tutor?->name} applied for {$tuitionJob->title}.";
-
-        $tuitionJob->guardian?->notify(new JobLifecycleNotification(
-            event: $event,
-            title: $title,
-            message: $message,
-            url: "/guardian/jobs/{$tuitionJob->id}/applications",
-            meta: [
-                'job_id' => $tuitionJob->id,
-                'application_id' => $application?->id,
-                'tutor_user_id' => $tutor?->getAuthIdentifier(),
-            ],
-        ));
+        ApplicationSubmitted::dispatch($tuitionJob, $application, $tutor, $resubmitted);
 
         return back()->with('status', $resubmitted
             ? 'Application submitted again successfully.'
@@ -198,77 +143,31 @@ class JobApplicationController extends Controller
     /**
      * Withdraw tutor application.
      */
-    public function withdraw(Request $request, TuitionJobApplication $tuitionJobApplication): RedirectResponse
-    {
+    public function withdraw(
+        Request $request,
+        TuitionJobApplication $tuitionJobApplication,
+        ApplicationService $applicationService,
+    ): RedirectResponse {
         $tutor = $request->user();
 
-        if ((int) $tuitionJobApplication->tutor_user_id !== (int) $tutor?->getAuthIdentifier()) {
-            abort(403);
-        }
+        $this->authorize('withdraw', $tuitionJobApplication);
 
         try {
-            if (! in_array($tuitionJobApplication->status, [
-                TuitionJobApplication::STATUS_APPLIED,
-                TuitionJobApplication::STATUS_SHORTLISTED,
-            ], true)) {
-                throw new DomainException('Only applied or shortlisted applications can be cancelled.');
-            }
-
-            $tuitionJobApplication->markCancelled('Cancelled by tutor.');
+            $applicationService->withdraw($tuitionJobApplication);
         } catch (DomainException $exception) {
             throw ValidationException::withMessages([
                 'status' => $exception->getMessage(),
             ]);
         }
 
-        $tuitionJobApplication->loadMissing('tuitionJob.guardian');
+        $tuitionJobApplication->loadMissing('tuitionJob');
         $job = $tuitionJobApplication->tuitionJob;
 
-        $job?->guardian?->notify(new JobLifecycleNotification(
-            event: 'job-application-cancelled',
-            title: 'Application Cancelled',
-            message: "{$tutor?->name} cancelled application for {$job?->title}.",
-            url: "/guardian/jobs/{$job?->id}/applications",
-            meta: [
-                'job_id' => $job?->id,
-                'application_id' => $tuitionJobApplication->id,
-                'tutor_user_id' => $tutor?->getAuthIdentifier(),
-            ],
-        ));
+        if ($job !== null) {
+            ApplicationWithdrawn::dispatch($job, $tuitionJobApplication, $tutor);
+        }
 
         return back()->with('status', 'Application cancelled successfully.');
-    }
-
-    /**
-     * Ensure a public job can be applied to.
-     *
-     * @throws ValidationException
-     */
-    private function ensureJobCanBeApplied(TuitionJob $tuitionJob): void
-    {
-        if ($tuitionJob->status !== TuitionJob::STATUS_LIVE) {
-            throw ValidationException::withMessages([
-                'job' => 'This job is not open for applications.',
-            ]);
-        }
-
-        if ($tuitionJob->published_at === null || $tuitionJob->published_at->isFuture()) {
-            throw ValidationException::withMessages([
-                'job' => 'This job is not published yet.',
-            ]);
-        }
-
-        if ($tuitionJob->isExpired()) {
-            throw ValidationException::withMessages([
-                'job' => 'This job has expired.',
-            ]);
-        }
-
-        if ($tuitionJob->assignment()->exists()) {
-            throw ValidationException::withMessages([
-                'job' => 'This job has already been finalized.',
-            ]);
-        }
     }
 
     /**
@@ -278,7 +177,7 @@ class JobApplicationController extends Controller
     {
         $normalized = strtolower(trim($status));
 
-        if (! in_array($normalized, TuitionJobApplication::statuses(), true)) {
+        if (ApplicationStatus::tryFrom($normalized) === null) {
             return '';
         }
 

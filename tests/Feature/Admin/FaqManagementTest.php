@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\FaqAudience;
+use App\Enums\FaqStatus;
 use App\Models\Faq;
 use App\Models\User;
 use Database\Seeders\AdminRolesAndPermissionsSeeder;
@@ -15,16 +17,16 @@ it('authorized admin can create faq', function () {
         ->post(route('admin.faqs.store'), [
             'question' => 'How do I apply as tutor?',
             'answer' => '<p>Complete your profile and submit required details.</p>',
-            'audience' => Faq::AUDIENCE_TUTOR,
-            'status' => Faq::STATUS_ACTIVE,
+            'audience' => FaqAudience::Tutor->value,
+            'status' => FaqStatus::Active->value,
             'sort_order' => 1,
         ])
         ->assertRedirect(route('admin.faqs.index', absolute: false));
 
     $this->assertDatabaseHas('faqs', [
         'question' => 'How do I apply as tutor?',
-        'audience' => Faq::AUDIENCE_TUTOR,
-        'status' => Faq::STATUS_ACTIVE,
+        'audience' => FaqAudience::Tutor->value,
+        'status' => FaqStatus::Active->value,
         'sort_order' => 1,
     ]);
 });
@@ -43,14 +45,14 @@ it('unauthorized admin cannot access faq routes', function () {
         ->post(route('admin.faqs.store'), [
             'question' => 'Unauthorized create',
             'answer' => '<p>Blocked</p>',
-            'audience' => Faq::AUDIENCE_BOTH,
-            'status' => Faq::STATUS_ACTIVE,
+            'audience' => FaqAudience::Both->value,
+            'status' => FaqStatus::Active->value,
             'sort_order' => 0,
         ])
         ->assertForbidden();
 
     $this->actingAs($admin)
-        ->patch(route('admin.faqs.status', $faq), ['status' => Faq::STATUS_INACTIVE])
+        ->patch(route('admin.faqs.status', $faq), ['status' => FaqStatus::Inactive->value])
         ->assertForbidden();
 });
 
@@ -61,7 +63,7 @@ it('soft delete moves faq to trash list and hides it from active list', function
     $admin->assignRole('super-admin');
 
     $faq = Faq::factory()->create([
-        'status' => Faq::STATUS_ACTIVE,
+        'status' => FaqStatus::Active,
     ]);
 
     $this->actingAs($admin)
@@ -127,14 +129,14 @@ it('authorized admin can toggle faq status', function () {
     $admin->givePermissionTo('faq-update');
 
     $faq = Faq::factory()->create([
-        'status' => Faq::STATUS_ACTIVE,
+        'status' => FaqStatus::Active,
     ]);
 
     $this->actingAs($admin)
         ->patch(route('admin.faqs.status', $faq), [
-            'status' => Faq::STATUS_INACTIVE,
+            'status' => FaqStatus::Inactive->value,
         ])
         ->assertRedirect();
 
-    expect($faq->refresh()->status)->toBe(Faq::STATUS_INACTIVE);
+    expect($faq->refresh()->status)->toBe(FaqStatus::Inactive);
 });

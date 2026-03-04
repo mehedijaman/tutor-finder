@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserRole;
+use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ManagedUserPasswordResetRequest;
 use App\Http\Requests\Admin\ManagedUserStoreRequest;
@@ -23,12 +25,12 @@ class GuardianManagementController extends Controller
      */
     private const VERIFICATION_SCOPES = [
         'pending' => [
-            User::VERIFICATION_STATUS_PENDING,
-            User::VERIFICATION_STATUS_APPROVED,
-            User::VERIFICATION_STATUS_INVOICED,
+            VerificationStatus::Pending,
+            VerificationStatus::Approved,
+            VerificationStatus::Invoiced,
         ],
-        'unverified' => [User::VERIFICATION_STATUS_UNVERIFIED],
-        'verified' => [User::VERIFICATION_STATUS_VERIFIED],
+        'unverified' => [VerificationStatus::Unverified],
+        'verified' => [VerificationStatus::Verified],
     ];
 
     /**
@@ -130,7 +132,7 @@ class GuardianManagementController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => 'guardian',
             'status' => $validated['status'],
-            'verification_status' => User::VERIFICATION_STATUS_UNVERIFIED,
+            'verification_status' => VerificationStatus::Unverified,
             'verification_type' => null,
             'verified_at' => null,
         ]);
@@ -143,7 +145,7 @@ class GuardianManagementController extends Controller
      */
     public function show(User $user): Response
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 
@@ -157,7 +159,7 @@ class GuardianManagementController extends Controller
      */
     public function edit(User $user): Response
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 
@@ -171,7 +173,7 @@ class GuardianManagementController extends Controller
      */
     public function update(ManagedUserUpdateRequest $request, User $user): RedirectResponse
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 
@@ -192,7 +194,7 @@ class GuardianManagementController extends Controller
      */
     public function updateStatus(UserStatusUpdateRequest $request, User $user): RedirectResponse
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 
@@ -208,7 +210,7 @@ class GuardianManagementController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 
@@ -222,7 +224,7 @@ class GuardianManagementController extends Controller
      */
     public function restore(User $user): RedirectResponse
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 
@@ -253,7 +255,7 @@ class GuardianManagementController extends Controller
      */
     public function forceDelete(User $user): RedirectResponse
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 
@@ -286,7 +288,7 @@ class GuardianManagementController extends Controller
      */
     public function resetPassword(ManagedUserPasswordResetRequest $request, User $user): RedirectResponse
     {
-        if ($user->role !== 'guardian') {
+        if ($user->role !== UserRole::Guardian) {
             abort(404);
         }
 

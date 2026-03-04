@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminUserStoreRequest;
 use App\Http\Requests\Admin\AdminUserUpdateRequest;
@@ -82,7 +83,7 @@ class AdminUserController extends Controller
      */
     public function edit(User $user): Response
     {
-        if ($user->role !== 'admin') {
+        if ($user->role !== UserRole::Admin) {
             abort(404);
         }
 
@@ -129,7 +130,7 @@ class AdminUserController extends Controller
      */
     public function update(AdminUserUpdateRequest $request, User $user): RedirectResponse
     {
-        if ($user->role !== 'admin') {
+        if ($user->role !== UserRole::Admin) {
             abort(404);
         }
 
@@ -152,7 +153,7 @@ class AdminUserController extends Controller
      */
     public function destroy(Request $request, User $user): RedirectResponse
     {
-        if ($user->role !== 'admin') {
+        if ($user->role !== UserRole::Admin) {
             abort(404);
         }
 
@@ -172,7 +173,7 @@ class AdminUserController extends Controller
      */
     public function restore(User $user): RedirectResponse
     {
-        if ($user->role !== 'admin') {
+        if ($user->role !== UserRole::Admin) {
             abort(404);
         }
 
@@ -204,7 +205,7 @@ class AdminUserController extends Controller
      */
     public function forceDelete(Request $request, User $user): RedirectResponse
     {
-        if ($user->role !== 'admin') {
+        if ($user->role !== UserRole::Admin) {
             abort(404);
         }
 

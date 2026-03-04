@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\JobGender;
+use App\Enums\JobStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -41,8 +43,8 @@ class TuitionJobFactory extends Factory
             'location' => fake()->streetAddress(),
             'latitude' => fake()->latitude(),
             'longitude' => fake()->longitude(),
-            'student_gender' => TuitionJob::GENDER_ANY,
-            'tutor_gender' => TuitionJob::GENDER_ANY,
+            'student_gender' => JobGender::Any,
+            'tutor_gender' => JobGender::Any,
             'tuition_days' => ['sun', 'tue', 'thu'],
             'days_per_week' => 3,
             'tuition_time' => '5:00 PM - 7:00 PM',
@@ -51,7 +53,7 @@ class TuitionJobFactory extends Factory
             'salary_amount' => 10000,
             'salary_currency' => 'BDT',
             'salary_negotiable' => false,
-            'status' => TuitionJob::STATUS_PENDING,
+            'status' => JobStatus::Pending,
             'cancellation_reason' => null,
             'published_at' => null,
             'expires_at' => now()->addDays(30),
@@ -69,7 +71,7 @@ class TuitionJobFactory extends Factory
     public function pending(): static
     {
         return $this->state(fn (): array => [
-            'status' => TuitionJob::STATUS_PENDING,
+            'status' => JobStatus::Pending,
             'published_at' => null,
         ]);
     }
@@ -80,7 +82,7 @@ class TuitionJobFactory extends Factory
     public function live(): static
     {
         return $this->state(fn (): array => [
-            'status' => TuitionJob::STATUS_LIVE,
+            'status' => JobStatus::Live,
             'published_at' => now()->subHour(),
         ]);
     }

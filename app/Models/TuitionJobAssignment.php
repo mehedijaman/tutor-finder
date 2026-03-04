@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\CancellationActor;
+use App\Enums\CancellationFault;
+use App\Enums\DurationType;
+use App\Enums\FeePaymentMode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,30 +20,6 @@ class TuitionJobAssignment extends Model
      */
     /** @use HasFactory<\Database\Factories\TuitionJobAssignmentFactory> */
     use HasFactory;
-
-    public const DURATION_LONG_TERM = 'long_term';
-
-    public const DURATION_SHORT_TERM = 'short_term';
-
-    public const CANCELLED_BY_TUTOR = 'tutor';
-
-    public const CANCELLED_BY_GUARDIAN = 'guardian';
-
-    public const CANCELLED_BY_ADMIN = 'admin';
-
-    public const CANCELLED_BY_SYSTEM = 'system';
-
-    public const FAULT_TUTOR = 'tutor_fault';
-
-    public const FAULT_GUARDIAN = 'guardian_fault';
-
-    public const FAULT_MUTUAL = 'mutual';
-
-    public const FAULT_VALID_OTHER = 'valid_other';
-
-    public const PAYMENT_MODE_PAY_BEFORE = 'pay_before';
-
-    public const PAYMENT_MODE_PAY_AFTER_FIRST_MONTH = 'pay_after_first_month';
 
     /**
      * @var list<string>
@@ -80,6 +60,10 @@ class TuitionJobAssignment extends Model
     protected function casts(): array
     {
         return [
+            'duration_type' => DurationType::class,
+            'cancelled_by' => CancellationActor::class,
+            'fault' => CancellationFault::class,
+            'fee_payment_mode' => FeePaymentMode::class,
             'appointed_at' => 'datetime',
             'confirmed_at' => 'datetime',
             'cancelled_at' => 'datetime',

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ApplicationStatus;
+use App\Enums\JobStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -36,7 +38,7 @@ it('shows only live published non-expired non-trashed jobs on public board', fun
 
     $live = TuitionJob::factory()->create([
         'title' => 'Visible Public Job',
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
         'published_at' => now()->subHour(),
         'expires_at' => now()->addDays(3),
         'category_id' => $category->id,
@@ -49,7 +51,7 @@ it('shows only live published non-expired non-trashed jobs on public board', fun
     $live->subjects()->sync([$subject->id]);
 
     TuitionJob::factory()->create([
-        'status' => TuitionJob::STATUS_PENDING,
+        'status' => JobStatus::Pending,
         'published_at' => now()->subHour(),
         'category_id' => $category->id,
         'class_id' => $schoolClass->id,
@@ -60,7 +62,7 @@ it('shows only live published non-expired non-trashed jobs on public board', fun
     ]);
 
     TuitionJob::factory()->create([
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
         'published_at' => now()->addHour(),
         'category_id' => $category->id,
         'class_id' => $schoolClass->id,
@@ -71,7 +73,7 @@ it('shows only live published non-expired non-trashed jobs on public board', fun
     ]);
 
     TuitionJob::factory()->create([
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
         'published_at' => now()->subHour(),
         'expires_at' => now()->subMinute(),
         'category_id' => $category->id,
@@ -83,7 +85,7 @@ it('shows only live published non-expired non-trashed jobs on public board', fun
     ]);
 
     $trashed = TuitionJob::factory()->create([
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
         'published_at' => now()->subHour(),
         'category_id' => $category->id,
         'class_id' => $schoolClass->id,
@@ -140,7 +142,7 @@ it('applies public board filters', function () {
 
     $match = TuitionJob::factory()->create([
         'title' => 'Physics Match Job',
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
         'published_at' => now()->subHour(),
         'expires_at' => now()->addDays(5),
         'category_id' => $categoryA->id,
@@ -154,7 +156,7 @@ it('applies public board filters', function () {
 
     $other = TuitionJob::factory()->create([
         'title' => 'Other Job',
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
         'published_at' => now()->subHour(),
         'expires_at' => now()->addDays(5),
         'category_id' => $categoryB->id,
@@ -198,7 +200,7 @@ it('shows job details for live public jobs and hides non public jobs', function 
 
     $live = TuitionJob::factory()->create([
         'title' => 'Public Detail Job',
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
         'published_at' => now()->subHour(),
         'expires_at' => now()->addDays(2),
         'category_id' => $category->id,
@@ -210,7 +212,7 @@ it('shows job details for live public jobs and hides non public jobs', function 
     $live->subjects()->sync([$subject->id]);
 
     $pending = TuitionJob::factory()->create([
-        'status' => TuitionJob::STATUS_PENDING,
+        'status' => JobStatus::Pending,
         'published_at' => now()->subHour(),
         'category_id' => $category->id,
         'class_id' => $schoolClass->id,
@@ -240,7 +242,7 @@ it('allows tutor re-apply on job show when existing application is cancelled', f
     TuitionJobApplication::factory()->create([
         'job_id' => $live->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'status' => ApplicationStatus::Cancelled,
         'cancel_reason' => 'Previous conflict resolved.',
     ]);
 
@@ -250,7 +252,7 @@ it('allows tutor re-apply on job show when existing application is cancelled', f
         ->assertInertia(fn (Assert $page) => $page
             ->component('JobShow')
             ->where('canApply', true)
-            ->where('application.status', TuitionJobApplication::STATUS_CANCELLED));
+            ->where('application.status', ApplicationStatus::Cancelled->value));
 });
 
 it('blocks apply on job show when assignment already exists', function () {

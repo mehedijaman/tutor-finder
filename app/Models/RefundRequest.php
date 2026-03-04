@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RefundStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,14 +11,6 @@ class RefundRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\RefundRequestFactory> */
     use HasFactory;
-
-    public const STATUS_PENDING = 'pending';
-
-    public const STATUS_APPROVED = 'approved';
-
-    public const STATUS_REJECTED = 'rejected';
-
-    public const STATUS_PAID = 'paid';
 
     /**
      * @var list<string>
@@ -43,6 +36,7 @@ class RefundRequest extends Model
     protected function casts(): array
     {
         return [
+            'status' => RefundStatus::class,
             'requested_at' => 'datetime',
             'amount' => 'decimal:2',
             'decided_at' => 'datetime',
@@ -83,15 +77,10 @@ class RefundRequest extends Model
     }
 
     /**
-     * @return list<string>
+     * @return list<RefundStatus>
      */
     public static function statuses(): array
     {
-        return [
-            self::STATUS_PENDING,
-            self::STATUS_APPROVED,
-            self::STATUS_REJECTED,
-            self::STATUS_PAID,
-        ];
+        return RefundStatus::cases();
     }
 }

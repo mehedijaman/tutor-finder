@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\Invoice;
+use App\Enums\PaymentGatewayType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class InvoiceMarkPaidRequest extends FormRequest
 {
@@ -22,7 +22,7 @@ class InvoiceMarkPaidRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'payment_gateway' => strtolower(trim((string) $this->input('payment_gateway', Invoice::GATEWAY_MANUAL))),
+            'payment_gateway' => strtolower(trim((string) $this->input('payment_gateway', PaymentGatewayType::Manual->value))),
             'payment_method' => trim((string) $this->input('payment_method', 'manual')),
             'payment_reference' => $this->nullableTrimmedString($this->input('payment_reference')),
             'notes' => $this->nullableTrimmedString($this->input('notes')),
@@ -38,11 +38,7 @@ class InvoiceMarkPaidRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_gateway' => ['required', Rule::in([
-                Invoice::GATEWAY_MANUAL,
-                Invoice::GATEWAY_BKASH,
-                Invoice::GATEWAY_SSLCOMMERZ,
-            ])],
+            'payment_gateway' => ['required', new Enum(PaymentGatewayType::class)],
             'payment_method' => ['required', 'string', 'max:50'],
             'payment_reference' => ['nullable', 'string', 'max:100'],
             'paid_at' => ['required', 'date'],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use App\Support\SiteSettingsResolver;
 use Illuminate\Http\Request;
@@ -77,7 +78,7 @@ class HandleInertiaRequests extends Middleware
      */
     private function notificationCounts(?User $user): array
     {
-        if (! $user instanceof User || ! in_array($user->role, ['tutor', 'guardian'], true)) {
+        if (! $user instanceof User || ! in_array($user->role, [UserRole::Tutor, UserRole::Guardian], true)) {
             return ['unread' => 0];
         }
 

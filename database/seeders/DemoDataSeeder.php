@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\JobGender;
+use App\Enums\JobStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -57,19 +59,19 @@ class DemoDataSeeder extends Seeder
         $tuitionTypes = TuitionType::query()->get();
 
         $statuses = [
-            TuitionJob::STATUS_PENDING,
-            TuitionJob::STATUS_LIVE,
-            TuitionJob::STATUS_LIVE,
-            TuitionJob::STATUS_LIVE,
-            TuitionJob::STATUS_CONFIRMED,
-            TuitionJob::STATUS_CANCELLED,
-            TuitionJob::STATUS_CLOSED,
+            JobStatus::Pending,
+            JobStatus::Live,
+            JobStatus::Live,
+            JobStatus::Live,
+            JobStatus::Confirmed,
+            JobStatus::Cancelled,
+            JobStatus::Closed,
         ];
 
         $genders = [
-            TuitionJob::GENDER_ANY,
-            TuitionJob::GENDER_MALE,
-            TuitionJob::GENDER_FEMALE,
+            JobGender::Any,
+            JobGender::Male,
+            JobGender::Female,
         ];
 
         $daysOptions = [
@@ -174,8 +176,8 @@ class DemoDataSeeder extends Seeder
                 'salary_currency' => 'BDT',
                 'salary_negotiable' => (bool) rand(0, 1),
                 'status' => $status,
-                'published_at' => $status !== TuitionJob::STATUS_PENDING ? now()->subDays(rand(0, 30)) : null,
-                'expires_at' => in_array($status, [TuitionJob::STATUS_CANCELLED, TuitionJob::STATUS_CLOSED])
+                'published_at' => $status !== JobStatus::Pending ? now()->subDays(rand(0, 30)) : null,
+                'expires_at' => in_array($status, [JobStatus::Cancelled, JobStatus::Closed])
                     ? now()->subDays(rand(1, 10))
                     : now()->addDays(rand(10, 60)),
                 'view_count' => rand(0, 500),

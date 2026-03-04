@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProfileStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,10 +13,6 @@ class TutorProfile extends Model
 {
     /** @use HasFactory<\Database\Factories\TutorProfileFactory> */
     use HasFactory, SoftDeletes;
-
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
 
     /**
      * @var list<string>
@@ -48,6 +45,7 @@ class TutorProfile extends Model
     protected function casts(): array
     {
         return [
+            'status' => ProfileStatus::class,
             'date_of_birth' => 'date',
             'preferred_tuition_types' => 'array',
             'preferred_categories' => 'array',

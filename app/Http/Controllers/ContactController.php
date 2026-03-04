@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ContactMessageStatus;
 use App\Http\Requests\ContactMessageStoreRequest;
 use App\Models\ContactMessage;
 use App\Models\SiteSetting;
@@ -43,7 +44,7 @@ class ContactController extends Controller
             'phone' => $validated['phone'] ?? null,
             'subject' => $validated['subject'] ?? null,
             'message' => $validated['message'],
-            'status' => ContactMessage::STATUS_OPEN,
+            'status' => ContactMessageStatus::Open,
             'ip' => $request->ip(),
             'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
         ]);

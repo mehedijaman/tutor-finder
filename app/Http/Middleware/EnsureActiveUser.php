@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserStatus;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,11 +22,11 @@ class EnsureActiveUser
             abort(403);
         }
 
-        if ($user->status === 'pending_verification') {
+        if ($user->status === UserStatus::PendingVerification) {
             return redirect('/verify-otp');
         }
 
-        if ($user->status !== 'active') {
+        if ($user->status !== UserStatus::Active) {
             abort(403);
         }
 

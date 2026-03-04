@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\FaqAudience;
+use App\Enums\FaqStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\FaqStatusUpdateRequest;
 use App\Http\Requests\Admin\FaqStoreRequest;
@@ -23,11 +25,11 @@ class FaqController extends Controller
         $audience = strtolower(trim($request->string('audience')->toString()));
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($audience, [Faq::AUDIENCE_TUTOR, Faq::AUDIENCE_GUARDIAN, Faq::AUDIENCE_BOTH], true)) {
+        if (! in_array($audience, [FaqAudience::Tutor->value, FaqAudience::Guardian->value, FaqAudience::Both->value], true)) {
             $audience = '';
         }
 
-        if (! in_array($status, [Faq::STATUS_ACTIVE, Faq::STATUS_INACTIVE], true)) {
+        if (! in_array($status, [FaqStatus::Active->value, FaqStatus::Inactive->value], true)) {
             $status = '';
         }
 
@@ -231,9 +233,9 @@ class FaqController extends Controller
     private function audienceOptions(): array
     {
         return [
-            ['value' => Faq::AUDIENCE_BOTH, 'label' => 'Both'],
-            ['value' => Faq::AUDIENCE_TUTOR, 'label' => 'Tutor'],
-            ['value' => Faq::AUDIENCE_GUARDIAN, 'label' => 'Guardian'],
+            ['value' => FaqAudience::Both, 'label' => 'Both'],
+            ['value' => FaqAudience::Tutor, 'label' => 'Tutor'],
+            ['value' => FaqAudience::Guardian, 'label' => 'Guardian'],
         ];
     }
 
@@ -245,8 +247,8 @@ class FaqController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => Faq::STATUS_ACTIVE, 'label' => 'Active'],
-            ['value' => Faq::STATUS_INACTIVE, 'label' => 'Inactive'],
+            ['value' => FaqStatus::Active, 'label' => 'Active'],
+            ['value' => FaqStatus::Inactive, 'label' => 'Inactive'],
         ];
     }
 }

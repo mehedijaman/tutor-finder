@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
+use App\Enums\VerificationRole;
 use App\Models\Invoice;
 use App\Models\User;
 use App\Models\VerificationRequest;
@@ -31,11 +34,11 @@ class InvoiceFactory extends Factory
                 'role' => 'platform',
                 'status' => 'active',
             ]),
-            'type' => Invoice::TYPE_TUTOR_VERIFICATION_FEE,
+            'type' => InvoiceType::TutorVerificationFee,
             'job_assignment_id' => null,
             'amount' => 500,
             'currency' => 'BDT',
-            'status' => Invoice::STATUS_UNPAID,
+            'status' => InvoiceStatus::Unpaid,
             'due_at' => now()->addDays(7),
             'expires_at' => now()->addDays(7),
             'issued_by' => null,
@@ -67,9 +70,9 @@ class InvoiceFactory extends Factory
             $invoice->forceFill([
                 'user_id' => $verificationRequest->user_id,
                 'payer_user_id' => $verificationRequest->user_id,
-                'type' => $verificationRequest->role === VerificationRequest::ROLE_GUARDIAN
-                    ? Invoice::TYPE_GUARDIAN_VERIFICATION_FEE
-                    : Invoice::TYPE_TUTOR_VERIFICATION_FEE,
+                'type' => $verificationRequest->role === VerificationRole::Guardian
+                    ? InvoiceType::GuardianVerificationFee
+                    : InvoiceType::TutorVerificationFee,
             ])->save();
         });
     }

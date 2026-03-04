@@ -2,6 +2,9 @@
 
 namespace App\Services\Finance;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\PaymentStatus;
+use App\Enums\VerificationStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\RefundRequest;
@@ -82,16 +85,16 @@ class InvoiceLifecycleService
                 ->lockForUpdate()
                 ->findOrFail($payment->getKey());
 
-            if ($lockedInvoice->status === Invoice::STATUS_PAID) {
+            if ($lockedInvoice->status === InvoiceStatus::Paid) {
                 return $lockedInvoice->fresh(['invoiceable', 'payer', 'payee']);
             }
 
             if (! in_array($lockedInvoice->status, [
-                Invoice::STATUS_UNPAID,
-                Invoice::STATUS_DRAFT,
-                Invoice::STATUS_VOID,
-                Invoice::STATUS_FAILED,
-                Invoice::STATUS_CANCELLED,
+                InvoiceStatus::Unpaid,
+                InvoiceStatus::Draft,
+                InvoiceStatus::Void,
+                InvoiceStatus::Failed,
+                InvoiceStatus::Cancelled,
             ], true)) {
                 throw new DomainException('Invoice cannot be marked paid in its current state.');
             }
@@ -100,7 +103,7 @@ class InvoiceLifecycleService
             $gatewayPayload = array_merge($gatewayPayload, $context['gateway_payload'] ?? []);
 
             $lockedInvoice->forceFill([
-                'status' => Invoice::STATUS_PAID,
+                'status' => InvoiceStatus::Paid,
                 'paid_at' => $context['paid_at'] ?? now(),
                 'payment_gateway' => $context['payment_gateway'] ?? $lockedInvoice->payment_gateway,
                 'payment_method' => $context['payment_method'] ?? $lockedInvoice->payment_method,
@@ -116,9 +119,9 @@ class InvoiceLifecycleService
             $lockedInvoice->syncLegacyUserReference();
             $lockedInvoice->save();
 
-            if ($lockedPayment->status !== Payment::STATUS_PAID) {
+            if ($lockedPayment->status !== PaymentStatus::Paid) {
                 $lockedPayment->forceFill([
-                    'status' => Payment::STATUS_PAID,
+                    'status' => PaymentStatus::Paid,
                     'provider_txn_id' => $context['transaction_id'] ?? $lockedPayment->provider_txn_id,
                 ])->save();
             }
@@ -148,12 +151,12 @@ class InvoiceLifecycleService
             /** @var Invoice $lockedInvoice */
             $lockedInvoice = Invoice::query()->lockForUpdate()->findOrFail($invoice->getKey());
 
-            if (in_array($lockedInvoice->status, [Invoice::STATUS_PAID, Invoice::STATUS_REFUNDED], true)) {
+            if (in_array($lockedInvoice->status, [InvoiceStatus::Paid, InvoiceStatus::Refunded], true)) {
                 throw new DomainException('Paid or refunded invoice cannot be voided.');
             }
 
             $lockedInvoice->forceFill([
-                'status' => Invoice::STATUS_VOID,
+                'status' => InvoiceStatus::Void,
             ])->save();
 
             return $lockedInvoice->fresh();
@@ -173,21 +176,21 @@ class InvoiceLifecycleService
             /** @var Invoice $lockedInvoice */
             $lockedInvoice = Invoice::query()->lockForUpdate()->findOrFail($invoice->getKey());
 
-            if ($lockedInvoice->status === Invoice::STATUS_REFUNDED) {
+            if ($lockedInvoice->status === InvoiceStatus::Refunded) {
                 return $lockedInvoice->fresh();
             }
 
-            if ($lockedInvoice->status !== Invoice::STATUS_PAID) {
+            if ($lockedInvoice->status !== InvoiceStatus::Paid) {
                 throw new DomainException('Only paid invoices can be marked refunded.');
             }
 
             $lockedInvoice->forceFill([
-                'status' => Invoice::STATUS_REFUNDED,
+                'status' => InvoiceStatus::Refunded,
             ])->save();
 
-            if ($refundPayment->status !== Payment::STATUS_REFUNDED) {
+            if ($refundPayment->status !== PaymentStatus::Refunded) {
                 $refundPayment->forceFill([
-                    'status' => Payment::STATUS_REFUNDED,
+                    'status' => PaymentStatus::Refunded,
                 ])->save();
             }
 
@@ -228,7 +231,7 @@ class InvoiceLifecycleService
 
         $user->forceFill([
             'verified_at' => now(),
-            'verification_status' => User::VERIFICATION_STATUS_VERIFIED,
+            'verification_status' => VerificationStatus::Verified,
             'verification_type' => $verificationRequest->role,
         ])->save();
     }

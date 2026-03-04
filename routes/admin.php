@@ -19,7 +19,6 @@ use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\Tuition\JobController as TuitionJobController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\AreaController as TaxonomyAreaController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\CategoryController as TaxonomyCategoryController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\CityController as TaxonomyCityController;
@@ -488,47 +487,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/tuition-types/recycle-bin/empty', [TaxonomyTuitionTypeController::class, 'emptyRecycleBin'])
                 ->middleware('permission:tuition-type-force-delete')
                 ->name('tuition-types.empty-recycle-bin');
-        });
-
-        Route::prefix('tuition/jobs')->name('tuition.jobs.')->group(function () {
-            Route::get('/', [TuitionJobController::class, 'index'])
-                ->middleware('permission:job-view')
-                ->name('index');
-            Route::get('/create', [TuitionJobController::class, 'create'])
-                ->middleware('permission:job-create')
-                ->name('create');
-            Route::post('/', [TuitionJobController::class, 'store'])
-                ->middleware('permission:job-create')
-                ->name('store');
-            Route::get('/{tuitionJob}/edit', [TuitionJobController::class, 'edit'])
-                ->middleware('permission:job-update')
-                ->name('edit');
-            Route::put('/{tuitionJob}', [TuitionJobController::class, 'update'])
-                ->middleware('permission:job-update')
-                ->name('update');
-            Route::patch('/{tuitionJob}/approve', [TuitionJobController::class, 'approve'])
-                ->middleware('permission:job-approve')
-                ->name('approve');
-            Route::patch('/{tuitionJob}/cancel', [TuitionJobController::class, 'cancel'])
-                ->middleware('permission:job-update')
-                ->name('cancel');
-            Route::patch('/{tuitionJob}/close', [TuitionJobController::class, 'close'])
-                ->middleware('permission:job-update')
-                ->name('close');
-            Route::delete('/{tuitionJob}', [TuitionJobController::class, 'destroy'])
-                ->middleware('permission:job-delete')
-                ->name('destroy');
-            Route::patch('/{tuitionJob}/restore', [TuitionJobController::class, 'restore'])
-                ->middleware('permission:job-restore')
-                ->withTrashed()
-                ->name('restore');
-            Route::delete('/{tuitionJob}/force', [TuitionJobController::class, 'forceDelete'])
-                ->middleware('permission:job-force-delete')
-                ->withTrashed()
-                ->name('force-delete');
-            Route::delete('/recycle-bin/empty', [TuitionJobController::class, 'emptyRecycleBin'])
-                ->middleware('permission:job-force-delete')
-                ->name('empty-recycle-bin');
         });
 
         Route::get('/users', [AdminUserController::class, 'index'])

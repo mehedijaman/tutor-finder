@@ -2,6 +2,7 @@
 
 namespace App\Http\Responses\Auth;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use App\Services\Otp\OtpService;
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
@@ -17,7 +18,7 @@ class RegisterResponse implements RegisterResponseContract
     {
         $user = $request->user();
 
-        if ($user instanceof User && in_array($user->role, ['guardian', 'tutor'], true)) {
+        if ($user instanceof User && in_array($user->role, [UserRole::Guardian, UserRole::Tutor], true)) {
             $this->otpService->issueForRegistration($user, $request, false);
 
             return redirect('/verify-otp');

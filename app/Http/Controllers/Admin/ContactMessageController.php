@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ContactMessageStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ContactMessageStatusUpdateRequest;
 use App\Models\ContactMessage;
@@ -30,7 +31,7 @@ class ContactMessageController extends Controller
             $direction = 'desc';
         }
 
-        if (! in_array($status, [ContactMessage::STATUS_OPEN, ContactMessage::STATUS_CLOSED], true)) {
+        if (! in_array($status, [ContactMessageStatus::Open->value, ContactMessageStatus::Closed->value], true)) {
             $status = '';
         }
 
@@ -67,8 +68,8 @@ class ContactMessageController extends Controller
                 'direction' => $direction,
             ],
             'counts' => [
-                'open' => ContactMessage::query()->where('status', ContactMessage::STATUS_OPEN)->count(),
-                'closed' => ContactMessage::query()->where('status', ContactMessage::STATUS_CLOSED)->count(),
+                'open' => ContactMessage::query()->where('status', ContactMessageStatus::Open)->count(),
+                'closed' => ContactMessage::query()->where('status', ContactMessageStatus::Closed)->count(),
                 'all' => ContactMessage::query()->count(),
             ],
         ]);

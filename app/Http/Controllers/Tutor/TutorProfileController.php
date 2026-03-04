@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tutor;
 
+use App\Enums\ProfileStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tutor\TutorProfileUpdateRequest;
 use App\Models\Area;
@@ -49,7 +50,7 @@ class TutorProfileController extends Controller
                 'expected_salary_max' => $profile?->expected_salary_max,
                 'available_days' => $profile?->available_days ?? [],
                 'available_time' => $profile?->available_time,
-                'status' => $profile?->status ?? TutorProfile::STATUS_ACTIVE,
+                'status' => $profile?->status ?? ProfileStatus::Active,
                 'educations' => $educations->map(fn (TutorEducation $education): array => [
                     'id' => $education->id,
                     'degree' => $education->degree,
@@ -97,7 +98,7 @@ class TutorProfileController extends Controller
             ]);
 
             $profile->fill($profileData);
-            $profile->status = $profileData['status'] ?? TutorProfile::STATUS_ACTIVE;
+            $profile->status = $profileData['status'] ?? ProfileStatus::Active;
             $profile->save();
 
             $this->syncEducations($user->getKey(), $validated['educations'] ?? []);

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\JobGender;
+use App\Enums\JobStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -52,8 +54,8 @@ it('admin can create approve cancel close and recycle jobs', function () {
         'area_id' => $area->id,
         'subject_ids' => [$subject->id],
         'location' => 'Dhanmondi',
-        'student_gender' => TuitionJob::GENDER_ANY,
-        'tutor_gender' => TuitionJob::GENDER_ANY,
+        'student_gender' => JobGender::Any->value,
+        'tutor_gender' => JobGender::Any->value,
         'tuition_days' => ['sun', 'mon'],
         'tuition_time' => '6 PM',
         'tuition_duration' => '4 months',
@@ -61,57 +63,57 @@ it('admin can create approve cancel close and recycle jobs', function () {
         'salary_amount' => 8000,
         'salary_currency' => 'BDT',
         'salary_negotiable' => true,
-        'status' => TuitionJob::STATUS_PENDING,
+        'status' => JobStatus::Pending->value,
         'published_at' => null,
         'expires_at' => now()->addDays(14)->toDateTimeString(),
     ];
 
     $this->actingAs($admin)
-        ->post(route('admin.tuition.jobs.store'), $payload)
-        ->assertRedirect(route('admin.tuition.jobs.index', absolute: false));
+        ->post(route('admin.jobs.store'), $payload)
+        ->assertRedirect(route('admin.jobs.index', absolute: false));
 
     $job = TuitionJob::query()->firstOrFail();
 
-    expect($job->status)->toBe(TuitionJob::STATUS_PENDING);
+    expect($job->status)->toBe(JobStatus::Pending);
 
     $this->actingAs($admin)
-        ->patch(route('admin.tuition.jobs.approve', $job))
+        ->patch(route('admin.jobs.approve', $job))
         ->assertRedirect();
 
-    expect($job->fresh()->status)->toBe(TuitionJob::STATUS_LIVE);
+    expect($job->fresh()->status)->toBe(JobStatus::Live);
 
     $this->actingAs($admin)
-        ->patch(route('admin.tuition.jobs.approve', $job))
+        ->patch(route('admin.jobs.approve', $job))
         ->assertSessionHasErrors('job');
 
     $this->actingAs($admin)
-        ->patch(route('admin.tuition.jobs.close', $job))
+        ->patch(route('admin.jobs.status', $job), ['status' => 'closed'])
         ->assertRedirect();
 
-    expect($job->fresh()->status)->toBe(TuitionJob::STATUS_CLOSED);
+    expect($job->fresh()->status)->toBe(JobStatus::Closed);
 
     $this->actingAs($admin)
-        ->patch(route('admin.tuition.jobs.cancel', $job), ['reason' => 'No longer needed'])
+        ->patch(route('admin.jobs.status', $job), ['status' => 'cancelled', 'reason' => 'No longer needed'])
         ->assertSessionHasErrors('job');
 
     $this->actingAs($admin)
-        ->delete(route('admin.tuition.jobs.destroy', $job))
+        ->delete(route('admin.jobs.destroy', $job))
         ->assertRedirect();
 
     expect($job->fresh()->trashed())->toBeTrue();
 
     $this->actingAs($admin)
-        ->patch(route('admin.tuition.jobs.restore', $job->id))
+        ->patch(route('admin.jobs.restore', $job->id))
         ->assertRedirect();
 
     expect($job->fresh()->trashed())->toBeFalse();
 
     $this->actingAs($admin)
-        ->delete(route('admin.tuition.jobs.destroy', $job))
+        ->delete(route('admin.jobs.destroy', $job))
         ->assertRedirect();
 
     $this->actingAs($admin)
-        ->delete(route('admin.tuition.jobs.force-delete', $job->id))
+        ->delete(route('admin.jobs.force-delete', $job->id))
         ->assertRedirect();
 
     expect(TuitionJob::withTrashed()->find($job->id))->toBeNull();
@@ -163,8 +165,8 @@ it('enforces slug uniqueness across soft deleted rows and blocks subject force d
         'area_id' => $area->id,
         'subject_ids' => [$subject->id],
         'location' => '',
-        'student_gender' => TuitionJob::GENDER_ANY,
-        'tutor_gender' => TuitionJob::GENDER_ANY,
+        'student_gender' => JobGender::Any->value,
+        'tutor_gender' => JobGender::Any->value,
         'tuition_days' => ['sun', 'wed'],
         'tuition_time' => '',
         'tuition_duration' => '',
@@ -172,23 +174,23 @@ it('enforces slug uniqueness across soft deleted rows and blocks subject force d
         'salary_amount' => 7000,
         'salary_currency' => 'BDT',
         'salary_negotiable' => false,
-        'status' => TuitionJob::STATUS_PENDING,
+        'status' => JobStatus::Pending->value,
         'published_at' => null,
         'expires_at' => now()->addDays(20)->toDateTimeString(),
     ];
 
     $this->actingAs($admin)
-        ->post(route('admin.tuition.jobs.store'), $payload)
+        ->post(route('admin.jobs.store'), $payload)
         ->assertRedirect();
 
     $first = TuitionJob::query()->latest('id')->firstOrFail();
 
     $this->actingAs($admin)
-        ->delete(route('admin.tuition.jobs.destroy', $first))
+        ->delete(route('admin.jobs.destroy', $first))
         ->assertRedirect();
 
     $this->actingAs($admin)
-        ->post(route('admin.tuition.jobs.store'), $payload)
+        ->post(route('admin.jobs.store'), $payload)
         ->assertRedirect();
 
     $slugs = TuitionJob::withTrashed()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tutor;
 
+use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VerificationRequestStoreRequest;
 use App\Models\User;
@@ -70,7 +71,7 @@ class TutorVerificationController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                if ($lockedUser->verification_status === User::VERIFICATION_STATUS_VERIFIED || $lockedUser->verified_at !== null) {
+                if ($lockedUser->verification_status === VerificationStatus::Verified || $lockedUser->verified_at !== null) {
                     throw new DomainException('Your profile is already verified.');
                 }
 
@@ -87,7 +88,7 @@ class TutorVerificationController extends Controller
                 VerificationRequest::query()->create([
                     'user_id' => $lockedUser->getKey(),
                     'role' => $request->requestedRole(),
-                    'status' => VerificationRequest::STATUS_PENDING,
+                    'status' => VerificationStatus::Pending,
                     'fee_amount' => 500,
                     'currency' => 'BDT',
                     'submitted_at' => now(),
@@ -95,7 +96,7 @@ class TutorVerificationController extends Controller
                 ]);
 
                 $lockedUser->forceFill([
-                    'verification_status' => User::VERIFICATION_STATUS_PENDING,
+                    'verification_status' => VerificationStatus::Pending,
                     'verification_type' => $request->requestedRole(),
                     'verified_at' => null,
                 ])->save();

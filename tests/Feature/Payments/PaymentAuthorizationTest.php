@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\InvoiceStatus;
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Models\Invoice;
 use App\Models\User;
 use App\Models\VerificationRequest;
@@ -10,15 +13,15 @@ it('forbids user from initiating payment for another users invoice', function ()
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $owner->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     $invoice = Invoice::factory()->create([
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $owner->id,
-        'status' => Invoice::STATUS_UNPAID,
+        'status' => InvoiceStatus::Unpaid,
         'expires_at' => now()->addDay(),
     ]);
 
@@ -36,15 +39,15 @@ it('requires authentication for payment initiation routes', function () {
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $owner->id,
-        'role' => VerificationRequest::ROLE_GUARDIAN,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Guardian,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     $invoice = Invoice::factory()->create([
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $owner->id,
-        'status' => Invoice::STATUS_UNPAID,
+        'status' => InvoiceStatus::Unpaid,
     ]);
 
     $this->post(route('payment.bkash.start', $invoice))

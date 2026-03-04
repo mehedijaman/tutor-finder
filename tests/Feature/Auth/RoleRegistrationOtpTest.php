@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserStatus;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -19,7 +20,7 @@ it('tutor can register verify otp and land on tutor dashboard', function () {
     /** @var User $user */
     $user = User::query()->where('email', 'tutor1@example.com')->firstOrFail();
 
-    expect($user->status)->toBe('pending_verification');
+    expect($user->status)->toBe(UserStatus::PendingVerification);
     expect($user->phone_verified_at)->toBeNull();
 
     $verifyResponse = $this->post(route('otp.verify.store'), [
@@ -30,7 +31,7 @@ it('tutor can register verify otp and land on tutor dashboard', function () {
 
     $user->refresh();
 
-    expect($user->status)->toBe('active');
+    expect($user->status)->toBe(UserStatus::Active);
     expect($user->phone_verified_at)->not->toBeNull();
 });
 

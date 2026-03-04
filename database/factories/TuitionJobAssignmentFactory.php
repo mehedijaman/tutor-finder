@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\DurationType;
+use App\Enums\FeePaymentMode;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobAssignment;
 use App\Models\User;
@@ -29,13 +31,13 @@ class TuitionJobAssignmentFactory extends Factory
             'fault' => null,
             'cancel_reason' => null,
             'reported_within_24h' => false,
-            'duration_type' => TuitionJobAssignment::DURATION_LONG_TERM,
+            'duration_type' => DurationType::LongTerm,
             'short_term_months' => null,
             'service_fee_rate' => null,
             'service_fee_amount' => null,
             'fee_currency' => 'BDT',
             'fee_due_at' => null,
-            'fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
+            'fee_payment_mode' => FeePaymentMode::PayBefore,
             'month1_escrow_required' => false,
             'month1_escrow_paid_at' => null,
             'first_month_received_at' => null,

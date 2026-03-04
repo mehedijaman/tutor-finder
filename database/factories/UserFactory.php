@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -30,9 +33,9 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'phone_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'role' => 'guardian',
-            'status' => 'active',
-            'verification_status' => 'unverified',
+            'role' => UserRole::Guardian,
+            'status' => UserStatus::Active,
+            'verification_status' => VerificationStatus::Unverified,
             'verification_type' => null,
             'verified_at' => null,
             'remember_token' => Str::random(10),
@@ -70,7 +73,7 @@ class UserFactory extends Factory
     public function pendingVerification(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'pending_verification',
+            'status' => UserStatus::PendingVerification,
             'phone_verified_at' => null,
         ]);
     }
@@ -81,7 +84,7 @@ class UserFactory extends Factory
     public function suspended(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'suspended',
+            'status' => UserStatus::Suspended,
         ]);
     }
 
@@ -91,7 +94,7 @@ class UserFactory extends Factory
     public function tutor(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'tutor',
+            'role' => UserRole::Tutor,
         ]);
     }
 
@@ -101,7 +104,7 @@ class UserFactory extends Factory
     public function guardian(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'guardian',
+            'role' => UserRole::Guardian,
         ]);
     }
 
@@ -111,8 +114,8 @@ class UserFactory extends Factory
     public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'admin',
-            'status' => 'active',
+            'role' => UserRole::Admin,
+            'status' => UserStatus::Active,
             'phone' => null,
             'phone_verified_at' => now(),
         ]);

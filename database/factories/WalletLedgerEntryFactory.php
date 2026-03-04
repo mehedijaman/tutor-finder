@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\LedgerEntryType;
 use App\Models\User;
 use App\Models\WalletLedgerEntry;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,8 +24,8 @@ class WalletLedgerEntryFactory extends Factory
             'journal_uuid' => Str::uuid()->toString(),
             'owner_user_id' => User::factory(),
             'type' => fake()->randomElement([
-                WalletLedgerEntry::TYPE_DEBIT,
-                WalletLedgerEntry::TYPE_CREDIT,
+                LedgerEntryType::Debit,
+                LedgerEntryType::Credit,
             ]),
             'amount' => fake()->randomFloat(2, 100, 5000),
             'currency' => 'BDT',

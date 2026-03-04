@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Enums\DurationType;
+use App\Enums\FeePaymentMode;
+use App\Enums\JobGender;
+use App\Enums\JobStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -84,15 +88,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Road 8A, Dhanmondi, near Dhanmondi Lake',
                 'latitude' => 23.7465,
                 'longitude' => 90.3760,
-                'student_gender' => TuitionJob::GENDER_FEMALE,
-                'tutor_gender' => TuitionJob::GENDER_FEMALE,
+                'student_gender' => JobGender::Female,
+                'tutor_gender' => JobGender::Female,
                 'tuition_days' => ['sun', 'tue', 'thu'],
                 'tuition_time' => '5:00 PM - 7:00 PM',
                 'tuition_duration' => '6 months',
                 'no_of_students' => 1,
                 'salary_amount' => 12000,
                 'salary_negotiable' => true,
-                'status' => TuitionJob::STATUS_LIVE,
+                'status' => JobStatus::Live,
                 'published_days_ago' => 6,
                 'expires_in_days' => 24,
                 'view_count' => 184,
@@ -110,15 +114,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Section 10, Mirpur, opposite local market',
                 'latitude' => 23.8067,
                 'longitude' => 90.3686,
-                'student_gender' => TuitionJob::GENDER_FEMALE,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Female,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sat', 'mon', 'wed', 'thu'],
                 'tuition_time' => '6:00 PM - 8:00 PM',
                 'tuition_duration' => '8 months',
                 'no_of_students' => 1,
                 'salary_amount' => 15000,
                 'salary_negotiable' => false,
-                'status' => TuitionJob::STATUS_LIVE,
+                'status' => JobStatus::Live,
                 'published_days_ago' => 10,
                 'expires_in_days' => 20,
                 'view_count' => 263,
@@ -136,15 +140,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Block D, Bashundhara Residential Area',
                 'latitude' => 23.8103,
                 'longitude' => 90.4254,
-                'student_gender' => TuitionJob::GENDER_MALE,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Male,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sun', 'tue', 'thu'],
                 'tuition_time' => '7:00 PM - 9:00 PM',
                 'tuition_duration' => '4 months',
                 'no_of_students' => 1,
                 'salary_amount' => 18000,
                 'salary_negotiable' => false,
-                'status' => TuitionJob::STATUS_LIVE,
+                'status' => JobStatus::Live,
                 'published_days_ago' => 3,
                 'expires_in_days' => 30,
                 'view_count' => 142,
@@ -162,15 +166,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'House 19, Sector 7, Uttara',
                 'latitude' => 23.8759,
                 'longitude' => 90.3795,
-                'student_gender' => TuitionJob::GENDER_MALE,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Male,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sat', 'mon', 'wed'],
                 'tuition_time' => '8:00 PM - 9:30 PM',
                 'tuition_duration' => '5 months',
                 'no_of_students' => 1,
                 'salary_amount' => 22000,
                 'salary_negotiable' => true,
-                'status' => TuitionJob::STATUS_PENDING,
+                'status' => JobStatus::Pending,
                 'expires_in_days' => 18,
                 'view_count' => 0,
                 'description' => 'Guardian posted a pending request for A Level Pure Mathematics support. Student is preparing for upcoming assessment and needs twice-to-thrice weekly intensive sessions.',
@@ -187,15 +191,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'GEC Circle, near shopping complex',
                 'latitude' => 22.3569,
                 'longitude' => 91.8221,
-                'student_gender' => TuitionJob::GENDER_FEMALE,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Female,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sun', 'mon', 'wed', 'thu'],
                 'tuition_time' => '4:30 PM - 6:30 PM',
                 'tuition_duration' => '7 months',
                 'no_of_students' => 3,
                 'salary_amount' => 20000,
                 'salary_negotiable' => false,
-                'status' => TuitionJob::STATUS_LIVE,
+                'status' => JobStatus::Live,
                 'published_days_ago' => 5,
                 'expires_in_days' => 40,
                 'created_by_admin' => true,
@@ -214,15 +218,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Boalia, close to Rajshahi College area',
                 'latitude' => 24.3660,
                 'longitude' => 88.6007,
-                'student_gender' => TuitionJob::GENDER_MALE,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Male,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sat', 'mon', 'wed', 'fri'],
                 'tuition_time' => '5:00 PM - 7:00 PM',
                 'tuition_duration' => '6 months',
                 'no_of_students' => 2,
                 'salary_amount' => 17000,
                 'salary_negotiable' => true,
-                'status' => TuitionJob::STATUS_PENDING,
+                'status' => JobStatus::Pending,
                 'expires_in_days' => 30,
                 'view_count' => 0,
                 'description' => 'Pending guardian request for BUET and engineering university admission preparation. Preference for tutors with previous admission coaching experience.',
@@ -239,15 +243,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Block B, Shahjalal Upashahar, Sylhet',
                 'latitude' => 24.9025,
                 'longitude' => 91.8687,
-                'student_gender' => TuitionJob::GENDER_MALE,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Male,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sun', 'tue', 'thu'],
                 'tuition_time' => '7:30 PM - 9:00 PM',
                 'tuition_duration' => '4 months',
                 'no_of_students' => 1,
                 'salary_amount' => 16000,
                 'salary_negotiable' => false,
-                'status' => TuitionJob::STATUS_CONFIRMED,
+                'status' => JobStatus::Confirmed,
                 'published_days_ago' => 20,
                 'expires_in_days' => 10,
                 'confirmed_days_ago' => 7,
@@ -268,15 +272,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Sonadanga Residential Area, Khulna',
                 'latitude' => 22.8456,
                 'longitude' => 89.5403,
-                'student_gender' => TuitionJob::GENDER_MALE,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Male,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sat', 'mon', 'wed'],
                 'tuition_time' => '6:00 PM - 8:00 PM',
                 'tuition_duration' => '3 months',
                 'no_of_students' => 1,
                 'salary_amount' => 9000,
                 'salary_negotiable' => true,
-                'status' => TuitionJob::STATUS_CANCELLED,
+                'status' => JobStatus::Cancelled,
                 'published_days_ago' => 25,
                 'cancellation_reason' => 'Student relocated to another city and no longer needs home tuition.',
                 'view_count' => 95,
@@ -294,15 +298,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Mohammadpur Housing, Dhaka',
                 'latitude' => 23.7641,
                 'longitude' => 90.3585,
-                'student_gender' => TuitionJob::GENDER_ANY,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Any,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sat', 'sun', 'tue', 'thu'],
                 'tuition_time' => '4:00 PM - 6:00 PM',
                 'tuition_duration' => '5 months',
                 'no_of_students' => 4,
                 'salary_amount' => 7000,
                 'salary_negotiable' => false,
-                'status' => TuitionJob::STATUS_CLOSED,
+                'status' => JobStatus::Closed,
                 'published_days_ago' => 60,
                 'created_by_admin' => true,
                 'view_count' => 320,
@@ -320,15 +324,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => 'Online classes from Badda via Zoom',
                 'latitude' => null,
                 'longitude' => null,
-                'student_gender' => TuitionJob::GENDER_ANY,
-                'tutor_gender' => TuitionJob::GENDER_ANY,
+                'student_gender' => JobGender::Any,
+                'tutor_gender' => JobGender::Any,
                 'tuition_days' => ['sun', 'mon', 'wed'],
                 'tuition_time' => '8:00 PM - 9:00 PM',
                 'tuition_duration' => '3 months',
                 'no_of_students' => 1,
                 'salary_amount' => 8000,
                 'salary_negotiable' => true,
-                'status' => TuitionJob::STATUS_LIVE,
+                'status' => JobStatus::Live,
                 'published_days_ago' => 2,
                 'expires_in_days' => 21,
                 'view_count' => 88,
@@ -390,7 +394,7 @@ class BangladeshDemoJobsSeeder extends Seeder
                 ->values()
                 ->all();
 
-            $status = (string) $jobData['status'];
+            $status = $jobData['status'];
             $tuitionDays = $this->normalizeTuitionDays($jobData['tuition_days'] ?? []);
             $selectedTutorId = null;
 
@@ -420,8 +424,8 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'location' => $jobData['location'] ?? null,
                 'latitude' => $jobData['latitude'] ?? null,
                 'longitude' => $jobData['longitude'] ?? null,
-                'student_gender' => $jobData['student_gender'] ?? TuitionJob::GENDER_ANY,
-                'tutor_gender' => $jobData['tutor_gender'] ?? TuitionJob::GENDER_ANY,
+                'student_gender' => $jobData['student_gender'] ?? JobGender::Any,
+                'tutor_gender' => $jobData['tutor_gender'] ?? JobGender::Any,
                 'tuition_days' => $tuitionDays,
                 'days_per_week' => count($tuitionDays),
                 'tuition_time' => $jobData['tuition_time'] ?? null,
@@ -431,15 +435,15 @@ class BangladeshDemoJobsSeeder extends Seeder
                 'salary_currency' => 'BDT',
                 'salary_negotiable' => (bool) ($jobData['salary_negotiable'] ?? false),
                 'status' => $status,
-                'cancellation_reason' => $status === TuitionJob::STATUS_CANCELLED
+                'cancellation_reason' => $status === JobStatus::Cancelled
                     ? ($jobData['cancellation_reason'] ?? 'Cancelled by guardian.')
                     : null,
                 'published_at' => $this->resolvePublishedAt($status, $jobData['published_days_ago'] ?? null),
                 'expires_at' => $this->resolveExpiresAt($status, $jobData['expires_in_days'] ?? null),
                 'created_by' => ($jobData['created_by_admin'] ?? false) ? $admin?->id : null,
-                'updated_by' => (($jobData['created_by_admin'] ?? false) || $status !== TuitionJob::STATUS_PENDING) ? $admin?->id : null,
-                'confirmed_by' => $status === TuitionJob::STATUS_CONFIRMED ? $admin?->id : null,
-                'confirmed_at' => $status === TuitionJob::STATUS_CONFIRMED
+                'updated_by' => (($jobData['created_by_admin'] ?? false) || $status !== JobStatus::Pending) ? $admin?->id : null,
+                'confirmed_by' => $status === JobStatus::Confirmed ? $admin?->id : null,
+                'confirmed_at' => $status === JobStatus::Confirmed
                     ? now()->subDays((int) ($jobData['confirmed_days_ago'] ?? 5))
                     : null,
                 'view_count' => (int) ($jobData['view_count'] ?? 0),
@@ -457,7 +461,7 @@ class BangladeshDemoJobsSeeder extends Seeder
 
             $job->subjects()->sync($subjectIds);
 
-            if ($status === TuitionJob::STATUS_CONFIRMED && $selectedTutorId !== null) {
+            if ($status === JobStatus::Confirmed && $selectedTutorId !== null) {
                 $confirmedAt = $job->confirmed_at ?? now();
 
                 TuitionJobAssignment::query()->updateOrCreate(
@@ -466,9 +470,9 @@ class BangladeshDemoJobsSeeder extends Seeder
                         'tutor_user_id' => $selectedTutorId,
                         'appointed_at' => $confirmedAt,
                         'confirmed_at' => $confirmedAt,
-                        'duration_type' => TuitionJobAssignment::DURATION_LONG_TERM,
+                        'duration_type' => DurationType::LongTerm,
                         'fee_currency' => 'BDT',
-                        'fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
+                        'fee_payment_mode' => FeePaymentMode::PayBefore,
                         'month1_escrow_required' => false,
                         'reported_within_24h' => false,
                         'metadata' => ['seed' => 'BangladeshDemoJobsSeeder'],
@@ -501,9 +505,9 @@ class BangladeshDemoJobsSeeder extends Seeder
     /**
      * Resolve published timestamp by lifecycle status.
      */
-    private function resolvePublishedAt(string $status, ?int $daysAgo): ?\Carbon\CarbonInterface
+    private function resolvePublishedAt(JobStatus $status, ?int $daysAgo): ?\Carbon\CarbonInterface
     {
-        if ($status === TuitionJob::STATUS_PENDING) {
+        if ($status === JobStatus::Pending) {
             return null;
         }
 
@@ -513,9 +517,9 @@ class BangladeshDemoJobsSeeder extends Seeder
     /**
      * Resolve expiry timestamp by lifecycle status.
      */
-    private function resolveExpiresAt(string $status, ?int $daysOffset): ?\Carbon\CarbonInterface
+    private function resolveExpiresAt(JobStatus $status, ?int $daysOffset): ?\Carbon\CarbonInterface
     {
-        if ($status === TuitionJob::STATUS_CANCELLED || $status === TuitionJob::STATUS_CLOSED) {
+        if ($status === JobStatus::Cancelled || $status === JobStatus::Closed) {
             return now()->subDays(abs($daysOffset ?? 5));
         }
 

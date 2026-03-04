@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ProfileStatus;
 use App\Models\TutorProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -35,7 +36,7 @@ class TutorProfileFactory extends Factory
             'expected_salary_max' => 10000,
             'available_days' => ['sat', 'mon', 'wed'],
             'available_time' => '5 PM - 8 PM',
-            'status' => TutorProfile::STATUS_ACTIVE,
+            'status' => ProfileStatus::Active,
         ];
     }
 }

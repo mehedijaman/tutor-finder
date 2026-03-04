@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\VerificationRequest;
+use App\Enums\VerificationStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,7 +27,7 @@ class VerificationDecisionRequest extends FormRequest
 
         $this->merge([
             'reason' => trim((string) $this->input('reason')),
-            'decision_status' => strtolower(trim((string) $this->input('decision_status', VerificationRequest::STATUS_REJECTED))),
+            'decision_status' => strtolower(trim((string) $this->input('decision_status', VerificationStatus::Rejected->value))),
         ]);
     }
 
@@ -50,8 +50,8 @@ class VerificationDecisionRequest extends FormRequest
             'decision_status' => [
                 'required',
                 Rule::in([
-                    VerificationRequest::STATUS_REJECTED,
-                    VerificationRequest::STATUS_CANCELLED,
+                    VerificationStatus::Rejected->value,
+                    VerificationStatus::Cancelled->value,
                 ]),
             ],
         ];

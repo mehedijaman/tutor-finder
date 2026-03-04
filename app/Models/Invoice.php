@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
+use App\Enums\PaymentGatewayType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,36 +24,6 @@ class Invoice extends Model
             $invoice->syncLegacyUserReference();
         });
     }
-
-    public const STATUS_DRAFT = 'draft';
-
-    public const STATUS_UNPAID = 'unpaid';
-
-    public const STATUS_PAID = 'paid';
-
-    public const STATUS_REFUNDED = 'refunded';
-
-    public const STATUS_VOID = 'void';
-
-    public const STATUS_PROCESSING = 'processing';
-
-    public const STATUS_FAILED = 'failed';
-
-    public const STATUS_CANCELLED = 'cancelled';
-
-    public const GATEWAY_BKASH = 'bkash';
-
-    public const GATEWAY_SSLCOMMERZ = 'sslcommerz';
-
-    public const GATEWAY_MANUAL = 'manual';
-
-    public const TYPE_TUTOR_VERIFICATION_FEE = 'tutor_verification_fee';
-
-    public const TYPE_GUARDIAN_VERIFICATION_FEE = 'guardian_verification_fee';
-
-    public const TYPE_PLATFORM_SERVICE_FEE = 'platform_service_fee';
-
-    public const TYPE_ONLINE_MONTH1_ESCROW = 'online_month1_escrow';
 
     /**
      * @var list<string>
@@ -88,6 +61,9 @@ class Invoice extends Model
     protected function casts(): array
     {
         return [
+            'type' => InvoiceType::class,
+            'status' => InvoiceStatus::class,
+            'payment_gateway' => PaymentGatewayType::class,
             'amount' => 'decimal:2',
             'due_at' => 'datetime',
             'expires_at' => 'datetime',
@@ -166,7 +142,7 @@ class Invoice extends Model
      */
     public function isPayable(): bool
     {
-        if ($this->status !== self::STATUS_UNPAID) {
+        if ($this->status !== InvoiceStatus::Unpaid) {
             return false;
         }
 
@@ -182,10 +158,7 @@ class Invoice extends Model
      */
     public function isVerificationInvoice(): bool
     {
-        return in_array($this->type, [
-            self::TYPE_TUTOR_VERIFICATION_FEE,
-            self::TYPE_GUARDIAN_VERIFICATION_FEE,
-        ], true);
+        return $this->type->isVerification();
     }
 
     /**
@@ -209,41 +182,26 @@ class Invoice extends Model
     /**
      * Return statuses that represent terminal failure/cancel paths.
      *
-     * @return list<string>
+     * @return list<InvoiceStatus>
      */
     public static function recoverableStatuses(): array
     {
-        return [
-            self::STATUS_VOID,
-            self::STATUS_FAILED,
-            self::STATUS_CANCELLED,
-        ];
+        return InvoiceStatus::recoverableStatuses();
     }
 
     /**
-     * @return list<string>
+     * @return list<InvoiceStatus>
      */
     public static function statuses(): array
     {
-        return [
-            self::STATUS_DRAFT,
-            self::STATUS_UNPAID,
-            self::STATUS_PAID,
-            self::STATUS_REFUNDED,
-            self::STATUS_VOID,
-        ];
+        return InvoiceStatus::cases();
     }
 
     /**
-     * @return list<string>
+     * @return list<InvoiceType>
      */
     public static function types(): array
     {
-        return [
-            self::TYPE_TUTOR_VERIFICATION_FEE,
-            self::TYPE_GUARDIAN_VERIFICATION_FEE,
-            self::TYPE_PLATFORM_SERVICE_FEE,
-            self::TYPE_ONLINE_MONTH1_ESCROW,
-        ];
+        return InvoiceType::cases();
     }
 }

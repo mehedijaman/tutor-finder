@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Models\User;
@@ -24,15 +26,15 @@ class VerifyOtpController extends Controller
             return redirect('/login');
         }
 
-        if ($user->role === 'admin') {
+        if ($user->role === UserRole::Admin) {
             return redirect('/admin/dashboard');
         }
 
-        if ($user->status === 'active') {
+        if ($user->status === UserStatus::Active) {
             return redirect(RoleRedirector::destinationFor($user));
         }
 
-        if ($user->status === 'suspended') {
+        if ($user->status === UserStatus::Suspended) {
             abort(403);
         }
 
@@ -61,15 +63,15 @@ class VerifyOtpController extends Controller
     {
         $user = $request->user();
 
-        if (! $user instanceof User || ! in_array($user->role, ['guardian', 'tutor'], true)) {
+        if (! $user instanceof User || ! in_array($user->role, [UserRole::Guardian, UserRole::Tutor], true)) {
             return redirect('/login');
         }
 
-        if ($user->status === 'active') {
+        if ($user->status === UserStatus::Active) {
             return redirect(RoleRedirector::destinationFor($user));
         }
 
-        if ($user->status === 'suspended') {
+        if ($user->status === UserStatus::Suspended) {
             abort(403);
         }
 
@@ -93,7 +95,7 @@ class VerifyOtpController extends Controller
 
         $user->forceFill([
             'phone_verified_at' => now(),
-            'status' => 'active',
+            'status' => UserStatus::Active,
         ])->save();
 
         $request->session()->forget('otp.local_debug');

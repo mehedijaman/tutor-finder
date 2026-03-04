@@ -1,5 +1,9 @@
 <?php
 
+use App\Enums\InvoiceStatus;
+use App\Enums\PaymentGatewayType;
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Models\Invoice;
 use App\Models\User;
 use App\Models\VerificationRequest;
@@ -13,14 +17,14 @@ it('admin can approve, generate invoice, and mark payment paid for verification'
     $admin->assignRole('super-admin');
 
     $tutor = User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_PENDING,
-        'verification_type' => VerificationRequest::ROLE_TUTOR,
+        'verification_status' => VerificationStatus::Pending,
+        'verification_type' => VerificationRole::Tutor,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $tutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_PENDING,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Pending,
         'fee_amount' => 500,
         'currency' => 'BDT',
     ]);
@@ -29,8 +33,8 @@ it('admin can approve, generate invoice, and mark payment paid for verification'
         ->patch(route('admin.verifications.approve', $verificationRequest))
         ->assertRedirect();
 
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_APPROVED);
-    expect($tutor->fresh()->verification_status)->toBe(User::VERIFICATION_STATUS_APPROVED);
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Approved);
+    expect($tutor->fresh()->verification_status)->toBe(VerificationStatus::Approved);
 
     $this->actingAs($admin)
         ->post(route('admin.verifications.invoice', $verificationRequest), [
@@ -47,26 +51,26 @@ it('admin can approve, generate invoice, and mark payment paid for verification'
         ->first();
 
     expect($invoice)->not->toBeNull();
-    expect($invoice->status)->toBe(Invoice::STATUS_UNPAID);
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_INVOICED);
-    expect($tutor->fresh()->verification_status)->toBe(User::VERIFICATION_STATUS_INVOICED);
+    expect($invoice->status)->toBe(InvoiceStatus::Unpaid);
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Invoiced);
+    expect($tutor->fresh()->verification_status)->toBe(VerificationStatus::Invoiced);
 
     $this->actingAs($admin)
         ->patch(route('admin.invoices.mark-paid', $invoice), [
-            'payment_gateway' => Invoice::GATEWAY_MANUAL,
+            'payment_gateway' => PaymentGatewayType::Manual->value,
             'payment_method' => 'cash',
             'payment_reference' => 'ADMIN-REF-1001',
             'paid_at' => now()->toDateTimeString(),
         ])
         ->assertRedirect();
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
     expect($invoice->fresh()->transaction_id)->toBe('ADMIN-REF-1001');
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_VERIFIED);
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Verified);
 
     $tutor->refresh();
 
-    expect($tutor->verification_status)->toBe(User::VERIFICATION_STATUS_VERIFIED);
+    expect($tutor->verification_status)->toBe(VerificationStatus::Verified);
     expect($tutor->verified_at)->not->toBeNull();
 });
 
@@ -77,35 +81,35 @@ it('admin manual override can verify a failed invoice', function () {
     $admin->assignRole('super-admin');
 
     $guardian = User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_INVOICED,
-        'verification_type' => VerificationRequest::ROLE_GUARDIAN,
+        'verification_status' => VerificationStatus::Invoiced,
+        'verification_type' => VerificationRole::Guardian,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $guardian->id,
-        'role' => VerificationRequest::ROLE_GUARDIAN,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Guardian,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     $invoice = Invoice::factory()->create([
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $guardian->id,
-        'status' => Invoice::STATUS_FAILED,
+        'status' => InvoiceStatus::Failed,
     ]);
 
     $this->actingAs($admin)
         ->patch(route('admin.invoices.mark-paid', $invoice), [
-            'payment_gateway' => Invoice::GATEWAY_MANUAL,
+            'payment_gateway' => PaymentGatewayType::Manual->value,
             'payment_method' => 'manual',
             'payment_reference' => 'OVERRIDE-001',
             'paid_at' => now()->toDateTimeString(),
         ])
         ->assertRedirect();
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_VERIFIED);
-    expect($guardian->fresh()->verification_status)->toBe(User::VERIFICATION_STATUS_VERIFIED);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Verified);
+    expect($guardian->fresh()->verification_status)->toBe(VerificationStatus::Verified);
 });
 
 it('admin without verification permissions cannot access verification routes', function () {
@@ -125,16 +129,16 @@ it('admin can view pending profile verification menu', function () {
     $admin->assignRole('super-admin');
 
     User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_PENDING,
+        'verification_status' => VerificationStatus::Pending,
     ]);
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_APPROVED,
+        'verification_status' => VerificationStatus::Approved,
     ]);
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_INVOICED,
+        'verification_status' => VerificationStatus::Invoiced,
     ]);
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_UNVERIFIED,
+        'verification_status' => VerificationStatus::Unverified,
     ]);
 
     $this->actingAs($admin)
@@ -153,10 +157,10 @@ it('admin can view unverified profile verification menu', function () {
     $admin->assignRole('super-admin');
 
     User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_UNVERIFIED,
+        'verification_status' => VerificationStatus::Unverified,
     ]);
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_VERIFIED,
+        'verification_status' => VerificationStatus::Verified,
     ]);
 
     $this->actingAs($admin)
@@ -175,10 +179,10 @@ it('admin can view verified profile verification menu', function () {
     $admin->assignRole('super-admin');
 
     User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_VERIFIED,
+        'verification_status' => VerificationStatus::Verified,
     ]);
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_PENDING,
+        'verification_status' => VerificationStatus::Pending,
     ]);
 
     $this->actingAs($admin)

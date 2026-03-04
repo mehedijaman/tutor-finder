@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\ContactMessage;
+use App\Enums\ContactMessageStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class ContactMessageStatusUpdateRequest extends FormRequest
 {
@@ -37,7 +37,7 @@ class ContactMessageStatusUpdateRequest extends FormRequest
             'status' => [
                 'required',
                 'string',
-                Rule::in([ContactMessage::STATUS_OPEN, ContactMessage::STATUS_CLOSED]),
+                new Enum(ContactMessageStatus::class),
             ],
         ];
     }

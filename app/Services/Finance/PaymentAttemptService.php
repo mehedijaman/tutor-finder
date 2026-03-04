@@ -2,6 +2,9 @@
 
 namespace App\Services\Finance;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Services\Payments\BkashService;
@@ -29,7 +32,7 @@ class PaymentAttemptService
     {
         $normalizedGateway = strtolower(trim($gateway));
 
-        if (! in_array($normalizedGateway, [Invoice::GATEWAY_BKASH, Invoice::GATEWAY_SSLCOMMERZ], true)) {
+        if (! in_array($normalizedGateway, [PaymentGatewayType::Bkash->value, PaymentGatewayType::Sslcommerz->value], true)) {
             throw new DomainException('Unsupported payment gateway selected.');
         }
 
@@ -44,7 +47,7 @@ class PaymentAttemptService
 
             $pendingExists = Payment::query()
                 ->where('invoice_id', $lockedInvoice->id)
-                ->where('status', Payment::STATUS_PENDING)
+                ->where('status', PaymentStatus::Pending)
                 ->lockForUpdate()
                 ->exists();
 
@@ -57,7 +60,7 @@ class PaymentAttemptService
                 'gateway' => $normalizedGateway,
                 'provider_txn_id' => null,
                 'amount' => $lockedInvoice->amount,
-                'status' => Payment::STATUS_PENDING,
+                'status' => PaymentStatus::Pending,
                 'provider_payload' => null,
             ]);
         });
@@ -66,14 +69,14 @@ class PaymentAttemptService
 
         try {
             $response = match ($normalizedGateway) {
-                Invoice::GATEWAY_BKASH => $this->bkashService->initiate($invoice),
-                Invoice::GATEWAY_SSLCOMMERZ => $this->sslCommerzService->initiate($invoice),
+                PaymentGatewayType::Bkash->value => $this->bkashService->initiate($invoice),
+                PaymentGatewayType::Sslcommerz->value => $this->sslCommerzService->initiate($invoice),
                 default => throw new DomainException('Unsupported payment gateway selected.'),
             };
         } catch (\Throwable $exception) {
             $this->database->transaction(function () use ($payment): void {
                 $payment->forceFill([
-                    'status' => Payment::STATUS_FAILED,
+                    'status' => PaymentStatus::Failed,
                 ])->save();
             });
 
@@ -117,7 +120,7 @@ class PaymentAttemptService
             return null;
         }
 
-        $invoice = $this->resolveInvoiceByReference(Invoice::GATEWAY_BKASH, $paymentId);
+        $invoice = $this->resolveInvoiceByReference(PaymentGatewayType::Bkash, $paymentId);
 
         if (! $invoice instanceof Invoice) {
             return null;
@@ -128,8 +131,8 @@ class PaymentAttemptService
         } catch (\Throwable $exception) {
             $this->markInvoiceAttemptFailure(
                 invoice: $invoice,
-                gateway: Invoice::GATEWAY_BKASH,
-                status: Payment::STATUS_FAILED,
+                gateway: PaymentGatewayType::Bkash,
+                status: PaymentStatus::Failed,
                 payload: [
                     'callback' => $request->all(),
                     'error' => $exception->getMessage(),
@@ -141,7 +144,7 @@ class PaymentAttemptService
 
         return $this->finalizeSuccessfulAttempt(
             invoice: $invoice,
-            gateway: Invoice::GATEWAY_BKASH,
+            gateway: PaymentGatewayType::Bkash,
             reference: $paymentId,
             providerTransactionId: (string) $result['transaction_id'],
             paymentMethod: 'bkash',
@@ -163,7 +166,7 @@ class PaymentAttemptService
             return null;
         }
 
-        $invoice = $this->resolveInvoiceByReference(Invoice::GATEWAY_SSLCOMMERZ, $tranId);
+        $invoice = $this->resolveInvoiceByReference(PaymentGatewayType::Sslcommerz, $tranId);
 
         if (! $invoice instanceof Invoice) {
             return null;
@@ -174,8 +177,8 @@ class PaymentAttemptService
         } catch (\Throwable $exception) {
             $this->markInvoiceAttemptFailure(
                 invoice: $invoice,
-                gateway: Invoice::GATEWAY_SSLCOMMERZ,
-                status: Payment::STATUS_FAILED,
+                gateway: PaymentGatewayType::Sslcommerz,
+                status: PaymentStatus::Failed,
                 payload: [
                     'callback' => $request->all(),
                     'error' => $exception->getMessage(),
@@ -187,7 +190,7 @@ class PaymentAttemptService
 
         return $this->finalizeSuccessfulAttempt(
             invoice: $invoice,
-            gateway: Invoice::GATEWAY_SSLCOMMERZ,
+            gateway: PaymentGatewayType::Sslcommerz,
             reference: $tranId,
             providerTransactionId: (string) $result['transaction_id'],
             paymentMethod: strtolower((string) Arr::get($result['payload'], 'card_type', 'sslcommerz')),
@@ -205,11 +208,11 @@ class PaymentAttemptService
      */
     public function markInvoiceAttemptFailure(
         Invoice $invoice,
-        string $gateway,
-        string $status = Payment::STATUS_FAILED,
+        PaymentGatewayType $gateway,
+        PaymentStatus $status = PaymentStatus::Failed,
         array $payload = [],
     ): void {
-        if (! in_array($status, [Payment::STATUS_FAILED, Payment::STATUS_CANCELLED], true)) {
+        if (! in_array($status, [PaymentStatus::Failed, PaymentStatus::Cancelled], true)) {
             throw new DomainException('Invalid payment attempt status.');
         }
 
@@ -217,14 +220,14 @@ class PaymentAttemptService
             /** @var Invoice $lockedInvoice */
             $lockedInvoice = Invoice::query()->lockForUpdate()->findOrFail($invoice->getKey());
 
-            if ($lockedInvoice->status === Invoice::STATUS_PAID) {
+            if ($lockedInvoice->status === InvoiceStatus::Paid) {
                 return;
             }
 
             $activeAttempt = Payment::query()
                 ->where('invoice_id', $lockedInvoice->id)
                 ->where('gateway', $gateway)
-                ->where('status', Payment::STATUS_PENDING)
+                ->where('status', PaymentStatus::Pending)
                 ->orderBy('id')
                 ->lockForUpdate()
                 ->first();
@@ -254,7 +257,7 @@ class PaymentAttemptService
         });
     }
 
-    private function resolveInvoiceByReference(string $gateway, string $reference): ?Invoice
+    private function resolveInvoiceByReference(PaymentGatewayType $gateway, string $reference): ?Invoice
     {
         return Invoice::query()
             ->with(['invoiceable', 'payer', 'payee', 'user'])
@@ -268,7 +271,7 @@ class PaymentAttemptService
      */
     private function finalizeSuccessfulAttempt(
         Invoice $invoice,
-        string $gateway,
+        PaymentGatewayType $gateway,
         string $reference,
         string $providerTransactionId,
         string $paymentMethod,
@@ -289,10 +292,10 @@ class PaymentAttemptService
                     ->lockForUpdate()
                     ->first();
 
-                if ($lockedInvoice->status === Invoice::STATUS_PAID) {
+                if ($lockedInvoice->status === InvoiceStatus::Paid) {
                     if ($paymentByProviderTxn instanceof Payment
                         && (int) $paymentByProviderTxn->invoice_id === (int) $lockedInvoice->id
-                        && $paymentByProviderTxn->status === Payment::STATUS_PAID) {
+                        && $paymentByProviderTxn->status === PaymentStatus::Paid) {
                         return $lockedInvoice->fresh(['invoiceable', 'payer', 'payee']);
                     }
 
@@ -310,7 +313,7 @@ class PaymentAttemptService
                     $activeAttempt = Payment::query()
                         ->where('invoice_id', $lockedInvoice->id)
                         ->where('gateway', $gateway)
-                        ->where('status', Payment::STATUS_PENDING)
+                        ->where('status', PaymentStatus::Pending)
                         ->orderBy('id')
                         ->lockForUpdate()
                         ->first();
@@ -322,7 +325,7 @@ class PaymentAttemptService
                         'gateway' => $gateway,
                         'provider_txn_id' => null,
                         'amount' => $lockedInvoice->amount,
-                        'status' => Payment::STATUS_PENDING,
+                        'status' => PaymentStatus::Pending,
                         'provider_payload' => null,
                     ]);
                 }
@@ -332,7 +335,7 @@ class PaymentAttemptService
 
                 $activeAttempt->forceFill([
                     'provider_txn_id' => $providerTransactionId,
-                    'status' => Payment::STATUS_PAID,
+                    'status' => PaymentStatus::Paid,
                     'provider_payload' => $attemptPayload,
                 ])->save();
 
@@ -365,14 +368,14 @@ class PaymentAttemptService
      */
     private function recordCallbackConflict(
         Invoice $invoice,
-        string $gateway,
+        PaymentGatewayType $gateway,
         string $providerTransactionId,
         array $payload = [],
     ): void {
         report(new DomainException(sprintf(
             'Payment callback conflict on invoice %d for gateway %s and provider txn %s.',
             (int) $invoice->id,
-            $gateway,
+            $gateway->value,
             $providerTransactionId,
         )));
 
@@ -381,7 +384,7 @@ class PaymentAttemptService
             'gateway' => $gateway,
             'provider_txn_id' => null,
             'amount' => $invoice->amount,
-            'status' => Payment::STATUS_FAILED,
+            'status' => PaymentStatus::Failed,
             'provider_payload' => [
                 'conflict_provider_txn_id' => $providerTransactionId,
                 'callback_payload' => $payload,

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Tutor;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tutor\RefundRequestStoreRequest;
-use App\Models\Invoice;
 use App\Models\RefundRequest;
 use App\Models\TuitionJobAssignment;
 use App\Services\Finance\RefundWorkflowService;
@@ -66,13 +67,13 @@ class RefundRequestController extends Controller
                 'job:id,title,slug',
                 'invoices' => fn (Builder $builder): Builder => $builder
                     ->select(['id', 'job_assignment_id', 'type', 'status', 'amount', 'currency'])
-                    ->where('type', Invoice::TYPE_PLATFORM_SERVICE_FEE)
-                    ->where('status', Invoice::STATUS_PAID),
+                    ->where('type', InvoiceType::PlatformServiceFee)
+                    ->where('status', InvoiceStatus::Paid),
             ])
             ->where('tutor_user_id', $request->user()?->getAuthIdentifier())
             ->whereHas('invoices', fn (Builder $builder): Builder => $builder
-                ->where('type', Invoice::TYPE_PLATFORM_SERVICE_FEE)
-                ->where('status', Invoice::STATUS_PAID))
+                ->where('type', InvoiceType::PlatformServiceFee)
+                ->where('status', InvoiceStatus::Paid))
             ->latest('id')
             ->get()
             ->map(fn (TuitionJobAssignment $assignment): array => [

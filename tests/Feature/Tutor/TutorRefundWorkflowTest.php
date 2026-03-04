@@ -1,5 +1,11 @@
 <?php
 
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
+use App\Enums\JobStatus;
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
+use App\Enums\RefundStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\RefundRequest;
@@ -19,7 +25,7 @@ it('tutor can submit refund request and duplicate pending request is blocked', f
 
     $job = TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
         'published_at' => now()->subDay(),
         'confirmed_at' => now()->subDay(),
         'expires_at' => now()->addDays(10),
@@ -37,8 +43,8 @@ it('tutor can submit refund request and duplicate pending request is blocked', f
         'user_id' => $tutor->id,
         'payer_user_id' => $tutor->id,
         'payee_user_id' => $platformUser->id,
-        'type' => Invoice::TYPE_PLATFORM_SERVICE_FEE,
-        'status' => Invoice::STATUS_PAID,
+        'type' => InvoiceType::PlatformServiceFee,
+        'status' => InvoiceStatus::Paid,
         'amount' => 6000,
         'currency' => 'BDT',
         'paid_at' => now()->subHour(),
@@ -53,7 +59,7 @@ it('tutor can submit refund request and duplicate pending request is blocked', f
     $this->assertDatabaseHas('refund_requests', [
         'job_assignment_id' => $assignment->id,
         'requested_by_user_id' => $tutor->id,
-        'status' => RefundRequest::STATUS_PENDING,
+        'status' => RefundStatus::Pending->value,
     ]);
 
     $this->actingAs($tutor)
@@ -67,7 +73,7 @@ it('tutor can submit refund request and duplicate pending request is blocked', f
     expect(
         RefundRequest::query()
             ->where('job_assignment_id', $assignment->id)
-            ->where('status', RefundRequest::STATUS_PENDING)
+            ->where('status', RefundStatus::Pending)
             ->count()
     )->toBe(1);
 });
@@ -87,7 +93,7 @@ it('admin can approve and mark paid refund which updates invoice and ledger', fu
 
     $job = TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
         'published_at' => now()->subDay(),
         'confirmed_at' => now()->subDay(),
         'expires_at' => now()->addDays(10),
@@ -105,8 +111,8 @@ it('admin can approve and mark paid refund which updates invoice and ledger', fu
         'user_id' => $tutor->id,
         'payer_user_id' => $tutor->id,
         'payee_user_id' => $platformUser->id,
-        'type' => Invoice::TYPE_PLATFORM_SERVICE_FEE,
-        'status' => Invoice::STATUS_PAID,
+        'type' => InvoiceType::PlatformServiceFee,
+        'status' => InvoiceStatus::Paid,
         'amount' => 8000,
         'currency' => 'BDT',
         'paid_at' => now()->subHour(),
@@ -117,7 +123,7 @@ it('admin can approve and mark paid refund which updates invoice and ledger', fu
         'requested_by_user_id' => $tutor->id,
         'reason_text' => 'Guardian ended the engagement before first month started.',
         'requested_at' => now()->subMinutes(30),
-        'status' => RefundRequest::STATUS_PENDING,
+        'status' => RefundStatus::Pending,
         'amount' => 8000,
         'currency' => 'BDT',
         'decision_by_admin_id' => null,
@@ -129,19 +135,19 @@ it('admin can approve and mark paid refund which updates invoice and ledger', fu
 
     $this->actingAs($admin)
         ->patch(route('admin.finance.refund-requests.decision', $refundRequest), [
-            'status' => RefundRequest::STATUS_APPROVED,
+            'status' => RefundStatus::Approved->value,
             'decision_note' => 'Approved after reviewing evidence.',
         ])
         ->assertRedirect();
 
     $this->assertDatabaseHas('refund_requests', [
         'id' => $refundRequest->id,
-        'status' => RefundRequest::STATUS_APPROVED,
+        'status' => RefundStatus::Approved->value,
     ]);
 
     $this->actingAs($admin)
         ->patch(route('admin.finance.refund-requests.mark-paid', $refundRequest), [
-            'gateway' => Invoice::GATEWAY_MANUAL,
+            'gateway' => PaymentGatewayType::Manual->value,
             'provider_txn_id' => 'REFUND-TXN-1001',
             'note' => 'Refund settled by manual transfer.',
         ])
@@ -150,12 +156,12 @@ it('admin can approve and mark paid refund which updates invoice and ledger', fu
     $refundRequest->refresh();
     $serviceFeeInvoice->refresh();
 
-    expect($refundRequest->status)->toBe(RefundRequest::STATUS_PAID);
+    expect($refundRequest->status)->toBe(RefundStatus::Paid);
     expect($refundRequest->payment_id)->not->toBeNull();
-    expect($serviceFeeInvoice->status)->toBe(Invoice::STATUS_REFUNDED);
+    expect($serviceFeeInvoice->status)->toBe(InvoiceStatus::Refunded);
 
     $refundPayment = Payment::query()->findOrFail($refundRequest->payment_id);
-    expect($refundPayment->status)->toBe(Payment::STATUS_REFUNDED);
+    expect($refundPayment->status)->toBe(PaymentStatus::Refunded);
     expect((float) $refundPayment->amount)->toBe(8000.0);
 
     $ledgerEntries = DB::table('wallet_ledger_entries')

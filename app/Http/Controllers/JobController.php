@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ApplicationStatus;
+use App\Enums\JobStatus;
+use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Subject;
@@ -169,16 +172,16 @@ class JobController extends Controller
         $application = null;
         $canApply = false;
 
-        if ($user !== null && $user->role === 'tutor') {
+        if ($user !== null && $user->role === UserRole::Tutor) {
             $application = TuitionJobApplication::query()
                 ->where('job_id', $job->id)
                 ->where('tutor_user_id', $user->getAuthIdentifier())
                 ->first();
 
-            $canApply = $job->status === TuitionJob::STATUS_LIVE
+            $canApply = $job->status === JobStatus::Live
                 && ! $job->isExpired()
                 && $job->assignment === null
-                && ($application === null || $application->status === TuitionJobApplication::STATUS_CANCELLED)
+                && ($application === null || $application->status === ApplicationStatus::Cancelled)
                 && (int) $job->guardian_id !== (int) $user->getAuthIdentifier();
         }
 
@@ -233,7 +236,7 @@ class JobController extends Controller
     private function publicJobsQuery(): Builder
     {
         return TuitionJob::query()
-            ->where('status', TuitionJob::STATUS_LIVE)
+            ->where('status', JobStatus::Live)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
             ->where(function (Builder $builder): void {
@@ -347,7 +350,7 @@ class JobController extends Controller
     private function applyPublicScope(Builder $query): Builder
     {
         return $query
-            ->where('status', TuitionJob::STATUS_LIVE)
+            ->where('status', JobStatus::Live)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
             ->where(function (Builder $builder): void {

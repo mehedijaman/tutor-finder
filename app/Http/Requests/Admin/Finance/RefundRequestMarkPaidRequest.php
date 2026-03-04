@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Admin\Finance;
 
-use App\Models\Invoice;
+use App\Enums\PaymentGatewayType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class RefundRequestMarkPaidRequest extends FormRequest
 {
@@ -26,7 +26,7 @@ class RefundRequestMarkPaidRequest extends FormRequest
         return [
             'gateway' => [
                 'required',
-                Rule::in([Invoice::GATEWAY_MANUAL, Invoice::GATEWAY_BKASH, Invoice::GATEWAY_SSLCOMMERZ]),
+                new Enum(PaymentGatewayType::class),
             ],
             'provider_txn_id' => ['nullable', 'string', 'max:120'],
             'note' => ['nullable', 'string', 'max:5000'],
@@ -36,7 +36,7 @@ class RefundRequestMarkPaidRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'gateway' => strtolower(trim((string) $this->input('gateway', Invoice::GATEWAY_MANUAL))),
+            'gateway' => strtolower(trim((string) $this->input('gateway', PaymentGatewayType::Manual->value))),
             'provider_txn_id' => $this->filled('provider_txn_id')
                 ? trim((string) $this->input('provider_txn_id'))
                 : null,

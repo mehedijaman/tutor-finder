@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ContactMessageStatus;
 use App\Models\ContactMessage;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -30,7 +31,7 @@ it('can submit a valid contact form and store the message', function () {
         'name' => 'John Doe',
         'email' => 'john@example.com',
         'phone' => null,
-        'status' => ContactMessage::STATUS_OPEN,
+        'status' => ContactMessageStatus::Open->value,
     ]);
 
     $message = ContactMessage::query()->firstOrFail();

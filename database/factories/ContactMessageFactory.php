@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ContactMessageStatus;
 use App\Models\ContactMessage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,7 +26,7 @@ class ContactMessageFactory extends Factory
             'phone' => fake()->numerify('017########'),
             'subject' => fake()->sentence(4),
             'message' => fake()->paragraph(3),
-            'status' => ContactMessage::STATUS_OPEN,
+            'status' => ContactMessageStatus::Open,
             'ip' => fake()->ipv4(),
             'user_agent' => fake()->userAgent(),
         ];

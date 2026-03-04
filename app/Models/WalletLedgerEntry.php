@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LedgerEntryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,10 +11,6 @@ class WalletLedgerEntry extends Model
 {
     /** @use HasFactory<\Database\Factories\WalletLedgerEntryFactory> */
     use HasFactory;
-
-    public const TYPE_DEBIT = 'debit';
-
-    public const TYPE_CREDIT = 'credit';
 
     /**
      * @var list<string>
@@ -39,6 +36,7 @@ class WalletLedgerEntry extends Model
     protected function casts(): array
     {
         return [
+            'type' => LedgerEntryType::class,
             'amount' => 'decimal:2',
             'posted_at' => 'datetime',
             'is_reversal' => 'boolean',

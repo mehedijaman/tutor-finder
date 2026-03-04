@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Concerns\PasswordValidationRules;
+use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -36,7 +37,7 @@ class CreateNewUser implements CreatesNewUsers
             'phone' => (string) $input['phone'],
             'password' => Hash::make((string) $input['password']),
             'role' => (string) $input['role'],
-            'status' => 'pending_verification',
+            'status' => UserStatus::PendingVerification,
             'phone_verified_at' => null,
         ]);
     }

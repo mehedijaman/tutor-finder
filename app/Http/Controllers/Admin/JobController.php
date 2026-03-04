@@ -2,20 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ApplicationStatus;
+use App\Enums\JobStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\JobStatusUpdateRequest;
 use App\Http\Requests\Admin\Tuition\JobStoreRequest;
 use App\Http\Requests\Admin\Tuition\JobUpdateRequest;
-use App\Models\Area;
-use App\Models\Category;
-use App\Models\City;
-use App\Models\Country;
-use App\Models\SchoolClass;
-use App\Models\Subject;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
-use App\Models\TuitionType;
-use App\Models\User;
+use App\Services\Job\JobFormOptionService;
+use App\Services\Job\JobLifecycleService;
 use App\Support\SlugService;
 use DomainException;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,25 +25,10 @@ class JobController extends Controller
 {
     private const FILTER_EXPIRED = 'expired';
 
-    /**
-     * @var array<string, list<string>>
-     */
-    private const TRANSITIONS = [
-        TuitionJob::STATUS_PENDING => [
-            TuitionJob::STATUS_LIVE,
-            TuitionJob::STATUS_CANCELLED,
-        ],
-        TuitionJob::STATUS_LIVE => [
-            TuitionJob::STATUS_CONFIRMED,
-            TuitionJob::STATUS_CANCELLED,
-            TuitionJob::STATUS_CLOSED,
-        ],
-        TuitionJob::STATUS_CONFIRMED => [
-            TuitionJob::STATUS_CLOSED,
-        ],
-        TuitionJob::STATUS_CANCELLED => [],
-        TuitionJob::STATUS_CLOSED => [],
-    ];
+    public function __construct(
+        private readonly JobFormOptionService $formOptionService,
+        private readonly JobLifecycleService $lifecycleService,
+    ) {}
 
     /**
      * Display jobs list for admin.
@@ -99,8 +80,8 @@ class JobController extends Controller
             ->withCount('applications')
             ->withCount([
                 'applications as open_applications_count' => fn (Builder $builder): Builder => $builder->whereIn('status', [
-                    TuitionJobApplication::STATUS_APPLIED,
-                    TuitionJobApplication::STATUS_SHORTLISTED,
+                    ApplicationStatus::Applied,
+                    ApplicationStatus::Shortlisted,
                 ]),
             ])
             ->when($showTrash, fn (Builder $builder): Builder => $builder->onlyTrashed())
@@ -114,7 +95,7 @@ class JobController extends Controller
             })
             ->when($effectiveStatus !== '' && ! $filterExpired, fn (Builder $builder): Builder => $builder->where('status', $effectiveStatus))
             ->when($filterExpired, fn (Builder $builder): Builder => $builder
-                ->where('status', TuitionJob::STATUS_LIVE)
+                ->where('status', JobStatus::Live)
                 ->whereNotNull('expires_at')
                 ->where('expires_at', '<=', now()))
             ->when($guardianId > 0, fn (Builder $builder): Builder => $builder->where('guardian_id', $guardianId))
@@ -142,7 +123,7 @@ class JobController extends Controller
                 'selected_tutor_name' => $job->assignment?->tutor?->name,
                 'assignment_appointed_at' => $job->assignment?->appointed_at?->toDateTimeString(),
                 'assignment_confirmed_at' => $job->assignment?->confirmed_at?->toDateTimeString(),
-                'is_expired' => $job->status === TuitionJob::STATUS_LIVE && $job->isExpired(),
+                'is_expired' => $job->status === JobStatus::Live && $job->isExpired(),
                 'published_at' => $job->published_at?->toDateTimeString(),
                 'expires_at' => $job->expires_at?->toDateTimeString(),
                 'updated_at' => $job->updated_at?->toDateTimeString(),
@@ -161,21 +142,21 @@ class JobController extends Controller
                 'direction' => $direction,
             ],
             'counts' => [
-                'pending_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_PENDING)->count(),
-                'live_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_LIVE)->count(),
+                'pending_count' => TuitionJob::query()->where('status', JobStatus::Pending)->count(),
+                'live_count' => TuitionJob::query()->where('status', JobStatus::Live)->count(),
                 'expired_count' => TuitionJob::query()
-                    ->where('status', TuitionJob::STATUS_LIVE)
+                    ->where('status', JobStatus::Live)
                     ->whereNotNull('expires_at')
                     ->where('expires_at', '<=', now())
                     ->count(),
-                'confirmed_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_CONFIRMED)->count(),
-                'cancelled_count' => TuitionJob::query()->where('status', TuitionJob::STATUS_CANCELLED)->count(),
+                'confirmed_count' => TuitionJob::query()->where('status', JobStatus::Confirmed)->count(),
+                'cancelled_count' => TuitionJob::query()->where('status', JobStatus::Cancelled)->count(),
                 'total_count' => TuitionJob::query()->count(),
                 'trash_count' => TuitionJob::query()->onlyTrashed()->count(),
             ],
             'pageTitle' => $this->pageTitle($presetStatus, $showTrash),
             'statusOptions' => $this->statusOptions(),
-            'guardianOptions' => $this->activeGuardians(),
+            'guardianOptions' => $this->formOptionService->activeGuardians(),
         ]);
     }
 
@@ -184,7 +165,7 @@ class JobController extends Controller
      */
     public function pending(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_PENDING);
+        return $this->index($request, JobStatus::Pending->value);
     }
 
     /**
@@ -192,7 +173,7 @@ class JobController extends Controller
      */
     public function live(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_LIVE);
+        return $this->index($request, JobStatus::Live->value);
     }
 
     /**
@@ -200,7 +181,7 @@ class JobController extends Controller
      */
     public function confirmed(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_CONFIRMED);
+        return $this->index($request, JobStatus::Confirmed->value);
     }
 
     /**
@@ -216,7 +197,7 @@ class JobController extends Controller
      */
     public function cancelled(Request $request): Response
     {
-        return $this->index($request, TuitionJob::STATUS_CANCELLED);
+        return $this->index($request, JobStatus::Cancelled->value);
     }
 
     /**
@@ -267,7 +248,7 @@ class JobController extends Controller
                 'slug' => $job->slug,
                 'status' => $job->status,
                 'guardian_name' => $job->guardian?->name,
-                'is_expired' => $job->status === TuitionJob::STATUS_LIVE && $job->isExpired(),
+                'is_expired' => $job->status === JobStatus::Live && $job->isExpired(),
                 'has_assignment' => $job->assignment !== null,
                 'selected_tutor_user_id' => $job->assignment?->tutor_user_id,
                 'selected_tutor_name' => $job->assignment?->tutor?->name,
@@ -279,11 +260,11 @@ class JobController extends Controller
                 'status' => $status,
             ],
             'statusOptions' => [
-                ['value' => TuitionJobApplication::STATUS_APPLIED, 'label' => 'Applied'],
-                ['value' => TuitionJobApplication::STATUS_SHORTLISTED, 'label' => 'Shortlisted'],
-                ['value' => TuitionJobApplication::STATUS_APPOINTED, 'label' => 'Appointed'],
-                ['value' => TuitionJobApplication::STATUS_CONFIRMED, 'label' => 'Confirmed'],
-                ['value' => TuitionJobApplication::STATUS_CANCELLED, 'label' => 'Cancelled'],
+                ['value' => ApplicationStatus::Applied, 'label' => 'Applied'],
+                ['value' => ApplicationStatus::Shortlisted, 'label' => 'Shortlisted'],
+                ['value' => ApplicationStatus::Appointed, 'label' => 'Appointed'],
+                ['value' => ApplicationStatus::Confirmed, 'label' => 'Confirmed'],
+                ['value' => ApplicationStatus::Cancelled, 'label' => 'Cancelled'],
             ],
         ]);
     }
@@ -294,17 +275,17 @@ class JobController extends Controller
     public function create(): Response
     {
         return inertia('admin/jobs/Create', [
-            'tuitionTypes' => $this->activeTuitionTypes(),
-            'categories' => $this->activeCategories(),
-            'schoolClasses' => $this->activeSchoolClasses(),
-            'countries' => $this->activeCountries(),
-            'cities' => $this->activeCities(),
-            'areas' => $this->activeAreas(),
-            'subjects' => $this->activeSubjects(),
-            'guardians' => $this->activeGuardians(),
+            'tuitionTypes' => $this->formOptionService->activeTuitionTypes(),
+            'categories' => $this->formOptionService->activeCategories(),
+            'schoolClasses' => $this->formOptionService->activeSchoolClasses(),
+            'countries' => $this->formOptionService->activeCountries(),
+            'cities' => $this->formOptionService->activeCities(),
+            'areas' => $this->formOptionService->activeAreas(),
+            'subjects' => $this->formOptionService->activeSubjects(),
+            'guardians' => $this->formOptionService->activeGuardians(),
             'statusOptions' => $this->createStatusOptions(),
-            'genderOptions' => $this->genderOptions(),
-            'dayOptions' => $this->dayOptions(),
+            'genderOptions' => $this->formOptionService->genderOptions(),
+            'dayOptions' => $this->formOptionService->dayOptions(),
         ]);
     }
 
@@ -373,17 +354,17 @@ class JobController extends Controller
 
         return inertia('admin/jobs/Edit', [
             'job' => $this->toFormPayload($job),
-            'tuitionTypes' => $this->activeTuitionTypes(),
-            'categories' => $this->activeCategories(),
-            'schoolClasses' => $this->activeSchoolClasses(),
-            'countries' => $this->activeCountries(),
-            'cities' => $this->activeCities(),
-            'areas' => $this->activeAreas(),
-            'subjects' => $this->activeSubjects(),
-            'guardians' => $this->activeGuardians(),
+            'tuitionTypes' => $this->formOptionService->activeTuitionTypes(),
+            'categories' => $this->formOptionService->activeCategories(),
+            'schoolClasses' => $this->formOptionService->activeSchoolClasses(),
+            'countries' => $this->formOptionService->activeCountries(),
+            'cities' => $this->formOptionService->activeCities(),
+            'areas' => $this->formOptionService->activeAreas(),
+            'subjects' => $this->formOptionService->activeSubjects(),
+            'guardians' => $this->formOptionService->activeGuardians(),
             'statusOptions' => $this->createStatusOptions(),
-            'genderOptions' => $this->genderOptions(),
-            'dayOptions' => $this->dayOptions(),
+            'genderOptions' => $this->formOptionService->genderOptions(),
+            'dayOptions' => $this->formOptionService->dayOptions(),
         ]);
     }
 
@@ -426,7 +407,7 @@ class JobController extends Controller
                 'salary_currency' => $validated['salary_currency'] ?: 'BDT',
                 'salary_negotiable' => (bool) $validated['salary_negotiable'],
                 'status' => $status,
-                'cancellation_reason' => $status === TuitionJob::STATUS_CANCELLED ? $job->cancellation_reason : null,
+                'cancellation_reason' => $status === JobStatus::Cancelled->value ? $job->cancellation_reason : null,
                 'published_at' => $this->normalizePublishedAt($status, $validated['published_at'] ?? $job->published_at),
                 'expires_at' => $validated['expires_at'] ?? null,
                 'updated_by' => $adminId,
@@ -460,59 +441,10 @@ class JobController extends Controller
     public function status(JobStatusUpdateRequest $request, TuitionJob $job): RedirectResponse
     {
         $targetStatus = (string) $request->validated('status');
-
-        if ($targetStatus === $job->status) {
-            return redirect()->back()->withErrors(['job' => 'The job is already in the selected status.']);
-        }
-
-        if (! $this->canTransition($job->status, $targetStatus)) {
-            return redirect()->back()->withErrors(['job' => "Invalid status transition from {$job->status} to {$targetStatus}."]);
-        }
+        $reason = $request->validated('reason');
 
         try {
-            if ($targetStatus === TuitionJob::STATUS_LIVE) {
-                $job->markLive($request->user());
-            }
-
-            if ($targetStatus === TuitionJob::STATUS_CONFIRMED) {
-                DB::transaction(function () use ($job, $request): void {
-                    $lockedJob = TuitionJob::query()
-                        ->whereKey($job->getKey())
-                        ->lockForUpdate()
-                        ->firstOrFail();
-
-                    $assignment = $lockedJob->assignment()
-                        ->lockForUpdate()
-                        ->first();
-
-                    if ($assignment === null) {
-                        throw new DomainException('Job cannot be confirmed without an assignment.');
-                    }
-
-                    $confirmedAt = $assignment->confirmed_at ?? now();
-
-                    if ($assignment->appointed_at === null) {
-                        $assignment->appointed_at = $confirmedAt;
-                    }
-
-                    if ($assignment->confirmed_at === null) {
-                        $assignment->confirmed_at = $confirmedAt;
-                    }
-
-                    $assignment->save();
-
-                    $lockedJob->markConfirmedAt($request->user(), $confirmedAt);
-                });
-            }
-
-            if ($targetStatus === TuitionJob::STATUS_CANCELLED) {
-                $reason = $request->validated('reason') ?: 'Cancelled by admin.';
-                $job->markCancelled($reason, $request->user());
-            }
-
-            if ($targetStatus === TuitionJob::STATUS_CLOSED) {
-                $job->markClosed($request->user());
-            }
+            $this->lifecycleService->transitionStatus($job, $targetStatus, $request->user(), $reason);
         } catch (DomainException $exception) {
             return redirect()->back()->withErrors(['job' => $exception->getMessage()]);
         }
@@ -549,14 +481,11 @@ class JobController extends Controller
      */
     public function forceDelete(TuitionJob $job): RedirectResponse
     {
-        if (! $job->trashed()) {
-            return redirect()->back()->withErrors(['job' => 'Only trashed jobs can be permanently deleted.']);
+        try {
+            $this->lifecycleService->forceDeleteJob($job);
+        } catch (DomainException $exception) {
+            return redirect()->back()->withErrors(['job' => $exception->getMessage()]);
         }
-
-        DB::transaction(function () use ($job): void {
-            $job->subjects()->detach();
-            $job->forceDelete();
-        });
 
         return redirect()->back()->with('status', 'Job permanently deleted.');
     }
@@ -566,18 +495,7 @@ class JobController extends Controller
      */
     public function emptyRecycleBin(): RedirectResponse
     {
-        $count = 0;
-
-        DB::transaction(function () use (&$count): void {
-            TuitionJob::query()
-                ->onlyTrashed()
-                ->get()
-                ->each(function (TuitionJob $job) use (&$count): void {
-                    $job->subjects()->detach();
-                    $job->forceDelete();
-                    $count++;
-                });
-        });
+        $count = $this->lifecycleService->emptyRecycleBin();
 
         return redirect()->back()->with('status', "Deleted {$count} job(s) from recycle bin.");
     }
@@ -625,7 +543,7 @@ class JobController extends Controller
      */
     private function normalizePublishedAt(string $status, mixed $publishedAt): ?Carbon
     {
-        if ($status !== TuitionJob::STATUS_LIVE) {
+        if ($status !== JobStatus::Live->value) {
             return null;
         }
 
@@ -641,16 +559,6 @@ class JobController extends Controller
     }
 
     /**
-     * Determine if a status can move to another status.
-     */
-    private function canTransition(string $currentStatus, string $targetStatus): bool
-    {
-        $allowedStatuses = self::TRANSITIONS[$currentStatus] ?? [];
-
-        return in_array($targetStatus, $allowedStatuses, true);
-    }
-
-    /**
      * Normalize status string.
      */
     private function normalizeStatus(string $status): string
@@ -661,7 +569,7 @@ class JobController extends Controller
             return $normalized;
         }
 
-        if (! in_array($normalized, TuitionJob::statuses(), true)) {
+        if (JobStatus::tryFrom($normalized) === null) {
             return '';
         }
 
@@ -678,162 +586,13 @@ class JobController extends Controller
         }
 
         return match ($presetStatus) {
-            TuitionJob::STATUS_PENDING => 'Pending Jobs',
-            TuitionJob::STATUS_LIVE => 'Live Jobs',
+            JobStatus::Pending->value => 'Pending Jobs',
+            JobStatus::Live->value => 'Live Jobs',
             self::FILTER_EXPIRED => 'Expired Jobs',
-            TuitionJob::STATUS_CONFIRMED => 'Confirmed Jobs',
-            TuitionJob::STATUS_CANCELLED => 'Cancelled Jobs',
+            JobStatus::Confirmed->value => 'Confirmed Jobs',
+            JobStatus::Cancelled->value => 'Cancelled Jobs',
             default => 'All Jobs',
         };
-    }
-
-    /**
-     * Get active guardians.
-     *
-     * @return array<int, array{id: int, name: string}>
-     */
-    private function activeGuardians(): array
-    {
-        return User::query()
-            ->where('role', 'guardian')
-            ->where('status', 'active')
-            ->orderBy('name')
-            ->get(['id', 'name'])
-            ->map(fn (User $guardian): array => [
-                'id' => $guardian->id,
-                'name' => $guardian->name,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active tuition types.
-     *
-     * @return array<int, array{id: int, name: string}>
-     */
-    private function activeTuitionTypes(): array
-    {
-        return TuitionType::query()
-            ->where('status', TuitionType::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (TuitionType $tuitionType): array => [
-                'id' => $tuitionType->id,
-                'name' => $tuitionType->name,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active categories.
-     *
-     * @return array<int, array{id: int, name: string}>
-     */
-    private function activeCategories(): array
-    {
-        return Category::query()
-            ->where('status', Category::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (Category $category): array => [
-                'id' => $category->id,
-                'name' => $category->name,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active school classes.
-     *
-     * @return array<int, array{id: int, name: string, category_id: int}>
-     */
-    private function activeSchoolClasses(): array
-    {
-        return SchoolClass::query()
-            ->where('status', SchoolClass::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'category_id'])
-            ->map(fn (SchoolClass $schoolClass): array => [
-                'id' => $schoolClass->id,
-                'name' => $schoolClass->name,
-                'category_id' => $schoolClass->category_id,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active countries.
-     *
-     * @return array<int, array{id: int, name: string}>
-     */
-    private function activeCountries(): array
-    {
-        return Country::query()
-            ->where('status', Country::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (Country $country): array => [
-                'id' => $country->id,
-                'name' => $country->name,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active cities.
-     *
-     * @return array<int, array{id: int, name: string, country_id: int}>
-     */
-    private function activeCities(): array
-    {
-        return City::query()
-            ->where('status', City::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'country_id'])
-            ->map(fn (City $city): array => [
-                'id' => $city->id,
-                'name' => $city->name,
-                'country_id' => $city->country_id,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active areas.
-     *
-     * @return array<int, array{id: int, name: string, city_id: int}>
-     */
-    private function activeAreas(): array
-    {
-        return Area::query()
-            ->where('status', Area::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'city_id'])
-            ->map(fn (Area $area): array => [
-                'id' => $area->id,
-                'name' => $area->name,
-                'city_id' => $area->city_id,
-            ])
-            ->all();
-    }
-
-    /**
-     * Get active subjects.
-     *
-     * @return array<int, array{id: int, name: string, class_id: int}>
-     */
-    private function activeSubjects(): array
-    {
-        return Subject::query()
-            ->where('status', Subject::STATUS_ACTIVE)
-            ->ordered()
-            ->get(['id', 'name', 'class_id'])
-            ->map(fn (Subject $subject): array => [
-                'id' => $subject->id,
-                'name' => $subject->name,
-                'class_id' => $subject->class_id,
-            ])
-            ->all();
     }
 
     /**
@@ -844,12 +603,12 @@ class JobController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => TuitionJob::STATUS_PENDING, 'label' => 'Pending'],
-            ['value' => TuitionJob::STATUS_LIVE, 'label' => 'Live'],
+            ['value' => JobStatus::Pending, 'label' => 'Pending'],
+            ['value' => JobStatus::Live, 'label' => 'Live'],
             ['value' => self::FILTER_EXPIRED, 'label' => 'Expired (Live + Past Expiry)'],
-            ['value' => TuitionJob::STATUS_CONFIRMED, 'label' => 'Confirmed'],
-            ['value' => TuitionJob::STATUS_CANCELLED, 'label' => 'Cancelled'],
-            ['value' => TuitionJob::STATUS_CLOSED, 'label' => 'Closed'],
+            ['value' => JobStatus::Confirmed, 'label' => 'Confirmed'],
+            ['value' => JobStatus::Cancelled, 'label' => 'Cancelled'],
+            ['value' => JobStatus::Closed, 'label' => 'Closed'],
         ];
     }
 
@@ -861,40 +620,8 @@ class JobController extends Controller
     private function createStatusOptions(): array
     {
         return [
-            ['value' => TuitionJob::STATUS_PENDING, 'label' => 'Pending'],
-            ['value' => TuitionJob::STATUS_LIVE, 'label' => 'Live'],
-        ];
-    }
-
-    /**
-     * Get gender options.
-     *
-     * @return array<int, array{value: string, label: string}>
-     */
-    private function genderOptions(): array
-    {
-        return [
-            ['value' => TuitionJob::GENDER_ANY, 'label' => 'Any'],
-            ['value' => TuitionJob::GENDER_MALE, 'label' => 'Male'],
-            ['value' => TuitionJob::GENDER_FEMALE, 'label' => 'Female'],
-        ];
-    }
-
-    /**
-     * Get selectable tuition days.
-     *
-     * @return array<int, array{value: string, label: string}>
-     */
-    private function dayOptions(): array
-    {
-        return [
-            ['value' => 'sun', 'label' => 'Sunday'],
-            ['value' => 'mon', 'label' => 'Monday'],
-            ['value' => 'tue', 'label' => 'Tuesday'],
-            ['value' => 'wed', 'label' => 'Wednesday'],
-            ['value' => 'thu', 'label' => 'Thursday'],
-            ['value' => 'fri', 'label' => 'Friday'],
-            ['value' => 'sat', 'label' => 'Saturday'],
+            ['value' => JobStatus::Pending, 'label' => 'Pending'],
+            ['value' => JobStatus::Live, 'label' => 'Live'],
         ];
     }
 }

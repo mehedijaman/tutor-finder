@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ApplicationStatus;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
 use App\Models\User;
@@ -25,7 +26,7 @@ class TuitionJobApplicationFactory extends Factory
             'cover_letter' => fake()->paragraph(),
             'expected_salary_amount' => fake()->numberBetween(5000, 30000),
             'salary_currency' => 'BDT',
-            'status' => TuitionJobApplication::STATUS_APPLIED,
+            'status' => ApplicationStatus::Applied,
             'cancel_reason' => null,
             'metadata' => null,
         ];
@@ -37,7 +38,7 @@ class TuitionJobApplicationFactory extends Factory
     public function shortlisted(): static
     {
         return $this->state(fn (): array => [
-            'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+            'status' => ApplicationStatus::Shortlisted,
         ]);
     }
 
@@ -47,7 +48,7 @@ class TuitionJobApplicationFactory extends Factory
     public function confirmed(): static
     {
         return $this->state(fn (): array => [
-            'status' => TuitionJobApplication::STATUS_CONFIRMED,
+            'status' => ApplicationStatus::Confirmed,
         ]);
     }
 }

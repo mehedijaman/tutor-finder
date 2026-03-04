@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\JobGender;
+use App\Enums\JobStatus;
 use DomainException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,22 +18,6 @@ class TuitionJob extends Model
 {
     /** @use HasFactory<\Database\Factories\TuitionJobFactory> */
     use HasFactory, SoftDeletes;
-
-    public const STATUS_PENDING = 'pending';
-
-    public const STATUS_LIVE = 'live';
-
-    public const STATUS_CONFIRMED = 'confirmed';
-
-    public const STATUS_CANCELLED = 'cancelled';
-
-    public const STATUS_CLOSED = 'closed';
-
-    public const GENDER_MALE = 'male';
-
-    public const GENDER_FEMALE = 'female';
-
-    public const GENDER_ANY = 'any';
 
     /**
      * @var list<string>
@@ -79,6 +65,9 @@ class TuitionJob extends Model
     protected function casts(): array
     {
         return [
+            'status' => JobStatus::class,
+            'student_gender' => JobGender::class,
+            'tutor_gender' => JobGender::class,
             'tuition_days' => 'array',
             'salary_amount' => 'decimal:2',
             'salary_negotiable' => 'boolean',
@@ -201,7 +190,7 @@ class TuitionJob extends Model
      */
     public function scopeLive(Builder $query): Builder
     {
-        return $query->where('status', self::STATUS_LIVE);
+        return $query->where('status', JobStatus::Live);
     }
 
     /**
@@ -209,7 +198,7 @@ class TuitionJob extends Model
      */
     public function scopePending(Builder $query): Builder
     {
-        return $query->where('status', self::STATUS_PENDING);
+        return $query->where('status', JobStatus::Pending);
     }
 
     /**
@@ -217,7 +206,7 @@ class TuitionJob extends Model
      */
     public function scopeConfirmed(Builder $query): Builder
     {
-        return $query->where('status', self::STATUS_CONFIRMED);
+        return $query->where('status', JobStatus::Confirmed);
     }
 
     /**
@@ -226,7 +215,7 @@ class TuitionJob extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query
-            ->where('status', self::STATUS_LIVE)
+            ->where('status', JobStatus::Live)
             ->where(function (Builder $builder): void {
                 $builder->whereNull('expires_at')->orWhere('expires_at', '>', now());
             });
@@ -245,7 +234,7 @@ class TuitionJob extends Model
      */
     public function isLive(): bool
     {
-        return $this->status === self::STATUS_LIVE;
+        return $this->status === JobStatus::Live;
     }
 
     /**
@@ -261,12 +250,12 @@ class TuitionJob extends Model
      */
     public function markLive(User $admin): void
     {
-        if ($this->status !== self::STATUS_PENDING) {
+        if ($this->status !== JobStatus::Pending) {
             throw new DomainException('Only pending jobs can be approved.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_LIVE,
+            'status' => JobStatus::Live,
             'published_at' => $this->published_at ?? now(),
             'updated_by' => $admin->getKey(),
             'cancellation_reason' => null,
@@ -288,12 +277,12 @@ class TuitionJob extends Model
      */
     public function markConfirmedAt(User $admin, \DateTimeInterface $confirmedAt): void
     {
-        if ($this->status !== self::STATUS_LIVE) {
+        if ($this->status !== JobStatus::Live) {
             throw new DomainException('Only live jobs can be confirmed.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_CONFIRMED,
+            'status' => JobStatus::Confirmed,
             'confirmed_by' => $admin->getKey(),
             'confirmed_at' => $confirmedAt,
             'updated_by' => $admin->getKey(),
@@ -305,12 +294,12 @@ class TuitionJob extends Model
      */
     public function markCancelled(?string $reason, ?User $admin = null): void
     {
-        if (! in_array($this->status, [self::STATUS_PENDING, self::STATUS_LIVE], true)) {
+        if (! in_array($this->status, [JobStatus::Pending, JobStatus::Live], true)) {
             throw new DomainException('Only pending or live jobs can be cancelled.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_CANCELLED,
+            'status' => JobStatus::Cancelled,
             'cancellation_reason' => $reason,
             'updated_by' => $admin?->getKey(),
         ])->save();
@@ -321,12 +310,12 @@ class TuitionJob extends Model
      */
     public function markClosed(?User $admin = null): void
     {
-        if (! in_array($this->status, [self::STATUS_LIVE, self::STATUS_CONFIRMED], true)) {
+        if (! in_array($this->status, [JobStatus::Live, JobStatus::Confirmed], true)) {
             throw new DomainException('Only live or confirmed jobs can be closed.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_CLOSED,
+            'status' => JobStatus::Closed,
             'updated_by' => $admin?->getKey(),
         ])->save();
     }
@@ -334,30 +323,20 @@ class TuitionJob extends Model
     /**
      * Get all available statuses.
      *
-     * @return list<string>
+     * @return list<JobStatus>
      */
     public static function statuses(): array
     {
-        return [
-            self::STATUS_PENDING,
-            self::STATUS_LIVE,
-            self::STATUS_CONFIRMED,
-            self::STATUS_CANCELLED,
-            self::STATUS_CLOSED,
-        ];
+        return JobStatus::cases();
     }
 
     /**
      * Get supported genders.
      *
-     * @return list<string>
+     * @return list<JobGender>
      */
     public static function genders(): array
     {
-        return [
-            self::GENDER_MALE,
-            self::GENDER_FEMALE,
-            self::GENDER_ANY,
-        ];
+        return JobGender::cases();
     }
 }

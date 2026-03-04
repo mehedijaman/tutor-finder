@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Tutor;
 
-use App\Models\TutorProfile;
-use App\Models\User;
+use App\Enums\ProfileStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class TutorProfileUpdateRequest extends FormRequest
 {
@@ -31,7 +31,7 @@ class TutorProfileUpdateRequest extends FormRequest
             'nid_no' => $this->nullableTrimmedString($this->input('nid_no')),
             'bio' => $this->nullableTrimmedString($this->input('bio')),
             'available_time' => $this->nullableTrimmedString($this->input('available_time')),
-            'status' => strtolower(trim((string) $this->input('status', TutorProfile::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', ProfileStatus::Active->value))),
             'preferred_tuition_types' => $this->normalizeIntegerArray($this->input('preferred_tuition_types')),
             'preferred_categories' => $this->normalizeIntegerArray($this->input('preferred_categories')),
             'preferred_classes' => $this->normalizeIntegerArray($this->input('preferred_classes')),
@@ -73,7 +73,7 @@ class TutorProfileUpdateRequest extends FormRequest
             'available_days' => ['nullable', 'array'],
             'available_days.*' => ['required', Rule::in($this->allowedDays())],
             'available_time' => ['nullable', 'string', 'max:100'],
-            'status' => ['nullable', Rule::in([TutorProfile::STATUS_ACTIVE, TutorProfile::STATUS_INACTIVE])],
+            'status' => ['nullable', new Enum(ProfileStatus::class)],
             'educations' => ['nullable', 'array'],
             'educations.*.id' => [
                 'nullable',

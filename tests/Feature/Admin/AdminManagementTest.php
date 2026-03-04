@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\UserRole;
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Models\User;
 use App\Models\VerificationRequest;
 use Database\Seeders\AdminRolesAndPermissionsSeeder;
@@ -27,7 +30,7 @@ it('admin can create another admin and assign role', function () {
     $newAdmin = User::query()->where('email', 'admin2@example.com')->first();
 
     expect($newAdmin)->not->toBeNull();
-    expect($newAdmin->role)->toBe('admin');
+    expect($newAdmin->role)->toBe(UserRole::Admin);
     expect($newAdmin->hasRole('admin'))->toBeTrue();
     expect($newAdmin->can('tutor-view'))->toBeTrue();
 });
@@ -65,8 +68,8 @@ it('admin can create tutor account', function () {
     $newTutor = User::query()->where('email', 'new-tutor@example.com')->first();
 
     expect($newTutor)->not->toBeNull();
-    expect($newTutor->role)->toBe('tutor');
-    expect($newTutor->verification_status)->toBe(User::VERIFICATION_STATUS_UNVERIFIED);
+    expect($newTutor->role)->toBe(UserRole::Tutor);
+    expect($newTutor->verification_status)->toBe(VerificationStatus::Unverified);
 });
 
 it('admin can create guardian account', function () {
@@ -89,8 +92,8 @@ it('admin can create guardian account', function () {
     $newGuardian = User::query()->where('email', 'new-guardian@example.com')->first();
 
     expect($newGuardian)->not->toBeNull();
-    expect($newGuardian->role)->toBe('guardian');
-    expect($newGuardian->verification_status)->toBe(User::VERIFICATION_STATUS_UNVERIFIED);
+    expect($newGuardian->role)->toBe(UserRole::Guardian);
+    expect($newGuardian->verification_status)->toBe(VerificationStatus::Unverified);
 });
 
 it('filters tutors by verification scope', function () {
@@ -100,17 +103,17 @@ it('filters tutors by verification scope', function () {
     $admin->assignRole('super-admin');
 
     $pendingTutor = User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_PENDING,
+        'verification_status' => VerificationStatus::Pending,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $pendingTutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_PENDING,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Pending,
     ]);
 
     User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_VERIFIED,
+        'verification_status' => VerificationStatus::Verified,
     ]);
 
     $this->actingAs($admin)
@@ -121,7 +124,7 @@ it('filters tutors by verification scope', function () {
             ->where('filters.verification', 'pending')
             ->has('items.data', 1)
             ->where('items.data.0.verification_request_id', $verificationRequest->id)
-            ->where('items.data.0.verification_request_status', VerificationRequest::STATUS_PENDING));
+            ->where('items.data.0.verification_request_status', VerificationStatus::Pending->value));
 });
 
 it('filters guardians by verification scope', function () {
@@ -131,10 +134,10 @@ it('filters guardians by verification scope', function () {
     $admin->assignRole('super-admin');
 
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_UNVERIFIED,
+        'verification_status' => VerificationStatus::Unverified,
     ]);
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_VERIFIED,
+        'verification_status' => VerificationStatus::Verified,
     ]);
 
     $this->actingAs($admin)
@@ -153,17 +156,17 @@ it('filters guardians by pending verification scope with request metadata', func
     $admin->assignRole('super-admin');
 
     $pendingGuardian = User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_INVOICED,
+        'verification_status' => VerificationStatus::Invoiced,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $pendingGuardian->id,
-        'role' => VerificationRequest::ROLE_GUARDIAN,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Guardian,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_VERIFIED,
+        'verification_status' => VerificationStatus::Verified,
     ]);
 
     $this->actingAs($admin)
@@ -174,5 +177,5 @@ it('filters guardians by pending verification scope with request metadata', func
             ->where('filters.verification', 'pending')
             ->has('items.data', 1)
             ->where('items.data.0.verification_request_id', $verificationRequest->id)
-            ->where('items.data.0.verification_request_status', VerificationRequest::STATUS_INVOICED));
+            ->where('items.data.0.verification_request_status', VerificationStatus::Invoiced->value));
 });

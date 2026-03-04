@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\Faq;
+use App\Enums\FaqAudience;
+use App\Enums\FaqStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class FaqUpdateRequest extends FormRequest
 {
@@ -24,8 +25,8 @@ class FaqUpdateRequest extends FormRequest
         $this->merge([
             'question' => trim((string) $this->input('question')),
             'answer' => trim((string) $this->input('answer')),
-            'audience' => strtolower(trim((string) $this->input('audience', Faq::AUDIENCE_BOTH))),
-            'status' => strtolower(trim((string) $this->input('status', Faq::STATUS_ACTIVE))),
+            'audience' => strtolower(trim((string) $this->input('audience', FaqAudience::Both->value))),
+            'status' => strtolower(trim((string) $this->input('status', FaqStatus::Active->value))),
             'sort_order' => $this->normalizeSortOrder($this->input('sort_order')),
         ]);
     }
@@ -43,12 +44,12 @@ class FaqUpdateRequest extends FormRequest
             'audience' => [
                 'required',
                 'string',
-                Rule::in([Faq::AUDIENCE_TUTOR, Faq::AUDIENCE_GUARDIAN, Faq::AUDIENCE_BOTH]),
+                new Enum(FaqAudience::class),
             ],
             'status' => [
                 'required',
                 'string',
-                Rule::in([Faq::STATUS_ACTIVE, Faq::STATUS_INACTIVE]),
+                new Enum(FaqStatus::class),
             ],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ContactMessageStatus;
 use App\Models\ContactMessage;
 use App\Models\User;
 use Database\Seeders\AdminRolesAndPermissionsSeeder;
@@ -13,7 +14,7 @@ it('authorized admin can list and view contact messages', function () {
 
     $message = ContactMessage::factory()->create([
         'name' => 'Client User',
-        'status' => ContactMessage::STATUS_OPEN,
+        'status' => ContactMessageStatus::Open,
     ]);
 
     $this->actingAs($admin)
@@ -49,7 +50,7 @@ it('unauthorized admin cannot access contact messages module', function () {
 
     $this->actingAs($admin)
         ->patch(route('admin.contact-messages.status', $message), [
-            'status' => ContactMessage::STATUS_CLOSED,
+            'status' => ContactMessageStatus::Closed->value,
         ])
         ->assertForbidden();
 });
@@ -61,23 +62,23 @@ it('authorized admin can toggle contact message status', function () {
     $admin->givePermissionTo('contact-message-update');
 
     $message = ContactMessage::factory()->create([
-        'status' => ContactMessage::STATUS_OPEN,
+        'status' => ContactMessageStatus::Open,
     ]);
 
     $this->actingAs($admin)
         ->patch(route('admin.contact-messages.status', $message), [
-            'status' => ContactMessage::STATUS_CLOSED,
+            'status' => ContactMessageStatus::Closed->value,
         ])
         ->assertRedirect()
         ->assertSessionHas('status');
 
-    expect($message->refresh()->status)->toBe(ContactMessage::STATUS_CLOSED);
+    expect($message->refresh()->status)->toBe(ContactMessageStatus::Closed);
 
     $this->actingAs($admin)
         ->patch(route('admin.contact-messages.status', $message), [
-            'status' => ContactMessage::STATUS_OPEN,
+            'status' => ContactMessageStatus::Open->value,
         ])
         ->assertRedirect();
 
-    expect($message->refresh()->status)->toBe(ContactMessage::STATUS_OPEN);
+    expect($message->refresh()->status)->toBe(ContactMessageStatus::Open);
 });

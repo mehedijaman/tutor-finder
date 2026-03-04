@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\FaqAudience;
+use App\Enums\FaqStatus;
 use App\Models\Faq;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,11 +25,11 @@ class FaqFactory extends Factory
             'question' => fake()->sentence(8),
             'answer' => '<p>'.fake()->paragraph(3).'</p>',
             'audience' => fake()->randomElement([
-                Faq::AUDIENCE_TUTOR,
-                Faq::AUDIENCE_GUARDIAN,
-                Faq::AUDIENCE_BOTH,
+                FaqAudience::Tutor,
+                FaqAudience::Guardian,
+                FaqAudience::Both,
             ]),
-            'status' => fake()->randomElement([Faq::STATUS_ACTIVE, Faq::STATUS_INACTIVE]),
+            'status' => fake()->randomElement([FaqStatus::Active, FaqStatus::Inactive]),
             'sort_order' => fake()->numberBetween(0, 20),
         ];
     }

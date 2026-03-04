@@ -72,18 +72,16 @@ const formatAverageRating = (value: number | null): string => {
                     <h1
                         class="font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl"
                     >
-                        Master any subject with
+                        Hire the Right Tutor 
                         <span class="relative whitespace-nowrap text-blue-600">
-                            <span class="relative">expert tutors</span>
+                            <span class="relative">with Confidences</span>
                         </span>
                     </h1>
 
                     <p
                         class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl"
                     >
-                        Connect with verified tutors for in-home or online
-                        learning. Personalized education that fits your schedule
-                        and goals.
+                        Quickly connect with qualified and trusted tutors for any subject or grade, giving your child the support they need to succeed.
                     </p>
 
                     <div

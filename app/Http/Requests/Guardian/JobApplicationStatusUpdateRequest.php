@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Guardian;
 
-use App\Models\TuitionJobApplication;
+use App\Enums\ApplicationStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -40,7 +40,7 @@ class JobApplicationStatusUpdateRequest extends FormRequest
             'status' => [
                 'required',
                 'string',
-                Rule::in([TuitionJobApplication::STATUS_SHORTLISTED, TuitionJobApplication::STATUS_CANCELLED]),
+                Rule::in([ApplicationStatus::Shortlisted->value, ApplicationStatus::Cancelled->value]),
             ],
             'cancel_reason' => ['nullable', 'string', 'max:5000'],
             'tutor_user_id' => ['prohibited'],

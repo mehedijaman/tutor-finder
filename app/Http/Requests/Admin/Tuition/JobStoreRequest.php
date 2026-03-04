@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Admin\Tuition;
 
-use App\Models\TuitionJob;
+use App\Enums\JobGender;
+use App\Enums\JobStatus;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class JobStoreRequest extends FormRequest
 {
@@ -29,11 +31,11 @@ class JobStoreRequest extends FormRequest
             'slug' => trim((string) $this->input('slug')),
             'description' => trim((string) $this->input('description')),
             'location' => trim((string) $this->input('location')),
-            'student_gender' => strtolower(trim((string) $this->input('student_gender', TuitionJob::GENDER_ANY))),
-            'tutor_gender' => strtolower(trim((string) $this->input('tutor_gender', TuitionJob::GENDER_ANY))),
+            'student_gender' => strtolower(trim((string) $this->input('student_gender', JobGender::Any->value))),
+            'tutor_gender' => strtolower(trim((string) $this->input('tutor_gender', JobGender::Any->value))),
             'salary_currency' => strtoupper(trim((string) $this->input('salary_currency', 'BDT'))),
             'salary_negotiable' => $this->boolean('salary_negotiable'),
-            'status' => strtolower(trim((string) $this->input('status', TuitionJob::STATUS_PENDING))),
+            'status' => strtolower(trim((string) $this->input('status', JobStatus::Pending->value))),
             'tuition_days' => $normalizedDays,
             'days_per_week' => count($normalizedDays) > 0 ? count($normalizedDays) : null,
             'tuition_time' => trim((string) $this->input('tuition_time')),
@@ -122,8 +124,8 @@ class JobStoreRequest extends FormRequest
             'location' => ['nullable', 'string', 'max:255'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'student_gender' => ['required', 'string', Rule::in(TuitionJob::genders())],
-            'tutor_gender' => ['required', 'string', Rule::in(TuitionJob::genders())],
+            'student_gender' => ['required', 'string', new Enum(JobGender::class)],
+            'tutor_gender' => ['required', 'string', new Enum(JobGender::class)],
             'tuition_days' => ['nullable', 'array'],
             'tuition_days.*' => ['required', 'string', Rule::in($this->allowedDays())],
             'days_per_week' => ['nullable', 'integer', 'between:1,7'],
@@ -133,7 +135,7 @@ class JobStoreRequest extends FormRequest
             'salary_amount' => ['nullable', 'numeric', 'min:0'],
             'salary_currency' => ['nullable', 'string', 'max:10'],
             'salary_negotiable' => ['required', 'boolean'],
-            'status' => ['required', 'string', Rule::in([TuitionJob::STATUS_PENDING, TuitionJob::STATUS_LIVE])],
+            'status' => ['required', 'string', Rule::in([JobStatus::Pending->value, JobStatus::Live->value])],
             'published_at' => ['nullable', 'date'],
             'expires_at' => ['nullable', 'date', 'after:now'],
             'view_count' => ['prohibited'],

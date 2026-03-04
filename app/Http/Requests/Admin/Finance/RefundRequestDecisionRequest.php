@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Finance;
 
-use App\Models\RefundRequest;
+use App\Enums\RefundStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +24,7 @@ class RefundRequestDecisionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in([RefundRequest::STATUS_APPROVED, RefundRequest::STATUS_REJECTED])],
+            'status' => ['required', Rule::in([RefundStatus::Approved->value, RefundStatus::Rejected->value])],
             'decision_note' => ['nullable', 'string', 'max:5000'],
         ];
     }

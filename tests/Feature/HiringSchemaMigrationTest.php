@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\JobStatus;
 use App\Models\TuitionJob;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
@@ -183,7 +184,7 @@ it('migration backfill creates synthetic confirmed application when selected app
 
     $job = TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
         'published_at' => now()->subDay(),
         'expires_at' => now()->addDays(7),
         'confirmed_by' => $admin->id,
@@ -253,7 +254,7 @@ it('migration backfill downgrades orphan confirmed jobs without selected tutor t
 
     $job = TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
         'published_at' => now()->subDay(),
         'expires_at' => now()->addDays(5),
         'confirmed_by' => $admin->id,
@@ -271,7 +272,7 @@ it('migration backfill downgrades orphan confirmed jobs without selected tutor t
 
     $this->assertDatabaseHas('tuition_jobs', [
         'id' => $job->id,
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live->value,
         'confirmed_by' => null,
         'confirmed_at' => null,
     ]);

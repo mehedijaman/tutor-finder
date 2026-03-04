@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import JobForm from '@/components/admin/tuition/jobs/JobForm.vue';
+import JobForm from '@/components/admin/jobs/JobForm.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
 const props = defineProps({

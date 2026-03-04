@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\JobStatus;
 use App\Models\Testimonial;
 use App\Models\TuitionJob;
 use App\Models\User;
@@ -33,19 +34,19 @@ test('home page hero stats are sourced from database', function () {
 
     TuitionJob::factory()->create([
         'guardian_id' => $firstGuardian->getKey(),
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
     ]);
     TuitionJob::factory()->create([
         'guardian_id' => $firstGuardian->getKey(),
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
     ]);
     TuitionJob::factory()->create([
         'guardian_id' => $secondGuardian->getKey(),
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
     ]);
     TuitionJob::factory()->create([
         'guardian_id' => $thirdGuardian->getKey(),
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live,
     ]);
 
     Testimonial::factory()->create([

@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -17,20 +20,6 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasRoles, ImpersonateModel, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
-
-    public const VERIFICATION_STATUS_UNVERIFIED = 'unverified';
-
-    public const VERIFICATION_STATUS_PENDING = 'pending';
-
-    public const VERIFICATION_STATUS_APPROVED = 'approved';
-
-    public const VERIFICATION_STATUS_INVOICED = 'invoiced';
-
-    public const VERIFICATION_STATUS_VERIFIED = 'verified';
-
-    public const VERIFICATION_STATUS_REJECTED = 'rejected';
-
-    public const VERIFICATION_STATUS_CANCELLED = 'cancelled';
 
     /**
      * The attributes that are mass assignable.
@@ -71,6 +60,9 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'role' => UserRole::class,
+            'status' => UserStatus::class,
+            'verification_status' => VerificationStatus::class,
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
             'verified_at' => 'datetime',
@@ -84,7 +76,7 @@ class User extends Authenticatable
      */
     public function canImpersonate(): bool
     {
-        return $this->role === 'admin' && $this->status === 'active';
+        return $this->role === UserRole::Admin && $this->status === UserStatus::Active;
     }
 
     /**
@@ -92,8 +84,8 @@ class User extends Authenticatable
      */
     public function canBeImpersonated(): bool
     {
-        return $this->status === 'active'
-            && in_array($this->role, ['admin', 'tutor', 'guardian'], true);
+        return $this->status === UserStatus::Active
+            && in_array($this->role, UserRole::cases(), true);
     }
 
     /**

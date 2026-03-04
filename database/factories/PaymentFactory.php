@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,13 +23,13 @@ class PaymentFactory extends Factory
         return [
             'invoice_id' => Invoice::factory(),
             'gateway' => fake()->randomElement([
-                Invoice::GATEWAY_BKASH,
-                Invoice::GATEWAY_SSLCOMMERZ,
-                Invoice::GATEWAY_MANUAL,
+                PaymentGatewayType::Bkash,
+                PaymentGatewayType::Sslcommerz,
+                PaymentGatewayType::Manual,
             ]),
             'provider_txn_id' => strtoupper(fake()->bothify('TXN#######')),
             'amount' => fake()->randomFloat(2, 100, 5000),
-            'status' => Payment::STATUS_PENDING,
+            'status' => PaymentStatus::Pending,
             'provider_payload' => null,
         ];
     }

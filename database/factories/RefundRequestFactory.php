@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RefundStatus;
 use App\Models\Payment;
 use App\Models\RefundRequest;
 use App\Models\TuitionJobAssignment;
@@ -25,7 +26,7 @@ class RefundRequestFactory extends Factory
             'requested_by_user_id' => User::factory()->tutor(),
             'reason_text' => fake()->sentence(),
             'requested_at' => now(),
-            'status' => RefundRequest::STATUS_PENDING,
+            'status' => RefundStatus::Pending,
             'amount' => fake()->randomFloat(2, 100, 4000),
             'currency' => 'BDT',
             'decision_by_admin_id' => null,
@@ -39,7 +40,7 @@ class RefundRequestFactory extends Factory
     public function paid(): static
     {
         return $this->state([
-            'status' => RefundRequest::STATUS_PAID,
+            'status' => RefundStatus::Paid,
             'decision_by_admin_id' => User::factory()->admin(),
             'decided_at' => now(),
             'paid_at' => now(),

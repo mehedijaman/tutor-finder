@@ -11,18 +11,18 @@ it('forbids admins without permissions from tuition jobs module', function () {
     $job = TuitionJob::factory()->create();
 
     $this->actingAs($admin)
-        ->get(route('admin.tuition.jobs.index'))
+        ->get(route('admin.jobs.index'))
         ->assertForbidden();
 
     $this->actingAs($admin)
-        ->post(route('admin.tuition.jobs.store'), [])
+        ->post(route('admin.jobs.store'), [])
         ->assertForbidden();
 
     $this->actingAs($admin)
-        ->patch(route('admin.tuition.jobs.approve', $job))
+        ->patch(route('admin.jobs.approve', $job))
         ->assertForbidden();
 
     $this->actingAs($admin)
-        ->delete(route('admin.tuition.jobs.destroy', $job))
+        ->delete(route('admin.jobs.destroy', $job))
         ->assertForbidden();
 });

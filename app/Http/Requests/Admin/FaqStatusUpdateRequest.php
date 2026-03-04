@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\Faq;
+use App\Enums\FaqStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class FaqStatusUpdateRequest extends FormRequest
 {
@@ -37,7 +37,7 @@ class FaqStatusUpdateRequest extends FormRequest
             'status' => [
                 'required',
                 'string',
-                Rule::in([Faq::STATUS_ACTIVE, Faq::STATUS_INACTIVE]),
+                new Enum(FaqStatus::class),
             ],
         ];
     }

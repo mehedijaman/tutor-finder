@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\JobGender;
+use App\Enums\JobStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -59,8 +61,8 @@ it('guardian can view jobs pages and create pending job', function () {
             'area_id' => $area->id,
             'subject_ids' => [$subject->id],
             'location' => 'Near Lake Road',
-            'student_gender' => TuitionJob::GENDER_ANY,
-            'tutor_gender' => TuitionJob::GENDER_FEMALE,
+            'student_gender' => JobGender::Any->value,
+            'tutor_gender' => JobGender::Female->value,
             'tuition_days' => ['sun', 'tue', 'thu'],
             'tuition_time' => '5 PM - 7 PM',
             'tuition_duration' => '3 months',
@@ -75,7 +77,7 @@ it('guardian can view jobs pages and create pending job', function () {
     $job = TuitionJob::query()->firstOrFail();
 
     expect($job->guardian_id)->toBe($guardian->id);
-    expect($job->status)->toBe(TuitionJob::STATUS_PENDING);
+    expect($job->status)->toBe(JobStatus::Pending);
     expect($job->days_per_week)->toBe(3);
     expect($job->slug)->toBe('need-maths-tutor-for-class-9');
 
@@ -90,24 +92,24 @@ it('guardian can access jobs preset routes with status filters', function () {
 
     TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_PENDING,
+        'status' => JobStatus::Pending,
     ]);
     TuitionJob::factory()->live()->create([
         'guardian_id' => $guardian->id,
     ]);
     TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
         'published_at' => now()->subDay(),
         'confirmed_at' => now()->subHour(),
     ]);
     TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CANCELLED,
+        'status' => JobStatus::Cancelled,
     ]);
     TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CLOSED,
+        'status' => JobStatus::Closed,
         'published_at' => now()->subDay(),
     ]);
 
@@ -123,33 +125,33 @@ it('guardian can access jobs preset routes with status filters', function () {
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('guardian/jobs/Index')
-            ->where('filters.preset_status', TuitionJob::STATUS_PENDING));
+            ->where('filters.preset_status', JobStatus::Pending->value));
 
     $this->actingAs($guardian)
         ->get(route('guardian.jobs.live'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('guardian/jobs/Index')
-            ->where('filters.preset_status', TuitionJob::STATUS_LIVE));
+            ->where('filters.preset_status', JobStatus::Live->value));
 
     $this->actingAs($guardian)
         ->get(route('guardian.jobs.confirmed'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('guardian/jobs/Index')
-            ->where('filters.preset_status', TuitionJob::STATUS_CONFIRMED));
+            ->where('filters.preset_status', JobStatus::Confirmed->value));
 
     $this->actingAs($guardian)
         ->get(route('guardian.jobs.cancelled'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('guardian/jobs/Index')
-            ->where('filters.preset_status', TuitionJob::STATUS_CANCELLED));
+            ->where('filters.preset_status', JobStatus::Cancelled->value));
 
     $this->actingAs($guardian)
         ->get(route('guardian.jobs.closed'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('guardian/jobs/Index')
-            ->where('filters.preset_status', TuitionJob::STATUS_CLOSED));
+            ->where('filters.preset_status', JobStatus::Closed->value));
 });

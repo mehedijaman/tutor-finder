@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ApplicationStatus;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,16 +12,6 @@ class TuitionJobApplication extends Model
 {
     /** @use HasFactory<\Database\Factories\TuitionJobApplicationFactory> */
     use HasFactory;
-
-    public const STATUS_APPLIED = 'applied';
-
-    public const STATUS_SHORTLISTED = 'shortlisted';
-
-    public const STATUS_APPOINTED = 'appointed';
-
-    public const STATUS_CONFIRMED = 'confirmed';
-
-    public const STATUS_CANCELLED = 'cancelled';
 
     /**
      * @var list<string>
@@ -44,6 +35,7 @@ class TuitionJobApplication extends Model
     protected function casts(): array
     {
         return [
+            'status' => ApplicationStatus::class,
             'expected_salary_amount' => 'decimal:2',
             'metadata' => 'array',
         ];
@@ -70,12 +62,12 @@ class TuitionJobApplication extends Model
      */
     public function markShortlisted(): void
     {
-        if ($this->status !== self::STATUS_APPLIED) {
+        if ($this->status !== ApplicationStatus::Applied) {
             throw new DomainException('Only applied applications can be shortlisted.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_SHORTLISTED,
+            'status' => ApplicationStatus::Shortlisted,
             'cancel_reason' => null,
         ])->save();
     }
@@ -85,17 +77,12 @@ class TuitionJobApplication extends Model
      */
     public function markCancelled(?string $reason = null): void
     {
-        if (! in_array($this->status, [
-            self::STATUS_APPLIED,
-            self::STATUS_SHORTLISTED,
-            self::STATUS_APPOINTED,
-            self::STATUS_CONFIRMED,
-        ], true)) {
+        if (! in_array($this->status, ApplicationStatus::cancellableStatuses(), true)) {
             throw new DomainException('Only active applications can be cancelled.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_CANCELLED,
+            'status' => ApplicationStatus::Cancelled,
             'cancel_reason' => $reason,
         ])->save();
     }
@@ -105,12 +92,12 @@ class TuitionJobApplication extends Model
      */
     public function markConfirmed(): void
     {
-        if ($this->status !== self::STATUS_SHORTLISTED) {
+        if ($this->status !== ApplicationStatus::Shortlisted) {
             throw new DomainException('Only shortlisted applications can be confirmed.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_CONFIRMED,
+            'status' => ApplicationStatus::Confirmed,
             'cancel_reason' => null,
         ])->save();
     }
@@ -120,12 +107,12 @@ class TuitionJobApplication extends Model
      */
     public function markApplied(?string $coverLetter, int|float|string|null $expectedSalaryAmount): void
     {
-        if ($this->status !== self::STATUS_CANCELLED) {
+        if ($this->status !== ApplicationStatus::Cancelled) {
             throw new DomainException('Only cancelled applications can be re-applied.');
         }
 
         $this->forceFill([
-            'status' => self::STATUS_APPLIED,
+            'status' => ApplicationStatus::Applied,
             'cover_letter' => $coverLetter,
             'expected_salary_amount' => $expectedSalaryAmount,
             'salary_currency' => $this->salary_currency ?: 'BDT',
@@ -136,16 +123,10 @@ class TuitionJobApplication extends Model
     /**
      * Get all available application statuses.
      *
-     * @return list<string>
+     * @return list<ApplicationStatus>
      */
     public static function statuses(): array
     {
-        return [
-            self::STATUS_APPLIED,
-            self::STATUS_SHORTLISTED,
-            self::STATUS_APPOINTED,
-            self::STATUS_CONFIRMED,
-            self::STATUS_CANCELLED,
-        ];
+        return ApplicationStatus::cases();
     }
 }

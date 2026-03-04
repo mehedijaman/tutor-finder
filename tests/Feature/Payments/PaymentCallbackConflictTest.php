@@ -1,5 +1,10 @@
 <?php
 
+use App\Enums\InvoiceStatus;
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
@@ -32,8 +37,8 @@ it('treats callback as idempotent when invoice is already paid with same provide
     $tutor = User::factory()->tutor()->create();
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $tutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_VERIFIED,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Verified,
     ]);
 
     $invoice = Invoice::factory()->create([
@@ -41,8 +46,8 @@ it('treats callback as idempotent when invoice is already paid with same provide
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $tutor->id,
         'payer_user_id' => $tutor->id,
-        'status' => Invoice::STATUS_PAID,
-        'payment_gateway' => Invoice::GATEWAY_BKASH,
+        'status' => InvoiceStatus::Paid,
+        'payment_gateway' => PaymentGatewayType::Bkash,
         'payment_reference' => 'PID-IDEMPOTENT-1',
         'transaction_id' => 'BKASH-TXN-1',
         'amount' => 500,
@@ -52,10 +57,10 @@ it('treats callback as idempotent when invoice is already paid with same provide
 
     Payment::query()->create([
         'invoice_id' => $invoice->id,
-        'gateway' => Invoice::GATEWAY_BKASH,
+        'gateway' => PaymentGatewayType::Bkash,
         'provider_txn_id' => 'BKASH-TXN-1',
         'amount' => 500,
-        'status' => Payment::STATUS_PAID,
+        'status' => PaymentStatus::Paid,
         'provider_payload' => null,
     ]);
 
@@ -75,7 +80,7 @@ it('treats callback as idempotent when invoice is already paid with same provide
         'status' => 'success',
     ]))->assertRedirect('/tutor/verification');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
     expect($invoice->fresh()->transaction_id)->toBe('BKASH-TXN-1');
     expect(Payment::query()->where('invoice_id', $invoice->id)->count())->toBe(1);
 });
@@ -86,8 +91,8 @@ it('records failed attempt on callback conflict and keeps paid invoice unchanged
     $tutor = User::factory()->tutor()->create();
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $tutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_VERIFIED,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Verified,
     ]);
 
     $invoice = Invoice::factory()->create([
@@ -95,8 +100,8 @@ it('records failed attempt on callback conflict and keeps paid invoice unchanged
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $tutor->id,
         'payer_user_id' => $tutor->id,
-        'status' => Invoice::STATUS_PAID,
-        'payment_gateway' => Invoice::GATEWAY_BKASH,
+        'status' => InvoiceStatus::Paid,
+        'payment_gateway' => PaymentGatewayType::Bkash,
         'payment_reference' => 'PID-CONFLICT-1',
         'transaction_id' => 'BKASH-TXN-OLD',
         'amount' => 500,
@@ -106,10 +111,10 @@ it('records failed attempt on callback conflict and keeps paid invoice unchanged
 
     Payment::query()->create([
         'invoice_id' => $invoice->id,
-        'gateway' => Invoice::GATEWAY_BKASH,
+        'gateway' => PaymentGatewayType::Bkash,
         'provider_txn_id' => 'BKASH-TXN-OLD',
         'amount' => 500,
-        'status' => Payment::STATUS_PAID,
+        'status' => PaymentStatus::Paid,
         'provider_payload' => null,
     ]);
 
@@ -131,12 +136,12 @@ it('records failed attempt on callback conflict and keeps paid invoice unchanged
         ->assertRedirect('/tutor/verification')
         ->assertSessionHasErrors('payment');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
     expect($invoice->fresh()->transaction_id)->toBe('BKASH-TXN-OLD');
 
     $failedAttempt = Payment::query()
         ->where('invoice_id', $invoice->id)
-        ->where('status', Payment::STATUS_FAILED)
+        ->where('status', PaymentStatus::Failed)
         ->latest('id')
         ->first();
 

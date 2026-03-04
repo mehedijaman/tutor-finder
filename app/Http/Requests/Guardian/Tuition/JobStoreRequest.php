@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\Guardian\Tuition;
 
-use App\Models\TuitionJob;
+use App\Enums\JobGender;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class JobStoreRequest extends FormRequest
 {
@@ -29,8 +30,8 @@ class JobStoreRequest extends FormRequest
             'slug' => trim((string) $this->input('slug')),
             'description' => trim((string) $this->input('description')),
             'location' => trim((string) $this->input('location')),
-            'student_gender' => strtolower(trim((string) $this->input('student_gender', TuitionJob::GENDER_ANY))),
-            'tutor_gender' => strtolower(trim((string) $this->input('tutor_gender', TuitionJob::GENDER_ANY))),
+            'student_gender' => strtolower(trim((string) $this->input('student_gender', JobGender::Any->value))),
+            'tutor_gender' => strtolower(trim((string) $this->input('tutor_gender', JobGender::Any->value))),
             'salary_currency' => strtoupper(trim((string) $this->input('salary_currency', 'BDT'))),
             'salary_negotiable' => $this->boolean('salary_negotiable'),
             'tuition_days' => $normalizedDays,
@@ -112,8 +113,8 @@ class JobStoreRequest extends FormRequest
             'location' => ['nullable', 'string', 'max:255'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'student_gender' => ['required', 'string', Rule::in(TuitionJob::genders())],
-            'tutor_gender' => ['required', 'string', Rule::in(TuitionJob::genders())],
+            'student_gender' => ['required', 'string', new Enum(JobGender::class)],
+            'tutor_gender' => ['required', 'string', new Enum(JobGender::class)],
             'tuition_days' => ['nullable', 'array'],
             'tuition_days.*' => ['required', 'string', Rule::in($this->allowedDays())],
             'days_per_week' => ['nullable', 'integer', 'between:1,7'],

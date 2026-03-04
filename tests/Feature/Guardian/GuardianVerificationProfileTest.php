@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Models\GuardianProfile;
 use App\Models\User;
 use App\Models\VerificationRequest;
@@ -71,11 +73,11 @@ it('guardian can submit verification request', function () {
     $request = VerificationRequest::query()->where('user_id', $guardian->id)->first();
 
     expect($request)->not->toBeNull();
-    expect($request->role)->toBe(VerificationRequest::ROLE_GUARDIAN);
-    expect($request->status)->toBe(VerificationRequest::STATUS_PENDING);
+    expect($request->role)->toBe(VerificationRole::Guardian);
+    expect($request->status)->toBe(VerificationStatus::Pending);
 
     $guardian->refresh();
 
-    expect($guardian->verification_status)->toBe(User::VERIFICATION_STATUS_PENDING);
-    expect($guardian->verification_type)->toBe(VerificationRequest::ROLE_GUARDIAN);
+    expect($guardian->verification_status)->toBe(VerificationStatus::Pending);
+    expect($guardian->verification_type)->toBe(VerificationRole::Guardian->value);
 });

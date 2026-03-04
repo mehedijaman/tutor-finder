@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\InvoiceCreateRequest;
 use App\Http\Requests\Admin\VerificationDecisionRequest;
 use App\Models\GuardianProfile;
-use App\Models\Invoice;
-use App\Models\SiteSetting;
 use App\Models\TutorProfile;
 use App\Models\User;
 use App\Models\VerificationRequest;
-use App\Services\Finance\InvoiceLifecycleService;
+use App\Services\Verification\VerificationWorkflowService;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Response;
 
 class VerificationRequestController extends Controller
@@ -57,7 +56,7 @@ class VerificationRequestController extends Controller
             $status = '';
         }
 
-        if (! in_array($role, [VerificationRequest::ROLE_TUTOR, VerificationRequest::ROLE_GUARDIAN], true)) {
+        if (! in_array($role, [VerificationRole::Tutor->value, VerificationRole::Guardian->value], true)) {
             $role = '';
         }
 
@@ -100,7 +99,7 @@ class VerificationRequestController extends Controller
                 'role' => $role,
             ],
             'statusOptions' => $this->statusOptions(),
-            'roleOptions' => [VerificationRequest::ROLE_TUTOR, VerificationRequest::ROLE_GUARDIAN],
+            'roleOptions' => [VerificationRole::Tutor, VerificationRole::Guardian],
         ]);
     }
 
@@ -115,11 +114,11 @@ class VerificationRequestController extends Controller
             'invoice',
         ]);
 
-        $profileSnapshot = $verificationRequest->role === VerificationRequest::ROLE_TUTOR
+        $profileSnapshot = $verificationRequest->role === VerificationRole::Tutor
             ? TutorProfile::query()->where('user_id', $verificationRequest->user_id)->first()
             : GuardianProfile::query()->where('user_id', $verificationRequest->user_id)->first();
 
-        $educationSnapshot = $verificationRequest->role === VerificationRequest::ROLE_TUTOR
+        $educationSnapshot = $verificationRequest->role === VerificationRole::Tutor
             ? $verificationRequest->user?->tutorEducations()->get()
             : collect();
 
@@ -166,23 +165,13 @@ class VerificationRequestController extends Controller
     /**
      * Approve verification request.
      */
-    public function approve(VerificationDecisionRequest $request, VerificationRequest $verificationRequest): RedirectResponse
-    {
+    public function approve(
+        VerificationDecisionRequest $request,
+        VerificationRequest $verificationRequest,
+        VerificationWorkflowService $workflowService,
+    ): RedirectResponse {
         try {
-            DB::transaction(function () use ($request, $verificationRequest): void {
-                $admin = $request->user();
-
-                $lockedRequest = VerificationRequest::query()->lockForUpdate()->findOrFail($verificationRequest->getKey());
-                $lockedUser = User::query()->lockForUpdate()->findOrFail($lockedRequest->user_id);
-
-                $lockedRequest->markApproved($admin);
-
-                $lockedUser->forceFill([
-                    'verification_status' => User::VERIFICATION_STATUS_APPROVED,
-                    'verification_type' => $lockedRequest->role,
-                    'verified_at' => null,
-                ])->save();
-            });
+            $workflowService->approve($verificationRequest, $request->user());
         } catch (DomainException $exception) {
             return redirect()->back()->withErrors(['verification' => $exception->getMessage()]);
         }
@@ -193,27 +182,13 @@ class VerificationRequestController extends Controller
     /**
      * Reject or cancel verification request.
      */
-    public function reject(VerificationDecisionRequest $request, VerificationRequest $verificationRequest): RedirectResponse
-    {
-        $validated = $request->validated();
-
+    public function reject(
+        VerificationDecisionRequest $request,
+        VerificationRequest $verificationRequest,
+        VerificationWorkflowService $workflowService,
+    ): RedirectResponse {
         try {
-            DB::transaction(function () use ($request, $verificationRequest, $validated): void {
-                $admin = $request->user();
-                $lockedRequest = VerificationRequest::query()->lockForUpdate()->findOrFail($verificationRequest->getKey());
-                $lockedUser = User::query()->lockForUpdate()->findOrFail($lockedRequest->user_id);
-
-                $lockedRequest->markDecision((string) $validated['decision_status'], (string) $validated['reason'], $admin);
-
-                $userStatus = $validated['decision_status'] === VerificationRequest::STATUS_REJECTED
-                    ? User::VERIFICATION_STATUS_REJECTED
-                    : User::VERIFICATION_STATUS_CANCELLED;
-
-                $lockedUser->forceFill([
-                    'verification_status' => $userStatus,
-                    'verified_at' => null,
-                ])->save();
-            });
+            $workflowService->reject($verificationRequest, $request->user(), $request->validated());
         } catch (DomainException $exception) {
             return redirect()->back()->withErrors(['verification' => $exception->getMessage()]);
         }
@@ -224,66 +199,13 @@ class VerificationRequestController extends Controller
     /**
      * Generate invoice for verification request.
      */
-    public function createInvoice(InvoiceCreateRequest $request, VerificationRequest $verificationRequest): RedirectResponse
-    {
-        $validated = $request->validated();
-
+    public function createInvoice(
+        InvoiceCreateRequest $request,
+        VerificationRequest $verificationRequest,
+        VerificationWorkflowService $workflowService,
+    ): RedirectResponse {
         try {
-            DB::transaction(function () use ($request, $verificationRequest, $validated): void {
-                $admin = $request->user();
-                $lockedRequest = VerificationRequest::query()->with('invoice')->lockForUpdate()->findOrFail($verificationRequest->getKey());
-                $lockedUser = User::query()->lockForUpdate()->findOrFail($lockedRequest->user_id);
-                $siteSetting = SiteSetting::current();
-                $platformOwnerUserId = $siteSetting->platformOwnerUserId();
-
-                if (! in_array($lockedRequest->status, [VerificationRequest::STATUS_PENDING, VerificationRequest::STATUS_APPROVED], true)) {
-                    throw new DomainException('Invoice can only be generated for pending or approved requests.');
-                }
-
-                if ($platformOwnerUserId === null) {
-                    throw new DomainException('Platform finance account is not configured. Please update site settings.');
-                }
-
-                if ($lockedRequest->invoice instanceof Invoice) {
-                    if (! in_array($lockedRequest->invoice->status, Invoice::recoverableStatuses(), true)) {
-                        throw new DomainException('An active invoice already exists for this verification request.');
-                    }
-
-                    $lockedRequest->invoice->delete();
-                }
-
-                $amount = isset($validated['amount']) ? (float) $validated['amount'] : (float) $lockedRequest->fee_amount;
-                $currency = $validated['currency'] ?? $lockedRequest->currency;
-                $invoiceType = $lockedRequest->role === VerificationRequest::ROLE_GUARDIAN
-                    ? Invoice::TYPE_GUARDIAN_VERIFICATION_FEE
-                    : Invoice::TYPE_TUTOR_VERIFICATION_FEE;
-
-                app(InvoiceLifecycleService::class)->issue([
-                    'invoice_no' => null,
-                    'invoiceable_type' => VerificationRequest::class,
-                    'invoiceable_id' => $lockedRequest->getKey(),
-                    'user_id' => $lockedUser->getKey(),
-                    'payer_user_id' => $lockedUser->getKey(),
-                    'payee_user_id' => $platformOwnerUserId,
-                    'type' => $invoiceType,
-                    'job_assignment_id' => null,
-                    'amount' => $amount,
-                    'currency' => $currency,
-                    'status' => Invoice::STATUS_UNPAID,
-                    'due_at' => $validated['due_at'] ?? now()->addDays(7),
-                    'expires_at' => $validated['expires_at'] ?? ($validated['due_at'] ?? now()->addDays(7)),
-                    'issued_by' => $admin?->getKey(),
-                    'issued_at' => now(),
-                    'notes' => $validated['notes'] ?? null,
-                ]);
-
-                $lockedRequest->markInvoiced($admin);
-
-                $lockedUser->forceFill([
-                    'verification_status' => User::VERIFICATION_STATUS_INVOICED,
-                    'verification_type' => $lockedRequest->role,
-                ])->save();
-            });
+            $workflowService->issueInvoice($verificationRequest, $request->user(), $request->validated());
         } catch (DomainException $exception) {
             return redirect()->back()->withErrors(['invoice' => $exception->getMessage()]);
         }
@@ -297,12 +219,12 @@ class VerificationRequestController extends Controller
     private function statusOptions(): array
     {
         return [
-            VerificationRequest::STATUS_PENDING,
-            VerificationRequest::STATUS_APPROVED,
-            VerificationRequest::STATUS_INVOICED,
-            VerificationRequest::STATUS_VERIFIED,
-            VerificationRequest::STATUS_REJECTED,
-            VerificationRequest::STATUS_CANCELLED,
+            VerificationStatus::Pending->value,
+            VerificationStatus::Approved->value,
+            VerificationStatus::Invoiced->value,
+            VerificationStatus::Verified->value,
+            VerificationStatus::Rejected->value,
+            VerificationStatus::Cancelled->value,
         ];
     }
 
@@ -314,18 +236,18 @@ class VerificationRequestController extends Controller
         $query = trim($request->string('q')->toString());
         $role = strtolower(trim($request->string('role')->toString()));
 
-        if (! in_array($role, [VerificationRequest::ROLE_TUTOR, VerificationRequest::ROLE_GUARDIAN], true)) {
+        if (! in_array($role, [VerificationRole::Tutor->value, VerificationRole::Guardian->value], true)) {
             $role = '';
         }
 
         $bucketStatuses = match ($bucket) {
             'pending' => [
-                User::VERIFICATION_STATUS_PENDING,
-                User::VERIFICATION_STATUS_APPROVED,
-                User::VERIFICATION_STATUS_INVOICED,
+                VerificationStatus::Pending,
+                VerificationStatus::Approved,
+                VerificationStatus::Invoiced,
             ],
-            'unverified' => [User::VERIFICATION_STATUS_UNVERIFIED],
-            'verified' => [User::VERIFICATION_STATUS_VERIFIED],
+            'unverified' => [VerificationStatus::Unverified],
+            'verified' => [VerificationStatus::Verified],
             default => abort(404),
         };
 
@@ -346,7 +268,7 @@ class VerificationRequestController extends Controller
         };
 
         $items = User::query()
-            ->whereIn('role', [VerificationRequest::ROLE_TUTOR, VerificationRequest::ROLE_GUARDIAN])
+            ->whereIn('role', [VerificationRole::Tutor, VerificationRole::Guardian])
             ->whereIn('verification_status', $bucketStatuses)
             ->when($query !== '', function ($builder) use ($query): void {
                 $builder->where(function ($subQuery) use ($query): void {
@@ -386,7 +308,7 @@ class VerificationRequestController extends Controller
                 'q' => $query,
                 'role' => $role,
             ],
-            'roleOptions' => [VerificationRequest::ROLE_TUTOR, VerificationRequest::ROLE_GUARDIAN],
+            'roleOptions' => [VerificationRole::Tutor, VerificationRole::Guardian],
             'bucket' => $bucket,
             'title' => $pageMeta['title'],
             'description' => $pageMeta['description'],

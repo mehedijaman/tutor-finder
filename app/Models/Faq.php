@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\FaqAudience;
+use App\Enums\FaqStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,16 +14,6 @@ class Faq extends Model
     use HasFactory;
 
     use SoftDeletes;
-
-    public const AUDIENCE_TUTOR = 'tutor';
-
-    public const AUDIENCE_GUARDIAN = 'guardian';
-
-    public const AUDIENCE_BOTH = 'both';
-
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
 
     /**
      * The attributes that are mass assignable.
@@ -44,6 +36,8 @@ class Faq extends Model
     protected function casts(): array
     {
         return [
+            'audience' => FaqAudience::class,
+            'status' => FaqStatus::class,
             'sort_order' => 'integer',
         ];
     }

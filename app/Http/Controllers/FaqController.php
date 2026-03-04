@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FaqAudience;
+use App\Enums\FaqStatus;
 use App\Models\Faq;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -16,14 +18,14 @@ class FaqController extends Controller
     {
         $audience = strtolower(trim($request->string('audience')->toString()));
 
-        if (! in_array($audience, [Faq::AUDIENCE_TUTOR, Faq::AUDIENCE_GUARDIAN], true)) {
+        if (! in_array($audience, [FaqAudience::Tutor->value, FaqAudience::Guardian->value], true)) {
             $audience = '';
         }
 
         $items = Faq::query()
-            ->where('status', Faq::STATUS_ACTIVE)
+            ->where('status', FaqStatus::Active)
             ->when($audience !== '', function ($builder) use ($audience): void {
-                $builder->whereIn('audience', [$audience, Faq::AUDIENCE_BOTH]);
+                $builder->whereIn('audience', [$audience, FaqAudience::Both]);
             })
             ->orderBy('sort_order')
             ->orderByDesc('created_at')
@@ -41,12 +43,12 @@ class FaqController extends Controller
         $metaTitle = 'FAQ | '.config('app.name');
         $metaDescription = 'Find answers to common questions for tutors and guardians.';
 
-        if ($audience === Faq::AUDIENCE_TUTOR) {
+        if ($audience === FaqAudience::Tutor->value) {
             $metaTitle = 'Tutor FAQ | '.config('app.name');
             $metaDescription = 'Frequently asked questions for tutors using our platform.';
         }
 
-        if ($audience === Faq::AUDIENCE_GUARDIAN) {
+        if ($audience === FaqAudience::Guardian->value) {
             $metaTitle = 'Guardian FAQ | '.config('app.name');
             $metaDescription = 'Frequently asked questions for guardians using our platform.';
         }

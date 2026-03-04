@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ApplicationStatus;
+use App\Enums\JobStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -60,7 +62,7 @@ it('tutor can apply to a live job and see it in own applications list', function
     $this->assertDatabaseHas('tuition_job_applications', [
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied->value,
     ]);
 
     $guardian->refresh();
@@ -87,7 +89,7 @@ it('tutor can access application preset routes with status filters', function ()
     TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
     TuitionJobApplication::factory()->create([
         'job_id' => TuitionJob::factory()->live()->create([
@@ -95,7 +97,7 @@ it('tutor can access application preset routes with status filters', function ()
             'expires_at' => now()->addDays(7),
         ])->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+        'status' => ApplicationStatus::Shortlisted,
     ]);
     TuitionJobApplication::factory()->create([
         'job_id' => TuitionJob::factory()->live()->create([
@@ -103,17 +105,17 @@ it('tutor can access application preset routes with status filters', function ()
             'expires_at' => now()->addDays(7),
         ])->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPOINTED,
+        'status' => ApplicationStatus::Appointed,
     ]);
     TuitionJobApplication::factory()->create([
         'job_id' => TuitionJob::factory()->create([
             'guardian_id' => $guardian->id,
-            'status' => TuitionJob::STATUS_CONFIRMED,
+            'status' => JobStatus::Confirmed,
             'published_at' => now()->subDay(),
             'confirmed_at' => now()->subHour(),
         ])->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_CONFIRMED,
+        'status' => ApplicationStatus::Confirmed,
     ]);
     TuitionJobApplication::factory()->create([
         'job_id' => TuitionJob::factory()->live()->create([
@@ -121,7 +123,7 @@ it('tutor can access application preset routes with status filters', function ()
             'expires_at' => now()->addDays(7),
         ])->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'status' => ApplicationStatus::Cancelled,
     ]);
 
     $this->actingAs($tutor)
@@ -136,35 +138,35 @@ it('tutor can access application preset routes with status filters', function ()
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('tutor/job-applications/Index')
-            ->where('filters.preset_status', TuitionJobApplication::STATUS_APPLIED));
+            ->where('filters.preset_status', ApplicationStatus::Applied->value));
 
     $this->actingAs($tutor)
         ->get(route('tutor.job-applications.shortlisted'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('tutor/job-applications/Index')
-            ->where('filters.preset_status', TuitionJobApplication::STATUS_SHORTLISTED));
+            ->where('filters.preset_status', ApplicationStatus::Shortlisted->value));
 
     $this->actingAs($tutor)
         ->get(route('tutor.job-applications.appointed'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('tutor/job-applications/Index')
-            ->where('filters.preset_status', TuitionJobApplication::STATUS_APPOINTED));
+            ->where('filters.preset_status', ApplicationStatus::Appointed->value));
 
     $this->actingAs($tutor)
         ->get(route('tutor.job-applications.confirmed'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('tutor/job-applications/Index')
-            ->where('filters.preset_status', TuitionJobApplication::STATUS_CONFIRMED));
+            ->where('filters.preset_status', ApplicationStatus::Confirmed->value));
 
     $this->actingAs($tutor)
         ->get(route('tutor.job-applications.cancelled'))
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('tutor/job-applications/Index')
-            ->where('filters.preset_status', TuitionJobApplication::STATUS_CANCELLED));
+            ->where('filters.preset_status', ApplicationStatus::Cancelled->value));
 });
 
 it('tutor cannot submit duplicate applied application', function () {
@@ -179,7 +181,7 @@ it('tutor cannot submit duplicate applied application', function () {
     TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($tutor)
@@ -194,7 +196,7 @@ it('tutor can cancel own application', function () {
 
     $application = TuitionJobApplication::factory()->create([
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($tutor)
@@ -203,7 +205,7 @@ it('tutor can cancel own application', function () {
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $application->id,
-        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'status' => ApplicationStatus::Cancelled->value,
     ]);
 
     $guardian = $application->tuitionJob->guardian->refresh();
@@ -217,7 +219,7 @@ it('tutor cannot apply to a confirmed job', function () {
 
     $job = TuitionJob::factory()->create([
         'guardian_id' => $guardian->id,
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed,
         'published_at' => now()->subHour(),
         'expires_at' => now()->addDays(5),
     ]);
@@ -240,7 +242,7 @@ it('tutor can reapply by updating existing cancelled row', function () {
     $application = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'status' => ApplicationStatus::Cancelled,
         'cancel_reason' => 'Cancelled by tutor.',
     ]);
 
@@ -255,7 +257,7 @@ it('tutor can reapply by updating existing cancelled row', function () {
         'id' => $application->id,
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied->value,
         'cancel_reason' => null,
     ]);
 });

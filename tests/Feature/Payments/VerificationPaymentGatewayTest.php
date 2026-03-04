@@ -1,7 +1,11 @@
 <?php
 
+use App\Enums\InvoiceStatus;
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Models\Invoice;
-use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Models\VerificationRequest;
@@ -66,14 +70,14 @@ it('completes bKash payment and verifies tutor after validated callback', functi
     configureGatewaySettings();
 
     $tutor = User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_INVOICED,
-        'verification_type' => VerificationRequest::ROLE_TUTOR,
+        'verification_status' => VerificationStatus::Invoiced,
+        'verification_type' => VerificationRole::Tutor,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $tutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Invoiced,
         'currency' => 'BDT',
         'fee_amount' => 500,
     ]);
@@ -82,7 +86,7 @@ it('completes bKash payment and verifies tutor after validated callback', functi
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $tutor->id,
-        'status' => Invoice::STATUS_UNPAID,
+        'status' => InvoiceStatus::Unpaid,
         'amount' => 500,
         'currency' => 'BDT',
         'expires_at' => now()->addDays(2),
@@ -101,10 +105,10 @@ it('completes bKash payment and verifies tutor after validated callback', functi
 
     $invoice->refresh();
 
-    expect($invoice->status)->toBe(Invoice::STATUS_UNPAID);
-    expect($invoice->payment_gateway)->toBe(Invoice::GATEWAY_BKASH);
+    expect($invoice->status)->toBe(InvoiceStatus::Unpaid);
+    expect($invoice->payment_gateway)->toBe(PaymentGatewayType::Bkash);
     expect($invoice->payment_reference)->toBe('PID-1001');
-    expect($invoice->payments()->where('status', Payment::STATUS_PENDING)->count())->toBe(1);
+    expect($invoice->payments()->where('status', PaymentStatus::Pending)->count())->toBe(1);
 
     Bkash::shouldReceive('queryPayment')
         ->once()
@@ -122,14 +126,14 @@ it('completes bKash payment and verifies tutor after validated callback', functi
         'status' => 'success',
     ]))->assertRedirect('/tutor/verification');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
     expect($invoice->fresh()->transaction_id)->toBe('BKASH-TRX-1001');
-    expect($invoice->payments()->where('status', Payment::STATUS_PAID)->count())->toBe(1);
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_VERIFIED);
+    expect($invoice->payments()->where('status', PaymentStatus::Paid)->count())->toBe(1);
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Verified);
 
     $tutor->refresh();
 
-    expect($tutor->verification_status)->toBe(User::VERIFICATION_STATUS_VERIFIED);
+    expect($tutor->verification_status)->toBe(VerificationStatus::Verified);
     expect($tutor->verified_at)->not->toBeNull();
 });
 
@@ -137,14 +141,14 @@ it('completes SSLCommerz payment and supports idempotent IPN handling', function
     configureGatewaySettings();
 
     $guardian = User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_INVOICED,
-        'verification_type' => VerificationRequest::ROLE_GUARDIAN,
+        'verification_status' => VerificationStatus::Invoiced,
+        'verification_type' => VerificationRole::Guardian,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $guardian->id,
-        'role' => VerificationRequest::ROLE_GUARDIAN,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Guardian,
+        'status' => VerificationStatus::Invoiced,
         'currency' => 'BDT',
         'fee_amount' => 500,
     ]);
@@ -153,7 +157,7 @@ it('completes SSLCommerz payment and supports idempotent IPN handling', function
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $guardian->id,
-        'status' => Invoice::STATUS_UNPAID,
+        'status' => InvoiceStatus::Unpaid,
         'amount' => 500,
         'currency' => 'BDT',
         'expires_at' => now()->addDays(2),
@@ -177,10 +181,10 @@ it('completes SSLCommerz payment and supports idempotent IPN handling', function
 
     $invoice->refresh();
 
-    expect($invoice->status)->toBe(Invoice::STATUS_UNPAID);
-    expect($invoice->payment_gateway)->toBe(Invoice::GATEWAY_SSLCOMMERZ);
+    expect($invoice->status)->toBe(InvoiceStatus::Unpaid);
+    expect($invoice->payment_gateway)->toBe(PaymentGatewayType::Sslcommerz);
     expect($invoice->payment_reference)->toBe($invoice->invoice_no);
-    expect($invoice->payments()->where('status', Payment::STATUS_PENDING)->count())->toBe(1);
+    expect($invoice->payments()->where('status', PaymentStatus::Pending)->count())->toBe(1);
 
     Sslcommerz::shouldReceive('verifyHash')->twice()->andReturnTrue();
     Sslcommerz::shouldReceive('validatePayment')->twice()->andReturnTrue();
@@ -196,11 +200,11 @@ it('completes SSLCommerz payment and supports idempotent IPN handling', function
     $this->get(route('payment.sslcommerz.success', $payload))
         ->assertRedirect('/guardian/verification');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_PAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Paid);
     expect($invoice->fresh()->transaction_id)->toBe('SSLC-BANK-1001');
-    expect($invoice->payments()->where('status', Payment::STATUS_PAID)->count())->toBe(1);
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_VERIFIED);
-    expect($guardian->fresh()->verification_status)->toBe(User::VERIFICATION_STATUS_VERIFIED);
+    expect($invoice->payments()->where('status', PaymentStatus::Paid)->count())->toBe(1);
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Verified);
+    expect($guardian->fresh()->verification_status)->toBe(VerificationStatus::Verified);
 
     $this->post(route('payment.sslcommerz.ipn'), $payload)
         ->assertOk()
@@ -213,22 +217,22 @@ it('rejects tampered bKash callback and does not verify user', function () {
     configureGatewaySettings();
 
     $tutor = User::factory()->tutor()->create([
-        'verification_status' => User::VERIFICATION_STATUS_INVOICED,
-        'verification_type' => VerificationRequest::ROLE_TUTOR,
+        'verification_status' => VerificationStatus::Invoiced,
+        'verification_type' => VerificationRole::Tutor,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $tutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     $invoice = Invoice::factory()->create([
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $tutor->id,
-        'status' => Invoice::STATUS_UNPAID,
-        'payment_gateway' => Invoice::GATEWAY_BKASH,
+        'status' => InvoiceStatus::Unpaid,
+        'payment_gateway' => PaymentGatewayType::Bkash,
         'payment_reference' => 'PID-TAMPER-1',
         'amount' => 500,
         'currency' => 'BDT',
@@ -251,10 +255,10 @@ it('rejects tampered bKash callback and does not verify user', function () {
         'status' => 'success',
     ]))->assertRedirect('/tutor/verification');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_UNPAID);
-    expect($invoice->payments()->where('status', Payment::STATUS_FAILED)->exists())->toBeTrue();
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_INVOICED);
-    expect($tutor->fresh()->verification_status)->toBe(User::VERIFICATION_STATUS_INVOICED);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Unpaid);
+    expect($invoice->payments()->where('status', PaymentStatus::Failed)->exists())->toBeTrue();
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Invoiced);
+    expect($tutor->fresh()->verification_status)->toBe(VerificationStatus::Invoiced);
     expect($tutor->fresh()->verified_at)->toBeNull();
 });
 
@@ -265,15 +269,15 @@ it('rejects payment initiation for expired invoice', function () {
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $tutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     $invoice = Invoice::factory()->create([
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $tutor->id,
-        'status' => Invoice::STATUS_UNPAID,
+        'status' => InvoiceStatus::Unpaid,
         'expires_at' => now()->subMinute(),
     ]);
 
@@ -283,7 +287,7 @@ it('rejects payment initiation for expired invoice', function () {
         ->assertRedirect('/tutor/verification')
         ->assertSessionHasErrors('payment');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_UNPAID);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Unpaid);
 });
 
 it('uses atomic transition so second payment start is blocked while a pending attempt exists', function () {
@@ -293,15 +297,15 @@ it('uses atomic transition so second payment start is blocked while a pending at
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $tutor->id,
-        'role' => VerificationRequest::ROLE_TUTOR,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Tutor,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     $invoice = Invoice::factory()->create([
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $tutor->id,
-        'status' => Invoice::STATUS_UNPAID,
+        'status' => InvoiceStatus::Unpaid,
         'expires_at' => now()->addDay(),
     ]);
 
@@ -316,8 +320,8 @@ it('uses atomic transition so second payment start is blocked while a pending at
         ->post(route('payment.bkash.start', $invoice))
         ->assertRedirect('https://sandbox.bkash.test/pay-2');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_UNPAID);
-    expect($invoice->payments()->where('status', Payment::STATUS_PENDING)->count())->toBe(1);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Unpaid);
+    expect($invoice->payments()->where('status', PaymentStatus::Pending)->count())->toBe(1);
 
     $this->actingAs($tutor)
         ->from('/tutor/verification')
@@ -330,22 +334,22 @@ it('records failed attempt on SSLCommerz fail callback and keeps user unverified
     configureGatewaySettings();
 
     $guardian = User::factory()->guardian()->create([
-        'verification_status' => User::VERIFICATION_STATUS_INVOICED,
-        'verification_type' => VerificationRequest::ROLE_GUARDIAN,
+        'verification_status' => VerificationStatus::Invoiced,
+        'verification_type' => VerificationRole::Guardian,
     ]);
 
     $verificationRequest = VerificationRequest::factory()->create([
         'user_id' => $guardian->id,
-        'role' => VerificationRequest::ROLE_GUARDIAN,
-        'status' => VerificationRequest::STATUS_INVOICED,
+        'role' => VerificationRole::Guardian,
+        'status' => VerificationStatus::Invoiced,
     ]);
 
     $invoice = Invoice::factory()->create([
         'invoiceable_type' => VerificationRequest::class,
         'invoiceable_id' => $verificationRequest->id,
         'user_id' => $guardian->id,
-        'status' => Invoice::STATUS_UNPAID,
-        'payment_gateway' => Invoice::GATEWAY_SSLCOMMERZ,
+        'status' => InvoiceStatus::Unpaid,
+        'payment_gateway' => PaymentGatewayType::Sslcommerz,
         'payment_reference' => 'INV-FAIL-1001',
     ]);
 
@@ -353,9 +357,9 @@ it('records failed attempt on SSLCommerz fail callback and keeps user unverified
         'tran_id' => 'INV-FAIL-1001',
     ]))->assertRedirect('/guardian/verification');
 
-    expect($invoice->fresh()->status)->toBe(Invoice::STATUS_UNPAID);
-    expect($invoice->payments()->where('status', Payment::STATUS_FAILED)->exists())->toBeTrue();
-    expect($verificationRequest->fresh()->status)->toBe(VerificationRequest::STATUS_INVOICED);
-    expect($guardian->fresh()->verification_status)->toBe(User::VERIFICATION_STATUS_INVOICED);
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Unpaid);
+    expect($invoice->payments()->where('status', PaymentStatus::Failed)->exists())->toBeTrue();
+    expect($verificationRequest->fresh()->status)->toBe(VerificationStatus::Invoiced);
+    expect($guardian->fresh()->verification_status)->toBe(VerificationStatus::Invoiced);
     expect($guardian->fresh()->verified_at)->toBeNull();
 });

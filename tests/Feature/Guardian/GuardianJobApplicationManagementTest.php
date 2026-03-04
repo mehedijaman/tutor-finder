@@ -1,6 +1,10 @@
 <?php
 
-use App\Models\Invoice;
+use App\Enums\ApplicationStatus;
+use App\Enums\FeePaymentMode;
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
+use App\Enums\JobStatus;
 use App\Models\SiteSetting;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
@@ -21,7 +25,7 @@ it('guardian can view own job applications and update status', function () {
     $application = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($guardian)
@@ -37,14 +41,14 @@ it('guardian can view own job applications and update status', function () {
             'tuitionJob' => $job->id,
             'tuitionJobApplication' => $application->id,
         ]), [
-            'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+            'status' => ApplicationStatus::Shortlisted->value,
             'cancel_reason' => null,
         ])
         ->assertRedirect();
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $application->id,
-        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+        'status' => ApplicationStatus::Shortlisted->value,
         'cancel_reason' => null,
     ]);
 
@@ -64,7 +68,7 @@ it('guardian cannot manage applications of another guardians job', function () {
 
     $application = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($otherGuardian)
@@ -76,7 +80,7 @@ it('guardian cannot manage applications of another guardians job', function () {
             'tuitionJob' => $job->id,
             'tuitionJobApplication' => $application->id,
         ]), [
-            'status' => TuitionJobApplication::STATUS_CANCELLED,
+            'status' => ApplicationStatus::Cancelled->value,
         ])
         ->assertForbidden();
 });
@@ -94,7 +98,7 @@ it('guardian cannot shortlist when assignment already exists', function () {
     $application = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     TuitionJobAssignment::factory()->create([
@@ -108,7 +112,7 @@ it('guardian cannot shortlist when assignment already exists', function () {
             'tuitionJob' => $job->id,
             'tuitionJobApplication' => $application->id,
         ]), [
-            'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+            'status' => ApplicationStatus::Shortlisted->value,
         ])
         ->assertRedirect(route('guardian.jobs.applications.index', ['tuitionJob' => $job->id], false))
         ->assertSessionHasErrors(['status']);
@@ -126,7 +130,7 @@ it('guardian applications page marks management as locked for expired live jobs'
     TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($guardian)
@@ -159,7 +163,7 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
             'platform_service_fee_rate' => 0.60000,
             'platform_service_fee_due_days' => 10,
             'default_fee_currency' => 'BDT',
-            'default_fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
+            'default_fee_payment_mode' => FeePaymentMode::PayBefore->value,
         ],
     );
 
@@ -172,13 +176,13 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
     $selectedApplication = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $selectedTutor->id,
-        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+        'status' => ApplicationStatus::Shortlisted,
     ]);
 
     $otherApplication = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $otherTutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($guardian)
@@ -194,7 +198,7 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
 
     $this->assertDatabaseHas('tuition_jobs', [
         'id' => $job->id,
-        'status' => TuitionJob::STATUS_CONFIRMED,
+        'status' => JobStatus::Confirmed->value,
         'confirmed_by' => $guardian->id,
     ]);
 
@@ -219,8 +223,8 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
 
     $this->assertDatabaseHas('invoices', [
         'job_assignment_id' => $assignment->id,
-        'type' => Invoice::TYPE_PLATFORM_SERVICE_FEE,
-        'status' => Invoice::STATUS_UNPAID,
+        'type' => InvoiceType::PlatformServiceFee->value,
+        'status' => InvoiceStatus::Unpaid->value,
         'payer_user_id' => $selectedTutor->id,
         'payee_user_id' => $platformUser->id,
         'amount' => 12000.00,
@@ -229,17 +233,17 @@ it('guardian can confirm shortlisted tutor engagement and close other open appli
 
     $this->assertDatabaseMissing('invoices', [
         'job_assignment_id' => $assignment->id,
-        'type' => Invoice::TYPE_ONLINE_MONTH1_ESCROW,
+        'type' => InvoiceType::OnlineMonth1Escrow->value,
     ]);
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $selectedApplication->id,
-        'status' => TuitionJobApplication::STATUS_CONFIRMED,
+        'status' => ApplicationStatus::Confirmed->value,
     ]);
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $otherApplication->id,
-        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'status' => ApplicationStatus::Cancelled->value,
     ]);
 
     $selectedTutor->refresh();
@@ -271,7 +275,7 @@ it('guardian confirm with escrow enabled requires amount and creates escrow invo
             'platform_service_fee_rate' => 0.50000,
             'platform_service_fee_due_days' => 10,
             'default_fee_currency' => 'BDT',
-            'default_fee_payment_mode' => TuitionJobAssignment::PAYMENT_MODE_PAY_BEFORE,
+            'default_fee_payment_mode' => FeePaymentMode::PayBefore->value,
         ],
     );
 
@@ -284,7 +288,7 @@ it('guardian confirm with escrow enabled requires amount and creates escrow invo
     $selectedApplication = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $selectedTutor->id,
-        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+        'status' => ApplicationStatus::Shortlisted,
     ]);
 
     $this->actingAs($guardian)
@@ -316,8 +320,8 @@ it('guardian confirm with escrow enabled requires amount and creates escrow invo
 
     $this->assertDatabaseHas('invoices', [
         'job_assignment_id' => $assignment->id,
-        'type' => Invoice::TYPE_PLATFORM_SERVICE_FEE,
-        'status' => Invoice::STATUS_UNPAID,
+        'type' => InvoiceType::PlatformServiceFee->value,
+        'status' => InvoiceStatus::Unpaid->value,
         'payer_user_id' => $selectedTutor->id,
         'amount' => 5000.00,
         'currency' => 'BDT',
@@ -325,8 +329,8 @@ it('guardian confirm with escrow enabled requires amount and creates escrow invo
 
     $this->assertDatabaseHas('invoices', [
         'job_assignment_id' => $assignment->id,
-        'type' => Invoice::TYPE_ONLINE_MONTH1_ESCROW,
-        'status' => Invoice::STATUS_UNPAID,
+        'type' => InvoiceType::OnlineMonth1Escrow->value,
+        'status' => InvoiceStatus::Unpaid->value,
         'payer_user_id' => $guardian->id,
         'payee_user_id' => $platformUser->id,
         'amount' => 7000.00,
@@ -346,7 +350,7 @@ it('guardian cannot confirm engagement from non shortlisted application', functi
     $application = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $tutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($guardian)
@@ -360,7 +364,7 @@ it('guardian cannot confirm engagement from non shortlisted application', functi
 
     $this->assertDatabaseHas('tuition_jobs', [
         'id' => $job->id,
-        'status' => TuitionJob::STATUS_LIVE,
+        'status' => JobStatus::Live->value,
     ]);
 
     $this->assertDatabaseMissing('tuition_job_assignments', [
@@ -380,7 +384,7 @@ it('guardian second confirm attempt fails cleanly after first assignment exists'
     $application = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $selectedTutor->id,
-        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+        'status' => ApplicationStatus::Shortlisted,
     ]);
 
     $this->actingAs($guardian)
@@ -416,19 +420,19 @@ it('guardian confirm keeps already confirmed applications unchanged during bulk 
     $selectedApplication = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $selectedTutor->id,
-        'status' => TuitionJobApplication::STATUS_SHORTLISTED,
+        'status' => ApplicationStatus::Shortlisted,
     ]);
 
     $alreadyConfirmedApplication = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $alreadyConfirmedTutor->id,
-        'status' => TuitionJobApplication::STATUS_CONFIRMED,
+        'status' => ApplicationStatus::Confirmed,
     ]);
 
     $openApplication = TuitionJobApplication::factory()->create([
         'job_id' => $job->id,
         'tutor_user_id' => $openTutor->id,
-        'status' => TuitionJobApplication::STATUS_APPLIED,
+        'status' => ApplicationStatus::Applied,
     ]);
 
     $this->actingAs($guardian)
@@ -440,17 +444,17 @@ it('guardian confirm keeps already confirmed applications unchanged during bulk 
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $selectedApplication->id,
-        'status' => TuitionJobApplication::STATUS_CONFIRMED,
+        'status' => ApplicationStatus::Confirmed->value,
     ]);
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $alreadyConfirmedApplication->id,
-        'status' => TuitionJobApplication::STATUS_CONFIRMED,
+        'status' => ApplicationStatus::Confirmed->value,
     ]);
 
     $this->assertDatabaseHas('tuition_job_applications', [
         'id' => $openApplication->id,
-        'status' => TuitionJobApplication::STATUS_CANCELLED,
+        'status' => ApplicationStatus::Cancelled->value,
     ]);
 });
 

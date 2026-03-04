@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContactMessageStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,10 +10,6 @@ class ContactMessage extends Model
 {
     /** @use HasFactory<\Database\Factories\ContactMessageFactory> */
     use HasFactory;
-
-    public const STATUS_OPEN = 'open';
-
-    public const STATUS_CLOSED = 'closed';
 
     /**
      * The attributes that are mass assignable.
@@ -29,4 +26,16 @@ class ContactMessage extends Model
         'ip',
         'user_agent',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => ContactMessageStatus::class,
+        ];
+    }
 }

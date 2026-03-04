@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserRole;
+use App\Enums\VerificationRole;
+use App\Enums\VerificationStatus;
 use App\Models\User;
 use App\Models\VerificationRequest;
 use Illuminate\Foundation\Http\FormRequest;
@@ -40,13 +43,13 @@ class VerificationRequestStoreRequest extends FormRequest
                 return;
             }
 
-            $expectedRole = $this->routeIs('tutor.*') ? VerificationRequest::ROLE_TUTOR : VerificationRequest::ROLE_GUARDIAN;
+            $expectedRole = $this->routeIs('tutor.*') ? UserRole::Tutor : UserRole::Guardian;
 
             if ($user->role !== $expectedRole) {
                 $validator->errors()->add('role', 'You are not authorized to submit verification request from this panel.');
             }
 
-            if ($user->verification_status === User::VERIFICATION_STATUS_VERIFIED || $user->verified_at !== null) {
+            if ($user->verification_status === VerificationStatus::Verified || $user->verified_at !== null) {
                 $validator->errors()->add('verification', 'Your profile is already verified.');
             }
 
@@ -67,7 +70,7 @@ class VerificationRequestStoreRequest extends FormRequest
     public function requestedRole(): string
     {
         return $this->routeIs('tutor.*')
-            ? VerificationRequest::ROLE_TUTOR
-            : VerificationRequest::ROLE_GUARDIAN;
+            ? VerificationRole::Tutor->value
+            : VerificationRole::Guardian->value;
     }
 }

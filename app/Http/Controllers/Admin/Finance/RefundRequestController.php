@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Finance;
 
+use App\Enums\RefundStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Finance\RefundRequestDecisionRequest;
 use App\Http\Requests\Admin\Finance\RefundRequestMarkPaidRequest;
@@ -100,7 +101,7 @@ class RefundRequestController extends Controller
             $status = $request->validated('status');
             $decisionNote = $request->validated('decision_note');
 
-            if ($status === RefundRequest::STATUS_APPROVED) {
+            if ($status === RefundStatus::Approved->value) {
                 $refundWorkflowService->approve($refundRequest, $request->user(), $decisionNote);
             } else {
                 $refundWorkflowService->reject(

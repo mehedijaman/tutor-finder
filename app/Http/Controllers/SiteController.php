@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\JobStatus;
 use App\Models\Testimonial;
 use App\Models\TuitionJob;
 use App\Models\User;
@@ -65,7 +66,7 @@ class SiteController extends Controller
             ->count();
 
         $familiesServed = TuitionJob::query()
-            ->where('status', TuitionJob::STATUS_CONFIRMED)
+            ->where('status', JobStatus::Confirmed)
             ->distinct('guardian_id')
             ->count('guardian_id');
 
