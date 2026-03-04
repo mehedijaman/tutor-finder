@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class SiteSetting extends Model
 {
     /** @use HasFactory<\Database\Factories\SiteSettingFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     public const PUBLIC_CACHE_KEY = 'site_settings.public';
 
@@ -38,6 +40,18 @@ class SiteSetting extends Model
         'default_fee_currency',
         'default_fee_payment_mode',
     ];
+
+    /**
+     * Configure activity log options.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('settings');
+    }
 
     /**
      * Get the attributes that should be cast.

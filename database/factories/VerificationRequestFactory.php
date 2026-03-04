@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Enums\VerificationRole;
 use App\Enums\VerificationStatus;
 use App\Models\User;
@@ -22,8 +23,10 @@ class VerificationRequestFactory extends Factory
     {
         $role = fake()->randomElement([VerificationRole::Tutor, VerificationRole::Guardian]);
 
+        $userRole = $role === VerificationRole::Tutor ? UserRole::Tutor : UserRole::Guardian;
+
         return [
-            'user_id' => User::factory()->state(['role' => $role]),
+            'user_id' => User::factory()->state(['role' => $userRole]),
             'role' => $role,
             'status' => VerificationStatus::Pending,
             'fee_amount' => 500,

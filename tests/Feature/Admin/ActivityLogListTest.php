@@ -3,6 +3,7 @@
 use App\Models\User;
 use Database\Seeders\AdminRolesAndPermissionsSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
+use Spatie\Activitylog\Models\Activity;
 
 it('admin can view activity logs in admin panel', function () {
     $this->seed(AdminRolesAndPermissionsSeeder::class);
@@ -16,6 +17,9 @@ it('admin can view activity logs in admin panel', function () {
     $causer = User::factory()->admin()->create([
         'name' => 'Moderator Admin',
     ]);
+
+    // Clear auto-logged User creation entries before adding manual ones
+    Activity::query()->delete();
 
     $olderActivity = activity('admin')
         ->causedBy($causer)

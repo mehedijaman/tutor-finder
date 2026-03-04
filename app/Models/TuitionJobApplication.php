@@ -7,11 +7,13 @@ use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TuitionJobApplication extends Model
 {
     /** @use HasFactory<\Database\Factories\TuitionJobApplicationFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     /**
      * @var list<string>
@@ -26,6 +28,18 @@ class TuitionJobApplication extends Model
         'cancel_reason',
         'metadata',
     ];
+
+    /**
+     * Configure activity log options.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('applications');
+    }
 
     /**
      * Get casts for model attributes.

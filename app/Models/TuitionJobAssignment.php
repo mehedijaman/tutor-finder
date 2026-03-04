@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TuitionJobAssignment extends Model
 {
@@ -19,7 +21,7 @@ class TuitionJobAssignment extends Model
      * to the same timestamp. A later split flow may diverge those lifecycle moments.
      */
     /** @use HasFactory<\Database\Factories\TuitionJobAssignmentFactory> */
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     /**
      * @var list<string>
@@ -51,6 +53,19 @@ class TuitionJobAssignment extends Model
         'notes',
         'metadata',
     ];
+
+    /**
+     * Configure activity log options.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->logExcept(['metadata'])
+            ->dontSubmitEmptyLogs()
+            ->useLogName('assignments');
+    }
 
     /**
      * Get casts for model attributes.

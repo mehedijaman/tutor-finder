@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Invoice extends Model
 {
     /** @use HasFactory<\Database\Factories\InvoiceFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected static function booted(): void
     {
@@ -52,6 +54,19 @@ class Invoice extends Model
         'gateway_payload',
         'notes',
     ];
+
+    /**
+     * Configure activity log options.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->logExcept(['gateway_payload'])
+            ->dontSubmitEmptyLogs()
+            ->useLogName('invoices');
+    }
 
     /**
      * Get casts for attributes.

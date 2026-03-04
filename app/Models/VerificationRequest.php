@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class VerificationRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\VerificationRequestFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     /**
      * @var list<string>
@@ -31,6 +33,19 @@ class VerificationRequest extends Model
         'decision_reason',
         'metadata',
     ];
+
+    /**
+     * Configure activity log options.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnlyDirty()
+            ->logExcept(['metadata'])
+            ->dontSubmitEmptyLogs()
+            ->useLogName('verification');
+    }
 
     /**
      * Get casts for attributes.
