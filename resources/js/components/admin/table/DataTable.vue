@@ -71,19 +71,19 @@ function formatPaginationLabel(label) {
 
 <template>
     <div
-        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-700/80 dark:bg-slate-900"
+        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/5 dark:border-slate-700/80 dark:bg-slate-900 dark:ring-slate-50/5"
     >
         <table
             class="w-full text-left text-sm"
             role="grid"
             aria-label="Data table"
         >
-            <thead class="bg-slate-50/80 dark:bg-slate-800/80">
+            <thead class="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
                     <th
                         v-for="column in columns"
                         :key="column.key"
-                        class="px-4 py-3.5 text-xs font-semibold tracking-wide text-slate-600 uppercase dark:text-slate-400"
+                        class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                         :class="column.headerClass"
                     >
                         <Button
@@ -121,12 +121,12 @@ function formatPaginationLabel(label) {
                     <tr
                         v-for="row in rows"
                         :key="row[rowKey] ?? row.id"
-                        class="border-t border-slate-200/70 transition-colors hover:bg-slate-50/60 dark:border-slate-700/70 dark:hover:bg-slate-800/60"
+                        class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
                     >
                         <td
                             v-for="column in columns"
                             :key="column.key"
-                            class="px-4 py-3.5 align-middle text-slate-900 dark:text-slate-100"
+                            class="px-5 py-4 align-middle text-sm text-slate-700 dark:text-slate-200"
                             :class="column.cellClass"
                         >
                             <slot

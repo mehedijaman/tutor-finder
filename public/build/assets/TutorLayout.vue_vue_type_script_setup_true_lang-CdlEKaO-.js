@@ -1,1 +1,0 @@
-import{_ as a}from"./AppLayout.vue_vue_type_script_setup_true_lang-B_ISfXho.js";import{d as t,m as s,w as o,C as m,o as c}from"./app-CWgJY-Mj.js";const _=t({__name:"TutorLayout",props:{breadcrumbs:{type:Array,default:()=>[]}},setup(r){return(e,u)=>(c(),s(a,{breadcrumbs:r.breadcrumbs},{default:o(()=>[m(e.$slots,"default")]),_:3},8,["breadcrumbs"]))}});export{_};

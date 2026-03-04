@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { Menu, X } from 'lucide-vue-next';
+import { ref } from 'vue';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import {
     dashboard,
@@ -23,6 +32,8 @@ withDefaults(
 
 const { siteName, logoUrl, slogan, primaryPhone, primaryEmail } =
     useSiteSettings();
+
+const mobileMenuOpen = ref(false);
 </script>
 
 <template>
@@ -115,10 +126,90 @@ const { siteName, logoUrl, slogan, primaryPhone, primaryEmail } =
 
                 <!-- Auth Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Mobile Menu Button -->
+                    <Sheet v-model:open="mobileMenuOpen">
+                        <SheetTrigger as-child>
+                            <button
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-50 md:hidden"
+                                aria-label="Open menu"
+                            >
+                                <Menu class="h-5 w-5" />
+                            </button>
+                        </SheetTrigger>
+                        <SheetContent side="right" class="w-[300px] sm:w-[360px]">
+                            <SheetHeader>
+                                <SheetTitle class="text-left">Menu</SheetTitle>
+                            </SheetHeader>
+                            <nav class="mt-6 flex flex-col gap-1">
+                                <Link
+                                    :href="home()"
+                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    Home
+                                </Link>
+                                <Link
+                                    :href="tutors()"
+                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    Find Tutor
+                                </Link>
+                                <Link
+                                    :href="jobs()"
+                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    Job Board
+                                </Link>
+                                <Link
+                                    :href="blog()"
+                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    Blog
+                                </Link>
+                                <Link
+                                    :href="contact()"
+                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    Contact
+                                </Link>
+                                <div class="my-4 border-t border-slate-200" />
+                                <template v-if="$page.props.auth.user">
+                                    <Link
+                                        :href="dashboard()"
+                                        class="flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                                        @click="mobileMenuOpen = false"
+                                    >
+                                        Dashboard
+                                    </Link>
+                                </template>
+                                <template v-else>
+                                    <Link
+                                        :href="login()"
+                                        class="flex items-center justify-center rounded-xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                                        @click="mobileMenuOpen = false"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        :href="register()"
+                                        class="mt-2 flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                                        @click="mobileMenuOpen = false"
+                                    >
+                                        Join Now
+                                    </Link>
+                                </template>
+                            </nav>
+                        </SheetContent>
+                    </Sheet>
+
                     <template v-if="$page.props.auth.user">
                         <Link
                             :href="dashboard()"
-                            class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2"
+                            class="hidden items-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 md:inline-flex"
                         >
                             Dashboard
                         </Link>
@@ -126,13 +217,13 @@ const { siteName, logoUrl, slogan, primaryPhone, primaryEmail } =
                     <template v-else>
                         <Link
                             :href="login()"
-                            class="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none sm:block"
+                            class="hidden rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none md:block"
                         >
                             Login
                         </Link>
                         <Link
                             :href="register()"
-                            class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2"
+                            class="hidden items-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 md:inline-flex"
                         >
                             Join Now
                         </Link>

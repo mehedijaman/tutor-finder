@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\Finance\RefundRequestController as FinanceRefundR
 use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
+use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\AreaController as TaxonomyAreaController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\CategoryController as TaxonomyCategoryController;
@@ -668,6 +669,37 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/invoices/{invoice}/mark-paid', [InvoiceController::class, 'markPaid'])
             ->middleware('permission:invoice-update')
             ->name('invoices.mark-paid');
+
+        // Notice Management
+        Route::get('/notices', [NoticeController::class, 'index'])
+            ->middleware('permission:notice-view')
+            ->name('notices.index');
+        Route::get('/notices/create', [NoticeController::class, 'create'])
+            ->middleware('permission:notice-create')
+            ->name('notices.create');
+        Route::post('/notices', [NoticeController::class, 'store'])
+            ->middleware('permission:notice-create')
+            ->name('notices.store');
+        Route::get('/notices/{notice}/edit', [NoticeController::class, 'edit'])
+            ->middleware('permission:notice-update')
+            ->name('notices.edit');
+        Route::put('/notices/{notice}', [NoticeController::class, 'update'])
+            ->middleware('permission:notice-update')
+            ->name('notices.update');
+        Route::delete('/notices/{notice}', [NoticeController::class, 'destroy'])
+            ->middleware('permission:notice-delete')
+            ->name('notices.destroy');
+        Route::patch('/notices/{notice}/restore', [NoticeController::class, 'restore'])
+            ->middleware('permission:notice-restore')
+            ->withTrashed()
+            ->name('notices.restore');
+        Route::delete('/notices/{notice}/force', [NoticeController::class, 'forceDelete'])
+            ->middleware('permission:notice-force-delete')
+            ->withTrashed()
+            ->name('notices.force-delete');
+        Route::delete('/notices/recycle-bin/empty', [NoticeController::class, 'emptyRecycleBin'])
+            ->middleware('permission:notice-force-delete')
+            ->name('notices.empty-recycle-bin');
 
         Route::prefix('finance')->name('finance.')->group(function () {
             Route::get('/invoices', [FinanceInvoiceController::class, 'index'])
