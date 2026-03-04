@@ -169,3 +169,35 @@ it('validates title max length', function () {
 
     $response->assertSessionHasErrors(['title']);
 });
+
+it('sends notifications to active users when notice is created', function () {
+    $activeTutor = User::factory()->tutor()->create(['status' => \App\Enums\UserStatus::Active]);
+    $suspendedTutor = User::factory()->tutor()->create(['status' => \App\Enums\UserStatus::Suspended]);
+    $activeGuardian = User::factory()->guardian()->create(['status' => \App\Enums\UserStatus::Active]);
+
+    $this->actingAs($this->admin)->post(route('admin.notices.store'), [
+        'title' => 'Test Notice',
+        'body' => '<p>Body</p>',
+        'audience' => 'tutor',
+        'is_active' => true,
+    ]);
+
+    expect($activeTutor->notifications()->count())->toBe(1);
+    expect($suspendedTutor->notifications()->count())->toBe(0);
+    expect($activeGuardian->notifications()->count())->toBe(0);
+});
+
+it('sends notifications to both tutors and guardians for both audience', function () {
+    $activeTutor = User::factory()->tutor()->create(['status' => \App\Enums\UserStatus::Active]);
+    $activeGuardian = User::factory()->guardian()->create(['status' => \App\Enums\UserStatus::Active]);
+
+    $this->actingAs($this->admin)->post(route('admin.notices.store'), [
+        'title' => 'Both Audience Notice',
+        'body' => '<p>Body</p>',
+        'audience' => 'both',
+        'is_active' => true,
+    ]);
+
+    expect($activeTutor->notifications()->count())->toBe(1);
+    expect($activeGuardian->notifications()->count())->toBe(1);
+});

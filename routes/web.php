@@ -9,6 +9,7 @@ use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Public\TutorController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', RoleDashboardRedirectController::class)->name('dashboard');
     Route::post('/impersonation/leave', [ImpersonationController::class, 'destroy'])->name('impersonation.leave');
+
+    Route::post('/push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push-subscriptions.store');
+    Route::delete('/push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push-subscriptions.destroy');
 
     Route::post('/payment/bkash/{invoice}', [PaymentController::class, 'startBkash'])
         ->whereNumber('invoice')

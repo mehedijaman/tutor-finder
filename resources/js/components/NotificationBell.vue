@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { Bell, Check, ExternalLink } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { Bell, BellRing, Check, ExternalLink, Loader2 } from 'lucide-vue-next';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -10,6 +10,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { usePushNotifications } from '@/composables/usePushNotifications';
 
 interface Notification {
     id: string;
@@ -19,15 +22,93 @@ interface Notification {
     created_at: string;
 }
 
+interface NoticeCreatedEvent {
+    notice_id: number;
+    title: string;
+    audience: string;
+    created_at: string;
+}
+
 const page = usePage();
 
-const unreadCount = computed(() =>
-    Number(page.props.notificationCounts?.unread ?? 0),
-);
-const recentNotifications = computed<Notification[]>(() =>
-    (page.props.notificationCounts?.recent as Notification[]) ?? [],
-);
+const {
+    isSupported: pushSupported,
+    isSubscribed: pushSubscribed,
+    isLoading: pushLoading,
+    permission: pushPermission,
+    checkSupport: checkPushSupport,
+    subscribe: subscribePush,
+    unsubscribe: unsubscribePush,
+} = usePushNotifications();
+
+const localUnreadCount = ref(0);
+const localNotifications = ref<Notification[]>([]);
+
+const unreadCount = computed(() => localUnreadCount.value);
+const recentNotifications = computed<Notification[]>(() => localNotifications.value);
 const userRole = computed(() => page.props.auth?.user?.role as string);
+
+function syncFromProps() {
+    localUnreadCount.value = Number(page.props.notificationCounts?.unread ?? 0);
+    localNotifications.value = (page.props.notificationCounts?.recent as Notification[]) ?? [];
+}
+
+function handleNoticeCreated(event: NoticeCreatedEvent) {
+    localUnreadCount.value++;
+
+    const newNotification: Notification = {
+        id: `notice-${event.notice_id}-${Date.now()}`,
+        type: 'notice',
+        title: event.title,
+        data: {
+            notice_id: event.notice_id,
+            audience: event.audience,
+        },
+        created_at: event.created_at ?? new Date().toISOString(),
+    };
+
+    localNotifications.value = [newNotification, ...localNotifications.value].slice(0, 5);
+}
+
+onMounted(() => {
+    syncFromProps();
+    checkPushSupport();
+
+    const role = userRole.value;
+    if (role && window.Echo && (role === 'tutor' || role === 'guardian')) {
+        window.Echo.private(`role.${role}`)
+            .listen('.notice.created', handleNoticeCreated);
+    }
+});
+
+async function togglePushSubscription() {
+    if (pushSubscribed.value) {
+        await unsubscribePush();
+    } else {
+        await subscribePush();
+    }
+}
+
+const pushToggleDisabled = computed(() => {
+    return !pushSupported.value || pushPermission.value === 'denied' || pushLoading.value;
+});
+
+const pushToggleLabel = computed(() => {
+    if (!pushSupported.value) {
+        return 'Not supported';
+    }
+    if (pushPermission.value === 'denied') {
+        return 'Permission denied';
+    }
+    return 'Push notifications';
+});
+
+onUnmounted(() => {
+    const role = userRole.value;
+    if (role && window.Echo && (role === 'tutor' || role === 'guardian')) {
+        window.Echo.leave(`role.${role}`);
+    }
+});
 
 const notificationsUrl = computed(() => {
     if (userRole.value === 'tutor') {
@@ -58,8 +139,12 @@ function markAllAsRead() {
         return;
     }
 
+    localUnreadCount.value = 0;
     router.patch(markAsReadUrl.value, {}, {
         preserveScroll: true,
+        onSuccess: () => {
+            syncFromProps();
+        },
     });
 }
 
@@ -155,6 +240,37 @@ function formatTimeAgo(dateString: string): string {
                         {{ notification.data.message }}
                     </p>
                 </DropdownMenuItem>
+            </div>
+
+            <DropdownMenuSeparator />
+            <div
+                class="flex items-center justify-between px-3 py-2"
+                :class="{ 'opacity-50': pushToggleDisabled }"
+            >
+                <div class="flex items-center gap-2">
+                    <BellRing
+                        v-if="pushSubscribed"
+                        class="h-4 w-4 text-emerald-500"
+                    />
+                    <Bell v-else class="h-4 w-4 text-slate-400" />
+                    <Label
+                        for="push-toggle"
+                        class="text-sm font-medium text-slate-700 dark:text-slate-300"
+                        :class="{ 'cursor-not-allowed': pushToggleDisabled, 'cursor-pointer': !pushToggleDisabled }"
+                    >
+                        {{ pushToggleLabel }}
+                    </Label>
+                </div>
+                <div class="flex items-center">
+                    <Loader2 v-if="pushLoading" class="h-4 w-4 animate-spin text-slate-400" />
+                    <Switch
+                        v-else
+                        id="push-toggle"
+                        :model-value="pushSubscribed"
+                        :disabled="pushToggleDisabled"
+                        @update:model-value="togglePushSubscription"
+                    />
+                </div>
             </div>
 
             <DropdownMenuSeparator />

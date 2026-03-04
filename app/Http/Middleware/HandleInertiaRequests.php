@@ -68,6 +68,7 @@ class HandleInertiaRequests extends Middleware
                 'status' => fn () => $request->session()->get('status'),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'vapidPublicKey' => config('webpush.vapid.public_key'),
         ];
     }
 
