@@ -52,31 +52,33 @@ defineProps({
                 <div class="grid gap-2">
                     <Label>I want to log in as</Label>
                     <div class="grid grid-cols-2 gap-3">
+                        
                         <label class="cursor-pointer">
                             <input
                                 type="radio"
                                 name="role"
-                                value="guardian"
+                                value="tutor"
                                 checked
                                 class="peer sr-only"
                             />
                             <div
                                 class="flex items-center justify-center rounded-xl border-2 border-slate-100 bg-slate-50 py-3 text-sm font-medium text-slate-600 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:border-slate-200 hover:bg-slate-100"
                             >
-                                <span class="block">Guardian</span>
+                                <span class="block">Tutor</span>
                             </div>
                         </label>
+
                         <label class="cursor-pointer">
                             <input
                                 type="radio"
                                 name="role"
-                                value="tutor"
+                                value="guardian"                                
                                 class="peer sr-only"
                             />
                             <div
                                 class="flex items-center justify-center rounded-xl border-2 border-slate-100 bg-slate-50 py-3 text-sm font-medium text-slate-600 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:border-slate-200 hover:bg-slate-100"
                             >
-                                <span class="block">Tutor</span>
+                                <span class="block">Guardian</span>
                             </div>
                         </label>
                     </div>

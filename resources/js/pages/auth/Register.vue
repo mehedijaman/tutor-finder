@@ -32,21 +32,8 @@ import { store } from '@/routes/register';
                             <input
                                 type="radio"
                                 name="role"
-                                value="guardian"
-                                checked
-                                class="peer sr-only"
-                            />
-                            <div
-                                class="flex items-center justify-center rounded-xl border-2 border-slate-100 bg-slate-50 py-3 text-sm font-medium text-slate-600 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:border-slate-200 hover:bg-slate-100"
-                            >
-                                Guardian
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input
-                                type="radio"
-                                name="role"
                                 value="tutor"
+                                checked
                                 class="peer sr-only"
                             />
                             <div
@@ -55,6 +42,21 @@ import { store } from '@/routes/register';
                                 Tutor
                             </div>
                         </label>
+
+                        <label class="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="role"
+                                value="guardian"                                
+                                class="peer sr-only"
+                            />
+                            <div
+                                class="flex items-center justify-center rounded-xl border-2 border-slate-100 bg-slate-50 py-3 text-sm font-medium text-slate-600 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:border-slate-200 hover:bg-slate-100"
+                            >
+                                Guardian
+                            </div>
+                        </label>
+                        
                     </div>
                     <InputError :message="errors.role" />
                 </div>

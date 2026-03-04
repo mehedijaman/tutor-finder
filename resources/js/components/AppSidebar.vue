@@ -443,15 +443,6 @@ const mainNavItems = computed<NavItem[]>(() => {
                 href: '/tutor/verification',
                 icon: Shield,
             },
-            {
-                title: 'Notifications',
-                href: '/tutor/notifications',
-                icon: Bell,
-                badge:
-                    unreadNotificationCount.value > 0
-                        ? unreadNotificationCount.value
-                        : undefined,
-            },
         ];
     }
 
@@ -507,15 +498,7 @@ const mainNavItems = computed<NavItem[]>(() => {
         },
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
         { title: 'Verification', href: '/guardian/verification', icon: Shield },
-        {
-            title: 'Notifications',
-            href: '/guardian/notifications',
-            icon: Bell,
-            badge:
-                unreadNotificationCount.value > 0
-                    ? unreadNotificationCount.value
-                    : undefined,
-        },
+        
     ];
 });
 </script>
@@ -555,11 +538,11 @@ const mainNavItems = computed<NavItem[]>(() => {
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarSeparator class="mx-3" />
+        <!-- <SidebarSeparator class="mx-3" /> -->
 
-        <SidebarFooter class="pt-3">
+        <!-- <SidebarFooter class="pt-3">
             <NavUser />
-        </SidebarFooter>
+        </SidebarFooter> -->
     </Sidebar>
     <slot />
 </template>
