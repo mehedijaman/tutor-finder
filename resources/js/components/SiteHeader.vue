@@ -115,18 +115,28 @@ const { siteName, logoUrl, slogan, primaryPhone, primaryEmail } =
 
                 <!-- Auth Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <Link
-                        :href="login()"
-                        class="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none sm:block"
-                    >
-                        Login
-                    </Link>
-                    <Link
-                        :href="register()"
-                        class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2"
-                    >
-                        Join Now
-                    </Link>
+                    <template v-if="$page.props.auth.user">
+                        <Link
+                            :href="dashboard()"
+                            class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2"
+                        >
+                            Dashboard
+                        </Link>
+                    </template>
+                    <template v-else>
+                        <Link
+                            :href="login()"
+                            class="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none sm:block"
+                        >
+                            Login
+                        </Link>
+                        <Link
+                            :href="register()"
+                            class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2"
+                        >
+                            Join Now
+                        </Link>
+                    </template>
                 </div>
             </div>
         </header>

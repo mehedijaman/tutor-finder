@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { List, Filter } from 'lucide-vue-next';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { List, Filter, Plus } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import JobCard from '@/components/jobs/JobCard.vue';
 import JobFiltersDrawer from '@/components/jobs/JobFiltersDrawer.vue';
+import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 type PaginationLink = {
@@ -62,6 +63,22 @@ const props = defineProps<{
     daysOptions: Array<{ value: string; label: string }>;
 }>();
 
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
+const canCreateJob = computed(() => {
+    return (
+        user.value &&
+        (user.value.role === 'guardian' || user.value.role === 'admin')
+    );
+});
+
+const createJobUrl = computed(() => {
+    if (!user.value) return '#';
+    if (user.value.role === 'guardian') return '/guardian/jobs/create';
+    if (user.value.role === 'admin') return '/admin/jobs/create';
+    return '#';
+});
+
 const filtersOpen = ref(false);
 
 const jobList = computed(() => props.jobs.data ?? []);
@@ -83,16 +100,29 @@ function formatPaginationLabel(label: string): string {
         <div class="min-h-screen bg-slate-50 py-12">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header -->
-                <div class="mb-10 text-center sm:text-left">
-                    <h1
-                        class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
-                    >
-                        Tuition Job Board
-                    </h1>
-                    <p class="mt-3 max-w-2xl text-lg text-slate-600">
-                        Explore active tuition opportunities and apply to the
-                        ones that match your expertise.
-                    </p>
+                <div
+                    class="mb-10 flex flex-col gap-6 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
+                >
+                    <div>
+                        <h1
+                            class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+                        >
+                            Tuition Job Board
+                        </h1>
+                        <p class="mt-3 max-w-2xl text-lg text-slate-600">
+                            Explore active tuition opportunities and apply to
+                            the ones that match your expertise.
+                        </p>
+                    </div>
+
+                    <div v-if="canCreateJob" class="flex-shrink-0">
+                        <Button as-child size="lg" class="w-full sm:w-auto">
+                            <Link :href="createJobUrl">
+                                <Plus class="mr-2 h-4 w-4" />
+                                Post a Job
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
                 <!-- Top Bar -->
