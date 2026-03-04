@@ -34,10 +34,16 @@ class SiteSettingController extends Controller
         $validated = $request->validated();
         $siteSetting = SiteSetting::current();
 
-        $logoPath = $this->handleLogoUpload(
+        $logoPath = $this->handleFileUpload(
             $request->file('logo'),
             $request->boolean('remove_logo'),
             $siteSetting->logo_path,
+        );
+
+        $faviconPath = $this->handleFileUpload(
+            $request->file('favicon'),
+            $request->boolean('remove_favicon'),
+            $siteSetting->favicon_path,
         );
 
         $siteSetting->fill([
@@ -45,6 +51,7 @@ class SiteSettingController extends Controller
             'slogan' => $this->nullableString($validated['slogan'] ?? null),
             'description' => $this->nullableString($validated['description'] ?? null),
             'logo_path' => $logoPath,
+            'favicon_path' => $faviconPath,
             'phone_numbers' => $this->normalizeStringList($validated['phone_numbers'] ?? []),
             'emails' => $this->normalizeStringList($validated['emails'] ?? [], true),
             'addresses' => $this->normalizeAddresses($validated['addresses'] ?? []),
@@ -138,27 +145,27 @@ class SiteSettingController extends Controller
             }, []);
     }
 
-    protected function handleLogoUpload(
-        ?UploadedFile $logoFile,
-        bool $removeLogo,
+    protected function handleFileUpload(
+        ?UploadedFile $file,
+        bool $removeFile,
         mixed $existingPath,
     ): ?string {
-        $logoPath = is_string($existingPath) && trim($existingPath) !== '' ? $existingPath : null;
+        $filePath = is_string($existingPath) && trim($existingPath) !== '' ? $existingPath : null;
 
-        if ($removeLogo && $logoPath !== null) {
-            Storage::disk('public')->delete($logoPath);
-            $logoPath = null;
+        if ($removeFile && $filePath !== null) {
+            Storage::disk('public')->delete($filePath);
+            $filePath = null;
         }
 
-        if ($logoFile instanceof UploadedFile) {
-            if ($logoPath !== null) {
-                Storage::disk('public')->delete($logoPath);
+        if ($file instanceof UploadedFile) {
+            if ($filePath !== null) {
+                Storage::disk('public')->delete($filePath);
             }
 
-            $logoPath = $logoFile->store('site-settings', 'public');
+            $filePath = $file->store('site-settings', 'public');
         }
 
-        return $logoPath;
+        return $filePath;
     }
 
     protected function nullableString(mixed $value): ?string

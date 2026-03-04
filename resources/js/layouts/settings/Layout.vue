@@ -58,6 +58,11 @@ const sidebarNavItems = computed<NavItem[]>(() => {
             title: 'SMS Settings',
             href: '/settings/sms',
         });
+
+        items.push({
+            title: 'SMTP Settings',
+            href: '/settings/smtp',
+        });
     }
 
     return items;

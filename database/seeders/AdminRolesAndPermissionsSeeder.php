@@ -22,6 +22,7 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'admin-user',
             'role',
             'sms-setting',
+            'smtp-setting',
             'faq',
             'blog-category',
             'blog-tag',

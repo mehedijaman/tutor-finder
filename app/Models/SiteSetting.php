@@ -24,6 +24,7 @@ class SiteSetting extends Model
         'slogan',
         'description',
         'logo_path',
+        'favicon_path',
         'phone_numbers',
         'emails',
         'addresses',
@@ -157,6 +158,7 @@ class SiteSetting extends Model
             'site_name' => $siteName,
             'slogan' => $slogan,
             'logo_url' => $this->logoUrl(),
+            'favicon_url' => $this->faviconUrl(),
             'primary_phone' => $phoneNumbers[0] ?? null,
             'primary_email' => $emails[0] ?? null,
             'primary_address' => $addresses[0]['address'] ?? null,
@@ -180,6 +182,7 @@ class SiteSetting extends Model
             'slogan' => $this->slogan,
             'description' => $this->description,
             'logo_url' => $this->logoUrl(),
+            'favicon_url' => $this->faviconUrl(),
             'phone_numbers' => $this->normalizeStringList($this->phone_numbers),
             'emails' => $this->normalizeStringList($this->emails),
             'addresses' => $this->normalizeAddresses($this->addresses),
@@ -200,6 +203,18 @@ class SiteSetting extends Model
         }
 
         return Storage::disk('public')->url($this->logo_path);
+    }
+
+    /**
+     * Resolve the public URL for the configured favicon path.
+     */
+    protected function faviconUrl(): ?string
+    {
+        if (! is_string($this->favicon_path) || trim($this->favicon_path) === '') {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->favicon_path);
     }
 
     /**

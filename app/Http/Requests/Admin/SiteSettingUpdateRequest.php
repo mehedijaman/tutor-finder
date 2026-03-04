@@ -21,6 +21,7 @@ class SiteSettingUpdateRequest extends FormRequest
     {
         $this->merge([
             'remove_logo' => $this->boolean('remove_logo'),
+            'remove_favicon' => $this->boolean('remove_favicon'),
         ]);
     }
 
@@ -37,6 +38,8 @@ class SiteSettingUpdateRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'logo' => ['nullable', 'image', 'max:2048'],
             'remove_logo' => ['required', 'boolean'],
+            'favicon' => ['nullable', 'image', 'mimes:ico,png,jpg,jpeg,gif,svg', 'max:512'],
+            'remove_favicon' => ['required', 'boolean'],
             'phone_numbers' => ['nullable', 'array'],
             'phone_numbers.*' => ['nullable', 'string', 'max:50'],
             'emails' => ['nullable', 'array'],

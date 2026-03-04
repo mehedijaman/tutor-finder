@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\PaymentGatewaySettingController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SmsSettingController;
+use App\Http\Controllers\Admin\SmtpSettingController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
@@ -62,4 +63,26 @@ Route::middleware(['auth', 'ensure.role:admin', 'ensure.active'])->group(functio
     Route::post('settings/sms/test', [SmsSettingController::class, 'testSms'])
         ->middleware('permission:sms-setting-update')
         ->name('admin.sms-settings.test');
+
+    Route::get('settings/smtp', [SmtpSettingController::class, 'index'])
+        ->middleware('permission:smtp-setting-view')
+        ->name('admin.smtp-settings.index');
+    Route::get('settings/smtp/create', [SmtpSettingController::class, 'create'])
+        ->middleware('permission:smtp-setting-create')
+        ->name('admin.smtp-settings.create');
+    Route::post('settings/smtp', [SmtpSettingController::class, 'store'])
+        ->middleware('permission:smtp-setting-create')
+        ->name('admin.smtp-settings.store');
+    Route::get('settings/smtp/{smtpSetting}/edit', [SmtpSettingController::class, 'edit'])
+        ->middleware('permission:smtp-setting-update')
+        ->name('admin.smtp-settings.edit');
+    Route::put('settings/smtp/{smtpSetting}', [SmtpSettingController::class, 'update'])
+        ->middleware('permission:smtp-setting-update')
+        ->name('admin.smtp-settings.update');
+    Route::delete('settings/smtp/{smtpSetting}', [SmtpSettingController::class, 'destroy'])
+        ->middleware('permission:smtp-setting-delete')
+        ->name('admin.smtp-settings.destroy');
+    Route::post('settings/smtp/test', [SmtpSettingController::class, 'testEmail'])
+        ->middleware('permission:smtp-setting-update')
+        ->name('admin.smtp-settings.test');
 });
