@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\Country;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class CountryUpdateRequest extends FormRequest
         $this->merge([
             'name' => trim((string) $this->input('name')),
             'slug' => trim((string) $this->input('slug')),
-            'status' => strtolower(trim((string) $this->input('status', Country::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
         ]);
     }
 
@@ -41,7 +42,7 @@ class CountryUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('countries', 'name')->ignore($country)],
             'slug' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'string', Rule::in([Country::STATUS_ACTIVE, Country::STATUS_INACTIVE])],
+            'status' => ['required', 'string', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
         ];
     }
 }

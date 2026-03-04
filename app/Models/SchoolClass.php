@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,10 +21,6 @@ class SchoolClass extends Model
      * @var string
      */
     protected $table = 'classes';
-
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
 
     /**
      * @var list<string>
@@ -44,6 +41,7 @@ class SchoolClass extends Model
     protected function casts(): array
     {
         return [
+            'status' => TaxonomyStatus::class,
             'sort_order' => 'integer',
         ];
     }

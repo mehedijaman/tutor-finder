@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JobStatus;
+use App\Enums\TaxonomyStatus;
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Models\Testimonial;
 use App\Models\TuitionJob;
 use App\Models\User;
@@ -61,8 +64,8 @@ class SiteController extends Controller
     private function heroStats(): array
     {
         $activeTutors = User::query()
-            ->where('role', 'tutor')
-            ->where('status', 'active')
+            ->where('role', UserRole::Tutor)
+            ->where('status', UserStatus::Active)
             ->count();
 
         $familiesServed = TuitionJob::query()
@@ -71,7 +74,7 @@ class SiteController extends Controller
             ->count('guardian_id');
 
         $averageRating = Testimonial::query()
-            ->where('status', Testimonial::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->avg('rating');
 
         return [

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -25,6 +26,16 @@ class BlogCategory extends Model implements HasMedia
         'meta_title',
         'meta_description',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => TaxonomyStatus::class,
+        ];
+    }
 
     /**
      * Get blog posts that belong to this category.

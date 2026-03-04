@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ApplicationStatus;
 use App\Enums\JobStatus;
+use App\Enums\TaxonomyStatus;
 use App\Enums\UserRole;
 use App\Models\Category;
 use App\Models\City;
@@ -274,7 +275,7 @@ class JobController extends Controller
     private function categoryOptions(): array
     {
         return Category::query()
-            ->where('status', Category::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
             ->ordered()
             ->get(['id', 'name', 'slug'])
@@ -294,7 +295,7 @@ class JobController extends Controller
     private function tuitionTypeOptions(): array
     {
         return TuitionType::query()
-            ->where('status', TuitionType::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
             ->ordered()
             ->get(['id', 'name', 'slug'])
@@ -314,7 +315,7 @@ class JobController extends Controller
     private function subjectOptions(): array
     {
         return Subject::query()
-            ->where('status', Subject::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
             ->ordered()
             ->get(['id', 'name'])
@@ -333,7 +334,7 @@ class JobController extends Controller
     private function cityOptions(): array
     {
         return City::query()
-            ->where('status', City::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
             ->ordered()
             ->get(['id', 'name'])

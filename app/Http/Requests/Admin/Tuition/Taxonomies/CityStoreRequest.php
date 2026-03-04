@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tuition\Taxonomies;
 
-use App\Models\City;
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,7 +26,7 @@ class CityStoreRequest extends FormRequest
             'country_id' => (int) $this->input('country_id'),
             'name' => trim((string) $this->input('name')),
             'slug' => trim((string) $this->input('slug')),
-            'status' => strtolower(trim((string) $this->input('status', City::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
         ]);
     }
 
@@ -52,7 +52,7 @@ class CityStoreRequest extends FormRequest
                 Rule::unique('cities', 'name')->where(fn (Builder $query): Builder => $query->where('country_id', $countryId)),
             ],
             'slug' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'string', Rule::in([City::STATUS_ACTIVE, City::STATUS_INACTIVE])],
+            'status' => ['required', 'string', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
         ];
     }
 }

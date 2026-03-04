@@ -207,7 +207,7 @@ class JobController extends Controller
     {
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($status, TuitionJobApplication::statuses(), true)) {
+        if ($status !== '' && ApplicationStatus::tryFrom($status) === null) {
             $status = '';
         }
 

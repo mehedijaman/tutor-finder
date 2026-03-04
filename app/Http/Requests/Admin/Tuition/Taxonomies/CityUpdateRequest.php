@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\City;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,7 +27,7 @@ class CityUpdateRequest extends FormRequest
             'country_id' => (int) $this->input('country_id'),
             'name' => trim((string) $this->input('name')),
             'slug' => trim((string) $this->input('slug')),
-            'status' => strtolower(trim((string) $this->input('status', City::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
         ]);
     }
 
@@ -56,7 +57,7 @@ class CityUpdateRequest extends FormRequest
                     ->ignore($city),
             ],
             'slug' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'string', Rule::in([City::STATUS_ACTIVE, City::STATUS_INACTIVE])],
+            'status' => ['required', 'string', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
         ];
     }
 }

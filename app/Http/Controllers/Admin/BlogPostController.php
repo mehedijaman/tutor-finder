@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\BlogPostStoreRequest;
 use App\Http\Requests\Admin\BlogPostUpdateRequest;
@@ -304,7 +305,7 @@ class BlogPostController extends Controller
     protected function activeCategories(): array
     {
         return BlogCategory::query()
-            ->where('status', 'active')
+            ->where('status', TaxonomyStatus::Active)
             ->orderBy('name')
             ->get(['id', 'name'])
             ->map(fn (BlogCategory $blogCategory): array => [
@@ -322,7 +323,7 @@ class BlogPostController extends Controller
     protected function activeTags(): array
     {
         return BlogTag::query()
-            ->where('status', 'active')
+            ->where('status', TaxonomyStatus::Active)
             ->orderBy('name')
             ->get(['id', 'name'])
             ->map(fn (BlogTag $blogTag): array => [

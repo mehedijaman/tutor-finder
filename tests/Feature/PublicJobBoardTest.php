@@ -2,6 +2,7 @@
 
 use App\Enums\ApplicationStatus;
 use App\Enums\JobStatus;
+use App\Enums\TaxonomyStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -16,25 +17,25 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('shows only live published non-expired non-trashed jobs on public board', function () {
-    $category = Category::factory()->create(['status' => Category::STATUS_ACTIVE]);
+    $category = Category::factory()->create(['status' => TaxonomyStatus::Active]);
     $schoolClass = SchoolClass::factory()->create([
         'category_id' => $category->id,
-        'status' => SchoolClass::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
     $subject = Subject::factory()->create([
         'class_id' => $schoolClass->id,
-        'status' => Subject::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
-    $country = Country::factory()->create(['status' => Country::STATUS_ACTIVE]);
+    $country = Country::factory()->create(['status' => TaxonomyStatus::Active]);
     $city = City::factory()->create([
         'country_id' => $country->id,
-        'status' => City::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
     $area = Area::factory()->create([
         'city_id' => $city->id,
-        'status' => Area::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
-    $tuitionType = TuitionType::factory()->create(['status' => TuitionType::STATUS_ACTIVE]);
+    $tuitionType = TuitionType::factory()->create(['status' => TaxonomyStatus::Active]);
 
     $live = TuitionJob::factory()->create([
         'title' => 'Visible Public Job',
@@ -105,40 +106,40 @@ it('shows only live published non-expired non-trashed jobs on public board', fun
 });
 
 it('applies public board filters', function () {
-    $categoryA = Category::factory()->create(['status' => Category::STATUS_ACTIVE, 'name' => 'Category A', 'slug' => 'category-a']);
-    $categoryB = Category::factory()->create(['status' => Category::STATUS_ACTIVE, 'name' => 'Category B', 'slug' => 'category-b']);
+    $categoryA = Category::factory()->create(['status' => TaxonomyStatus::Active, 'name' => 'Category A', 'slug' => 'category-a']);
+    $categoryB = Category::factory()->create(['status' => TaxonomyStatus::Active, 'name' => 'Category B', 'slug' => 'category-b']);
 
     $schoolClassA = SchoolClass::factory()->create([
         'category_id' => $categoryA->id,
-        'status' => SchoolClass::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
 
     $schoolClassB = SchoolClass::factory()->create([
         'category_id' => $categoryB->id,
-        'status' => SchoolClass::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
 
     $subjectA = Subject::factory()->create([
         'class_id' => $schoolClassA->id,
-        'status' => Subject::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
 
     $subjectB = Subject::factory()->create([
         'class_id' => $schoolClassB->id,
-        'status' => Subject::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
 
-    $country = Country::factory()->create(['status' => Country::STATUS_ACTIVE]);
+    $country = Country::factory()->create(['status' => TaxonomyStatus::Active]);
     $cityA = City::factory()->create([
         'country_id' => $country->id,
-        'status' => City::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
     $cityB = City::factory()->create([
         'country_id' => $country->id,
-        'status' => City::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
 
-    $tuitionType = TuitionType::factory()->create(['status' => TuitionType::STATUS_ACTIVE]);
+    $tuitionType = TuitionType::factory()->create(['status' => TaxonomyStatus::Active]);
 
     $match = TuitionJob::factory()->create([
         'title' => 'Physics Match Job',
@@ -182,21 +183,21 @@ it('applies public board filters', function () {
 });
 
 it('shows job details for live public jobs and hides non public jobs', function () {
-    $category = Category::factory()->create(['status' => Category::STATUS_ACTIVE]);
+    $category = Category::factory()->create(['status' => TaxonomyStatus::Active]);
     $schoolClass = SchoolClass::factory()->create([
         'category_id' => $category->id,
-        'status' => SchoolClass::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
     $subject = Subject::factory()->create([
         'class_id' => $schoolClass->id,
-        'status' => Subject::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
-    $country = Country::factory()->create(['status' => Country::STATUS_ACTIVE]);
+    $country = Country::factory()->create(['status' => TaxonomyStatus::Active]);
     $city = City::factory()->create([
         'country_id' => $country->id,
-        'status' => City::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
-    $tuitionType = TuitionType::factory()->create(['status' => TuitionType::STATUS_ACTIVE]);
+    $tuitionType = TuitionType::factory()->create(['status' => TaxonomyStatus::Active]);
 
     $live = TuitionJob::factory()->create([
         'title' => 'Public Detail Job',

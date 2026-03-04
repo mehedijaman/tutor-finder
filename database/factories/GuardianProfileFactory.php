@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\GuardianProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,7 +26,7 @@ class GuardianProfileFactory extends Factory
             'address' => fake()->address(),
             'occupation' => fake()->jobTitle(),
             'notes' => fake()->optional()->sentence(),
-            'status' => GuardianProfile::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
         ];
     }
 }

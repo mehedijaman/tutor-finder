@@ -71,22 +71,27 @@ function formatPaginationLabel(label) {
 
 <template>
     <div
-        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm"
+        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-700/80 dark:bg-slate-900"
     >
-        <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50/80">
+        <table
+            class="w-full text-left text-sm"
+            role="grid"
+            aria-label="Data table"
+        >
+            <thead class="bg-slate-50/80 dark:bg-slate-800/80">
                 <tr>
                     <th
                         v-for="column in columns"
                         :key="column.key"
-                        class="px-4 py-3.5 text-xs font-semibold tracking-wide text-slate-600 uppercase"
+                        class="px-4 py-3.5 text-xs font-semibold tracking-wide text-slate-600 uppercase dark:text-slate-400"
                         :class="column.headerClass"
                     >
                         <Button
                             v-if="column.sortable"
                             variant="ghost"
                             size="sm"
-                            class="-ml-3 h-auto p-0 text-xs font-semibold tracking-wide text-slate-600 uppercase hover:bg-transparent hover:text-slate-900"
+                            class="-ml-3 h-auto p-0 text-xs font-semibold tracking-wide text-slate-600 uppercase hover:bg-transparent hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                            :aria-label="`Sort by ${column.label}`"
                             @click="toggleSort(column)"
                         >
                             {{ column.label }}
@@ -102,7 +107,7 @@ function formatPaginationLabel(label) {
 
             <tbody>
                 <template v-if="loading">
-                    <tr class="border-t">
+                    <tr class="border-t dark:border-slate-700">
                         <td
                             :colspan="columns.length"
                             class="px-4 py-8 text-center text-muted-foreground"
@@ -116,12 +121,12 @@ function formatPaginationLabel(label) {
                     <tr
                         v-for="row in rows"
                         :key="row[rowKey] ?? row.id"
-                        class="border-t border-slate-200/70 transition-colors hover:bg-slate-50/60"
+                        class="border-t border-slate-200/70 transition-colors hover:bg-slate-50/60 dark:border-slate-700/70 dark:hover:bg-slate-800/60"
                     >
                         <td
                             v-for="column in columns"
                             :key="column.key"
-                            class="px-4 py-3.5 align-middle"
+                            class="px-4 py-3.5 align-middle text-slate-900 dark:text-slate-100"
                             :class="column.cellClass"
                         >
                             <slot
@@ -136,7 +141,7 @@ function formatPaginationLabel(label) {
                 </template>
 
                 <template v-else>
-                    <tr class="border-t">
+                    <tr class="border-t dark:border-slate-700">
                         <td
                             :colspan="columns.length"
                             class="px-4 py-8 text-center text-muted-foreground"
@@ -150,7 +155,9 @@ function formatPaginationLabel(label) {
 
         <div
             v-if="links.length > 3"
-            class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-200/80 px-4 py-3"
+            class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-200/80 px-4 py-3 dark:border-slate-700/80"
+            role="navigation"
+            aria-label="Pagination"
         >
             <template
                 v-for="(link, index) in links"
@@ -168,8 +175,9 @@ function formatPaginationLabel(label) {
                     :class="
                         link.active
                             ? 'border-primary bg-primary text-primary-foreground'
-                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                     "
+                    :aria-current="link.active ? 'page' : undefined"
                 >
                     {{ formatPaginationLabel(link.label) }}
                 </Link>

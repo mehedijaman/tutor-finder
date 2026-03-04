@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\TuitionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -25,7 +26,7 @@ class TuitionTypeUpdateRequest extends FormRequest
             'name' => trim((string) $this->input('name')),
             'slug' => trim((string) $this->input('slug')),
             'description' => $this->nullableTrimmedString($this->input('description')),
-            'status' => strtolower(trim((string) $this->input('status', TuitionType::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
             'sort_order' => $this->normalizeSortOrder($this->input('sort_order')),
         ]);
     }
@@ -44,7 +45,7 @@ class TuitionTypeUpdateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255', Rule::unique('tuition_types', 'name')->ignore($tuitionType)],
             'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'status' => ['required', 'string', Rule::in([TuitionType::STATUS_ACTIVE, TuitionType::STATUS_INACTIVE])],
+            'status' => ['required', 'string', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }

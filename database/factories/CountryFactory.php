@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -23,7 +24,7 @@ class CountryFactory extends Factory
         return [
             'name' => $name,
             'slug' => Str::slug($name),
-            'status' => Country::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
         ];
     }
 }

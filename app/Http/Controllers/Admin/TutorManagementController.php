@@ -64,7 +64,7 @@ class TutorManagementController extends Controller
         }
 
         $items = User::query()
-            ->where('role', 'tutor')
+            ->where('role', UserRole::Tutor)
             ->with(['latestVerificationRequest.invoice'])
             ->when($filters['trash'], fn ($query) => $query->onlyTrashed())
             ->when($filters['search'] !== '', function ($query) use ($filters): void {
@@ -244,7 +244,7 @@ class TutorManagementController extends Controller
     {
         $count = User::query()
             ->onlyTrashed()
-            ->where('role', 'tutor')
+            ->where('role', UserRole::Tutor)
             ->restore();
 
         return redirect()->back()->with('status', "Restored {$count} tutor(s) from recycle bin.");
@@ -277,7 +277,7 @@ class TutorManagementController extends Controller
     {
         $count = User::query()
             ->onlyTrashed()
-            ->where('role', 'tutor')
+            ->where('role', UserRole::Tutor)
             ->forceDelete();
 
         return redirect()->back()->with('status', "Deleted {$count} tutor(s) from recycle bin.");

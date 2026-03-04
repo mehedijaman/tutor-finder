@@ -195,6 +195,23 @@ class Invoice extends Model
     }
 
     /**
+     * Get formatted amount with currency symbol.
+     */
+    public function getFormattedAmountAttribute(): string
+    {
+        $currency = $this->currency ?? 'BDT';
+        $symbol = match ($currency) {
+            'BDT' => '৳',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            default => $currency.' ',
+        };
+
+        return $symbol.number_format((float) $this->amount, 2);
+    }
+
+    /**
      * Return statuses that represent terminal failure/cancel paths.
      *
      * @return list<InvoiceStatus>

@@ -32,7 +32,7 @@ class AdminUserController extends Controller
         }
 
         $items = User::query()
-            ->where('role', 'admin')
+            ->where('role', UserRole::Admin)
             ->when($showTrash, fn ($query) => $query->onlyTrashed())
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($subQuery) use ($search): void {
@@ -193,7 +193,7 @@ class AdminUserController extends Controller
     {
         $count = User::query()
             ->onlyTrashed()
-            ->where('role', 'admin')
+            ->where('role', UserRole::Admin)
             ->when($request->user(), fn ($query) => $query->whereKeyNot($request->user()->getKey()))
             ->restore();
 
@@ -233,7 +233,7 @@ class AdminUserController extends Controller
     {
         $count = User::query()
             ->onlyTrashed()
-            ->where('role', 'admin')
+            ->where('role', UserRole::Admin)
             ->when($request->user(), fn ($query) => $query->whereKeyNot($request->user()->getKey()))
             ->forceDelete();
 

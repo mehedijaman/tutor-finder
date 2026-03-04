@@ -28,7 +28,7 @@ class JobApplicationController extends Controller
         $this->authorize('manageApplications', $tuitionJob);
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($status, TuitionJobApplication::statuses(), true)) {
+        if ($status !== '' && ApplicationStatus::tryFrom($status) === null) {
             $status = '';
         }
 

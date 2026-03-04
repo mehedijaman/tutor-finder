@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -32,7 +33,7 @@ class BangladeshTuitionTaxonomySeeder extends Seeder
                 'bangladesh',
                 $country->exists ? $country->getKey() : null,
             ),
-            'status' => Country::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
         ])->save();
 
         $this->restoreIfTrashed($country);
@@ -74,7 +75,7 @@ class BangladeshTuitionTaxonomySeeder extends Seeder
                     true,
                     ['country_id' => $country->id],
                 ),
-                'status' => City::STATUS_ACTIVE,
+                'status' => TaxonomyStatus::Active,
             ])->save();
 
             $this->restoreIfTrashed($city);
@@ -93,7 +94,7 @@ class BangladeshTuitionTaxonomySeeder extends Seeder
                         true,
                         ['city_id' => $city->id],
                     ),
-                    'status' => Area::STATUS_ACTIVE,
+                    'status' => TaxonomyStatus::Active,
                 ])->save();
 
                 $this->restoreIfTrashed($area);
@@ -203,7 +204,7 @@ class BangladeshTuitionTaxonomySeeder extends Seeder
                     $category->exists ? $category->getKey() : null,
                 ),
                 'description' => $categoryRow['description'],
-                'status' => Category::STATUS_ACTIVE,
+                'status' => TaxonomyStatus::Active,
                 'sort_order' => $categoryIndex + 1,
             ])->save();
 
@@ -223,7 +224,7 @@ class BangladeshTuitionTaxonomySeeder extends Seeder
                         true,
                         ['category_id' => $category->id],
                     ),
-                    'status' => SchoolClass::STATUS_ACTIVE,
+                    'status' => TaxonomyStatus::Active,
                     'sort_order' => $classIndex + 1,
                 ])->save();
 
@@ -243,7 +244,7 @@ class BangladeshTuitionTaxonomySeeder extends Seeder
                             true,
                             ['class_id' => $schoolClass->id],
                         ),
-                        'status' => Subject::STATUS_ACTIVE,
+                        'status' => TaxonomyStatus::Active,
                         'sort_order' => $subjectIndex + 1,
                     ])->save();
 
@@ -291,7 +292,7 @@ class BangladeshTuitionTaxonomySeeder extends Seeder
                     $tuitionType->exists ? $tuitionType->getKey() : null,
                 ),
                 'description' => $typeRow['description'],
-                'status' => TuitionType::STATUS_ACTIVE,
+                'status' => TaxonomyStatus::Active,
                 'sort_order' => $index + 1,
             ])->save();
 

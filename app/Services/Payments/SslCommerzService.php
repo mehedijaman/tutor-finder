@@ -2,6 +2,7 @@
 
 namespace App\Services\Payments;
 
+use App\Enums\PaymentGatewayType;
 use App\Models\Invoice;
 use App\Models\PaymentGateway;
 use DomainException;
@@ -89,7 +90,7 @@ class SslCommerzService
      */
     private function configureCredentials(): void
     {
-        $paymentGateway = PaymentGateway::active(PaymentGateway::GATEWAY_SSLCOMMERZ);
+        $paymentGateway = PaymentGateway::active(PaymentGatewayType::Sslcommerz->value);
 
         if (! $paymentGateway instanceof PaymentGateway) {
             throw new DomainException('SSLCommerz gateway is not active.');

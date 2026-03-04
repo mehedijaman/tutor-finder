@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tutor;
 
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Enums\RefundStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tutor\RefundRequestStoreRequest;
 use App\Models\RefundRequest;
@@ -24,7 +25,7 @@ class RefundRequestController extends Controller
     {
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($status, RefundRequest::statuses(), true)) {
+        if ($status !== '' && RefundStatus::tryFrom($status) === null) {
             $status = '';
         }
 

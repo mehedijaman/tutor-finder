@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tuition\Taxonomies\CountryStoreRequest;
 use App\Http\Requests\Admin\Tuition\Taxonomies\CountryUpdateRequest;
@@ -23,7 +24,7 @@ class CountryController extends Controller
         $query = trim($request->string('q')->toString());
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($status, [Country::STATUS_ACTIVE, Country::STATUS_INACTIVE], true)) {
+        if (! in_array($status, [TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value], true)) {
             $status = '';
         }
 
@@ -232,8 +233,8 @@ class CountryController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => Country::STATUS_ACTIVE, 'label' => 'Active'],
-            ['value' => Country::STATUS_INACTIVE, 'label' => 'Inactive'],
+            ['value' => TaxonomyStatus::Active->value, 'label' => 'Active'],
+            ['value' => TaxonomyStatus::Inactive->value, 'label' => 'Inactive'],
         ];
     }
 }

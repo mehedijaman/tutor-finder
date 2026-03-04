@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tuition\Taxonomies\CategoryStoreRequest;
 use App\Http\Requests\Admin\Tuition\Taxonomies\CategoryUpdateRequest;
@@ -23,7 +24,7 @@ class CategoryController extends Controller
         $query = trim($request->string('q')->toString());
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($status, [Category::STATUS_ACTIVE, Category::STATUS_INACTIVE], true)) {
+        if (! in_array($status, [TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value], true)) {
             $status = '';
         }
 
@@ -242,8 +243,8 @@ class CategoryController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => Category::STATUS_ACTIVE, 'label' => 'Active'],
-            ['value' => Category::STATUS_INACTIVE, 'label' => 'Inactive'],
+            ['value' => TaxonomyStatus::Active->value, 'label' => 'Active'],
+            ['value' => TaxonomyStatus::Inactive->value, 'label' => 'Inactive'],
         ];
     }
 }

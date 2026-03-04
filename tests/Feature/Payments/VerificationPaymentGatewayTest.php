@@ -3,6 +3,7 @@
 use App\Enums\InvoiceStatus;
 use App\Enums\PaymentGatewayType;
 use App\Enums\PaymentStatus;
+use App\Enums\TaxonomyStatus;
 use App\Enums\VerificationRole;
 use App\Enums\VerificationStatus;
 use App\Models\Invoice;
@@ -16,10 +17,10 @@ use Raziul\Sslcommerz\Facades\Sslcommerz;
 function configureGatewaySettings(): void
 {
     PaymentGateway::query()->updateOrCreate(
-        ['gateway' => PaymentGateway::GATEWAY_BKASH],
+        ['gateway' => PaymentGatewayType::Bkash->value],
         [
             'name' => 'bKash',
-            'status' => PaymentGateway::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'credentials' => [
                 'app_key' => 'bkash-app-key',
                 'app_secret' => 'bkash-app-secret',
@@ -32,10 +33,10 @@ function configureGatewaySettings(): void
     );
 
     PaymentGateway::query()->updateOrCreate(
-        ['gateway' => PaymentGateway::GATEWAY_SSLCOMMERZ],
+        ['gateway' => PaymentGatewayType::Sslcommerz->value],
         [
             'name' => 'SSLCommerz',
-            'status' => PaymentGateway::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'credentials' => [
                 'store_id' => 'ssl-store-id',
                 'store_password' => 'ssl-store-password',
@@ -46,10 +47,10 @@ function configureGatewaySettings(): void
     );
 
     PaymentGateway::query()->updateOrCreate(
-        ['gateway' => PaymentGateway::GATEWAY_MANUAL],
+        ['gateway' => PaymentGatewayType::Manual->value],
         [
             'name' => 'Manual',
-            'status' => PaymentGateway::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'credentials' => [],
             'notes' => 'Manual payment requires admin approval.',
         ],

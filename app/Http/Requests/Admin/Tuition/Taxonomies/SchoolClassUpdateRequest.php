@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\SchoolClass;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,7 +27,7 @@ class SchoolClassUpdateRequest extends FormRequest
             'category_id' => (int) $this->input('category_id'),
             'name' => trim((string) $this->input('name')),
             'slug' => trim((string) $this->input('slug')),
-            'status' => strtolower(trim((string) $this->input('status', SchoolClass::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
             'sort_order' => $this->normalizeSortOrder($this->input('sort_order')),
         ]);
     }
@@ -57,7 +58,7 @@ class SchoolClassUpdateRequest extends FormRequest
                     ->ignore($schoolClass),
             ],
             'slug' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'string', Rule::in([SchoolClass::STATUS_ACTIVE, SchoolClass::STATUS_INACTIVE])],
+            'status' => ['required', 'string', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }

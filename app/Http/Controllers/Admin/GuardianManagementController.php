@@ -64,7 +64,7 @@ class GuardianManagementController extends Controller
         }
 
         $items = User::query()
-            ->where('role', 'guardian')
+            ->where('role', UserRole::Guardian)
             ->with(['latestVerificationRequest.invoice'])
             ->when($filters['trash'], fn ($query) => $query->onlyTrashed())
             ->when($filters['search'] !== '', function ($query) use ($filters): void {
@@ -244,7 +244,7 @@ class GuardianManagementController extends Controller
     {
         $count = User::query()
             ->onlyTrashed()
-            ->where('role', 'guardian')
+            ->where('role', UserRole::Guardian)
             ->restore();
 
         return redirect()->back()->with('status', "Restored {$count} guardian(s) from recycle bin.");
@@ -277,7 +277,7 @@ class GuardianManagementController extends Controller
     {
         $count = User::query()
             ->onlyTrashed()
-            ->where('role', 'guardian')
+            ->where('role', UserRole::Guardian)
             ->forceDelete();
 
         return redirect()->back()->with('status', "Deleted {$count} guardian(s) from recycle bin.");

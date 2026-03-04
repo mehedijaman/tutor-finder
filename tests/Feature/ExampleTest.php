@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\JobStatus;
+use App\Enums\TaxonomyStatus;
 use App\Models\Testimonial;
 use App\Models\TuitionJob;
 use App\Models\User;
@@ -50,15 +51,15 @@ test('home page hero stats are sourced from database', function () {
     ]);
 
     Testimonial::factory()->create([
-        'status' => Testimonial::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
         'rating' => 5,
     ]);
     Testimonial::factory()->create([
-        'status' => Testimonial::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
         'rating' => 4,
     ]);
     Testimonial::factory()->create([
-        'status' => Testimonial::STATUS_INACTIVE,
+        'status' => TaxonomyStatus::Inactive,
         'rating' => 1,
     ]);
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Guardian;
 
-use App\Models\GuardianProfile;
+use App\Enums\TaxonomyStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,7 +29,7 @@ class GuardianProfileUpdateRequest extends FormRequest
             'address' => $this->nullableTrimmedString($this->input('address')),
             'occupation' => $this->nullableTrimmedString($this->input('occupation')),
             'notes' => $this->nullableTrimmedString($this->input('notes')),
-            'status' => strtolower(trim((string) $this->input('status', GuardianProfile::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
         ]);
     }
 
@@ -48,7 +48,7 @@ class GuardianProfileUpdateRequest extends FormRequest
             'address' => ['nullable', 'string'],
             'occupation' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
-            'status' => ['nullable', Rule::in([GuardianProfile::STATUS_ACTIVE, GuardianProfile::STATUS_INACTIVE])],
+            'status' => ['nullable', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
         ];
     }
 

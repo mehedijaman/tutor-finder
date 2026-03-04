@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,10 +13,6 @@ class Category extends Model
 {
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory, SoftDeletes;
-
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
 
     /**
      * @var list<string>
@@ -36,6 +33,7 @@ class Category extends Model
     protected function casts(): array
     {
         return [
+            'status' => TaxonomyStatus::class,
             'sort_order' => 'integer',
         ];
     }

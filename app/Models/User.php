@@ -224,6 +224,40 @@ class User extends Authenticatable
     }
 
     /**
+     * Calculate wallet balance for a given currency.
+     */
+    public function getWalletBalance(string $currency = 'BDT'): float
+    {
+        $entries = $this->ledgerEntries()
+            ->where('currency', $currency)
+            ->selectRaw('type, SUM(amount) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+
+        $credits = (float) ($entries[\App\Enums\LedgerEntryType::Credit->value] ?? 0);
+        $debits = (float) ($entries[\App\Enums\LedgerEntryType::Debit->value] ?? 0);
+
+        return $credits - $debits;
+    }
+
+    /**
+     * Get formatted wallet balance with currency symbol.
+     */
+    public function getFormattedWalletBalance(string $currency = 'BDT'): string
+    {
+        $balance = $this->getWalletBalance($currency);
+        $symbol = match ($currency) {
+            'BDT' => '৳',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            default => $currency.' ',
+        };
+
+        return $symbol.number_format($balance, 2);
+    }
+
+    /**
      * Get refund requests submitted by this user.
      */
     public function refundRequests(): HasMany

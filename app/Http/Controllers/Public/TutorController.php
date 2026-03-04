@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,8 +13,8 @@ class TutorController extends Controller
     public function index(Request $request)
     {
         $query = User::query()
-            ->where('role', 'tutor')
-            ->where('status', 'active')
+            ->where('role', UserRole::Tutor)
+            ->where('status', UserStatus::Active)
             ->with('tutorProfile')
             ->with(['tutorEducations' => function ($q) {
                 $q->orderBy('sort_order')->orderByDesc('is_current');
@@ -63,8 +65,8 @@ class TutorController extends Controller
     public function show(int $id)
     {
         $tutor = User::query()
-            ->where('role', 'tutor')
-            ->where('status', 'active')
+            ->where('role', UserRole::Tutor)
+            ->where('status', UserStatus::Active)
             ->with('tutorProfile')
             ->with('tutorEducations')
             ->findOrFail($id);

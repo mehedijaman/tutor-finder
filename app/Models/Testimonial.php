@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,10 +11,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Testimonial extends Model
 {
     use HasFactory, SoftDeletes;
-
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
 
     protected $fillable = [
         'user_id',
@@ -29,6 +26,7 @@ class Testimonial extends Model
     protected function casts(): array
     {
         return [
+            'status' => TaxonomyStatus::class,
             'rating' => 'integer',
             'sort_order' => 'integer',
         ];

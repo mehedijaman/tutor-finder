@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\TuitionType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -24,7 +25,7 @@ class TuitionTypeFactory extends Factory
             'name' => ucwords($name),
             'slug' => Str::slug($name),
             'description' => fake()->optional()->sentence(),
-            'status' => TuitionType::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'sort_order' => fake()->numberBetween(0, 20),
         ];
     }

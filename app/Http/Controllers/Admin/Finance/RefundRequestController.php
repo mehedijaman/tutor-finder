@@ -24,7 +24,7 @@ class RefundRequestController extends Controller
         $status = strtolower(trim($request->string('status')->toString()));
         $search = trim($request->string('q')->toString());
 
-        if (! in_array($status, RefundRequest::statuses(), true)) {
+        if ($status !== '' && RefundStatus::tryFrom($status) === null) {
             $status = '';
         }
 

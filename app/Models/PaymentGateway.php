@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentGatewayType;
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,16 +14,6 @@ class PaymentGateway extends Model
 {
     /** @use HasFactory<\Database\Factories\PaymentGatewayFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
-
-    public const GATEWAY_BKASH = 'bkash';
-
-    public const GATEWAY_SSLCOMMERZ = 'sslcommerz';
-
-    public const GATEWAY_MANUAL = 'manual';
-
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
 
     /**
      * @var list<string>
@@ -53,6 +45,8 @@ class PaymentGateway extends Model
     protected function casts(): array
     {
         return [
+            'gateway' => PaymentGatewayType::class,
+            'status' => TaxonomyStatus::class,
             'credentials' => 'encrypted:array',
         ];
     }
@@ -64,7 +58,7 @@ class PaymentGateway extends Model
     {
         return static::query()
             ->where('gateway', strtolower(trim($gateway)))
-            ->where('status', self::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->first();
     }
 
@@ -74,9 +68,9 @@ class PaymentGateway extends Model
     public static function ensureDefaults(): void
     {
         foreach ([
-            self::GATEWAY_BKASH => 'bKash',
-            self::GATEWAY_SSLCOMMERZ => 'SSLCommerz',
-            self::GATEWAY_MANUAL => 'Manual',
+            PaymentGatewayType::Bkash->value => 'bKash',
+            PaymentGatewayType::Sslcommerz->value => 'SSLCommerz',
+            PaymentGatewayType::Manual->value => 'Manual',
         ] as $gateway => $name) {
             $paymentGateway = static::query()->withTrashed()->firstOrNew([
                 'gateway' => $gateway,
@@ -88,7 +82,7 @@ class PaymentGateway extends Model
 
             $paymentGateway->fill([
                 'name' => $name,
-                'status' => self::STATUS_ACTIVE,
+                'status' => TaxonomyStatus::Active,
                 'credentials' => is_array($paymentGateway->credentials) ? $paymentGateway->credentials : [],
             ])->save();
         }

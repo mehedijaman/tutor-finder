@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -20,6 +21,16 @@ class BlogTag extends Model
         'slug',
         'status',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => TaxonomyStatus::class,
+        ];
+    }
 
     /**
      * Get blog posts assigned to this tag.

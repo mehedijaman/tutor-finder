@@ -3,6 +3,7 @@
 namespace App\Services\Job;
 
 use App\Enums\JobGender;
+use App\Enums\TaxonomyStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -41,7 +42,7 @@ class JobFormOptionService
     public function activeTuitionTypes(): array
     {
         return TuitionType::query()
-            ->where('status', TuitionType::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active->value)
             ->ordered()
             ->get(['id', 'name'])
             ->map(fn (TuitionType $tuitionType): array => [
@@ -59,7 +60,7 @@ class JobFormOptionService
     public function activeCategories(): array
     {
         return Category::query()
-            ->where('status', Category::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active->value)
             ->ordered()
             ->get(['id', 'name'])
             ->map(fn (Category $category): array => [
@@ -77,7 +78,7 @@ class JobFormOptionService
     public function activeSchoolClasses(): array
     {
         return SchoolClass::query()
-            ->where('status', SchoolClass::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active->value)
             ->ordered()
             ->get(['id', 'name', 'category_id'])
             ->map(fn (SchoolClass $schoolClass): array => [
@@ -96,7 +97,7 @@ class JobFormOptionService
     public function activeCountries(): array
     {
         return Country::query()
-            ->where('status', Country::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active->value)
             ->ordered()
             ->get(['id', 'name'])
             ->map(fn (Country $country): array => [
@@ -114,7 +115,7 @@ class JobFormOptionService
     public function activeCities(): array
     {
         return City::query()
-            ->where('status', City::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active->value)
             ->ordered()
             ->get(['id', 'name', 'country_id'])
             ->map(fn (City $city): array => [
@@ -133,7 +134,7 @@ class JobFormOptionService
     public function activeAreas(): array
     {
         return Area::query()
-            ->where('status', Area::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active->value)
             ->ordered()
             ->get(['id', 'name', 'city_id'])
             ->map(fn (Area $area): array => [
@@ -152,7 +153,7 @@ class JobFormOptionService
     public function activeSubjects(): array
     {
         return Subject::query()
-            ->where('status', Subject::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active->value)
             ->ordered()
             ->get(['id', 'name', 'class_id'])
             ->map(fn (Subject $subject): array => [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\BlogTag;
@@ -62,7 +63,7 @@ class BlogController extends Controller
             ]);
 
         $categories = BlogCategory::query()
-            ->where('status', 'active')
+            ->where('status', TaxonomyStatus::Active)
             ->whereHas('posts', fn (Builder $builder) => $this->applyPublishedScope($builder))
             ->orderBy('name')
             ->get(['id', 'name', 'slug'])
@@ -75,7 +76,7 @@ class BlogController extends Controller
             ->all();
 
         $tags = BlogTag::query()
-            ->where('status', 'active')
+            ->where('status', TaxonomyStatus::Active)
             ->whereHas('posts', fn (Builder $builder) => $this->applyPublishedScope($builder))
             ->orderBy('name')
             ->get(['id', 'name', 'slug'])
@@ -91,7 +92,7 @@ class BlogController extends Controller
 
         if ($categorySlug !== '') {
             $selectedCategory = BlogCategory::query()
-                ->where('status', 'active')
+                ->where('status', TaxonomyStatus::Active)
                 ->where('slug', $categorySlug)
                 ->first();
         }

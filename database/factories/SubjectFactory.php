@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,7 +26,7 @@ class SubjectFactory extends Factory
             'class_id' => SchoolClass::factory(),
             'name' => ucwords($name),
             'slug' => Str::slug($name),
-            'status' => Subject::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'sort_order' => fake()->numberBetween(0, 20),
         ];
     }

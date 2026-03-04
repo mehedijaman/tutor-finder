@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\PaymentGatewayType;
+use App\Enums\TaxonomyStatus;
 use App\Models\PaymentGateway;
 use App\Models\User;
 use Database\Seeders\AdminRolesAndPermissionsSeeder;
@@ -30,7 +32,7 @@ it('admin with permission can update payment settings while preserving secrets',
     $admin->givePermissionTo('payment-setting-update');
 
     PaymentGateway::query()->updateOrCreate(
-        ['gateway' => PaymentGateway::GATEWAY_BKASH],
+        ['gateway' => PaymentGatewayType::Bkash->value],
         [
             'name' => 'bKash',
             'status' => 'active',
@@ -45,7 +47,7 @@ it('admin with permission can update payment settings while preserving secrets',
     );
 
     PaymentGateway::query()->updateOrCreate(
-        ['gateway' => PaymentGateway::GATEWAY_SSLCOMMERZ],
+        ['gateway' => PaymentGatewayType::Sslcommerz->value],
         [
             'name' => 'SSLCommerz',
             'status' => 'active',
@@ -58,7 +60,7 @@ it('admin with permission can update payment settings while preserving secrets',
     );
 
     PaymentGateway::query()->updateOrCreate(
-        ['gateway' => PaymentGateway::GATEWAY_MANUAL],
+        ['gateway' => PaymentGatewayType::Manual->value],
         [
             'name' => 'Manual',
             'status' => 'active',
@@ -90,18 +92,18 @@ it('admin with permission can update payment settings while preserving secrets',
         ])
         ->assertRedirect(route('admin.payment-settings.edit', absolute: false));
 
-    $bkash = PaymentGateway::query()->where('gateway', PaymentGateway::GATEWAY_BKASH)->firstOrFail();
-    $sslCommerz = PaymentGateway::query()->where('gateway', PaymentGateway::GATEWAY_SSLCOMMERZ)->firstOrFail();
-    $manual = PaymentGateway::query()->where('gateway', PaymentGateway::GATEWAY_MANUAL)->firstOrFail();
+    $bkash = PaymentGateway::query()->where('gateway', PaymentGatewayType::Bkash->value)->firstOrFail();
+    $sslCommerz = PaymentGateway::query()->where('gateway', PaymentGatewayType::Sslcommerz->value)->firstOrFail();
+    $manual = PaymentGateway::query()->where('gateway', PaymentGatewayType::Manual->value)->firstOrFail();
 
-    expect($bkash->status)->toBe('active');
+    expect($bkash->status)->toBe(TaxonomyStatus::Active);
     expect($bkash->credentials['app_key'])->toBe('new-key');
     expect($bkash->credentials['username'])->toBe('new-user');
     expect($bkash->credentials['base_url'])->toBe('https://tokenized.pay.bka.sh');
     expect($bkash->credentials['app_secret'])->toBe('old-secret');
     expect($bkash->credentials['password'])->toBe('old-password');
 
-    expect($sslCommerz->status)->toBe('inactive');
+    expect($sslCommerz->status)->toBe(TaxonomyStatus::Inactive);
     expect($sslCommerz->credentials['store_id'])->toBe('new-store');
     expect($sslCommerz->credentials['mode'])->toBe('live');
     expect($sslCommerz->credentials['store_password'])->toBe('old-store-password');

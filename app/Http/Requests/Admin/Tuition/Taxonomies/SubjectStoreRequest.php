@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tuition\Taxonomies;
 
-use App\Models\Subject;
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,7 +26,7 @@ class SubjectStoreRequest extends FormRequest
             'class_id' => (int) $this->input('class_id'),
             'name' => trim((string) $this->input('name')),
             'slug' => trim((string) $this->input('slug')),
-            'status' => strtolower(trim((string) $this->input('status', Subject::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
             'sort_order' => $this->normalizeSortOrder($this->input('sort_order')),
         ]);
     }
@@ -53,7 +53,7 @@ class SubjectStoreRequest extends FormRequest
                 Rule::unique('subjects', 'name')->where(fn (Builder $query): Builder => $query->where('class_id', $classId)),
             ],
             'slug' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'string', Rule::in([Subject::STATUS_ACTIVE, Subject::STATUS_INACTIVE])],
+            'status' => ['required', 'string', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }

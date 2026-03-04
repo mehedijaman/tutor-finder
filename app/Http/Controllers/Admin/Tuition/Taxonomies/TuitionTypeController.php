@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tuition\Taxonomies\TaxonomyStatusUpdateRequest;
 use App\Http\Requests\Admin\Tuition\Taxonomies\TuitionTypeStoreRequest;
@@ -23,7 +24,7 @@ class TuitionTypeController extends Controller
         $query = trim($request->string('q')->toString());
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($status, [TuitionType::STATUS_ACTIVE, TuitionType::STATUS_INACTIVE], true)) {
+        if (! in_array($status, [TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value], true)) {
             $status = '';
         }
 
@@ -213,8 +214,8 @@ class TuitionTypeController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => TuitionType::STATUS_ACTIVE, 'label' => 'Active'],
-            ['value' => TuitionType::STATUS_INACTIVE, 'label' => 'Inactive'],
+            ['value' => TaxonomyStatus::Active->value, 'label' => 'Active'],
+            ['value' => TaxonomyStatus::Inactive->value, 'label' => 'Inactive'],
         ];
     }
 }

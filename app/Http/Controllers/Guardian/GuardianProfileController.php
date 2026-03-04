@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Guardian;
 
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guardian\GuardianProfileUpdateRequest;
 use App\Models\GuardianProfile;
@@ -30,7 +31,7 @@ class GuardianProfileController extends Controller
                 'address' => $profile?->address,
                 'occupation' => $profile?->occupation,
                 'notes' => $profile?->notes,
-                'status' => $profile?->status ?? GuardianProfile::STATUS_ACTIVE,
+                'status' => $profile?->status ?? TaxonomyStatus::Active->value,
             ],
         ]);
     }
@@ -56,7 +57,7 @@ class GuardianProfileController extends Controller
             ]);
 
             $profile->fill($profileData);
-            $profile->status = $profileData['status'] ?? GuardianProfile::STATUS_ACTIVE;
+            $profile->status = $profileData['status'] ?? TaxonomyStatus::Active;
             $profile->save();
         });
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,10 +12,6 @@ class GuardianProfile extends Model
 {
     /** @use HasFactory<\Database\Factories\GuardianProfileFactory> */
     use HasFactory, SoftDeletes;
-
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
 
     /**
      * @var list<string>
@@ -28,6 +25,16 @@ class GuardianProfile extends Model
         'notes',
         'status',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => TaxonomyStatus::class,
+        ];
+    }
 
     /**
      * Get guardian profile owner.

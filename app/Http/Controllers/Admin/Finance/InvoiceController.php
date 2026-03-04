@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Finance;
 
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,11 +21,11 @@ class InvoiceController extends Controller
         $status = strtolower(trim($request->string('status')->toString()));
         $type = strtolower(trim($request->string('type')->toString()));
 
-        if (! in_array($status, Invoice::statuses(), true)) {
+        if ($status !== '' && InvoiceStatus::tryFrom($status) === null) {
             $status = '';
         }
 
-        if (! in_array($type, Invoice::types(), true)) {
+        if ($type !== '' && InvoiceType::tryFrom($type) === null) {
             $type = '';
         }
 

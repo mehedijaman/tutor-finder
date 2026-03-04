@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,10 +15,6 @@ class City extends Model
     /** @use HasFactory<\Database\Factories\CityFactory> */
     use HasFactory, SoftDeletes;
 
-    public const STATUS_ACTIVE = 'active';
-
-    public const STATUS_INACTIVE = 'inactive';
-
     /**
      * @var list<string>
      */
@@ -27,6 +24,16 @@ class City extends Model
         'slug',
         'status',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => TaxonomyStatus::class,
+        ];
+    }
 
     /**
      * Get the country this city belongs to.

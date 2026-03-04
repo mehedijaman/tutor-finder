@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tuition\Taxonomies\CityStoreRequest;
 use App\Http\Requests\Admin\Tuition\Taxonomies\CityUpdateRequest;
@@ -25,7 +26,7 @@ class CityController extends Controller
         $status = strtolower(trim($request->string('status')->toString()));
         $countryId = (int) $request->integer('country_id');
 
-        if (! in_array($status, [City::STATUS_ACTIVE, City::STATUS_INACTIVE], true)) {
+        if (! in_array($status, [TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value], true)) {
             $status = '';
         }
 
@@ -257,7 +258,7 @@ class CityController extends Controller
     private function activeCountries(): array
     {
         return Country::query()
-            ->where('status', Country::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->orderBy('name')
             ->get(['id', 'name'])
             ->map(fn (Country $country): array => [
@@ -275,8 +276,8 @@ class CityController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => City::STATUS_ACTIVE, 'label' => 'Active'],
-            ['value' => City::STATUS_INACTIVE, 'label' => 'Inactive'],
+            ['value' => TaxonomyStatus::Active->value, 'label' => 'Active'],
+            ['value' => TaxonomyStatus::Inactive->value, 'label' => 'Inactive'],
         ];
     }
 }

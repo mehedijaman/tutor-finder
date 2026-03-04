@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Tuition\Taxonomies;
 
-use App\Models\Area;
+use App\Enums\TaxonomyStatus;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -26,7 +26,7 @@ class AreaStoreRequest extends FormRequest
             'city_id' => (int) $this->input('city_id'),
             'name' => trim((string) $this->input('name')),
             'slug' => trim((string) $this->input('slug')),
-            'status' => strtolower(trim((string) $this->input('status', Area::STATUS_ACTIVE))),
+            'status' => strtolower(trim((string) $this->input('status', TaxonomyStatus::Active->value))),
         ]);
     }
 
@@ -52,7 +52,7 @@ class AreaStoreRequest extends FormRequest
                 Rule::unique('areas', 'name')->where(fn (Builder $query): Builder => $query->where('city_id', $cityId)),
             ],
             'slug' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'string', Rule::in([Area::STATUS_ACTIVE, Area::STATUS_INACTIVE])],
+            'status' => ['required', 'string', Rule::in([TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value])],
         ];
     }
 }

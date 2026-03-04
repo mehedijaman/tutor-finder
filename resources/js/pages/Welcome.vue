@@ -72,7 +72,7 @@ const formatAverageRating = (value: number | null): string => {
                     <h1
                         class="font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl"
                     >
-                        Hire the Right Tutor 
+                        Hire the Right Tutor
                         <span class="relative whitespace-nowrap text-blue-600">
                             <span class="relative">with Confidences</span>
                         </span>
@@ -81,7 +81,9 @@ const formatAverageRating = (value: number | null): string => {
                     <p
                         class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl"
                     >
-                        Quickly connect with qualified and trusted tutors for any subject or grade, giving your child the support they need to succeed.
+                        Quickly connect with qualified and trusted tutors for
+                        any subject or grade, giving your child the support they
+                        need to succeed.
                     </p>
 
                     <div

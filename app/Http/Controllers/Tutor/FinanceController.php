@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tutor;
 
+use App\Enums\InvoiceStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +18,7 @@ class FinanceController extends Controller
     {
         $status = strtolower(trim($request->string('status')->toString()));
 
-        if (! in_array($status, Invoice::statuses(), true)) {
+        if ($status !== '' && InvoiceStatus::tryFrom($status) === null) {
             $status = '';
         }
 

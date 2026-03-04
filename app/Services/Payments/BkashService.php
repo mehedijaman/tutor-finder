@@ -2,6 +2,7 @@
 
 namespace App\Services\Payments;
 
+use App\Enums\PaymentGatewayType;
 use App\Models\Invoice;
 use App\Models\PaymentGateway;
 use DomainException;
@@ -104,7 +105,7 @@ class BkashService
      */
     private function configureCredentials(): void
     {
-        $paymentGateway = PaymentGateway::active(PaymentGateway::GATEWAY_BKASH);
+        $paymentGateway = PaymentGateway::active(PaymentGatewayType::Bkash->value);
 
         if (! $paymentGateway instanceof PaymentGateway) {
             throw new DomainException('bKash gateway is not active.');

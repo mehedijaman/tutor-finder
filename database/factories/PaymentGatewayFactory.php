@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\PaymentGatewayType;
+use App\Enums\TaxonomyStatus;
 use App\Models\PaymentGateway;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,12 +21,12 @@ class PaymentGatewayFactory extends Factory
     {
         return [
             'gateway' => fake()->randomElement([
-                PaymentGateway::GATEWAY_BKASH,
-                PaymentGateway::GATEWAY_SSLCOMMERZ,
-                PaymentGateway::GATEWAY_MANUAL,
+                PaymentGatewayType::Bkash,
+                PaymentGatewayType::Sslcommerz,
+                PaymentGatewayType::Manual,
             ]),
             'name' => fake()->company(),
-            'status' => PaymentGateway::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'credentials' => [],
             'notes' => null,
         ];
@@ -33,7 +35,7 @@ class PaymentGatewayFactory extends Factory
     public function bkash(): static
     {
         return $this->state(fn (): array => [
-            'gateway' => PaymentGateway::GATEWAY_BKASH,
+            'gateway' => PaymentGatewayType::Bkash,
             'name' => 'bKash',
         ]);
     }
@@ -41,7 +43,7 @@ class PaymentGatewayFactory extends Factory
     public function sslcommerz(): static
     {
         return $this->state(fn (): array => [
-            'gateway' => PaymentGateway::GATEWAY_SSLCOMMERZ,
+            'gateway' => PaymentGatewayType::Sslcommerz,
             'name' => 'SSLCommerz',
         ]);
     }
@@ -49,7 +51,7 @@ class PaymentGatewayFactory extends Factory
     public function manual(): static
     {
         return $this->state(fn (): array => [
-            'gateway' => PaymentGateway::GATEWAY_MANUAL,
+            'gateway' => PaymentGatewayType::Manual,
             'name' => 'Manual',
             'credentials' => [],
             'notes' => 'Manual payment requires admin approval.',

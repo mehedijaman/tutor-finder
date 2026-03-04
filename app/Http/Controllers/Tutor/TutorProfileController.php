@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tutor;
 
 use App\Enums\ProfileStatus;
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tutor\TutorProfileUpdateRequest;
 use App\Models\Area;
@@ -163,7 +164,7 @@ class TutorProfileController extends Controller
     private function activeTuitionTypes(): array
     {
         return TuitionType::query()
-            ->where('status', TuitionType::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->ordered()
             ->get(['id', 'name'])
             ->map(fn (TuitionType $item): array => [
@@ -179,7 +180,7 @@ class TutorProfileController extends Controller
     private function activeCategories(): array
     {
         return Category::query()
-            ->where('status', Category::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->ordered()
             ->get(['id', 'name'])
             ->map(fn (Category $item): array => [
@@ -195,7 +196,7 @@ class TutorProfileController extends Controller
     private function activeSchoolClasses(): array
     {
         return SchoolClass::query()
-            ->where('status', SchoolClass::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->ordered()
             ->get(['id', 'name', 'category_id'])
             ->map(fn (SchoolClass $item): array => [
@@ -212,7 +213,7 @@ class TutorProfileController extends Controller
     private function activeSubjects(): array
     {
         return Subject::query()
-            ->where('status', Subject::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->ordered()
             ->get(['id', 'name', 'class_id'])
             ->map(fn (Subject $item): array => [
@@ -229,7 +230,7 @@ class TutorProfileController extends Controller
     private function activeLocations(): array
     {
         $cityLocations = City::query()
-            ->where('status', City::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->ordered()
             ->get(['id', 'name'])
             ->map(fn (City $city): array => [
@@ -239,7 +240,7 @@ class TutorProfileController extends Controller
             ]);
 
         $areaLocations = Area::query()
-            ->where('status', Area::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->ordered()
             ->get(['id', 'name', 'city_id'])
             ->map(fn (Area $area): array => [

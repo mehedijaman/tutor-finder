@@ -12,6 +12,7 @@ enum InvoiceStatus: string
     case Processing = 'processing';
     case Failed = 'failed';
     case Cancelled = 'cancelled';
+    case Expired = 'expired';
 
     /**
      * Get human-readable label.
@@ -27,6 +28,7 @@ enum InvoiceStatus: string
             self::Processing => 'Processing',
             self::Failed => 'Failed',
             self::Cancelled => 'Cancelled',
+            self::Expired => 'Expired',
         };
     }
 
@@ -41,6 +43,7 @@ enum InvoiceStatus: string
             self::Void,
             self::Failed,
             self::Cancelled,
+            self::Expired,
         ];
     }
 }

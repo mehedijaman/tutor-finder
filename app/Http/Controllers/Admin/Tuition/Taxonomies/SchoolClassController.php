@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Tuition\Taxonomies;
 
+use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tuition\Taxonomies\SchoolClassStoreRequest;
 use App\Http\Requests\Admin\Tuition\Taxonomies\SchoolClassUpdateRequest;
@@ -25,7 +26,7 @@ class SchoolClassController extends Controller
         $status = strtolower(trim($request->string('status')->toString()));
         $categoryId = (int) $request->integer('category_id');
 
-        if (! in_array($status, [SchoolClass::STATUS_ACTIVE, SchoolClass::STATUS_INACTIVE], true)) {
+        if (! in_array($status, [TaxonomyStatus::Active->value, TaxonomyStatus::Inactive->value], true)) {
             $status = '';
         }
 
@@ -262,7 +263,7 @@ class SchoolClassController extends Controller
     private function activeCategories(): array
     {
         return Category::query()
-            ->where('status', Category::STATUS_ACTIVE)
+            ->where('status', TaxonomyStatus::Active)
             ->whereNull('deleted_at')
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -282,8 +283,8 @@ class SchoolClassController extends Controller
     private function statusOptions(): array
     {
         return [
-            ['value' => SchoolClass::STATUS_ACTIVE, 'label' => 'Active'],
-            ['value' => SchoolClass::STATUS_INACTIVE, 'label' => 'Inactive'],
+            ['value' => TaxonomyStatus::Active->value, 'label' => 'Active'],
+            ['value' => TaxonomyStatus::Inactive->value, 'label' => 'Inactive'],
         ];
     }
 }

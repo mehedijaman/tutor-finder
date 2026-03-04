@@ -2,6 +2,7 @@
 
 use App\Enums\ApplicationStatus;
 use App\Enums\JobStatus;
+use App\Enums\TaxonomyStatus;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\City;
@@ -20,25 +21,25 @@ it('tutor can apply to a live job and see it in own applications list', function
     $guardian = User::factory()->guardian()->create();
     $tutor = User::factory()->tutor()->create();
 
-    $category = Category::factory()->create(['status' => Category::STATUS_ACTIVE]);
+    $category = Category::factory()->create(['status' => TaxonomyStatus::Active]);
     $schoolClass = SchoolClass::factory()->create([
         'category_id' => $category->id,
-        'status' => SchoolClass::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
     $subject = Subject::factory()->create([
         'class_id' => $schoolClass->id,
-        'status' => Subject::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
-    $country = Country::factory()->create(['status' => Country::STATUS_ACTIVE]);
+    $country = Country::factory()->create(['status' => TaxonomyStatus::Active]);
     $city = City::factory()->create([
         'country_id' => $country->id,
-        'status' => City::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
     $area = Area::factory()->create([
         'city_id' => $city->id,
-        'status' => Area::STATUS_ACTIVE,
+        'status' => TaxonomyStatus::Active,
     ]);
-    $tuitionType = TuitionType::factory()->create(['status' => TuitionType::STATUS_ACTIVE]);
+    $tuitionType = TuitionType::factory()->create(['status' => TaxonomyStatus::Active]);
 
     $job = TuitionJob::factory()->live()->create([
         'guardian_id' => $guardian->id,

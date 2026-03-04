@@ -3,6 +3,7 @@
 use App\Enums\InvoiceStatus;
 use App\Enums\PaymentGatewayType;
 use App\Enums\PaymentStatus;
+use App\Enums\TaxonomyStatus;
 use App\Enums\VerificationRole;
 use App\Enums\VerificationStatus;
 use App\Models\Invoice;
@@ -15,10 +16,10 @@ use Ihasan\Bkash\Facades\Bkash;
 function configureBkashGatewayForCallbackTests(): void
 {
     PaymentGateway::query()->updateOrCreate(
-        ['gateway' => PaymentGateway::GATEWAY_BKASH],
+        ['gateway' => PaymentGatewayType::Bkash->value],
         [
             'name' => 'bKash',
-            'status' => PaymentGateway::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'credentials' => [
                 'app_key' => 'bkash-app-key',
                 'app_secret' => 'bkash-app-secret',

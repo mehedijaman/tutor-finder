@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Finance;
 
+use App\Enums\PaymentGatewayType;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,13 +21,11 @@ class PaymentController extends Controller
         $status = strtolower(trim($request->string('status')->toString()));
         $gateway = strtolower(trim($request->string('gateway')->toString()));
 
-        if (! in_array($status, Payment::statuses(), true)) {
+        if ($status !== '' && PaymentStatus::tryFrom($status) === null) {
             $status = '';
         }
 
-        $gatewayOptions = ['bkash', 'sslcommerz', 'manual'];
-
-        if (! in_array($gateway, $gatewayOptions, true)) {
+        if ($gateway !== '' && PaymentGatewayType::tryFrom($gateway) === null) {
             $gateway = '';
         }
 
@@ -75,7 +75,7 @@ class PaymentController extends Controller
                 'gateway' => $gateway,
             ],
             'statusOptions' => Payment::statuses(),
-            'gatewayOptions' => $gatewayOptions,
+            'gatewayOptions' => PaymentGatewayType::cases(),
         ]);
     }
 }

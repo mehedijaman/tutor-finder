@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaxonomyStatus;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -24,7 +25,7 @@ class CategoryFactory extends Factory
             'name' => ucfirst($name),
             'slug' => Str::slug($name),
             'description' => fake()->optional()->sentence(),
-            'status' => Category::STATUS_ACTIVE,
+            'status' => TaxonomyStatus::Active,
             'sort_order' => fake()->numberBetween(0, 20),
         ];
     }
