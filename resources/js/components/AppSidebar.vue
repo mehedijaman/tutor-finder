@@ -46,8 +46,22 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const page = usePage();
+type AuthUser = {
+    id: number;
+    name?: string;
+    avatar?: string;
+    created_at?: string;
+    verification_status?: string;
+};
+
+type NotificationCounts = {
+    unread?: number;
+};
+
+const authUser = computed(() => page.props.auth?.user as AuthUser | undefined);
+
 const unreadNotificationCount = computed(() =>
-    Number(page.props.notificationCounts?.unread ?? 0),
+    Number((page.props.notificationCounts as NotificationCounts | undefined)?.unread ?? 0),
 );
 const panelContext = computed<'admin' | 'tutor' | 'guardian'>(() => {
     const role = page.props.auth?.user?.role;
@@ -64,24 +78,63 @@ const panelContext = computed<'admin' | 'tutor' | 'guardian'>(() => {
     return 'guardian';
 });
 
-const panelMeta = computed(() => {
-    if (panelContext.value === 'admin') {
-        return {
-            title: 'Admin Panel',
-            subtitle: 'Operations & platform control',
-        };
+
+
+const showMemberSummary = computed(
+    () => panelContext.value !== 'admin' && authUser.value !== undefined,
+);
+
+const memberIdLabel = computed(() =>
+    panelContext.value === 'tutor' ? 'Tutor ID' : 'Guardian ID',
+);
+
+const memberSince = computed(() => {
+    const createdAt = authUser.value?.created_at;
+
+    if (!createdAt) {
+        return '—';
     }
 
-    if (panelContext.value === 'tutor') {
+    const parsed = new Date(createdAt);
+
+    if (Number.isNaN(parsed.getTime())) {
+        return '—';
+    }
+
+    return new Intl.DateTimeFormat('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    }).format(parsed);
+});
+
+const memberInitials = computed(() => {
+    const name = authUser.value?.name?.trim() ?? '';
+
+    if (!name) {
+        return 'U';
+    }
+
+    const segments = name.split(/\s+/).slice(0, 2);
+
+    return segments.map((segment) => segment[0]?.toUpperCase() ?? '').join('');
+});
+
+const verificationBadge = computed(() => {
+    const status = String(authUser.value?.verification_status ?? '').toLowerCase();
+
+    if (status === 'verified') {
         return {
-            title: 'Tutor Panel',
-            subtitle: 'Applications & teaching workflow',
+            label: 'Verified',
+            className:
+                'border-emerald-300/70 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
         };
     }
 
     return {
-        title: 'Guardian Panel',
-        subtitle: 'Hiring pipeline & tutoring progress',
+        label: 'Unverified',
+        className:
+            'border-amber-300/70 bg-amber-500/15 text-amber-700 dark:text-amber-300',
     };
 });
 
@@ -381,45 +434,8 @@ const mainNavItems = computed<NavItem[]>(() => {
     if (role === 'tutor') {
         return [
             { title: 'Dashboard', href: '/tutor/dashboard', icon: LayoutGrid },
-            { title: 'Browse Jobs', href: '/jobs', icon: FileText },
-            {
-                title: 'My Applications',
-                href: '/tutor/job-applications',
-                icon: FolderOpen,
-                isActive: true,
-                children: [
-                    {
-                        title: 'All Applications',
-                        href: '/tutor/job-applications',
-                        icon: FileText,
-                    },
-                    {
-                        title: 'Applied',
-                        href: '/tutor/job-applications/applied',
-                        icon: FileText,
-                    },
-                    {
-                        title: 'Shortlisted',
-                        href: '/tutor/job-applications/shortlisted',
-                        icon: FileText,
-                    },
-                    {
-                        title: 'Appointed',
-                        href: '/tutor/job-applications/appointed',
-                        icon: FileText,
-                    },
-                    {
-                        title: 'Confirmed Hires',
-                        href: '/tutor/job-applications/confirmed',
-                        icon: Briefcase,
-                    },
-                    {
-                        title: 'Cancelled',
-                        href: '/tutor/job-applications/cancelled',
-                        icon: FileText,
-                    },
-                ],
-            },
+            { title: 'Browse Jobs', href: '/tutor/jobs', icon: FileText },
+            { title: 'My Applications', href: '/tutor/job-applications', icon: FolderOpen },
             {
                 title: 'Fees & Refunds',
                 href: '/tutor/finance/invoices',
@@ -510,24 +526,50 @@ const mainNavItems = computed<NavItem[]>(() => {
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
                         <Link :href="dashboard()">
-                            <AppLogo />
+                            <AppLogo :show-slogan="true" />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
 
-            <div class="px-2 group-data-[collapsible=icon]:hidden">
-                <p
-                    class="text-xs font-semibold tracking-wide text-sidebar-foreground uppercase"
-                >
-                    {{ panelMeta.title }}
-                </p>
-                <p
-                    class="mt-1 text-xs leading-relaxed text-sidebar-foreground/70"
-                >
-                    {{ panelMeta.subtitle }}
-                </p>
+            <div
+                v-if="showMemberSummary"
+                class="mt-2 px-2 group-data-[collapsible=icon]:hidden"
+            >
+                <div class="rounded-xl border border-sidebar-border/70 p-3 text-center">
+                    <div
+                        class="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-sidebar-border/70 bg-sidebar-accent text-xl font-semibold text-sidebar-accent-foreground"
+                    >
+                        <img
+                            v-if="authUser?.avatar"
+                            :src="String(authUser.avatar)"
+                            :alt="authUser.name || 'User avatar'"
+                            class="h-full w-full object-cover"
+                        />
+                        <span v-else>{{ memberInitials }}</span>
+                    </div>
+
+                    <p class="mt-3 truncate text-base font-semibold text-sidebar-foreground">
+                        {{ authUser?.name }}
+                    </p>
+                    <div class="mt-1">
+                        <span
+                            class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold"
+                            :class="verificationBadge.className"
+                        >
+                            {{ verificationBadge.label }}
+                        </span>
+                    </div>
+                    <p class="mt-1 text-xs text-sidebar-foreground/80">
+                        {{ memberIdLabel }}: {{ authUser?.id }}
+                    </p>
+                    <p class="text-xs text-sidebar-foreground/70">
+                        Member since {{ memberSince }}
+                    </p>
+                </div>
             </div>
+
+            
         </SidebarHeader>
 
         <SidebarContent class="pt-2">

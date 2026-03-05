@@ -105,6 +105,21 @@ it('shows only live published non-expired non-trashed jobs on public board', fun
             ->where('jobs.data.0.slug', $live->slug));
 });
 
+it('renders tutor browse jobs page for authenticated tutor', function () {
+    $tutor = User::factory()->tutor()->create();
+    TuitionJob::factory()->live()->create([
+        'published_at' => now()->subHour(),
+        'expires_at' => now()->addDays(2),
+    ]);
+
+    $this->actingAs($tutor)
+        ->get('/tutor/jobs')
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('tutor/JobBoard')
+            ->has('jobs.data'));
+});
+
 it('applies public board filters', function () {
     $categoryA = Category::factory()->create(['status' => TaxonomyStatus::Active, 'name' => 'Category A', 'slug' => 'category-a']);
     $categoryB = Category::factory()->create(['status' => TaxonomyStatus::Active, 'name' => 'Category B', 'slug' => 'category-b']);
@@ -229,6 +244,21 @@ it('shows job details for live public jobs and hides non public jobs', function 
             ->where('job.slug', $live->slug));
 
     $this->get(route('jobs.show', $pending->slug))->assertNotFound();
+});
+
+it('shows job details inside tutor route for authenticated tutor', function () {
+    $tutor = User::factory()->tutor()->create();
+    $job = TuitionJob::factory()->live()->create([
+        'published_at' => now()->subHour(),
+        'expires_at' => now()->addDays(2),
+    ]);
+
+    $this->actingAs($tutor)
+        ->get("/tutor/jobs/{$job->slug}")
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('JobShow')
+            ->where('job.slug', $job->slug));
 });
 
 it('allows tutor re-apply on job show when existing application is cancelled', function () {

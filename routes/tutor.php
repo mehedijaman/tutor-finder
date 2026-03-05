@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\Tutor\DashboardController as TutorDashboardController;
 use App\Http\Controllers\Tutor\FinanceController;
 use App\Http\Controllers\Tutor\JobApplicationController;
@@ -15,8 +16,10 @@ Route::prefix('tutor')
     ->group(function () {
         Route::redirect('/', '/tutor/dashboard')->name('home');
         Route::get('/dashboard', TutorDashboardController::class)->name('dashboard');
+        Route::get('/jobs', [JobController::class, 'tutorIndex'])->name('jobs.index');
+        Route::get('/jobs/{slug}', [JobController::class, 'tutorShow'])->name('jobs.show');
         Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
-        Route::get('/job-applications/applied', [JobApplicationController::class, 'applied'])->name('job-applications.applied');
+        Route::redirect('/job-applications/applied', '/tutor/job-applications')->name('job-applications.applied');
         Route::get('/job-applications/shortlisted', [JobApplicationController::class, 'shortlisted'])->name('job-applications.shortlisted');
         Route::get('/job-applications/appointed', [JobApplicationController::class, 'appointed'])->name('job-applications.appointed');
         Route::get('/job-applications/confirmed', [JobApplicationController::class, 'confirmed'])->name('job-applications.confirmed');

@@ -24,6 +24,24 @@ class JobController extends Controller
      */
     public function index(Request $request): Response
     {
+        return inertia('JobBoard', $this->buildJobBoardPayload($request));
+    }
+
+    /**
+     * Display tutor job board under tutor dashboard layout.
+     */
+    public function tutorIndex(Request $request): Response
+    {
+        return inertia('tutor/JobBoard', $this->buildJobBoardPayload($request));
+    }
+
+    /**
+     * Build shared job board payload with filters and options.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildJobBoardPayload(Request $request): array
+    {
         $query = trim($request->string('q')->toString());
         $categorySlug = trim($request->string('category')->toString());
         $tuitionTypeSlug = trim($request->string('tuition_type')->toString());
@@ -109,7 +127,7 @@ class JobController extends Controller
                 'expires_at' => $job->expires_at?->toDateTimeString(),
             ]);
 
-        return inertia('JobBoard', [
+        return [
             'jobs' => $jobs,
             'total' => $jobs->total(),
             'filters' => [
@@ -147,13 +165,31 @@ class JobController extends Controller
                 ['value' => '6', 'label' => '6 Days/Week'],
                 ['value' => '7', 'label' => '7 Days/Week'],
             ],
-        ]);
+        ];
     }
 
     /**
      * Display a single public job by slug.
      */
     public function show(Request $request, string $slug): Response
+    {
+        return inertia('JobShow', $this->buildJobShowPayload($request, $slug));
+    }
+
+    /**
+     * Display a single job by slug in tutor dashboard context.
+     */
+    public function tutorShow(Request $request, string $slug): Response
+    {
+        return inertia('JobShow', $this->buildJobShowPayload($request, $slug));
+    }
+
+    /**
+     * Build job show payload for public and tutor contexts.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildJobShowPayload(Request $request, string $slug): array
     {
         $job = $this->publicJobsQuery()
             ->with([
@@ -186,7 +222,7 @@ class JobController extends Controller
                 && (int) $job->guardian_id !== (int) $user->getAuthIdentifier();
         }
 
-        return inertia('JobShow', [
+        return [
             'job' => [
                 'id' => $job->id,
                 'title' => $job->title,
@@ -228,7 +264,7 @@ class JobController extends Controller
                     'cancel_reason' => $application->cancel_reason,
                     'created_at' => $application->created_at?->toDateTimeString(),
                 ],
-        ]);
+        ];
     }
 
     /**

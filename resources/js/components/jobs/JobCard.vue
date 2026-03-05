@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import {
     MapPin,
     Wallet,
@@ -8,7 +8,16 @@ import {
     Clock,
     Share2,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 
 type JobItem = {
     id: number;
@@ -33,11 +42,30 @@ type JobItem = {
     expires_at: string | null;
 };
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     job: JobItem;
+    detailsBasePath?: string;
+}>(), {
+    detailsBasePath: '/jobs',
+});
+
+const page = usePage<{
+    auth?: {
+        user?: {
+            role?: string;
+        };
+    };
 }>();
 
 const copied = ref(false);
+const showApplyModal = ref(false);
+const isTutor = computed(() => page.props.auth?.user?.role === 'tutor');
+
+const applicationForm = useForm({
+    cover_letter: '',
+    expected_salary_amount: '',
+    salary_currency: 'BDT',
+});
 
 function formatDate(dateStr: string | null): string {
     if (!dateStr) return '';
@@ -91,6 +119,25 @@ async function shareJob(): Promise<void> {
         }, 2000);
     }
 }
+
+function openApplyModal(): void {
+    showApplyModal.value = true;
+}
+
+function closeApplyModal(): void {
+    showApplyModal.value = false;
+    applicationForm.clearErrors();
+}
+
+function submitApplication(): void {
+    applicationForm.post(`/tutor/jobs/${props.job.slug}/apply`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            applicationForm.reset('cover_letter', 'expected_salary_amount');
+            closeApplyModal();
+        },
+    });
+}
 </script>
 
 <template>
@@ -102,7 +149,7 @@ async function shareJob(): Promise<void> {
             class="pointer-events-none absolute top-0 right-0 hidden h-full w-32 opacity-5 md:block"
         >
             <div
-                class="h-full w-full rounded-l-3xl bg-gradient-to-b from-blue-400 to-purple-500 blur-2xl"
+                class="h-full w-full rounded-l-3xl bg-linear-to-b from-blue-400 to-purple-500 blur-2xl"
             ></div>
         </div>
 
@@ -197,23 +244,119 @@ async function shareJob(): Promise<void> {
         </div>
 
         <!-- Footer Actions -->
-        <div
-            class="mt-6 flex items-center justify-between border-t border-slate-100 pt-4"
-        >
-            <Link
-                :href="`/jobs/${job.slug}`"
-                class="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
-            >
-                View Details
-            </Link>
-            <button
-                @click="shareJob"
-                class="flex items-center gap-1.5 text-sm text-slate-500 transition-colors hover:text-slate-700"
-            >
-                <Share2 class="h-4 w-4" />
-                <span v-if="copied">Copied!</span>
-                <span v-else>Share</span>
-            </button>
+        <div class="mt-6 border-t border-slate-100 pt-4">
+            <div class="flex items-center justify-between gap-3">
+                <Link
+                    :href="`${props.detailsBasePath}/${job.slug}`"
+                    class="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
+                >
+                    View Details
+                </Link>
+
+                <div class="flex items-center gap-2">
+                    <Button
+                        v-if="isTutor"
+                        size="sm"
+                        class="h-8"
+                        @click="openApplyModal"
+                    >
+                        Apply
+                    </Button>
+
+                    <button
+                        @click="shareJob"
+                        class="flex items-center gap-1.5 text-sm text-slate-500 transition-colors hover:text-slate-700"
+                    >
+                        <Share2 class="h-4 w-4" />
+                        <span v-if="copied">Copied!</span>
+                        <span v-else>Share</span>
+                    </button>
+                </div>
+            </div>
         </div>
+
+        <Dialog :open="showApplyModal" @update:open="showApplyModal = $event">
+            <DialogContent>
+                <DialogHeader class="space-y-2">
+                    <DialogTitle>Apply for this job</DialogTitle>
+                    <DialogDescription>
+                        Submit your application for "{{ job.title }}".
+                    </DialogDescription>
+                </DialogHeader>
+
+                <form class="space-y-4" @submit.prevent="submitApplication">
+                    <div class="space-y-2">
+                        <label
+                            :for="`cover-letter-${job.id}`"
+                            class="text-sm font-medium text-slate-700"
+                        >
+                            Cover Letter (optional)
+                        </label>
+                        <textarea
+                            :id="`cover-letter-${job.id}`"
+                            v-model="applicationForm.cover_letter"
+                            rows="4"
+                            class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            placeholder="Write a short introduction..."
+                        ></textarea>
+                        <p
+                            v-if="applicationForm.errors.cover_letter"
+                            class="text-xs text-red-600"
+                        >
+                            {{ applicationForm.errors.cover_letter }}
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label
+                            :for="`expected-salary-${job.id}`"
+                            class="text-sm font-medium text-slate-700"
+                        >
+                            Expected Salary (optional)
+                        </label>
+                        <input
+                            :id="`expected-salary-${job.id}`"
+                            v-model="applicationForm.expected_salary_amount"
+                            type="number"
+                            min="0"
+                            step="100"
+                            class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            placeholder="e.g. 8000"
+                        />
+                        <p
+                            v-if="applicationForm.errors.expected_salary_amount"
+                            class="text-xs text-red-600"
+                        >
+                            {{ applicationForm.errors.expected_salary_amount }}
+                        </p>
+                    </div>
+
+                    <p v-if="applicationForm.errors.job" class="text-sm text-red-600">
+                        {{ applicationForm.errors.job }}
+                    </p>
+
+                    <DialogFooter class="gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            :disabled="applicationForm.processing"
+                            @click="closeApplyModal"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            :disabled="applicationForm.processing"
+                        >
+                            {{
+                                applicationForm.processing
+                                    ? 'Submitting...'
+                                    : 'Submit Application'
+                            }}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
     </article>
 </template>

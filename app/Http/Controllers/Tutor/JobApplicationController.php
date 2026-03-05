@@ -56,19 +56,28 @@ class JobApplicationController extends Controller
                 ],
             ]);
 
+        $statusSummary = TuitionJobApplication::query()
+            ->where('tutor_user_id', $user?->getAuthIdentifier())
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $statusCounts = [
+            'all' => (int) $statusSummary->sum(),
+            'applied' => (int) ($statusSummary[ApplicationStatus::Applied->value] ?? 0),
+            'shortlisted' => (int) ($statusSummary[ApplicationStatus::Shortlisted->value] ?? 0),
+            'appointed' => (int) ($statusSummary[ApplicationStatus::Appointed->value] ?? 0),
+            'confirmed' => (int) ($statusSummary[ApplicationStatus::Confirmed->value] ?? 0),
+            'cancelled' => (int) ($statusSummary[ApplicationStatus::Cancelled->value] ?? 0),
+        ];
+
         return inertia('tutor/job-applications/Index', [
             'items' => $items,
             'filters' => [
                 'status' => $queryStatus,
                 'preset_status' => $presetStatus,
             ],
-            'statusOptions' => [
-                ['value' => ApplicationStatus::Applied, 'label' => 'Applied'],
-                ['value' => ApplicationStatus::Shortlisted, 'label' => 'Shortlisted'],
-                ['value' => ApplicationStatus::Appointed, 'label' => 'Appointed'],
-                ['value' => ApplicationStatus::Confirmed, 'label' => 'Confirmed'],
-                ['value' => ApplicationStatus::Cancelled, 'label' => 'Cancelled'],
-            ],
+            'statusCounts' => $statusCounts,
         ]);
     }
 

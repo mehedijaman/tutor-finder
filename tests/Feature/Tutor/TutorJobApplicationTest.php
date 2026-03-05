@@ -132,14 +132,17 @@ it('tutor can access application preset routes with status filters', function ()
         ->assertSuccessful()
         ->assertInertia(fn (Assert $page) => $page
             ->component('tutor/job-applications/Index')
-            ->where('filters.preset_status', ''));
+            ->where('filters.preset_status', '')
+            ->where('statusCounts.all', 5)
+            ->where('statusCounts.applied', 1)
+            ->where('statusCounts.shortlisted', 1)
+            ->where('statusCounts.appointed', 1)
+            ->where('statusCounts.confirmed', 1)
+            ->where('statusCounts.cancelled', 1));
 
     $this->actingAs($tutor)
         ->get(route('tutor.job-applications.applied'))
-        ->assertSuccessful()
-        ->assertInertia(fn (Assert $page) => $page
-            ->component('tutor/job-applications/Index')
-            ->where('filters.preset_status', ApplicationStatus::Applied->value));
+        ->assertRedirect(route('tutor.job-applications.index', absolute: false));
 
     $this->actingAs($tutor)
         ->get(route('tutor.job-applications.shortlisted'))

@@ -1,51 +1,71 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
+import {
+    CircleCheck,
+    CircleX,
+    Send,
+    Star,
+    UserRound,
+} from 'lucide-vue-next';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
 import { Badge } from '@/components/ui/badge';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import TutorLayout from '@/layouts/TutorLayout.vue';
 
 const props = defineProps({
     items: { type: Object, required: true },
     filters: { type: Object, default: () => ({}) },
-    statusOptions: { type: Array, default: () => [] },
+    statusCounts: { type: Object, default: () => ({}) },
 });
 
 const breadcrumbs = [
     { title: 'My Applications', href: '/tutor/job-applications' },
 ];
+
+const statusMenus = [
+    {
+        key: 'all',
+        label: 'All',
+        href: '/tutor/job-applications',
+        icon: Send,
+    },
+    {
+        key: 'shortlisted',
+        label: 'Shortlisted',
+        href: '/tutor/job-applications/shortlisted',
+        icon: Star,
+    },
+    {
+        key: 'appointed',
+        label: 'Appointed',
+        href: '/tutor/job-applications/appointed',
+        icon: UserRound,
+    },
+    {
+        key: 'confirmed',
+        label: 'Confirmed',
+        href: '/tutor/job-applications/confirmed',
+        icon: CircleCheck,
+    },
+    {
+        key: 'cancelled',
+        label: 'Canceled',
+        href: '/tutor/job-applications/cancelled',
+        icon: CircleX,
+    },
+];
+
 const presetStatus = computed(() => props.filters.preset_status || '');
-const baseUrl = computed(() => {
-    if (presetStatus.value === 'applied') {
-        return '/tutor/job-applications/applied';
+const appliedCount = computed(() => {
+    const value = props.statusCounts?.applied;
+
+    if (typeof value === 'number') {
+        return value;
     }
 
-    if (presetStatus.value === 'shortlisted') {
-        return '/tutor/job-applications/shortlisted';
-    }
-
-    if (presetStatus.value === 'appointed') {
-        return '/tutor/job-applications/appointed';
-    }
-
-    if (presetStatus.value === 'confirmed') {
-        return '/tutor/job-applications/confirmed';
-    }
-
-    if (presetStatus.value === 'cancelled') {
-        return '/tutor/job-applications/cancelled';
-    }
-
-    return '/tutor/job-applications';
+    return 0;
 });
 
 const columns = [
@@ -58,38 +78,8 @@ const columns = [
     { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap' },
 ];
 
-const statusFilter = ref(props.filters.status || 'all');
 const confirmOpen = ref(false);
 const pendingRow = ref<any>(null);
-
-watch(
-    () => props.filters.status,
-    (value) => {
-        const normalized = value || 'all';
-
-        if (statusFilter.value !== normalized) {
-            statusFilter.value = normalized;
-        }
-    },
-);
-
-watch(statusFilter, (value) => {
-    if (presetStatus.value) {
-        return;
-    }
-
-    router.get(
-        baseUrl.value,
-        {
-            status: presetStatus.value ? '' : value === 'all' ? '' : value,
-        },
-        {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-        },
-    );
-});
 
 function badgeVariant(status: string): string {
     if (status === 'confirmed') {
@@ -158,6 +148,20 @@ function closeConfirm(): void {
     confirmOpen.value = false;
     pendingRow.value = null;
 }
+
+function formatCount(count: number): string {
+    return String(count).padStart(2, '0');
+}
+
+function menuCount(key: string): number {
+    const value = props.statusCounts?.[key];
+
+    if (typeof value === 'number') {
+        return value;
+    }
+
+    return 0;
+}
 </script>
 
 <template>
@@ -195,23 +199,38 @@ function closeConfirm(): void {
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
+                class="rounded-2xl border border-slate-200/80 bg-slate-50/60 px-4 shadow-sm"
             >
-                <Select v-if="!presetStatus" v-model="statusFilter">
-                    <SelectTrigger>
-                        <SelectValue placeholder="All statuses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem
-                            v-for="option in statusOptions"
-                            :key="option.value"
-                            :value="option.value"
+                <div
+                    class="flex flex-wrap items-center justify-between gap-3 border-b border-blue-200/80"
+                >
+                    <div
+                        class="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] md:w-auto"
+                    >
+                        <div class="flex min-w-max items-center gap-6 pr-2 [&::-webkit-scrollbar]:hidden">
+                        <Link
+                            v-for="menu in statusMenus"
+                            :key="menu.key"
+                            :href="menu.href"
+                            class="inline-flex items-center gap-1.5 border-b-2 py-3 text-sm font-medium transition"
+                            :class="
+                                (menu.key === 'all' && presetStatus === '') ||
+                                presetStatus === menu.key
+                                    ? 'border-blue-500 text-blue-500'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                            "
                         >
-                            {{ option.label }}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
+                            <component :is="menu.icon" class="h-4 w-4" />
+                            <span>{{ menu.label }}</span>
+                            <span>{{ formatCount(menuCount(menu.key)) }}</span>
+                        </Link>
+                        </div>
+                    </div>
+
+                    <p class="hidden pb-3 text-sm font-medium text-slate-600 md:block">
+                        Applied {{ formatCount(appliedCount) }}
+                    </p>
+                </div>
             </div>
 
             <DataTable

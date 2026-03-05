@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import JobBoardContent from '@/components/jobs/JobBoardContent.vue';
-import PublicLayout from '@/layouts/PublicLayout.vue';
+import TutorLayout from '@/layouts/TutorLayout.vue';
 
 type PaginationLink = {
     url: string | null;
@@ -59,16 +59,17 @@ const props = defineProps<{
     daysOptions: Array<{ value: string; label: string }>;
 }>();
 
+const breadcrumbs = [{ title: 'Browse Jobs', href: '/tutor/jobs' }];
 </script>
 
 <template>
-    <Head title="Job Board" />
+    <Head title="Browse Jobs" />
 
-    <PublicLayout>
+    <TutorLayout :breadcrumbs="breadcrumbs">
         <JobBoardContent
             v-bind="props"
-            page-title="Job Board"
+            page-title="Browse Jobs"
             page-description="Explore active tuition opportunities and apply to the ones that match your expertise."
         />
-    </PublicLayout>
+    </TutorLayout>
 </template>

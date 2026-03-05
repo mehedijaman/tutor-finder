@@ -12,6 +12,7 @@ type FilterOption = {
 type FilterProps = {
     open: boolean;
     onClose: () => void;
+    basePath?: string;
     filters: {
         q: string;
         category: string;
@@ -33,7 +34,9 @@ type FilterProps = {
     daysOptions: { value: string; label: string }[];
 };
 
-const props = defineProps<FilterProps>();
+const props = withDefaults(defineProps<FilterProps>(), {
+    basePath: '/jobs',
+});
 
 const emit = defineEmits<{
     close: [];
@@ -108,7 +111,7 @@ function applyFilters(): void {
     if (form.value.sort && form.value.sort !== 'newest')
         params.sort = form.value.sort;
 
-    router.get('/jobs', params, {
+    router.get(props.basePath, params, {
         preserveState: true,
         preserveScroll: true,
         replace: true,
@@ -132,7 +135,7 @@ function resetFilters(): void {
     };
 
     router.get(
-        '/jobs',
+        props.basePath,
         {},
         {
             preserveState: true,
@@ -170,7 +173,7 @@ function resetFilters(): void {
         >
             <div
                 v-if="open"
-                class="fixed top-0 right-0 z-50 flex h-full w-full flex-col bg-white shadow-2xl sm:w-[420px]"
+                class="fixed top-0 right-0 z-50 flex h-full w-full flex-col bg-white shadow-2xl sm:w-105"
             >
                 <!-- Header -->
                 <div

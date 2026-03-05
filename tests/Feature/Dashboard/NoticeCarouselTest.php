@@ -1,6 +1,10 @@
 <?php
 
+use App\Enums\ApplicationStatus;
+use App\Enums\JobStatus;
 use App\Models\Notice;
+use App\Models\TuitionJob;
+use App\Models\TuitionJobApplication;
 use App\Models\User;
 
 it('tutor dashboard shows active notices for tutors', function () {
@@ -119,4 +123,90 @@ it('dashboard limits notices to 10', function () {
 
     $response->assertOk();
     $response->assertInertia(fn ($page) => $page->has('notices', 10));
+});
+
+it('tutor dashboard shows application stats counts', function () {
+    $tutor = User::factory()->tutor()->create();
+    $otherTutor = User::factory()->tutor()->create();
+
+    TuitionJobApplication::factory()->count(2)->create([
+        'tutor_user_id' => $tutor->id,
+        'status' => ApplicationStatus::Applied,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'status' => ApplicationStatus::Shortlisted,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'status' => ApplicationStatus::Appointed,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'status' => ApplicationStatus::Confirmed,
+    ]);
+    TuitionJobApplication::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'status' => ApplicationStatus::Cancelled,
+    ]);
+
+    TuitionJobApplication::factory()->create([
+        'tutor_user_id' => $otherTutor->id,
+        'status' => ApplicationStatus::Applied,
+    ]);
+
+    $response = $this->actingAs($tutor)->get('/tutor/dashboard');
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->where('applicationStats.applied', 2)
+        ->where('applicationStats.shortlisted', 1)
+        ->where('applicationStats.appointed', 1)
+        ->where('applicationStats.confirmed', 1)
+        ->where('applicationStats.cancelled', 1)
+    );
+});
+
+it('guardian dashboard shows job stats counts', function () {
+    $guardian = User::factory()->guardian()->create();
+    $otherGuardian = User::factory()->guardian()->create();
+
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => JobStatus::Pending,
+    ]);
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => JobStatus::Live,
+        'published_at' => now()->subHour(),
+    ]);
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => JobStatus::Confirmed,
+    ]);
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => JobStatus::Cancelled,
+    ]);
+    TuitionJob::factory()->create([
+        'guardian_id' => $guardian->id,
+        'status' => JobStatus::Closed,
+    ]);
+
+    TuitionJob::factory()->create([
+        'guardian_id' => $otherGuardian->id,
+        'status' => JobStatus::Live,
+        'published_at' => now()->subHour(),
+    ]);
+
+    $response = $this->actingAs($guardian)->get('/guardian/dashboard');
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->where('jobStats.pending', 1)
+        ->where('jobStats.live', 1)
+        ->where('jobStats.confirmed', 1)
+        ->where('jobStats.cancelled', 1)
+        ->where('jobStats.closed', 1)
+    );
 });

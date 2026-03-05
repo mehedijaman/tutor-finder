@@ -2,7 +2,11 @@
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 
-const { siteName, logoUrl } = useSiteSettings();
+defineProps<{
+    showSlogan?: boolean;
+}>();
+
+const { siteName, slogan, logoUrl } = useSiteSettings();
 </script>
 
 <template>
@@ -24,5 +28,10 @@ const { siteName, logoUrl } = useSiteSettings();
         <span class="mb-0.5 truncate leading-tight font-semibold">{{
             siteName
         }}</span>
+        <span
+            v-if="showSlogan && slogan"
+            class="truncate text-xs leading-tight text-sidebar-foreground/70"
+            >{{ slogan }}</span
+        >
     </div>
 </template>
