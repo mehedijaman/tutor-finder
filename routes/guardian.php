@@ -7,6 +7,7 @@ use App\Http\Controllers\Guardian\GuardianVerificationController;
 use App\Http\Controllers\Guardian\JobApplicationController;
 use App\Http\Controllers\Guardian\NotificationController;
 use App\Http\Controllers\Guardian\SupportTicketController as GuardianSupportTicketController;
+use App\Http\Controllers\Guardian\TermsOfServiceController as GuardianTermsOfServiceController;
 use App\Http\Controllers\Guardian\TuitionJobController;
 use App\Http\Controllers\Guardian\TutorialController as GuardianTutorialController;
 use App\Http\Controllers\Guardian\TutorReviewController;
@@ -62,4 +63,5 @@ Route::prefix('guardian')
             ->name('reviews.force-delete');
 
         Route::get('/tutorials', [GuardianTutorialController::class, 'index'])->name('tutorials.index');
+        Route::get('/terms-of-service', GuardianTermsOfServiceController::class)->name('terms-of-service');
     });

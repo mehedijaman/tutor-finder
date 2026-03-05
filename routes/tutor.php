@@ -7,6 +7,7 @@ use App\Http\Controllers\Tutor\JobApplicationController;
 use App\Http\Controllers\Tutor\NotificationController;
 use App\Http\Controllers\Tutor\RefundRequestController;
 use App\Http\Controllers\Tutor\SupportTicketController as TutorSupportTicketController;
+use App\Http\Controllers\Tutor\TermsOfServiceController as TutorTermsOfServiceController;
 use App\Http\Controllers\Tutor\TutorialController as TutorTutorialController;
 use App\Http\Controllers\Tutor\TutorProfileController;
 use App\Http\Controllers\Tutor\TutorVerificationController;
@@ -48,4 +49,5 @@ Route::prefix('tutor')
         Route::patch('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
         Route::get('/tutorials', [TutorTutorialController::class, 'index'])->name('tutorials.index');
+        Route::get('/terms-of-service', TutorTermsOfServiceController::class)->name('terms-of-service');
     });

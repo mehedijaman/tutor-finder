@@ -31,6 +31,7 @@ import {
     Settings,
     Star,
     PlayCircle,
+    ScrollText,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -507,6 +508,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             },
             { title: 'Profile', href: '/tutor/profile', icon: UserRound },
             { title: 'Tutorials', href: '/tutor/tutorials', icon: PlayCircle },
+            { title: 'Terms of Service', href: '/tutor/terms-of-service', icon: ScrollText },
             { title: 'Support Tickets', href: '/tutor/support-tickets', icon: LifeBuoy },
             { title: 'Settings', href: '/settings/profile', icon: Cog },
         ];
@@ -565,6 +567,7 @@ const mainNavItems = computed<NavItem[]>(() => {
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
         { title: 'My Reviews', href: '/guardian/reviews', icon: Star },
         { title: 'Tutorials', href: '/guardian/tutorials', icon: PlayCircle },
+        { title: 'Terms of Service', href: '/guardian/terms-of-service', icon: ScrollText },
         { title: 'Support Tickets', href: '/guardian/support-tickets', icon: LifeBuoy },
         { title: 'Settings', href: '/settings/profile', icon: Cog },
         
