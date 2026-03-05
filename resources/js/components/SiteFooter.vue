@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import {
+    Facebook,
+    Globe,
+    Instagram,
+    Linkedin,
+    MessageCircle,
+    Twitter,
+    Youtube,
+} from 'lucide-vue-next';
+import { computed } from 'vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import {
     jobs,
@@ -21,8 +31,32 @@ withDefaults(
     },
 );
 
-const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
+const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress, socialDetails } =
     useSiteSettings();
+
+const socialIconMap: Record<string, unknown> = {
+    facebook: Facebook,
+    instagram: Instagram,
+    linkedin: Linkedin,
+    twitter: Twitter,
+    x: Twitter,
+    youtube: Youtube,
+    whatsapp: MessageCircle,
+};
+
+const socialLinks = computed(() =>
+    Object.entries(socialDetails.value)
+        .filter(([, url]) => url)
+        .map(([platform, url]) => ({
+            platform,
+            url,
+            icon: socialIconMap[platform.toLowerCase()] ?? Globe,
+            label: platform
+                .replaceAll('_', ' ')
+                .replaceAll('-', ' ')
+                .replace(/\b\w/g, (l) => l.toUpperCase()),
+        })),
+);
 </script>
 
 <template>
@@ -59,6 +93,20 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
                         Connecting students with verified tutors for better
                         learning outcomes.
                     </p>
+
+                    <div v-if="socialLinks.length" class="mt-5 flex items-center gap-3">
+                        <a
+                            v-for="link in socialLinks"
+                            :key="link.platform"
+                            :href="link.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            :aria-label="link.label"
+                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-400 transition-colors hover:bg-blue-600 hover:text-white"
+                        >
+                            <component :is="link.icon" class="h-4 w-4" />
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Quick Links -->

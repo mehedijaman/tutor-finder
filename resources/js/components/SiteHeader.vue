@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { Menu, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import {
+    Facebook,
+    Globe,
+    Instagram,
+    Linkedin,
+    Menu,
+    MessageCircle,
+    Twitter,
+    Youtube,
+} from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import {
     Sheet,
     SheetContent,
@@ -31,17 +40,41 @@ withDefaults(
     },
 );
 
-const { siteName, logoUrl, slogan, primaryPhone, primaryEmail } =
+const { siteName, logoUrl, slogan, primaryPhone, primaryEmail, socialDetails } =
     useSiteSettings();
 
 const mobileMenuOpen = ref(false);
+
+const socialIconMap: Record<string, unknown> = {
+    facebook: Facebook,
+    instagram: Instagram,
+    linkedin: Linkedin,
+    twitter: Twitter,
+    x: Twitter,
+    youtube: Youtube,
+    whatsapp: MessageCircle,
+};
+
+const socialLinks = computed(() =>
+    Object.entries(socialDetails.value)
+        .filter(([, url]) => url)
+        .map(([platform, url]) => ({
+            platform,
+            url,
+            icon: socialIconMap[platform.toLowerCase()] ?? Globe,
+            label: platform
+                .replaceAll('_', ' ')
+                .replaceAll('-', ' ')
+                .replace(/\b\w/g, (l) => l.toUpperCase()),
+        })),
+);
 </script>
 
 <template>
     <!-- Full Header -->
     <template v-if="variant === 'full'">
         <div
-            v-if="primaryPhone || primaryEmail"
+            v-if="primaryPhone || primaryEmail || socialLinks.length"
             class="border-b border-white/10 bg-slate-950 text-slate-100"
         >
             <div
@@ -58,6 +91,20 @@ const mobileMenuOpen = ref(false);
                 <span v-if="primaryEmail" class="font-medium tracking-wide"
                     >Email: {{ primaryEmail }}</span
                 >
+
+                <div v-if="socialLinks.length" class="ml-auto flex items-center gap-2">
+                    <a
+                        v-for="link in socialLinks"
+                        :key="link.platform"
+                        :href="link.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        :aria-label="link.label"
+                        class="text-slate-400 transition-colors hover:text-white"
+                    >
+                        <component :is="link.icon" class="h-3.5 w-3.5" />
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -249,7 +296,7 @@ const mobileMenuOpen = ref(false);
     <!-- Simple Header -->
     <template v-else>
         <div
-            v-if="primaryPhone || primaryEmail"
+            v-if="primaryPhone || primaryEmail || socialLinks.length"
             class="border-b border-white/10 bg-slate-950 text-slate-100"
         >
             <div
@@ -266,6 +313,20 @@ const mobileMenuOpen = ref(false);
                 <span v-if="primaryEmail" class="font-medium tracking-wide"
                     >Email: {{ primaryEmail }}</span
                 >
+
+                <div v-if="socialLinks.length" class="ml-auto flex items-center gap-2">
+                    <a
+                        v-for="link in socialLinks"
+                        :key="link.platform"
+                        :href="link.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        :aria-label="link.label"
+                        class="text-slate-400 transition-colors hover:text-white"
+                    >
+                        <component :is="link.icon" class="h-3.5 w-3.5" />
+                    </a>
+                </div>
             </div>
         </div>
 
