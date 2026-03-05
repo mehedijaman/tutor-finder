@@ -36,6 +36,7 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'tuition-type',
             'job',
             'notice',
+            'ticket',
         ])->flatMap(fn (string $resource): array => [
             "{$resource}-create",
             "{$resource}-view",
@@ -98,6 +99,8 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'finance-refund-decide',
             'finance-refund-pay',
             'finance-ledger-view',
+            'ticket-close',
+            'ticket-assign',
         )->values()->all();
 
         Permission::query()

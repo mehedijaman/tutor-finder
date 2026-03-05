@@ -265,4 +265,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(RefundRequest::class, 'requested_by_user_id');
     }
+
+    /**
+     * Get support tickets created by this user.
+     */
+    public function supportTickets(): HasMany
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
+    /**
+     * Get support tickets assigned to this admin.
+     */
+    public function assignedTickets(): HasMany
+    {
+        return $this->hasMany(SupportTicket::class, 'assigned_to');
+    }
 }

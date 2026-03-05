@@ -79,7 +79,7 @@ class HandleInertiaRequests extends Middleware
      */
     private function notificationCounts(?User $user): array
     {
-        if (! $user instanceof User || ! in_array($user->role, [UserRole::Tutor, UserRole::Guardian], true)) {
+        if (! $user instanceof User || ! in_array($user->role, [UserRole::Tutor, UserRole::Guardian, UserRole::Admin], true)) {
             return ['unread' => 0, 'recent' => []];
         }
 

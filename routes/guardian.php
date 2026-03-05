@@ -6,6 +6,7 @@ use App\Http\Controllers\Guardian\GuardianProfileController;
 use App\Http\Controllers\Guardian\GuardianVerificationController;
 use App\Http\Controllers\Guardian\JobApplicationController;
 use App\Http\Controllers\Guardian\NotificationController;
+use App\Http\Controllers\Guardian\SupportTicketController as GuardianSupportTicketController;
 use App\Http\Controllers\Guardian\TuitionJobController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,11 @@ Route::prefix('guardian')
         Route::get('/verification', [GuardianVerificationController::class, 'show'])->name('verification.show');
         Route::post('/verification/request', [GuardianVerificationController::class, 'store'])->name('verification.request');
         Route::get('/finance/invoices', [FinanceController::class, 'invoices'])->name('finance.invoices');
+        Route::get('/support-tickets', [GuardianSupportTicketController::class, 'index'])->name('tickets.index');
+        Route::get('/support-tickets/create', [GuardianSupportTicketController::class, 'create'])->name('tickets.create');
+        Route::post('/support-tickets', [GuardianSupportTicketController::class, 'store'])->name('tickets.store');
+        Route::get('/support-tickets/{supportTicket}', [GuardianSupportTicketController::class, 'show'])->name('tickets.show');
+        Route::post('/support-tickets/{supportTicket}/reply', [GuardianSupportTicketController::class, 'reply'])->name('tickets.reply');
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
         Route::patch('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

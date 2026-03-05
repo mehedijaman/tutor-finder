@@ -10,3 +10,5 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('role.tutor', fn ($user) => $user->role === UserRole::Tutor);
 
 Broadcast::channel('role.guardian', fn ($user) => $user->role === UserRole::Guardian);
+
+Broadcast::channel('role.admin', fn ($user) => $user->role === UserRole::Admin);

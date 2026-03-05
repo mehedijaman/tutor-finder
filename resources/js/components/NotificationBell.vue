@@ -29,6 +29,16 @@ interface NoticeCreatedEvent {
     created_at: string;
 }
 
+interface TicketBroadcastEvent {
+    ticket_id: number;
+    ticket_number: string;
+    subject: string;
+    user_name?: string;
+    replier_name?: string;
+    category?: string;
+    priority?: string;
+}
+
 const page = usePage();
 
 const {
@@ -70,6 +80,32 @@ function handleNoticeCreated(event: NoticeCreatedEvent) {
     localNotifications.value = [newNotification, ...localNotifications.value].slice(0, 5);
 }
 
+function handleTicketEvent(event: TicketBroadcastEvent) {
+    localUnreadCount.value++;
+
+    const title = event.replier_name
+        ? `Reply on ${event.ticket_number}`
+        : `New Ticket ${event.ticket_number}`;
+
+    const message = event.replier_name
+        ? `${event.replier_name} replied to "${event.subject}"`
+        : `${event.user_name} opened "${event.subject}"`;
+
+    const newNotification: Notification = {
+        id: `ticket-${event.ticket_id}-${Date.now()}`,
+        type: 'ticket',
+        title,
+        data: {
+            ticket_id: event.ticket_id,
+            ticket_number: event.ticket_number,
+            message,
+        },
+        created_at: new Date().toISOString(),
+    };
+
+    localNotifications.value = [newNotification, ...localNotifications.value].slice(0, 5);
+}
+
 onMounted(() => {
     syncFromProps();
     checkPushSupport();
@@ -78,6 +114,12 @@ onMounted(() => {
     if (role && window.Echo && (role === 'tutor' || role === 'guardian')) {
         window.Echo.private(`role.${role}`)
             .listen('.notice.created', handleNoticeCreated);
+    }
+
+    if (role === 'admin' && window.Echo) {
+        window.Echo.private('role.admin')
+            .listen('.ticket.created', handleTicketEvent)
+            .listen('.ticket.replied', handleTicketEvent);
     }
 });
 
@@ -108,6 +150,9 @@ onUnmounted(() => {
     if (role && window.Echo && (role === 'tutor' || role === 'guardian')) {
         window.Echo.leave(`role.${role}`);
     }
+    if (role === 'admin' && window.Echo) {
+        window.Echo.leave('role.admin');
+    }
 });
 
 const notificationsUrl = computed(() => {
@@ -117,6 +162,10 @@ const notificationsUrl = computed(() => {
 
     if (userRole.value === 'guardian') {
         return '/guardian/notifications';
+    }
+
+    if (userRole.value === 'admin') {
+        return '/admin/notifications';
     }
 
     return '';
@@ -129,6 +178,10 @@ const markAsReadUrl = computed(() => {
 
     if (userRole.value === 'guardian') {
         return '/guardian/notifications/read-all';
+    }
+
+    if (userRole.value === 'admin') {
+        return '/admin/notifications/read-all';
     }
 
     return '';

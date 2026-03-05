@@ -9,6 +9,7 @@ import {
     History,
     HardDrive,
     LayoutGrid,
+    LifeBuoy,
     Newspaper,
     Globe,
     MapPin,
@@ -236,6 +237,11 @@ const mainNavItems = computed<NavItem[]>(() => {
                 href: '/admin/contact-messages',
                 icon: MessagesSquare,
             },
+            {
+                title: 'Support Tickets',
+                href: '/admin/support-tickets',
+                icon: LifeBuoy,
+            },
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             { title: 'Notices', href: '/admin/notices', icon: Newspaper },
             {
@@ -454,6 +460,7 @@ const mainNavItems = computed<NavItem[]>(() => {
                 ],
             },
             { title: 'Profile', href: '/tutor/profile', icon: UserRound },
+            { title: 'Support Tickets', href: '/tutor/support-tickets', icon: LifeBuoy },
             { title: 'Settings', href: '/settings/profile', icon: Cog },
         ];
     }
@@ -509,6 +516,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             icon: FileText,
         },
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
+        { title: 'Support Tickets', href: '/guardian/support-tickets', icon: LifeBuoy },
         { title: 'Settings', href: '/settings/profile', icon: Cog },
         
     ];

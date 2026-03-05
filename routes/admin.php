@@ -19,7 +19,9 @@ use App\Http\Controllers\Admin\GuardianManagementController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Admin\NoticeController;
+use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\AreaController as TaxonomyAreaController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\CategoryController as TaxonomyCategoryController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\CityController as TaxonomyCityController;
@@ -68,6 +70,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/contact-messages/{contactMessage}/status', [ContactMessageController::class, 'updateStatus'])
             ->middleware('permission:contact-message-update')
             ->name('contact-messages.status');
+        Route::get('/support-tickets', [AdminSupportTicketController::class, 'index'])
+            ->middleware('permission:ticket-view')
+            ->name('tickets.index');
+        Route::get('/support-tickets/{supportTicket}', [AdminSupportTicketController::class, 'show'])
+            ->middleware('permission:ticket-view')
+            ->name('tickets.show');
+        Route::post('/support-tickets/{supportTicket}/reply', [AdminSupportTicketController::class, 'reply'])
+            ->middleware('permission:ticket-update')
+            ->name('tickets.reply');
+        Route::patch('/support-tickets/{supportTicket}/status', [AdminSupportTicketController::class, 'updateStatus'])
+            ->middleware('permission:ticket-close')
+            ->name('tickets.update-status');
+        Route::patch('/support-tickets/{supportTicket}/assign', [AdminSupportTicketController::class, 'assign'])
+            ->middleware('permission:ticket-assign')
+            ->name('tickets.assign');
+        Route::get('/notifications', [AdminNotificationController::class, 'index'])
+            ->name('notifications.index');
+        Route::patch('/notifications/read-all', [AdminNotificationController::class, 'markAllAsRead'])
+            ->name('notifications.read-all');
+        Route::patch('/notifications/{notificationId}/read', [AdminNotificationController::class, 'markAsRead'])
+            ->name('notifications.read');
         Route::get('/faqs', [AdminFaqController::class, 'index'])
             ->middleware('permission:faq-view')
             ->name('faqs.index');
