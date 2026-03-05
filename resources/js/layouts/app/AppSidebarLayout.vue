@@ -20,7 +20,7 @@ withDefaults(defineProps<Props>(), {
         <AppSidebar />
         <AppContent
             variant="sidebar"
-            class="overflow-x-hidden bg-slate-50/60 dark:bg-slate-950/40"
+            class="overflow-x-hidden bg-slate-100 dark:bg-slate-950/40"
         >
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <ImpersonationBanner />

@@ -35,30 +35,6 @@ const breadcrumbs = [{ title: 'Tutor Dashboard', href: '/tutor/dashboard' }];
             <!-- Notices Carousel -->
             <NoticeCarousel :notices="notices" />
 
-            <!-- Hero Section -->
-            <div
-                class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 text-white shadow-2xl shadow-blue-900/20 sm:p-10"
-            >
-                <div
-                    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.2),transparent_50%)] opacity-80"
-                ></div>
-                <div
-                    class="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-white/10 blur-3xl"
-                ></div>
-
-                <div class="relative">
-                    <p class="text-sm font-medium uppercase tracking-wider text-blue-200">
-                        Welcome back
-                    </p>
-                    <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                        Tutor Dashboard
-                    </h1>
-                    <p class="mt-3 max-w-xl text-base text-blue-100/90 sm:text-lg">
-                        Manage your applications, update your profile, and grow your tutoring career.
-                    </p>
-                </div>
-            </div>
-
             <!-- Quick Actions -->
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 <Link

@@ -24,6 +24,8 @@ Route::prefix('tutor')
         Route::post('/jobs/{tuitionJob:slug}/apply', [JobApplicationController::class, 'store'])->name('jobs.apply');
         Route::patch('/job-applications/{tuitionJobApplication}/withdraw', [JobApplicationController::class, 'withdraw'])
             ->name('job-applications.withdraw');
+        Route::get('/profile/download-cv', [TutorProfileController::class, 'downloadCv'])->name('profile.download-cv');
+        Route::get('/profile/view-as-guardian', [TutorProfileController::class, 'viewAsGuardian'])->name('profile.view-as-guardian');
         Route::get('/profile', [TutorProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [TutorProfileController::class, 'update'])->name('profile.update');
         Route::get('/verification', [TutorVerificationController::class, 'show'])->name('verification.show');

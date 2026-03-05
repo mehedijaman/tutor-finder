@@ -6,6 +6,7 @@ use App\Enums\TaxonomyStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guardian\GuardianProfileUpdateRequest;
 use App\Models\GuardianProfile;
+use App\Models\VerificationRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -22,6 +23,12 @@ class GuardianProfileController extends Controller
         $user = $request->user();
         $profile = $user->guardianProfile()->first();
 
+        $verificationRequest = VerificationRequest::query()
+            ->with('invoice')
+            ->where('user_id', $user->getKey())
+            ->latest('id')
+            ->first();
+
         return inertia('guardian/Profile/Edit', [
             'profile' => [
                 'name' => $user->name,
@@ -33,6 +40,29 @@ class GuardianProfileController extends Controller
                 'notes' => $profile?->notes,
                 'status' => $profile?->status ?? TaxonomyStatus::Active->value,
             ],
+            'verification' => $verificationRequest ? [
+                'id' => $verificationRequest->id,
+                'status' => $verificationRequest->status,
+                'role' => $verificationRequest->role,
+                'fee_amount' => $verificationRequest->fee_amount,
+                'currency' => $verificationRequest->currency,
+                'submitted_at' => $verificationRequest->submitted_at?->toDateTimeString(),
+                'reviewed_at' => $verificationRequest->reviewed_at?->toDateTimeString(),
+                'decision_reason' => $verificationRequest->decision_reason,
+                'invoice' => $verificationRequest->invoice ? [
+                    'id' => $verificationRequest->invoice->id,
+                    'invoice_no' => $verificationRequest->invoice->invoice_no,
+                    'amount' => $verificationRequest->invoice->amount,
+                    'currency' => $verificationRequest->invoice->currency,
+                    'status' => $verificationRequest->invoice->status,
+                    'due_at' => $verificationRequest->invoice->due_at?->toDateTimeString(),
+                    'expires_at' => $verificationRequest->invoice->expires_at?->toDateTimeString(),
+                    'paid_at' => $verificationRequest->invoice->paid_at?->toDateTimeString(),
+                    'payment_gateway' => $verificationRequest->invoice->payment_gateway,
+                ] : null,
+            ] : null,
+            'verificationStatus' => $user->verification_status,
+            'verifiedAt' => $user->verified_at?->toDateTimeString(),
         ]);
     }
 

@@ -14,11 +14,15 @@ use App\Models\Subject;
 use App\Models\TuitionType;
 use App\Models\TutorEducation;
 use App\Models\TutorProfile;
+use App\Models\VerificationRequest;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Inertia\Response;
+
+use function Spatie\LaravelPdf\Support\pdf;
 
 class TutorProfileController extends Controller
 {
@@ -31,6 +35,12 @@ class TutorProfileController extends Controller
 
         $profile = $user->tutorProfile()->first();
         $educations = $user->tutorEducations()->get();
+
+        $verificationRequest = VerificationRequest::query()
+            ->with('invoice')
+            ->where('user_id', $user->getKey())
+            ->latest('id')
+            ->first();
 
         return inertia('tutor/Profile/Edit', [
             'profile' => [
@@ -75,6 +85,29 @@ class TutorProfileController extends Controller
                 ['value' => 'other', 'label' => 'Other'],
                 ['value' => 'prefer_not_to_say', 'label' => 'Prefer Not to Say'],
             ],
+            'verification' => $verificationRequest ? [
+                'id' => $verificationRequest->id,
+                'status' => $verificationRequest->status,
+                'role' => $verificationRequest->role,
+                'fee_amount' => $verificationRequest->fee_amount,
+                'currency' => $verificationRequest->currency,
+                'submitted_at' => $verificationRequest->submitted_at?->toDateTimeString(),
+                'reviewed_at' => $verificationRequest->reviewed_at?->toDateTimeString(),
+                'decision_reason' => $verificationRequest->decision_reason,
+                'invoice' => $verificationRequest->invoice ? [
+                    'id' => $verificationRequest->invoice->id,
+                    'invoice_no' => $verificationRequest->invoice->invoice_no,
+                    'amount' => $verificationRequest->invoice->amount,
+                    'currency' => $verificationRequest->invoice->currency,
+                    'status' => $verificationRequest->invoice->status,
+                    'due_at' => $verificationRequest->invoice->due_at?->toDateTimeString(),
+                    'expires_at' => $verificationRequest->invoice->expires_at?->toDateTimeString(),
+                    'paid_at' => $verificationRequest->invoice->paid_at?->toDateTimeString(),
+                    'payment_gateway' => $verificationRequest->invoice->payment_gateway,
+                ] : null,
+            ] : null,
+            'verificationStatus' => $user->verification_status,
+            'verifiedAt' => $user->verified_at?->toDateTimeString(),
         ]);
     }
 
@@ -108,6 +141,36 @@ class TutorProfileController extends Controller
         return redirect()
             ->route('tutor.profile.edit')
             ->with('status', 'Profile updated successfully.');
+    }
+
+    /**
+     * Download tutor profile as PDF.
+     */
+    public function downloadCv(Request $request): Responsable
+    {
+        $user = $request->user()->load([
+            'tutorProfile',
+            'tutorEducations' => fn ($query) => $query->orderBy('sort_order')->orderByDesc('is_current'),
+        ]);
+
+        return pdf()
+            ->driver('dompdf')
+            ->view('pdf.tutor-cv', [
+                'user' => $user,
+                'profile' => $user->tutorProfile,
+                'educations' => $user->tutorEducations,
+            ])
+            ->format('a4')
+            ->name("tutor-cv-{$user->getKey()}.pdf")
+            ->download();
+    }
+
+    /**
+     * Preview tutor profile as publicly visible for guardians.
+     */
+    public function viewAsGuardian(Request $request): RedirectResponse
+    {
+        return redirect()->route('tutors.show', $request->user()->getKey());
     }
 
     /**

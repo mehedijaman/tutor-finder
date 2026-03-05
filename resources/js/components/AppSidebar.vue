@@ -383,7 +383,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'Dashboard', href: '/tutor/dashboard', icon: LayoutGrid },
             { title: 'Browse Jobs', href: '/jobs', icon: FileText },
             {
-                title: 'Application Pipeline',
+                title: 'My Applications',
                 href: '/tutor/job-applications',
                 icon: FolderOpen,
                 isActive: true,
@@ -438,11 +438,7 @@ const mainNavItems = computed<NavItem[]>(() => {
                 ],
             },
             { title: 'Profile', href: '/tutor/profile', icon: UserRound },
-            {
-                title: 'Verification',
-                href: '/tutor/verification',
-                icon: Shield,
-            },
+            { title: 'Settings', href: '/settings/profile', icon: Cog },
         ];
     }
 
@@ -497,7 +493,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             icon: FileText,
         },
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
-        { title: 'Verification', href: '/guardian/verification', icon: Shield },
+        { title: 'Settings', href: '/settings/profile', icon: Cog },
         
     ];
 });

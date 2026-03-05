@@ -68,7 +68,7 @@ it('guardian can submit verification request', function () {
     $response = $this->actingAs($guardian)
         ->post(route('guardian.verification.request'));
 
-    $response->assertRedirect(route('guardian.verification.show', absolute: false));
+    $response->assertRedirect(route('guardian.profile.edit', absolute: false));
 
     $request = VerificationRequest::query()->where('user_id', $guardian->id)->first();
 

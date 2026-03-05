@@ -11,7 +11,7 @@ it('tutor can submit a verification request', function () {
     $response = $this->actingAs($tutor)
         ->post(route('tutor.verification.request'));
 
-    $response->assertRedirect(route('tutor.verification.show', absolute: false));
+    $response->assertRedirect(route('tutor.profile.edit', absolute: false));
 
     $request = VerificationRequest::query()->where('user_id', $tutor->id)->first();
 
@@ -39,11 +39,11 @@ it('blocks duplicate active verification requests for tutor', function () {
     ]);
 
     $response = $this->actingAs($tutor)
-        ->from(route('tutor.verification.show'))
+        ->from(route('tutor.profile.edit'))
         ->post(route('tutor.verification.request'));
 
     $response
-        ->assertRedirect(route('tutor.verification.show', absolute: false))
+        ->assertRedirect(route('tutor.profile.edit', absolute: false))
         ->assertSessionHasErrors('verification');
 
     expect(

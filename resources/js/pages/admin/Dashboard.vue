@@ -22,29 +22,6 @@ const breadcrumbs = [{ title: 'Admin Dashboard', href: '/admin/dashboard' }];
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-4 sm:p-6 lg:p-8">
-            <!-- Hero Section -->
-            <div
-                class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-8 text-white shadow-2xl shadow-slate-900/30 sm:p-10"
-            >
-                <div
-                    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.2),transparent_50%)] opacity-80"
-                ></div>
-                <div
-                    class="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"
-                ></div>
-
-                <div class="relative">
-                    <p class="text-sm font-medium uppercase tracking-wider text-slate-400">
-                        Control Center
-                    </p>
-                    <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                        Admin Dashboard
-                    </h1>
-                    <p class="mt-3 max-w-xl text-base text-slate-300 sm:text-lg">
-                        Oversee users, platform operations, and system-level settings from one place.
-                    </p>
-                </div>
-            </div>
 
             <!-- Quick Actions -->
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
