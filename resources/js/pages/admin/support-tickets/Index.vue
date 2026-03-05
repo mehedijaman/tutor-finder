@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { SelectOption } from '@/types';
-import type { TicketRow } from '@/types/support';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import DataTable from '@/components/admin/table/DataTable.vue';
 import TicketPriorityBadge from '@/components/support/TicketPriorityBadge.vue';
 import TicketStatusBadge from '@/components/support/TicketStatusBadge.vue';
-import DataTable from '@/components/admin/table/DataTable.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +16,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import type { SelectOption } from '@/types';
+import type { TicketRow } from '@/types/support';
 
 interface AdminUser {
     id: number;

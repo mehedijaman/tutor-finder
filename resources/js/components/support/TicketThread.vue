@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { TicketMessage } from '@/types/support';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import type { TicketMessage } from '@/types/support';
 
 defineProps<{
     messages: TicketMessage[];

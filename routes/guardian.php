@@ -8,6 +8,7 @@ use App\Http\Controllers\Guardian\JobApplicationController;
 use App\Http\Controllers\Guardian\NotificationController;
 use App\Http\Controllers\Guardian\SupportTicketController as GuardianSupportTicketController;
 use App\Http\Controllers\Guardian\TuitionJobController;
+use App\Http\Controllers\Guardian\TutorReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('guardian')
@@ -43,4 +44,9 @@ Route::prefix('guardian')
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
         Route::patch('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+
+        Route::get('/reviews', [TutorReviewController::class, 'index'])->name('reviews.index');
+        Route::post('/reviews', [TutorReviewController::class, 'store'])->name('reviews.store');
+        Route::put('/reviews/{tutorReview}', [TutorReviewController::class, 'update'])->name('reviews.update');
+        Route::delete('/reviews/{tutorReview}', [TutorReviewController::class, 'destroy'])->name('reviews.destroy');
     });

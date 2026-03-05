@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { TicketRow } from '@/types/support';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import DataTable from '@/components/admin/table/DataTable.vue';
 import TicketPriorityBadge from '@/components/support/TicketPriorityBadge.vue';
 import TicketStatusBadge from '@/components/support/TicketStatusBadge.vue';
-import DataTable from '@/components/admin/table/DataTable.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +14,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import TutorLayout from '@/layouts/TutorLayout.vue';
+import type { TicketRow } from '@/types/support';
 
 const props = defineProps<{
     items: {

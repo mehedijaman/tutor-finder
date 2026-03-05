@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { CheckCircle } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+
+import ReviewForm from '@/components/tutors/ReviewForm.vue';
+import ReviewSection from '@/components/tutors/ReviewSection.vue';
+import StarRating from '@/components/tutors/StarRating.vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 type TutorEducation = {
@@ -30,6 +35,34 @@ type TutorProfile = {
     available_time: string | null;
 };
 
+type Guardian = {
+    id: number;
+    name: string;
+    photo_url: string | null;
+};
+
+type Review = {
+    id: number;
+    rating: number;
+    comment: string | null;
+    created_at: string;
+    guardian: Guardian;
+};
+
+type PaginatedReviews = {
+    data: Review[];
+    current_page: number;
+    last_page: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+    total: number;
+};
+
+type ReviewableAssignment = {
+    assignment_id: number;
+    job_title: string;
+};
+
 type Tutor = {
     id: number;
     name: string;
@@ -39,10 +72,16 @@ type Tutor = {
     created_at: string;
     tutor_profile: TutorProfile | null;
     tutor_educations: TutorEducation[];
+    tutor_reviews_count: number;
+    tutor_reviews_avg_rating: number | null;
 };
 
 const props = defineProps<{
     tutor: Tutor;
+    reviews: PaginatedReviews;
+    ratingDistribution: Record<number, number>;
+    canReview: boolean;
+    reviewableAssignments: ReviewableAssignment[];
     meta: {
         title: string;
         description: string;
@@ -50,6 +89,43 @@ const props = defineProps<{
 }>();
 
 const isVerified = computed(() => !!props.tutor.verified_at);
+const averageRating = computed(
+    () => Number(props.tutor.tutor_reviews_avg_rating) || 0,
+);
+const totalReviews = computed(() => props.tutor.tutor_reviews_count ?? 0);
+
+const page = usePage();
+const successMessage = computed(
+    () => (page.props.flash as { success?: string })?.success,
+);
+
+type EditReview = {
+    id: number;
+    rating: number;
+    comment: string | null;
+};
+
+const editingReview = ref<EditReview | null>(null);
+
+function handleEditReview(review: {
+    id: number;
+    rating: number;
+    comment: string | null;
+}): void {
+    editingReview.value = {
+        id: review.id,
+        rating: review.rating,
+        comment: review.comment,
+    };
+}
+
+function cancelEdit(): void {
+    editingReview.value = null;
+}
+
+const showReviewForm = computed(
+    () => props.canReview || editingReview.value !== null,
+);
 
 function formatDate(dateStr: string | null): string {
     if (!dateStr) return '';
@@ -166,6 +242,19 @@ function getSalaryRange(): string {
                                 <p class="mt-1 text-sm text-slate-500">
                                     Tutor ID: #{{ tutor.id }}
                                 </p>
+                            </div>
+
+                            <!-- Rating Summary -->
+                            <div
+                                v-if="totalReviews > 0"
+                                class="mt-4 flex flex-col items-center gap-1"
+                            >
+                                <StarRating
+                                    :rating="averageRating"
+                                    :review-count="totalReviews"
+                                    size="md"
+                                    show-value
+                                />
                             </div>
 
                             <!-- Stats -->
@@ -516,6 +605,33 @@ function getSalaryRange(): string {
                                 </span>
                             </div>
                         </section>
+
+                        <!-- Reviews & Ratings -->
+                        <ReviewSection
+                            :reviews="reviews"
+                            :average-rating="averageRating"
+                            :total-reviews="totalReviews"
+                            :rating-distribution="ratingDistribution"
+                            @edit="handleEditReview"
+                        />
+
+                        <!-- Flash Message -->
+                        <div
+                            v-if="successMessage"
+                            class="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                        >
+                            <CheckCircle class="h-4.5 w-4.5 flex-shrink-0" />
+                            {{ successMessage }}
+                        </div>
+
+                        <!-- Write Review Form -->
+                        <ReviewForm
+                            v-if="showReviewForm"
+                            :tutor-id="tutor.id"
+                            :assignments="reviewableAssignments"
+                            :edit-review="editingReview"
+                            @cancel-edit="cancelEdit"
+                        />
                     </div>
                 </div>
             </div>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
 import {
     CircleCheck,
     CircleX,
@@ -8,6 +7,7 @@ import {
     Star,
     UserRound,
 } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';

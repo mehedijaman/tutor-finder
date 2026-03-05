@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\Tuition\Taxonomies\SchoolClassController as Taxon
 use App\Http\Controllers\Admin\Tuition\Taxonomies\SubjectController as TaxonomySubjectController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\TuitionTypeController as TaxonomyTuitionTypeController;
 use App\Http\Controllers\Admin\TutorManagementController;
+use App\Http\Controllers\Admin\TutorReviewController as AdminTutorReviewController;
 use App\Http\Controllers\Admin\VerificationRequestController;
 use App\Http\Controllers\ImpersonationController;
 use Illuminate\Support\Facades\Route;
@@ -85,6 +86,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/support-tickets/{supportTicket}/assign', [AdminSupportTicketController::class, 'assign'])
             ->middleware('permission:ticket-assign')
             ->name('tickets.assign');
+        Route::get('/reviews', [AdminTutorReviewController::class, 'index'])
+            ->middleware('permission:review-view')
+            ->name('reviews.index');
+        Route::put('/reviews/{tutorReview}', [AdminTutorReviewController::class, 'update'])
+            ->middleware('permission:review-update')
+            ->name('reviews.update');
+        Route::delete('/reviews/{tutorReview}', [AdminTutorReviewController::class, 'destroy'])
+            ->middleware('permission:review-delete')
+            ->name('reviews.destroy');
         Route::get('/notifications', [AdminNotificationController::class, 'index'])
             ->name('notifications.index');
         Route::patch('/notifications/read-all', [AdminNotificationController::class, 'markAllAsRead'])

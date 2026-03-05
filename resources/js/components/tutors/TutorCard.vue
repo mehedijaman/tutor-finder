@@ -8,6 +8,7 @@ import {
     BadgeCheck,
     BadgeX,
 } from 'lucide-vue-next';
+import StarRating from '@/components/tutors/StarRating.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -48,6 +49,8 @@ type Tutor = {
     photo_url: string | null;
     tutor_profile: TutorProfile | null;
     tutor_educations: TutorEducation[];
+    tutor_reviews_count?: number;
+    tutor_reviews_avg_rating?: number | null;
 };
 
 const props = defineProps<{
@@ -136,6 +139,23 @@ function getGenderLabel(): string {
             <h3 class="mt-4 line-clamp-1 text-lg font-semibold text-slate-900">
                 {{ tutor.name }}
             </h3>
+
+            <!-- Rating -->
+            <div class="mt-1.5">
+                <StarRating
+                    v-if="
+                        tutor.tutor_reviews_count &&
+                        tutor.tutor_reviews_count > 0
+                    "
+                    :rating="Number(tutor.tutor_reviews_avg_rating ?? 0)"
+                    :review-count="tutor.tutor_reviews_count"
+                    size="sm"
+                    show-value
+                />
+                <span v-else class="text-xs text-slate-400">
+                    No reviews yet
+                </span>
+            </div>
 
             <!-- Gender Badge -->
             <div class="mt-2">

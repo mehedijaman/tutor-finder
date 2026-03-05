@@ -28,6 +28,7 @@ import {
     MessageSquare,
     CreditCard,
     Settings,
+    Star,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -241,6 +242,11 @@ const mainNavItems = computed<NavItem[]>(() => {
                 title: 'Support Tickets',
                 href: '/admin/support-tickets',
                 icon: LifeBuoy,
+            },
+            {
+                title: 'Tutor Reviews',
+                href: '/admin/reviews',
+                icon: Star,
             },
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             { title: 'Notices', href: '/admin/notices', icon: Newspaper },
@@ -516,6 +522,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             icon: FileText,
         },
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
+        { title: 'My Reviews', href: '/guardian/reviews', icon: Star },
         { title: 'Support Tickets', href: '/guardian/support-tickets', icon: LifeBuoy },
         { title: 'Settings', href: '/settings/profile', icon: Cog },
         

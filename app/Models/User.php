@@ -153,6 +153,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get reviews received by this tutor.
+     */
+    public function tutorReviews(): HasMany
+    {
+        return $this->hasMany(TutorReview::class, 'tutor_user_id');
+    }
+
+    /**
+     * Get reviews written by this guardian.
+     */
+    public function givenReviews(): HasMany
+    {
+        return $this->hasMany(TutorReview::class, 'guardian_user_id');
+    }
+
+    /**
      * Get tutor profile for this user.
      */
     public function tutorProfile(): HasOne

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { TicketDetail } from '@/types/support';
 import { Head, Link } from '@inertiajs/vue3';
 import TicketPriorityBadge from '@/components/support/TicketPriorityBadge.vue';
 import TicketReplyForm from '@/components/support/TicketReplyForm.vue';
@@ -7,6 +6,7 @@ import TicketStatusBadge from '@/components/support/TicketStatusBadge.vue';
 import TicketThread from '@/components/support/TicketThread.vue';
 import { Badge } from '@/components/ui/badge';
 import GuardianLayout from '@/layouts/GuardianLayout.vue';
+import type { TicketDetail } from '@/types/support';
 
 const props = defineProps<{
     ticket: TicketDetail;

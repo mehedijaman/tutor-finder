@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { SelectOption } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,8 +13,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import InputError from '@/components/InputError.vue';
 import TutorLayout from '@/layouts/TutorLayout.vue';
+import type { SelectOption } from '@/types';
 
 const props = defineProps<{
     categoryOptions: SelectOption[];

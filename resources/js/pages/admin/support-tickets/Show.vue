@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { SelectOption } from '@/types';
-import type { TicketDetail } from '@/types/support';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import TicketPriorityBadge from '@/components/support/TicketPriorityBadge.vue';
 import TicketReplyForm from '@/components/support/TicketReplyForm.vue';
 import TicketStatusBadge from '@/components/support/TicketStatusBadge.vue';
 import TicketThread from '@/components/support/TicketThread.vue';
-import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -20,6 +18,8 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import type { SelectOption } from '@/types';
+import type { TicketDetail } from '@/types/support';
 
 interface AdminUser {
     id: number;

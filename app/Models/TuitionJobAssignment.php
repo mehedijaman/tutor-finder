@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -128,5 +129,13 @@ class TuitionJobAssignment extends Model
     public function refundRequests(): HasMany
     {
         return $this->hasMany(RefundRequest::class, 'job_assignment_id');
+    }
+
+    /**
+     * Get the review for this assignment.
+     */
+    public function review(): HasOne
+    {
+        return $this->hasOne(TutorReview::class, 'job_assignment_id');
     }
 }
