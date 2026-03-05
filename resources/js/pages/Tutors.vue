@@ -88,29 +88,24 @@ function formatPaginationLabel(label: string): string {
     </Head>
 
     <PublicLayout>
-        <div class="min-h-screen bg-slate-50 py-12">
+        <div class="min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-50/50 py-12">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header -->
                 <div class="mb-10 text-center sm:text-left">
-                    <h1
-                        class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
-                    >
+                    <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
                         Find Expert Tutors
                     </h1>
                     <p class="mt-3 max-w-2xl text-lg text-slate-600">
-                        Browse our verified tutors to find the perfect match for
-                        your learning needs.
+                        Browse our verified tutors to find the perfect match for your learning needs.
                     </p>
                 </div>
 
                 <!-- Top Bar -->
-                <div class="mb-6 flex items-center justify-between">
+                <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex items-center gap-2 text-sm text-slate-600">
                         <List class="h-5 w-5" />
                         <span>
-                            <span class="font-semibold text-slate-900">{{
-                                total
-                            }}</span>
+                            <span class="font-semibold text-slate-900">{{ total }}</span>
                             tutors found
                         </span>
                     </div>
@@ -126,7 +121,7 @@ function formatPaginationLabel(label: string): string {
                 <!-- Tutors Grid -->
                 <div
                     v-if="hasTutors"
-                    class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+                    class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
                 >
                     <TutorCard
                         v-for="tutor in tutorList"
@@ -138,7 +133,7 @@ function formatPaginationLabel(label: string): string {
                 <!-- Empty State -->
                 <div
                     v-else
-                    class="rounded-2xl border border-slate-200 bg-white p-12 text-center"
+                    class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-md"
                 >
                     <svg
                         class="mx-auto h-16 w-16 text-slate-300"

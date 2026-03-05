@@ -29,6 +29,13 @@ class PageSeeder extends Seeder
                 'is_system' => true,
             ],
             [
+                'title' => 'Refund Policy',
+                'slug' => 'refund-policy',
+                'content' => $this->refundPolicyContent(),
+                'status' => PageStatus::Active,
+                'is_system' => true,
+            ],
+            [
                 'title' => 'About Us',
                 'slug' => 'about-us',
                 'content' => $this->aboutUsContent(),
@@ -127,6 +134,40 @@ class PageSeeder extends Seeder
         </ul>
         <h2>Contact Us</h2>
         <p>Have questions? Reach out to us through our contact page. We would love to hear from you!</p>
+        HTML;
+    }
+
+    private function refundPolicyContent(): string
+    {
+        return <<<'HTML'
+        <h2>1. Scope</h2>
+        <p>This Refund Policy explains when and how refunds may be issued for platform-related payments.</p>
+        <h2>2. Eligible refund scenarios</h2>
+        <ul>
+        <li><strong>Duplicate payment:</strong> if you are charged more than once for the same invoice.</li>
+        <li><strong>Service not delivered:</strong> where a confirmed service could not be delivered due to verified platform-side issues.</li>
+        <li><strong>Billing error:</strong> if an incorrect amount is charged because of a technical or administrative mistake.</li>
+        </ul>
+        <h2>3. Non-refundable cases</h2>
+        <ul>
+        <li>Change of mind after a confirmed service is started.</li>
+        <li>Disputes outside documented platform and service terms.</li>
+        <li>Requests submitted after the allowed claim window.</li>
+        </ul>
+        <h2>4. Refund request timeline</h2>
+        <p>Refund requests should be submitted as soon as possible. Requests received after 7 days of payment may be declined unless required by law.</p>
+        <h2>5. How to request a refund</h2>
+        <ol>
+        <li>Open a support request with payment details (invoice number, amount, date).</li>
+        <li>Provide a short explanation and any relevant evidence (receipts, screenshots).</li>
+        <li>Our team will review and communicate the decision.</li>
+        </ol>
+        <h2>6. Processing time</h2>
+        <p>Approved refunds are usually processed within 7-10 business days. Processing time may vary by payment provider.</p>
+        <h2>7. Partial refunds</h2>
+        <p>Where appropriate, we may issue partial refunds based on completed service portion and applicable fees.</p>
+        <h2>8. Changes to this policy</h2>
+        <p>We may update this Refund Policy from time to time. The updated version will be published on this page.</p>
         HTML;
     }
 }

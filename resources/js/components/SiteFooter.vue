@@ -13,7 +13,6 @@ import { computed } from 'vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import {
     jobs,
-    contact,
     privacyPolicy,
     termsOfService,
     home,
@@ -31,8 +30,14 @@ withDefaults(
     },
 );
 
-const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress, socialDetails } =
-    useSiteSettings();
+const {
+    siteName,
+    logoUrl,
+    primaryPhone,
+    primaryEmail,
+    primaryAddress,
+    socialDetails,
+} = useSiteSettings();
 
 const socialIconMap: Record<string, unknown> = {
     facebook: Facebook,
@@ -94,7 +99,10 @@ const socialLinks = computed(() =>
                         learning outcomes.
                     </p>
 
-                    <div v-if="socialLinks.length" class="mt-5 flex items-center gap-3">
+                    <div
+                        v-if="socialLinks.length"
+                        class="mt-5 flex items-center gap-3"
+                    >
                         <a
                             v-for="link in socialLinks"
                             :key="link.platform"
@@ -117,34 +125,6 @@ const socialLinks = computed(() =>
                         Quick Links
                     </h3>
                     <ul class="space-y-2.5 text-sm">
-                        <li>
-                            <Link
-                                :href="home()"
-                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
-                                >Home</Link
-                            >
-                        </li>
-                        <li>
-                            <Link
-                                :href="jobs()"
-                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
-                                >Find Tutor</Link
-                            >
-                        </li>
-                        <li>
-                            <Link
-                                :href="jobs()"
-                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
-                                >Job Board</Link
-                            >
-                        </li>
-                        <li>
-                            <Link
-                                :href="contact()"
-                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
-                                >Contact</Link
-                            >
-                        </li>
                         <li>
                             <Link
                                 :href="faqIndex()"
@@ -252,6 +232,11 @@ const socialLinks = computed(() =>
                         >Terms of Service</Link
                     >
                     <Link
+                        href="/refund-policy"
+                        class="text-slate-500 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
+                        >Refund Policy</Link
+                    >
+                    <Link
                         :href="faqIndex()"
                         class="text-slate-500 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                         >FAQ</Link
@@ -283,9 +268,9 @@ const socialLinks = computed(() =>
                         >Terms</Link
                     >
                     <Link
-                        :href="faqIndex()"
+                        href="/refund-policy"
                         class="font-medium text-slate-600 transition-colors hover:text-blue-700 focus-visible:underline focus-visible:outline-none"
-                        >FAQ</Link
+                        >Refund Policy</Link
                     >
                 </div>
             </div>

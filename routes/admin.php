@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\Report\TuitionReportController;
 use App\Http\Controllers\Admin\Report\UserRegistrationReportController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
+use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\AreaController as TaxonomyAreaController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\CategoryController as TaxonomyCategoryController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\CityController as TaxonomyCityController;
@@ -49,6 +50,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware(['auth', 'ensure.role:admin', 'ensure.active'])->group(function () {
+        // Testimonials CRUD & Recycle Bin (admin only)
+        Route::prefix('testimonials')->name('testimonials.')->group(function () {
+            Route::get('/', [AdminTestimonialController::class, 'index'])->name('index');
+            Route::post('/', [AdminTestimonialController::class, 'store'])->name('store');
+            Route::put('/{testimonial}', [AdminTestimonialController::class, 'update'])->name('update');
+            Route::delete('/{testimonial}', [AdminTestimonialController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [AdminTestimonialController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force', [AdminTestimonialController::class, 'forceDelete'])->name('forceDelete');
+            Route::delete('/recycle-bin/empty', [AdminTestimonialController::class, 'emptyRecycleBin'])->name('empty-recycle-bin');
+        });
         Route::redirect('/', '/admin/dashboard')->name('home');
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])

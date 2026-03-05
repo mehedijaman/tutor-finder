@@ -24,6 +24,7 @@ class Page extends Model implements HasMedia
     public const array SYSTEM_SLUGS = [
         'privacy-policy',
         'terms-of-service',
+        'refund-policy',
         'about-us',
     ];
 

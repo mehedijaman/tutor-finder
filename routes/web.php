@@ -29,6 +29,7 @@ Route::post('/contact', [ContactController::class, 'store'])
 Route::get('/tutorials', [TutorialController::class, 'index'])->name('tutorials');
 Route::get('/privacy-policy', [SiteController::class, 'privacy'])->name('privacy-policy');
 Route::get('/terms-of-service', [SiteController::class, 'terms'])->name('terms-of-service');
+Route::get('/refund-policy', [SiteController::class, 'refundPolicy'])->name('refund-policy');
 Route::get('/pages/{slug}', [SiteController::class, 'showPage'])->name('pages.show');
 
 Route::middleware('auth')->group(function () {

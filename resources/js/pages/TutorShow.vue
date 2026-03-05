@@ -1,11 +1,29 @@
 <script setup lang="ts">
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { CheckCircle } from 'lucide-vue-next';
+import {
+    ArrowLeft,
+    BadgeCheck,
+    BookOpen,
+    Calendar,
+    CalendarDays,
+    CheckCircle,
+    Clock,
+    GraduationCap,
+    Mail,
+    MapPin,
+    Phone,
+    ShieldAlert,
+    Sparkles,
+    Tag,
+    User,
+    Wallet,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 import ReviewForm from '@/components/tutors/ReviewForm.vue';
 import ReviewSection from '@/components/tutors/ReviewSection.vue';
 import StarRating from '@/components/tutors/StarRating.vue';
+import { Badge } from '@/components/ui/badge';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 type TutorEducation = {
@@ -31,7 +49,7 @@ type TutorProfile = {
     preferred_classes: string | null;
     preferred_subjects: string | null;
     preferred_locations: string | null;
-    available_days: string | null;
+    available_days: string[] | null;
     available_time: string | null;
 };
 
@@ -161,6 +179,47 @@ function getSalaryRange(): string {
     }
     return 'Negotiable';
 }
+
+const dayLabelMap: Record<string, string> = {
+    sat: 'Saturday',
+    sun: 'Sunday',
+    mon: 'Monday',
+    tue: 'Tuesday',
+    wed: 'Wednesday',
+    thu: 'Thursday',
+    fri: 'Friday',
+};
+
+const dayShortMap: Record<string, string> = {
+    sat: 'Sat',
+    sun: 'Sun',
+    mon: 'Mon',
+    tue: 'Tue',
+    wed: 'Wed',
+    thu: 'Thu',
+    fri: 'Fri',
+};
+
+const formattedAvailableDays = computed(() => {
+    const days = props.tutor.tutor_profile?.available_days;
+    if (!days || !Array.isArray(days) || days.length === 0) {
+        return [];
+    }
+    return days.map((d: string) => ({
+        key: d,
+        short: dayShortMap[d.toLowerCase()] ?? d,
+        full: dayLabelMap[d.toLowerCase()] ?? d,
+    }));
+});
+
+const hasPreferences = computed(
+    () =>
+        tutor.tutor_profile?.preferred_subjects ||
+        tutor.tutor_profile?.preferred_categories ||
+        tutor.tutor_profile?.preferred_classes,
+);
+
+const { tutor } = props;
 </script>
 
 <template>
@@ -169,440 +228,599 @@ function getSalaryRange(): string {
     </Head>
 
     <PublicLayout>
-        <div class="min-h-screen bg-slate-50 py-12">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="mb-8">
+        <div
+            class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50/50"
+        >
+            <!-- Hero Banner -->
+            <div
+                class="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800"
+            >
+                <!-- Decorative elements -->
+                <div
+                    class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDJ2LTJoMzR6bTAtMzBWNkgyVjRoMzR6TTIgNTBoMzR2Mkgydi0yeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"
+                />
+                <div
+                    class="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-white/5 blur-3xl"
+                />
+                <div
+                    class="absolute -right-10 -bottom-10 h-56 w-56 rounded-full bg-indigo-400/10 blur-3xl"
+                />
+
+                <div
+                    class="relative mx-auto max-w-7xl px-4 pt-8 pb-24 sm:px-6 lg:px-8"
+                >
                     <Link
                         href="/tutors"
-                        class="mb-4 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
+                        class="group inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm transition-all hover:bg-white/20 hover:text-white"
                     >
-                        <svg
-                            class="mr-1 h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="2"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                            />
-                        </svg>
+                        <ArrowLeft
+                            class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                        />
                         Back to Tutors
                     </Link>
                 </div>
+            </div>
 
-                <!-- Main Grid -->
-                <div class="grid gap-10 lg:grid-cols-12">
-                    <!-- Left Column - Profile Summary -->
-                    <aside class="lg:col-span-4">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <!-- Profile Card (overlapping hero) -->
+                <div class="-mt-20 mb-8">
+                    <div
+                        class="rounded-3xl border border-white/80 bg-white/95 p-5 shadow-2xl shadow-slate-300/30 backdrop-blur-xl sm:p-7 lg:p-8"
+                    >
                         <div
-                            class="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                            class="flex flex-col items-center gap-5 sm:flex-row sm:items-start sm:gap-7 lg:gap-8"
                         >
-                            <!-- Profile Image -->
-                            <div class="flex flex-col items-center">
+                            <!-- Avatar -->
+                            <div class="relative shrink-0">
                                 <div
-                                    class="flex h-32 w-32 items-center justify-center overflow-hidden rounded-2xl border-2 border-slate-100 bg-blue-100 text-4xl font-bold text-blue-600"
+                                    class="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-4xl font-bold text-white shadow-xl ring-[5px] shadow-blue-600/30 ring-white sm:h-36 sm:w-36 sm:text-5xl"
                                 >
                                     {{ tutor.name.charAt(0).toUpperCase() }}
                                 </div>
-
-                                <!-- Verified Badge -->
                                 <div
                                     v-if="isVerified"
-                                    class="mt-3 inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700"
+                                    class="absolute -right-1.5 -bottom-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-lg ring-[3px] shadow-emerald-500/30 ring-white"
+                                    title="Verified Tutor"
                                 >
-                                    <svg
-                                        class="mr-1 h-4 w-4"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                    Verified Tutor
+                                    <BadgeCheck class="h-5 w-5" />
                                 </div>
+                            </div>
+
+                            <!-- Info -->
+                            <div
+                                class="flex min-w-0 flex-1 flex-col items-center text-center sm:items-start sm:text-left"
+                            >
                                 <div
-                                    v-else
-                                    class="mt-3 inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-700"
+                                    class="flex flex-col items-center gap-2.5 sm:flex-row sm:items-center"
                                 >
-                                    Unverified
+                                    <h1
+                                        class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                                    >
+                                        {{ tutor.name }}
+                                    </h1>
+                                    <Badge
+                                        v-if="isVerified"
+                                        class="border-emerald-200 bg-emerald-50 px-2.5 text-emerald-700"
+                                    >
+                                        <BadgeCheck class="mr-1 h-3.5 w-3.5" />
+                                        Verified
+                                    </Badge>
+                                    <Badge
+                                        v-else
+                                        variant="outline"
+                                        class="border-amber-200 bg-amber-50 px-2.5 text-amber-700"
+                                    >
+                                        <ShieldAlert class="mr-1 h-3.5 w-3.5" />
+                                        Unverified
+                                    </Badge>
                                 </div>
 
-                                <h1
-                                    class="mt-4 text-center text-2xl font-bold text-slate-900"
-                                >
-                                    {{ tutor.name }}
-                                </h1>
-                                <p class="mt-1 text-sm text-slate-500">
+                                <p class="mt-1.5 text-sm text-slate-400">
                                     Tutor ID: #{{ tutor.id }}
                                 </p>
-                            </div>
 
-                            <!-- Rating Summary -->
-                            <div
-                                v-if="totalReviews > 0"
-                                class="mt-4 flex flex-col items-center gap-1"
-                            >
-                                <StarRating
-                                    :rating="averageRating"
-                                    :review-count="totalReviews"
-                                    size="md"
-                                    show-value
-                                />
-                            </div>
-
-                            <!-- Stats -->
-                            <div class="mt-6 border-t border-slate-100 pt-6">
-                                <div class="text-center">
-                                    <p
-                                        class="text-3xl font-bold text-slate-900"
-                                    >
-                                        {{ getSalaryRange() }}
-                                    </p>
-                                    <p class="mt-1 text-sm text-slate-500">
-                                        Expected Salary
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- CTA Buttons -->
-                            <div class="mt-6 space-y-3">
-                                <button
-                                    class="h-11 w-full rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-all duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none active:scale-[0.98]"
-                                >
-                                    Hire This Tutor
-                                </button>
-                                <button
-                                    class="h-11 w-full rounded-xl border border-slate-300 px-4 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:outline-none active:scale-[0.98]"
-                                >
-                                    Save Profile
-                                </button>
-                            </div>
-
-                            <!-- Quick Info -->
-                            <div
-                                class="mt-6 space-y-3 border-t border-slate-100 pt-6"
-                            >
-                                <div class="flex items-center gap-3 text-sm">
-                                    <svg
-                                        class="h-5 w-5 text-slate-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                        />
-                                    </svg>
-                                    <span class="text-slate-600">{{
-                                        tutor.phone || 'Not provided'
-                                    }}</span>
-                                </div>
-                                <div class="flex items-center gap-3 text-sm">
-                                    <svg
-                                        class="h-5 w-5 text-slate-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                        />
-                                    </svg>
-                                    <span class="text-slate-600">{{
-                                        tutor.email
-                                    }}</span>
-                                </div>
+                                <!-- Rating -->
                                 <div
-                                    v-if="tutor.tutor_profile?.present_address"
-                                    class="flex items-center gap-3 text-sm"
+                                    v-if="totalReviews > 0"
+                                    class="mt-3 flex items-center gap-3"
                                 >
-                                    <svg
-                                        class="h-5 w-5 text-slate-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                                    <StarRating
+                                        :rating="averageRating"
+                                        :review-count="totalReviews"
+                                        size="md"
+                                        show-value
+                                    />
+                                </div>
+
+                                <!-- Contact Info Chips -->
+                                <div
+                                    class="mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start"
+                                >
+                                    <span
+                                        v-if="tutor.phone"
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200"
                                     >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                        <Phone
+                                            class="h-3.5 w-3.5 text-slate-400"
                                         />
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                        {{ tutor.phone }}
+                                    </span>
+                                    <span
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200"
+                                    >
+                                        <Mail
+                                            class="h-3.5 w-3.5 text-slate-400"
                                         />
-                                    </svg>
-                                    <span class="text-slate-600">{{
-                                        tutor.tutor_profile.present_address
-                                    }}</span>
+                                        {{ tutor.email }}
+                                    </span>
+                                    <span
+                                        v-if="
+                                            tutor.tutor_profile?.present_address
+                                        "
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200"
+                                    >
+                                        <MapPin
+                                            class="h-3.5 w-3.5 text-slate-400"
+                                        />
+                                        {{
+                                            tutor.tutor_profile.present_address
+                                        }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    </aside>
+                    </div>
+                </div>
 
-                    <!-- Right Column - Details -->
-                    <div class="space-y-6 lg:col-span-8">
-                        <!-- About Me -->
-                        <section
-                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                        >
-                            <h2
-                                class="mb-4 text-lg font-semibold text-slate-900"
-                            >
-                                About Me
-                            </h2>
-                            <p
-                                v-if="tutor.tutor_profile?.bio"
-                                class="leading-relaxed text-slate-600"
-                            >
-                                {{ tutor.tutor_profile.bio }}
-                            </p>
-                            <p v-else class="text-slate-400 italic">
-                                No bio provided
-                            </p>
-                        </section>
-
-                        <!-- Academic Information -->
-                        <section
-                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                        >
-                            <h2
-                                class="mb-4 text-lg font-semibold text-slate-900"
-                            >
-                                Academic Information
-                            </h2>
+                <!-- Main Content Grid -->
+                <div class="grid gap-6 pb-20 lg:grid-cols-12 lg:gap-8">
+                    <!-- Left Column - Sidebar -->
+                    <aside
+                        class="order-2 lg:order-1 lg:col-span-4 xl:col-span-3"
+                    >
+                        <div class="space-y-5 lg:sticky lg:top-24">
+                            <!-- Salary Card -->
                             <div
-                                v-if="
-                                    tutor.tutor_educations &&
-                                    tutor.tutor_educations.length > 0
-                                "
-                                class="space-y-4"
+                                class="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm"
                             >
                                 <div
-                                    v-for="edu in tutor.tutor_educations"
-                                    :key="edu.id"
-                                    class="rounded-xl border border-slate-100 bg-slate-50 p-4"
+                                    class="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4"
                                 >
                                     <div
-                                        class="flex items-start justify-between"
+                                        class="flex items-center gap-2 text-sm font-medium text-blue-700"
                                     >
+                                        <Wallet class="h-4 w-4" />
+                                        Expected Salary
+                                    </div>
+                                    <p
+                                        class="mt-1.5 text-2xl font-bold tracking-tight text-slate-900"
+                                    >
+                                        {{ getSalaryRange() }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Quick Details Card -->
+                            <div
+                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm"
+                            >
+                                <h3
+                                    class="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-900"
+                                >
+                                    <Sparkles class="h-4 w-4 text-amber-500" />
+                                    Quick Details
+                                </h3>
+                                <div class="space-y-4">
+                                    <div
+                                        class="flex items-center gap-3 text-sm"
+                                    >
+                                        <div
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600"
+                                        >
+                                            <User class="h-4 w-4" />
+                                        </div>
                                         <div>
                                             <p
-                                                class="font-semibold text-slate-900"
+                                                class="text-xs font-medium text-slate-400"
                                             >
-                                                {{ edu.degree }}
+                                                Gender
                                             </p>
-                                            <p class="text-sm text-slate-600">
-                                                {{ edu.institute }}
-                                            </p>
-                                            <p class="text-sm text-slate-500">
-                                                {{ edu.department }}
+                                            <p
+                                                class="font-medium text-slate-800"
+                                            >
+                                                {{
+                                                    tutor.tutor_profile?.gender
+                                                        ? tutor.tutor_profile
+                                                              .gender === 'male'
+                                                            ? 'Male'
+                                                            : tutor
+                                                                    .tutor_profile
+                                                                    .gender ===
+                                                                'female'
+                                                              ? 'Female'
+                                                              : 'Other'
+                                                        : 'Not specified'
+                                                }}
                                             </p>
                                         </div>
-                                        <div class="text-right">
+                                    </div>
+
+                                    <div
+                                        class="flex items-center gap-3 text-sm"
+                                    >
+                                        <div
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600"
+                                        >
+                                            <Clock class="h-4 w-4" />
+                                        </div>
+                                        <div>
                                             <p
-                                                class="text-sm font-medium text-slate-700"
+                                                class="text-xs font-medium text-slate-400"
                                             >
-                                                {{ edu.result }}
+                                                Available Time
                                             </p>
                                             <p
-                                                v-if="edu.graduation_year"
-                                                class="text-xs text-slate-500"
+                                                class="font-medium text-slate-800"
                                             >
-                                                {{ edu.graduation_year }}
+                                                {{
+                                                    tutor.tutor_profile
+                                                        ?.available_time ||
+                                                    'Flexible'
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="flex items-center gap-3 text-sm"
+                                    >
+                                        <div
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"
+                                        >
+                                            <Calendar class="h-4 w-4" />
+                                        </div>
+                                        <div>
+                                            <p
+                                                class="text-xs font-medium text-slate-400"
+                                            >
+                                                Member Since
+                                            </p>
+                                            <p
+                                                class="font-medium text-slate-800"
+                                            >
+                                                {{
+                                                    formatDate(tutor.created_at)
+                                                }}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <p v-else class="text-slate-400 italic">
-                                No education details provided
-                            </p>
-                        </section>
 
-                        <!-- Teaching Details -->
-                        <section
-                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                        >
-                            <h2
-                                class="mb-4 text-lg font-semibold text-slate-900"
+                            <!-- Available Days Card -->
+                            <div
+                                v-if="formattedAvailableDays.length > 0"
+                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm"
                             >
-                                Teaching Details
-                            </h2>
-                            <div class="grid gap-4 md:grid-cols-2">
+                                <h3
+                                    class="mb-3.5 flex items-center gap-2 text-sm font-semibold text-slate-900"
+                                >
+                                    <CalendarDays
+                                        class="h-4 w-4 text-purple-500"
+                                    />
+                                    Available Days
+                                </h3>
                                 <div
-                                    class="rounded-xl border border-slate-100 p-4"
+                                    class="grid grid-cols-4 gap-1.5 sm:grid-cols-3 lg:grid-cols-4"
                                 >
-                                    <p class="text-sm text-slate-500">Gender</p>
-                                    <p class="mt-1 font-medium text-slate-800">
-                                        {{
-                                            tutor.tutor_profile?.gender
-                                                ? tutor.tutor_profile.gender ===
-                                                  'male'
-                                                    ? 'Male'
-                                                    : tutor.tutor_profile
-                                                            .gender === 'female'
-                                                      ? 'Female'
-                                                      : 'Other'
-                                                : 'Not specified'
-                                        }}
-                                    </p>
-                                </div>
-                                <div
-                                    class="rounded-xl border border-slate-100 p-4"
-                                >
-                                    <p class="text-sm text-slate-500">
-                                        Available Time
-                                    </p>
-                                    <p class="mt-1 font-medium text-slate-800">
-                                        {{
-                                            tutor.tutor_profile
-                                                ?.available_time || 'Flexible'
-                                        }}
-                                    </p>
-                                </div>
-                                <div
-                                    class="rounded-xl border border-slate-100 p-4"
-                                >
-                                    <p class="text-sm text-slate-500">
-                                        Expected Salary
-                                    </p>
-                                    <p class="mt-1 font-medium text-slate-800">
-                                        {{ getSalaryRange() }}
-                                    </p>
-                                </div>
-                                <div
-                                    class="rounded-xl border border-slate-100 p-4"
-                                >
-                                    <p class="text-sm text-slate-500">
-                                        Member Since
-                                    </p>
-                                    <p class="mt-1 font-medium text-slate-800">
-                                        {{ formatDate(tutor.created_at) }}
-                                    </p>
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- Preferred Subjects -->
-                        <section
-                            v-if="tutor.tutor_profile?.preferred_subjects"
-                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                        >
-                            <h2
-                                class="mb-4 text-lg font-semibold text-slate-900"
-                            >
-                                Preferred Subjects
-                            </h2>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="subject in parseJson(
-                                        tutor.tutor_profile.preferred_subjects,
-                                    )"
-                                    :key="subject"
-                                    class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700"
-                                >
-                                    {{ subject }}
-                                </span>
-                            </div>
-                        </section>
-
-                        <!-- Preferred Categories -->
-                        <section
-                            v-if="tutor.tutor_profile?.preferred_categories"
-                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                        >
-                            <h2
-                                class="mb-4 text-lg font-semibold text-slate-900"
-                            >
-                                Preferred Categories
-                            </h2>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="category in parseJson(
-                                        tutor.tutor_profile
-                                            .preferred_categories,
-                                    )"
-                                    :key="category"
-                                    class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700"
-                                >
-                                    {{ category }}
-                                </span>
-                            </div>
-                        </section>
-
-                        <!-- Preferred Classes -->
-                        <section
-                            v-if="tutor.tutor_profile?.preferred_classes"
-                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                        >
-                            <h2
-                                class="mb-4 text-lg font-semibold text-slate-900"
-                            >
-                                Preferred Classes
-                            </h2>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="cls in parseJson(
-                                        tutor.tutor_profile.preferred_classes,
-                                    )"
-                                    :key="cls"
-                                    class="inline-flex items-center rounded-full border border-purple-200 bg-purple-50 px-3 py-1.5 text-sm font-medium text-purple-700"
-                                >
-                                    {{ cls }}
-                                </span>
-                            </div>
-                        </section>
-
-                        <!-- Preferred Locations -->
-                        <section
-                            v-if="tutor.tutor_profile?.preferred_locations"
-                            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-                        >
-                            <h2
-                                class="mb-4 text-lg font-semibold text-slate-900"
-                            >
-                                Preferred Locations
-                            </h2>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="location in parseJson(
-                                        tutor.tutor_profile.preferred_locations,
-                                    )"
-                                    :key="location"
-                                    class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700"
-                                >
-                                    <svg
-                                        class="mr-1 h-4 w-4 text-slate-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
+                                    <div
+                                        v-for="day in formattedAvailableDays"
+                                        :key="day.key"
+                                        class="flex flex-col items-center rounded-xl border border-purple-100 bg-gradient-to-b from-purple-50 to-white px-2 py-2.5 text-center"
+                                        :title="day.full"
                                     >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                        <span
+                                            class="text-xs font-bold text-purple-700"
+                                        >
+                                            {{ day.short }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preferred Locations Card -->
+                            <div
+                                v-if="tutor.tutor_profile?.preferred_locations"
+                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm"
+                            >
+                                <h3
+                                    class="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900"
+                                >
+                                    <MapPin class="h-4 w-4 text-rose-400" />
+                                    Preferred Locations
+                                </h3>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <Badge
+                                        v-for="location in parseJson(
+                                            tutor.tutor_profile
+                                                .preferred_locations,
+                                        )"
+                                        :key="location"
+                                        variant="outline"
+                                        class="rounded-lg border-slate-200 bg-slate-50 font-normal text-slate-600"
+                                    >
+                                        <MapPin
+                                            class="mr-1 h-3 w-3 text-slate-400"
                                         />
-                                    </svg>
-                                    {{ location }}
-                                </span>
+                                        {{ location }}
+                                    </Badge>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Right Column - Main Content -->
+                    <div
+                        class="order-1 space-y-6 lg:order-2 lg:col-span-8 xl:col-span-9"
+                    >
+                        <!-- About Me -->
+                        <section
+                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6"
+                        >
+                            <h2
+                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900"
+                            >
+                                <div
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600"
+                                >
+                                    <User class="h-4.5 w-4.5" />
+                                </div>
+                                About Me
+                            </h2>
+                            <div class="mt-4 pl-0 sm:pl-[46px]">
+                                <p
+                                    v-if="tutor.tutor_profile?.bio"
+                                    class="text-[15px] leading-relaxed whitespace-pre-line text-slate-600"
+                                >
+                                    {{ tutor.tutor_profile.bio }}
+                                </p>
+                                <p v-else class="text-sm text-slate-400 italic">
+                                    No bio provided
+                                </p>
+                            </div>
+                        </section>
+
+                        <!-- Academic Information -->
+                        <section
+                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6"
+                        >
+                            <h2
+                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900"
+                            >
+                                <div
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600"
+                                >
+                                    <GraduationCap class="h-4.5 w-4.5" />
+                                </div>
+                                Academic Information
+                            </h2>
+                            <div class="mt-4">
+                                <div
+                                    v-if="
+                                        tutor.tutor_educations &&
+                                        tutor.tutor_educations.length > 0
+                                    "
+                                    class="space-y-3"
+                                >
+                                    <div
+                                        v-for="(
+                                            edu, i
+                                        ) in tutor.tutor_educations"
+                                        :key="edu.id"
+                                        class="group relative flex gap-4"
+                                    >
+                                        <!-- Timeline dot -->
+                                        <div
+                                            class="hidden shrink-0 flex-col items-center sm:flex"
+                                        >
+                                            <div
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600 group-hover:bg-indigo-200"
+                                            >
+                                                {{ i + 1 }}
+                                            </div>
+                                            <div
+                                                v-if="
+                                                    i <
+                                                    tutor.tutor_educations
+                                                        .length -
+                                                        1
+                                                "
+                                                class="mt-1 w-px flex-1 bg-slate-200"
+                                            />
+                                        </div>
+
+                                        <!-- Card -->
+                                        <div
+                                            class="flex-1 rounded-xl border border-slate-100 bg-gradient-to-r from-slate-50/60 to-white p-4 transition-all group-hover:border-indigo-200/60 group-hover:shadow-sm"
+                                        >
+                                            <div
+                                                class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"
+                                            >
+                                                <div class="min-w-0 flex-1">
+                                                    <p
+                                                        class="font-semibold text-slate-900"
+                                                    >
+                                                        {{ edu.degree }}
+                                                    </p>
+                                                    <p
+                                                        class="mt-0.5 text-sm text-slate-600"
+                                                    >
+                                                        {{ edu.institute }}
+                                                    </p>
+                                                    <p
+                                                        v-if="edu.department"
+                                                        class="text-sm text-slate-500"
+                                                    >
+                                                        {{ edu.department }}
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-1.5"
+                                                >
+                                                    <Badge
+                                                        v-if="edu.result"
+                                                        class="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                    >
+                                                        {{ edu.result }}
+                                                    </Badge>
+                                                    <span
+                                                        v-if="
+                                                            edu.graduation_year
+                                                        "
+                                                        class="text-xs text-slate-500"
+                                                    >
+                                                        {{
+                                                            edu.graduation_year
+                                                        }}
+                                                    </span>
+                                                    <Badge
+                                                        v-if="edu.is_current"
+                                                        class="border-emerald-200 bg-emerald-50 text-emerald-700"
+                                                    >
+                                                        <span
+                                                            class="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"
+                                                        />
+                                                        Current
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p v-else class="text-sm text-slate-400 italic">
+                                    No education details provided
+                                </p>
+                            </div>
+                        </section>
+
+                        <!-- Teaching Preferences -->
+                        <section
+                            v-if="hasPreferences"
+                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6"
+                        >
+                            <h2
+                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900"
+                            >
+                                <div
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600"
+                                >
+                                    <BookOpen class="h-4.5 w-4.5" />
+                                </div>
+                                Teaching Preferences
+                            </h2>
+
+                            <div class="mt-5 space-y-5">
+                                <!-- Subjects -->
+                                <div
+                                    v-if="
+                                        tutor.tutor_profile?.preferred_subjects
+                                    "
+                                >
+                                    <p
+                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    >
+                                        <BookOpen class="h-3.5 w-3.5" />
+                                        Subjects
+                                    </p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <Badge
+                                            v-for="subject in parseJson(
+                                                tutor.tutor_profile
+                                                    .preferred_subjects,
+                                            )"
+                                            :key="subject"
+                                            class="rounded-lg border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700"
+                                        >
+                                            {{ subject }}
+                                        </Badge>
+                                    </div>
+                                </div>
+
+                                <!-- Divider -->
+                                <div
+                                    v-if="
+                                        tutor.tutor_profile
+                                            ?.preferred_subjects &&
+                                        tutor.tutor_profile
+                                            ?.preferred_categories
+                                    "
+                                    class="border-t border-slate-100"
+                                />
+
+                                <!-- Categories -->
+                                <div
+                                    v-if="
+                                        tutor.tutor_profile
+                                            ?.preferred_categories
+                                    "
+                                >
+                                    <p
+                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    >
+                                        <Tag class="h-3.5 w-3.5" />
+                                        Categories
+                                    </p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <Badge
+                                            v-for="category in parseJson(
+                                                tutor.tutor_profile
+                                                    .preferred_categories,
+                                            )"
+                                            :key="category"
+                                            class="rounded-lg border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700"
+                                        >
+                                            {{ category }}
+                                        </Badge>
+                                    </div>
+                                </div>
+
+                                <!-- Divider -->
+                                <div
+                                    v-if="
+                                        (tutor.tutor_profile
+                                            ?.preferred_subjects ||
+                                            tutor.tutor_profile
+                                                ?.preferred_categories) &&
+                                        tutor.tutor_profile?.preferred_classes
+                                    "
+                                    class="border-t border-slate-100"
+                                />
+
+                                <!-- Classes -->
+                                <div
+                                    v-if="
+                                        tutor.tutor_profile?.preferred_classes
+                                    "
+                                >
+                                    <p
+                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    >
+                                        <GraduationCap class="h-3.5 w-3.5" />
+                                        Classes
+                                    </p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <Badge
+                                            v-for="cls in parseJson(
+                                                tutor.tutor_profile
+                                                    .preferred_classes,
+                                            )"
+                                            :key="cls"
+                                            class="rounded-lg border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700"
+                                        >
+                                            {{ cls }}
+                                        </Badge>
+                                    </div>
+                                </div>
                             </div>
                         </section>
 
@@ -620,7 +838,7 @@ function getSalaryRange(): string {
                             v-if="successMessage"
                             class="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
                         >
-                            <CheckCircle class="h-4.5 w-4.5 flex-shrink-0" />
+                            <CheckCircle class="h-4.5 w-4.5 shrink-0" />
                             {{ successMessage }}
                         </div>
 

@@ -1,9 +1,26 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, Home, MonitorPlay, School } from 'lucide-vue-next';
+import HomeTestimonialsCarousel from '@/components/home/HomeTestimonialsCarousel.vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import PublicLayout from '@/layouts/PublicLayout.vue';
-import { contact, jobs, register } from '@/routes';
+import { jobs, register } from '@/routes';
+
+type HomepageTestimonial = {
+    id: number;
+    name: string;
+    role: string | null;
+    avatar_url: string | null;
+    content: string;
+    rating: number;
+};
+
+type TuitionMethod = {
+    id: number;
+    name: string;
+    slug: string;
+    description: string | null;
+};
 
 const props = withDefaults(
     defineProps<{
@@ -13,6 +30,8 @@ const props = withDefaults(
             families_served: number;
             average_rating: number | null;
         };
+        testimonials: HomepageTestimonial[];
+        tuitionMethods: TuitionMethod[];
     }>(),
     {
         canRegister: true,
@@ -21,6 +40,8 @@ const props = withDefaults(
             families_served: 0,
             average_rating: null,
         }),
+        testimonials: () => [],
+        tuitionMethods: () => [],
     },
 );
 
@@ -41,6 +62,25 @@ const formatAverageRating = (value: number | null): string => {
     }
 
     return `${value.toFixed(1)}/5`;
+};
+
+const tuitionMethodDecorations = [
+    {
+        icon: Home,
+        iconWrapperClass: 'bg-blue-600',
+    },
+    {
+        icon: MonitorPlay,
+        iconWrapperClass: 'bg-emerald-600',
+    },
+    {
+        icon: School,
+        iconWrapperClass: 'bg-amber-600',
+    },
+] as const;
+
+const tuitionMethodDecoration = (index: number) => {
+    return tuitionMethodDecorations[index % tuitionMethodDecorations.length];
 };
 </script>
 
@@ -287,124 +327,73 @@ const formatAverageRating = (value: number | null): string => {
                         Choose your preferred learning style
                     </p>
                     <p class="mt-6 text-lg leading-8 text-slate-600">
-                        We offer flexible options to ensure the best environment
-                        for effective learning.
+                        Explore currently active tuition categories and pick
+                        what matches your learning goals.
                     </p>
                 </div>
 
                 <div
+                    v-if="props.tuitionMethods.length"
                     class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8"
                 >
-                    <!-- Home Tutoring -->
                     <div
+                        v-for="(method, index) in props.tuitionMethods"
+                        :key="method.id"
                         class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md"
                     >
                         <dt
                             class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900"
                         >
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600"
+                                class="flex h-10 w-10 items-center justify-center rounded-lg"
+                                :class="
+                                    tuitionMethodDecoration(index)
+                                        .iconWrapperClass
+                                "
                             >
-                                <Home
+                                <component
+                                    :is="tuitionMethodDecoration(index).icon"
                                     class="h-6 w-6 text-white"
                                     aria-hidden="true"
                                 />
                             </div>
-                            Home Tutoring
+                            {{ method.name }}
                         </dt>
                         <dd
                             class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600"
                         >
                             <p class="flex-auto">
-                                One-on-one sessions in the comfort of your home.
-                                Perfect for personalized attention and
-                                minimizing distractions.
+                                {{
+                                    method.description ||
+                                    'Browse available tutors and jobs under this category.'
+                                }}
                             </p>
                             <p class="mt-6">
                                 <Link
-                                    :href="contact()"
+                                    :href="
+                                        jobs({
+                                            query: {
+                                                category: method.slug,
+                                            },
+                                        })
+                                    "
                                     class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500"
                                 >
-                                    Learn more
+                                    Explore category
                                     <ArrowRight class="inline-block h-4 w-4" />
                                 </Link>
                             </p>
                         </dd>
                     </div>
+                </div>
 
-                    <!-- Online Tutoring -->
-                    <div
-                        class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md"
-                    >
-                        <dt
-                            class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900"
-                        >
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600"
-                            >
-                                <MonitorPlay
-                                    class="h-6 w-6 text-white"
-                                    aria-hidden="true"
-                                />
-                            </div>
-                            Online Tutoring
-                        </dt>
-                        <dd
-                            class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600"
-                        >
-                            <p class="flex-auto">
-                                Interactive virtual sessions using modern tools.
-                                Learn from anywhere with verified tutors
-                                nationwide.
-                            </p>
-                            <p class="mt-6">
-                                <Link
-                                    :href="contact()"
-                                    class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500"
-                                >
-                                    Learn more
-                                    <ArrowRight class="inline-block h-4 w-4" />
-                                </Link>
-                            </p>
-                        </dd>
-                    </div>
-
-                    <!-- Institute Tutoring -->
-                    <div
-                        class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md"
-                    >
-                        <dt
-                            class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900"
-                        >
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-600"
-                            >
-                                <School
-                                    class="h-6 w-6 text-white"
-                                    aria-hidden="true"
-                                />
-                            </div>
-                            Institute Tutoring
-                        </dt>
-                        <dd
-                            class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600"
-                        >
-                            <p class="flex-auto">
-                                Structured learning in a dedicated facility.
-                                Ideal for small groups and accessing specialized
-                                resources.
-                            </p>
-                            <p class="mt-6">
-                                <Link
-                                    :href="contact()"
-                                    class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500"
-                                >
-                                    Learn more
-                                    <ArrowRight class="inline-block h-4 w-4" />
-                                </Link>
-                            </p>
-                        </dd>
-                    </div>
+                <div
+                    v-else
+                    class="mx-auto mt-16 max-w-3xl rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center"
+                >
+                    <p class="text-sm text-slate-500">
+                        Tuition categories are not available right now.
+                    </p>
                 </div>
             </div>
         </section>
@@ -427,223 +416,17 @@ const formatAverageRating = (value: number | null): string => {
                         Hear from satisfied parents and guardians
                     </p>
                 </div>
-
-                <div class="mt-12 grid gap-6 sm:grid-cols-3">
-                    <div
-                        class="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-                    >
-                        <div class="flex items-center gap-1 text-amber-500">
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                        </div>
-                        <p class="mt-4 text-sm leading-relaxed text-slate-600">
-                            "Found an excellent math tutor for my son within 2
-                            days. The platform made it so easy!"
-                        </p>
-                        <div class="mt-5 flex items-center gap-3">
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-500"
-                            >
-                                <svg
-                                    class="h-5 w-5"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                                    />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-slate-900">
-                                    Sarah Rahman
-                                </p>
-                                <p class="text-xs text-slate-500">Parent</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-                    >
-                        <div class="flex items-center gap-1 text-amber-500">
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                        </div>
-                        <p class="mt-4 text-sm leading-relaxed text-slate-600">
-                            "Great experience. The tutor is very professional
-                            and my daughter has improved significantly."
-                        </p>
-                        <div class="mt-5 flex items-center gap-3">
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-500"
-                            >
-                                <svg
-                                    class="h-5 w-5"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                                    />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-slate-900">
-                                    Ahmed Khan
-                                </p>
-                                <p class="text-xs text-slate-500">Parent</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="group rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
-                    >
-                        <div class="flex items-center gap-1 text-amber-500">
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                            <svg
-                                class="h-5 w-5 fill-current"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                            </svg>
-                        </div>
-                        <p class="mt-4 text-sm leading-relaxed text-slate-600">
-                            "Very trustworthy platform. Felt safe having our
-                            child learn with verified tutors."
-                        </p>
-                        <div class="mt-5 flex items-center gap-3">
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-500"
-                            >
-                                <svg
-                                    class="h-5 w-5"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                                    />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-slate-900">
-                                    Fatima Begum
-                                </p>
-                                <p class="text-xs text-slate-500">Guardian</p>
-                            </div>
-                        </div>
-                    </div>
+                <HomeTestimonialsCarousel
+                    v-if="props.testimonials.length"
+                    :testimonials="props.testimonials"
+                />
+                <div
+                    v-else
+                    class="mt-12 rounded-2xl border border-dashed border-slate-300 px-6 py-12 text-center"
+                >
+                    <p class="text-sm text-slate-500">
+                        Testimonials will appear here once published.
+                    </p>
                 </div>
             </div>
         </section>

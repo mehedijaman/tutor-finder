@@ -171,7 +171,7 @@ function getGenderLabel(): string {
             >
                 <div class="flex items-start gap-2">
                     <GraduationCap
-                        class="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-500"
+                        class="mt-0.5 h-4 w-4 shrink-0 text-slate-500"
                     />
                     <div class="min-w-0 flex-1">
                         <p
@@ -191,13 +191,13 @@ function getGenderLabel(): string {
                 v-if="getCityName()"
                 class="mt-3 flex items-center gap-1.5 text-sm text-slate-500"
             >
-                <MapPin class="h-4 w-4 flex-shrink-0" />
+                <MapPin class="h-4 w-4 shrink-0" />
                 <span class="line-clamp-1">{{ getCityName() }}</span>
             </div>
 
             <!-- Expected Salary -->
             <div class="mt-3 flex items-center gap-1.5 text-sm">
-                <Wallet class="h-4 w-4 flex-shrink-0 text-slate-500" />
+                <Wallet class="h-4 w-4 shrink-0 text-slate-500" />
                 <span class="font-medium text-slate-900">
                     {{ formatSalary() }}
                 </span>

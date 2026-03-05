@@ -22,13 +22,9 @@ import {
     Wrench,
     Cog,
     Key,
-    Bell,
     Briefcase,
     ClipboardCheck,
-    Mail,
     MessageSquare,
-    CreditCard,
-    Settings,
     Star,
     PlayCircle,
     ScrollText,
@@ -36,12 +32,9 @@ import {
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
-import NavUser from '@/components/NavUser.vue';
 import {
     Sidebar,
     SidebarContent,
-    SidebarSeparator,
-    SidebarFooter,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -59,15 +52,7 @@ type AuthUser = {
     verification_status?: string;
 };
 
-type NotificationCounts = {
-    unread?: number;
-};
-
 const authUser = computed(() => page.props.auth?.user as AuthUser | undefined);
-
-const unreadNotificationCount = computed(() =>
-    Number((page.props.notificationCounts as NotificationCounts | undefined)?.unread ?? 0),
-);
 const panelContext = computed<'admin' | 'tutor' | 'guardian'>(() => {
     const role = page.props.auth?.user?.role;
     const currentPath = new URL(page.url, window.location.origin).pathname;
@@ -82,8 +67,6 @@ const panelContext = computed<'admin' | 'tutor' | 'guardian'>(() => {
 
     return 'guardian';
 });
-
-
 
 const showMemberSummary = computed(
     () => panelContext.value !== 'admin' && authUser.value !== undefined,
@@ -126,7 +109,9 @@ const memberInitials = computed(() => {
 });
 
 const verificationBadge = computed(() => {
-    const status = String(authUser.value?.verification_status ?? '').toLowerCase();
+    const status = String(
+        authUser.value?.verification_status ?? '',
+    ).toLowerCase();
 
     if (status === 'verified') {
         return {
@@ -250,6 +235,11 @@ const mainNavItems = computed<NavItem[]>(() => {
                 title: 'Tutor Reviews',
                 href: '/admin/reviews',
                 icon: Star,
+            },
+            {
+                title: 'Testimonials',
+                href: '/admin/testimonials',
+                icon: MessageSquare,
             },
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             { title: 'Notices', href: '/admin/notices', icon: Newspaper },
@@ -423,33 +413,6 @@ const mainNavItems = computed<NavItem[]>(() => {
             },
             { title: 'Settings', href: '/settings', icon: Cog },
             {
-                title: 'Admin Settings',
-                href: '/settings/site',
-                icon: Settings,
-                children: [
-                    {
-                        title: 'Site Settings',
-                        href: '/settings/site',
-                        icon: Cog,
-                    },
-                    {
-                        title: 'Payment Settings',
-                        href: '/settings/payment',
-                        icon: CreditCard,
-                    },
-                    {
-                        title: 'SMS Settings',
-                        href: '/settings/sms',
-                        icon: MessageSquare,
-                    },
-                    {
-                        title: 'SMTP Settings',
-                        href: '/settings/smtp',
-                        icon: Mail,
-                    },
-                ],
-            },
-            {
                 title: 'Access Control',
                 href: '/admin/maintenance',
                 icon: Key,
@@ -488,7 +451,11 @@ const mainNavItems = computed<NavItem[]>(() => {
         return [
             { title: 'Dashboard', href: '/tutor/dashboard', icon: LayoutGrid },
             { title: 'Browse Jobs', href: '/tutor/jobs', icon: FileText },
-            { title: 'My Applications', href: '/tutor/job-applications', icon: FolderOpen },
+            {
+                title: 'My Applications',
+                href: '/tutor/job-applications',
+                icon: FolderOpen,
+            },
             {
                 title: 'Fees & Refunds',
                 href: '/tutor/finance/invoices',
@@ -508,8 +475,16 @@ const mainNavItems = computed<NavItem[]>(() => {
             },
             { title: 'Profile', href: '/tutor/profile', icon: UserRound },
             { title: 'Tutorials', href: '/tutor/tutorials', icon: PlayCircle },
-            { title: 'Terms of Service', href: '/tutor/terms-of-service', icon: ScrollText },
-            { title: 'Support Tickets', href: '/tutor/support-tickets', icon: LifeBuoy },
+            {
+                title: 'Terms of Service',
+                href: '/tutor/terms-of-service',
+                icon: ScrollText,
+            },
+            {
+                title: 'Support Tickets',
+                href: '/tutor/support-tickets',
+                icon: LifeBuoy,
+            },
             { title: 'Settings', href: '/settings/profile', icon: Cog },
         ];
     }
@@ -567,10 +542,17 @@ const mainNavItems = computed<NavItem[]>(() => {
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
         { title: 'My Reviews', href: '/guardian/reviews', icon: Star },
         { title: 'Tutorials', href: '/guardian/tutorials', icon: PlayCircle },
-        { title: 'Terms of Service', href: '/guardian/terms-of-service', icon: ScrollText },
-        { title: 'Support Tickets', href: '/guardian/support-tickets', icon: LifeBuoy },
+        {
+            title: 'Terms of Service',
+            href: '/guardian/terms-of-service',
+            icon: ScrollText,
+        },
+        {
+            title: 'Support Tickets',
+            href: '/guardian/support-tickets',
+            icon: LifeBuoy,
+        },
         { title: 'Settings', href: '/settings/profile', icon: Cog },
-        
     ];
 });
 </script>
@@ -596,7 +578,9 @@ const mainNavItems = computed<NavItem[]>(() => {
                 v-if="showMemberSummary"
                 class="mt-2 px-2 group-data-[collapsible=icon]:hidden"
             >
-                <div class="rounded-xl border border-sidebar-border/70 p-3 text-center">
+                <div
+                    class="rounded-xl border border-sidebar-border/70 p-3 text-center"
+                >
                     <div
                         class="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-sidebar-border/70 bg-sidebar-accent text-xl font-semibold text-sidebar-accent-foreground"
                     >
@@ -609,7 +593,9 @@ const mainNavItems = computed<NavItem[]>(() => {
                         <span v-else>{{ memberInitials }}</span>
                     </div>
 
-                    <p class="mt-3 truncate text-base font-semibold text-sidebar-foreground">
+                    <p
+                        class="mt-3 truncate text-base font-semibold text-sidebar-foreground"
+                    >
                         {{ authUser?.name }}
                     </p>
                     <div class="mt-1">
@@ -628,8 +614,6 @@ const mainNavItems = computed<NavItem[]>(() => {
                     </p>
                 </div>
             </div>
-
-            
         </SidebarHeader>
 
         <SidebarContent class="pt-2">

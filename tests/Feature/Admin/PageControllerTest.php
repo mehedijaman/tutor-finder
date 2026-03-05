@@ -280,6 +280,24 @@ it('terms of service route loads from page model when available', function () {
     );
 });
 
+it('refund policy route loads from page model when available', function () {
+    Page::factory()->create([
+        'title' => 'Refund Policy',
+        'slug' => 'refund-policy',
+        'content' => '<p>Custom refund policy content</p>',
+        'status' => PageStatus::Active,
+        'is_system' => true,
+    ]);
+
+    $response = $this->get(route('refund-policy'));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Page')
+        ->where('page.title', 'Refund Policy')
+    );
+});
+
 it('admin can create a page with a featured image', function () {
     Storage::fake('public');
     config(['media-library.disk_name' => 'public']);
