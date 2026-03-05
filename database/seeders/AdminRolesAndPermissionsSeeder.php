@@ -39,6 +39,7 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'ticket',
             'review',
             'page',
+            'tutorial',
         ])->flatMap(fn (string $resource): array => [
             "{$resource}-create",
             "{$resource}-view",

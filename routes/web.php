@@ -11,6 +11,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Public\TutorController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\TutorialController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'index'])->name('home');
@@ -25,6 +26,7 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])
     ->middleware('throttle:contact-form')
     ->name('contact.store');
+Route::get('/tutorials', [TutorialController::class, 'index'])->name('tutorials');
 Route::get('/privacy-policy', [SiteController::class, 'privacy'])->name('privacy-policy');
 Route::get('/terms-of-service', [SiteController::class, 'terms'])->name('terms-of-service');
 Route::get('/pages/{slug}', [SiteController::class, 'showPage'])->name('pages.show');

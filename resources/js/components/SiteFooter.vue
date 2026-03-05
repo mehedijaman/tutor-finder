@@ -8,6 +8,7 @@ import {
     termsOfService,
     home,
     register,
+    tutorials,
 } from '@/routes';
 import { index as faqIndex } from '@/routes/faq';
 
@@ -101,6 +102,13 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
                                 :href="faqIndex()"
                                 class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >FAQ</Link
+                            >
+                        </li>
+                        <li>
+                            <Link
+                                :href="tutorials()"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
+                                >Tutorials</Link
                             >
                         </li>
                         <li>

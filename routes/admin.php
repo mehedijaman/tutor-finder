@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\Tuition\Taxonomies\CountryController as TaxonomyC
 use App\Http\Controllers\Admin\Tuition\Taxonomies\SchoolClassController as TaxonomySchoolClassController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\SubjectController as TaxonomySubjectController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\TuitionTypeController as TaxonomyTuitionTypeController;
+use App\Http\Controllers\Admin\TutorialController as AdminTutorialController;
 use App\Http\Controllers\Admin\TutorManagementController;
 use App\Http\Controllers\Admin\TutorReviewController as AdminTutorReviewController;
 use App\Http\Controllers\Admin\VerificationRequestController;
@@ -186,6 +187,39 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/pages/recycle-bin/empty', [AdminPageController::class, 'emptyRecycleBin'])
             ->middleware('permission:page-force-delete')
             ->name('pages.empty-recycle-bin');
+
+        Route::get('/tutorials', [AdminTutorialController::class, 'index'])
+            ->middleware('permission:tutorial-view')
+            ->name('tutorials.index');
+        Route::get('/tutorials/create', [AdminTutorialController::class, 'create'])
+            ->middleware('permission:tutorial-create')
+            ->name('tutorials.create');
+        Route::post('/tutorials', [AdminTutorialController::class, 'store'])
+            ->middleware('permission:tutorial-create')
+            ->name('tutorials.store');
+        Route::get('/tutorials/{tutorial}/edit', [AdminTutorialController::class, 'edit'])
+            ->middleware('permission:tutorial-update')
+            ->name('tutorials.edit');
+        Route::put('/tutorials/{tutorial}', [AdminTutorialController::class, 'update'])
+            ->middleware('permission:tutorial-update')
+            ->name('tutorials.update');
+        Route::patch('/tutorials/{tutorial}/status', [AdminTutorialController::class, 'updateStatus'])
+            ->middleware('permission:tutorial-update')
+            ->name('tutorials.status');
+        Route::delete('/tutorials/{tutorial}', [AdminTutorialController::class, 'destroy'])
+            ->middleware('permission:tutorial-delete')
+            ->name('tutorials.destroy');
+        Route::patch('/tutorials/{tutorial}/restore', [AdminTutorialController::class, 'restore'])
+            ->middleware('permission:tutorial-delete')
+            ->withTrashed()
+            ->name('tutorials.restore');
+        Route::delete('/tutorials/{tutorial}/force', [AdminTutorialController::class, 'forceDelete'])
+            ->middleware('permission:tutorial-delete')
+            ->withTrashed()
+            ->name('tutorials.force-delete');
+        Route::delete('/tutorials/recycle-bin/empty', [AdminTutorialController::class, 'emptyRecycleBin'])
+            ->middleware('permission:tutorial-delete')
+            ->name('tutorials.empty-recycle-bin');
 
         Route::prefix('jobs')->name('jobs.')->group(function () {
             Route::get('/', [AdminJobController::class, 'index'])

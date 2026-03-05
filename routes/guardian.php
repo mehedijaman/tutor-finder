@@ -8,6 +8,7 @@ use App\Http\Controllers\Guardian\JobApplicationController;
 use App\Http\Controllers\Guardian\NotificationController;
 use App\Http\Controllers\Guardian\SupportTicketController as GuardianSupportTicketController;
 use App\Http\Controllers\Guardian\TuitionJobController;
+use App\Http\Controllers\Guardian\TutorialController as GuardianTutorialController;
 use App\Http\Controllers\Guardian\TutorReviewController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,4 +60,6 @@ Route::prefix('guardian')
         Route::delete('/reviews/{tutorReview}/force-delete', [TutorReviewController::class, 'forceDelete'])
             ->withTrashed()
             ->name('reviews.force-delete');
+
+        Route::get('/tutorials', [GuardianTutorialController::class, 'index'])->name('tutorials.index');
     });

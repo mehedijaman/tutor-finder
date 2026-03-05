@@ -19,6 +19,7 @@ import {
     contact,
     tutors,
     blog,
+    tutorials,
 } from '@/routes';
 
 withDefaults(
@@ -118,6 +119,11 @@ const mobileMenuOpen = ref(false);
                         >Blog</Link
                     >
                     <Link
+                        :href="tutorials()"
+                        class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
+                        >Tutorials</Link
+                    >
+                    <Link
                         :href="contact()"
                         class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
                         >Contact</Link
@@ -168,6 +174,13 @@ const mobileMenuOpen = ref(false);
                                     @click="mobileMenuOpen = false"
                                 >
                                     Blog
+                                </Link>
+                                <Link
+                                    :href="tutorials()"
+                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
+                                    @click="mobileMenuOpen = false"
+                                >
+                                    Tutorials
                                 </Link>
                                 <Link
                                     :href="contact()"

@@ -30,6 +30,7 @@ import {
     CreditCard,
     Settings,
     Star,
+    PlayCircle,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -252,6 +253,11 @@ const mainNavItems = computed<NavItem[]>(() => {
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             { title: 'Notices', href: '/admin/notices', icon: Newspaper },
             { title: 'Pages', href: '/admin/pages', icon: FileText },
+            {
+                title: 'Tutorials',
+                href: '/admin/tutorials',
+                icon: PlayCircle,
+            },
             {
                 title: 'Jobs',
                 href: '/admin/jobs',
@@ -500,6 +506,7 @@ const mainNavItems = computed<NavItem[]>(() => {
                 ],
             },
             { title: 'Profile', href: '/tutor/profile', icon: UserRound },
+            { title: 'Tutorials', href: '/tutor/tutorials', icon: PlayCircle },
             { title: 'Support Tickets', href: '/tutor/support-tickets', icon: LifeBuoy },
             { title: 'Settings', href: '/settings/profile', icon: Cog },
         ];
@@ -557,6 +564,7 @@ const mainNavItems = computed<NavItem[]>(() => {
         },
         { title: 'Profile', href: '/guardian/profile', icon: UserRound },
         { title: 'My Reviews', href: '/guardian/reviews', icon: Star },
+        { title: 'Tutorials', href: '/guardian/tutorials', icon: PlayCircle },
         { title: 'Support Tickets', href: '/guardian/support-tickets', icon: LifeBuoy },
         { title: 'Settings', href: '/settings/profile', icon: Cog },
         
