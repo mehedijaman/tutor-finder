@@ -111,6 +111,48 @@ const profileCompletion = computed(() => {
     return Math.round((filled / profileCompletionFields.length) * 100);
 });
 
+function hasValue(value: unknown): boolean {
+    if (Array.isArray(value)) {
+        return value.length > 0;
+    }
+
+    if (typeof value === 'string') {
+        return value.trim() !== '';
+    }
+
+    if (typeof value === 'number') {
+        return true;
+    }
+
+    if (typeof value === 'boolean') {
+        return value;
+    }
+
+    return value !== null && value !== undefined;
+}
+
+const activeTabActionLabel = computed(() => {
+    if (activeTab.value === 'contact') {
+        const hasContactInfo = [
+            form.phone_alt,
+            form.address,
+            form.notes,
+        ].some((value) => hasValue(value));
+
+        return hasContactInfo ? 'Edit' : 'Add';
+    }
+
+    const hasPersonalInfo = [
+        form.name,
+        form.phone,
+        form.guardian_name,
+        form.occupation,
+        form.status,
+    ].some((value) => hasValue(value));
+
+    return hasPersonalInfo ? 'Edit' : 'Add';
+});
+
 function switchTab(tabKey: string) {
     activeTab.value = tabKey;
     editingTab.value = null;
@@ -357,7 +399,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                         Information
                     </h2>
                     <Button type="button" variant="outline" @click="openEditMode">
-                        Edit/Add
+                        {{ activeTabActionLabel }}
                     </Button>
                 </div>
 

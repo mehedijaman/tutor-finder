@@ -255,6 +255,61 @@ const availableDayLabels = computed(() =>
         .map((option: any) => option.label),
 );
 
+function hasValue(value: unknown): boolean {
+    if (Array.isArray(value)) {
+        return value.length > 0;
+    }
+
+    if (typeof value === 'string') {
+        return value.trim() !== '';
+    }
+
+    if (typeof value === 'number') {
+        return true;
+    }
+
+    if (typeof value === 'boolean') {
+        return value;
+    }
+
+    return value !== null && value !== undefined;
+}
+
+const activeTabActionLabel = computed(() => {
+    if (activeTab.value === 'education') {
+        return form.educations.length > 0 ? 'Edit' : 'Add';
+    }
+
+    if (activeTab.value === 'preferences') {
+        const hasPreferences = [
+            form.preferred_tuition_types,
+            form.preferred_categories,
+            form.preferred_classes,
+            form.preferred_subjects,
+            form.preferred_locations,
+            form.expected_salary_min,
+            form.expected_salary_max,
+            form.available_days,
+            form.available_time,
+        ].some((value) => hasValue(value));
+
+        return hasPreferences ? 'Edit' : 'Add';
+    }
+
+    const hasPersonalInfo = [
+        form.name,
+        form.phone,
+        form.gender !== 'none' ? form.gender : '',
+        form.date_of_birth,
+        form.present_address,
+        form.permanent_address,
+        form.nid_no,
+        form.bio,
+    ].some((value) => hasValue(value));
+
+    return hasPersonalInfo ? 'Edit' : 'Add';
+});
+
 function switchTab(tabKey: string) {
     activeTab.value = tabKey;
     editingTab.value = null;
@@ -576,7 +631,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                         Information
                     </h2>
                     <Button type="button" variant="outline" @click="openEditMode">
-                        Edit/Add
+                        {{ activeTabActionLabel }}
                     </Button>
                 </div>
 
