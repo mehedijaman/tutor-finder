@@ -21,15 +21,24 @@ class TutorReviewController extends Controller
     {
         $user = $request->user();
 
+        $showTrashed = $request->boolean('trash');
+
         $reviews = TutorReview::query()
             ->where('guardian_user_id', $user->id)
+            ->when($showTrashed, fn ($q) => $q->onlyTrashed())
             ->with([
                 'tutor:id,name,photo_url',
                 'jobAssignment:id,job_id',
                 'jobAssignment.job:id,title',
             ])
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
+
+        $trashedCount = TutorReview::query()
+            ->where('guardian_user_id', $user->id)
+            ->onlyTrashed()
+            ->count();
 
         $reviewableAssignments = DB::table('tuition_job_assignments')
             ->join('tuition_jobs', 'tuition_job_assignments.job_id', '=', 'tuition_jobs.id')
@@ -51,6 +60,8 @@ class TutorReviewController extends Controller
         return inertia('guardian/reviews/Index', [
             'reviews' => $reviews,
             'reviewableAssignments' => $reviewableAssignments,
+            'trashedCount' => $trashedCount,
+            'showTrashed' => $showTrashed,
         ]);
     }
 
@@ -96,5 +107,77 @@ class TutorReviewController extends Controller
         $tutorReview->delete();
 
         return back()->with('success', 'Your review has been deleted.');
+    }
+
+    /**
+     * Restore a soft-deleted tutor review.
+     */
+    public function restore(TutorReview $tutorReview): RedirectResponse
+    {
+        if ($tutorReview->guardian_user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if (! $tutorReview->trashed()) {
+            return back()->with('success', 'This review is already active.');
+        }
+
+        $tutorReview->restore();
+
+        return back()->with('success', 'Your review has been restored.');
+    }
+
+    /**
+     * Permanently delete a soft-deleted tutor review.
+     */
+    public function forceDelete(TutorReview $tutorReview): RedirectResponse
+    {
+        if ($tutorReview->guardian_user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if (! $tutorReview->trashed()) {
+            abort(403);
+        }
+
+        $tutorReview->forceDelete();
+
+        return back()->with('success', 'Your review has been permanently deleted.');
+    }
+
+    /**
+     * Restore all soft-deleted reviews for the guardian.
+     */
+    public function restoreAll(): RedirectResponse
+    {
+        $count = TutorReview::query()
+            ->where('guardian_user_id', auth()->id())
+            ->onlyTrashed()
+            ->count();
+
+        TutorReview::query()
+            ->where('guardian_user_id', auth()->id())
+            ->onlyTrashed()
+            ->restore();
+
+        return back()->with('success', "{$count} review(s) have been restored.");
+    }
+
+    /**
+     * Permanently delete all soft-deleted reviews for the guardian.
+     */
+    public function emptyTrash(): RedirectResponse
+    {
+        $count = TutorReview::query()
+            ->where('guardian_user_id', auth()->id())
+            ->onlyTrashed()
+            ->count();
+
+        TutorReview::query()
+            ->where('guardian_user_id', auth()->id())
+            ->onlyTrashed()
+            ->forceDelete();
+
+        return back()->with('success', "{$count} review(s) have been permanently deleted.");
     }
 }

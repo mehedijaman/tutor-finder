@@ -102,6 +102,9 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'finance-ledger-view',
             'ticket-close',
             'ticket-assign',
+            'review-restore',
+            'review-force-delete',
+            'report-view',
         )->values()->all();
 
         Permission::query()

@@ -126,6 +126,146 @@ it('allows admin to delete a review', function () {
     $this->assertSoftDeleted('tutor_reviews', ['id' => $review->id]);
 });
 
+// --- Restore ---
+
+it('allows admin to restore a soft-deleted review', function () {
+    $review = createReviewWithAssignment();
+    $review->delete();
+
+    $this->actingAs($this->admin)
+        ->patch("/admin/reviews/{$review->id}/restore")
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseHas('tutor_reviews', [
+        'id' => $review->id,
+        'deleted_at' => null,
+    ]);
+});
+
+it('returns success message when restoring an already active review', function () {
+    $review = createReviewWithAssignment();
+
+    $this->actingAs($this->admin)
+        ->patch("/admin/reviews/{$review->id}/restore")
+        ->assertRedirect()
+        ->assertSessionHas('success');
+});
+
+it('lists trashed reviews when trash filter is applied', function () {
+    $review = createReviewWithAssignment();
+    $review->delete();
+
+    $this->actingAs($this->admin)
+        ->get('/admin/reviews?trash=1')
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('admin/reviews/Index')
+            ->has('reviews.data', 1)
+            ->where('filters.trash', true)
+            ->where('trashedCount', 1)
+        );
+});
+
+it('requires review-restore permission to restore a review', function () {
+    $admin = User::factory()->admin()->create();
+    $review = createReviewWithAssignment();
+    $review->delete();
+
+    $this->actingAs($admin)
+        ->patch("/admin/reviews/{$review->id}/restore")
+        ->assertForbidden();
+});
+
+// --- Force Delete ---
+
+it('allows admin to permanently delete a soft-deleted review', function () {
+    $review = createReviewWithAssignment();
+    $review->delete();
+
+    $this->actingAs($this->admin)
+        ->delete("/admin/reviews/{$review->id}/force-delete")
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseMissing('tutor_reviews', ['id' => $review->id]);
+});
+
+it('prevents force-deleting a non-trashed review', function () {
+    $review = createReviewWithAssignment();
+
+    $this->actingAs($this->admin)
+        ->delete("/admin/reviews/{$review->id}/force-delete")
+        ->assertForbidden();
+});
+
+it('requires review-force-delete permission to force-delete a review', function () {
+    $admin = User::factory()->admin()->create();
+    $review = createReviewWithAssignment();
+    $review->delete();
+
+    $this->actingAs($admin)
+        ->delete("/admin/reviews/{$review->id}/force-delete")
+        ->assertForbidden();
+});
+
+// --- Restore All ---
+
+it('allows admin to restore all soft-deleted reviews', function () {
+    $reviews = [];
+    for ($i = 0; $i < 3; $i++) {
+        $reviews[] = createReviewWithAssignment();
+    }
+
+    foreach ($reviews as $review) {
+        $review->delete();
+    }
+
+    $this->actingAs($this->admin)
+        ->patch('/admin/reviews/restore-all')
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    foreach ($reviews as $review) {
+        $this->assertDatabaseHas('tutor_reviews', [
+            'id' => $review->id,
+            'deleted_at' => null,
+        ]);
+    }
+});
+
+// --- Empty Recycle Bin ---
+
+it('allows admin to permanently delete all soft-deleted reviews', function () {
+    $reviews = [];
+    for ($i = 0; $i < 3; $i++) {
+        $reviews[] = createReviewWithAssignment();
+    }
+
+    foreach ($reviews as $review) {
+        $review->delete();
+    }
+
+    $this->actingAs($this->admin)
+        ->delete('/admin/reviews/empty-trash')
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    foreach ($reviews as $review) {
+        $this->assertDatabaseMissing('tutor_reviews', ['id' => $review->id]);
+    }
+});
+
+it('requires review-force-delete permission to empty recycle bin', function () {
+    $admin = User::factory()->admin()->create();
+    $review = createReviewWithAssignment();
+    $review->delete();
+
+    $this->actingAs($admin)
+        ->delete('/admin/reviews/empty-trash')
+        ->assertForbidden();
+});
+
 // --- Authorization ---
 
 it('requires review-view permission to access reviews index', function () {

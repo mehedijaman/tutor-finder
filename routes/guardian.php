@@ -47,6 +47,16 @@ Route::prefix('guardian')
 
         Route::get('/reviews', [TutorReviewController::class, 'index'])->name('reviews.index');
         Route::post('/reviews', [TutorReviewController::class, 'store'])->name('reviews.store');
+        Route::patch('/reviews/restore-all', [TutorReviewController::class, 'restoreAll'])
+            ->name('reviews.restore-all');
+        Route::delete('/reviews/empty-trash', [TutorReviewController::class, 'emptyTrash'])
+            ->name('reviews.empty-trash');
         Route::put('/reviews/{tutorReview}', [TutorReviewController::class, 'update'])->name('reviews.update');
         Route::delete('/reviews/{tutorReview}', [TutorReviewController::class, 'destroy'])->name('reviews.destroy');
+        Route::patch('/reviews/{tutorReview}/restore', [TutorReviewController::class, 'restore'])
+            ->withTrashed()
+            ->name('reviews.restore');
+        Route::delete('/reviews/{tutorReview}/force-delete', [TutorReviewController::class, 'forceDelete'])
+            ->withTrashed()
+            ->name('reviews.force-delete');
     });

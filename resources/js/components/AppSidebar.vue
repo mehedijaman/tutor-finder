@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import {
+    BarChart3,
     FileText,
     FolderOpen,
     GraduationCap,
@@ -316,6 +317,38 @@ const mainNavItems = computed<NavItem[]>(() => {
                     {
                         title: 'Ledger',
                         href: '/admin/finance/ledger',
+                        icon: FileText,
+                    },
+                ],
+            },
+            {
+                title: 'Reports',
+                href: '/admin/reports/income',
+                icon: BarChart3,
+                children: [
+                    {
+                        title: 'Income Report',
+                        href: '/admin/reports/income',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Tuition Report',
+                        href: '/admin/reports/tuition',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Refund Report',
+                        href: '/admin/reports/refunds',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'User Registrations',
+                        href: '/admin/reports/user-registrations',
+                        icon: FileText,
+                    },
+                    {
+                        title: 'Job Performance',
+                        href: '/admin/reports/job-performance',
                         icon: FileText,
                     },
                 ],

@@ -211,6 +211,239 @@ it('prevents a guardian from deleting another guardians review', function () {
         ->assertForbidden();
 });
 
+// --- Restore Review ---
+
+it('allows a guardian to restore their own soft-deleted review', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $assignment = createConfirmedAssignment($guardian, $tutor);
+
+    $review = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian->id,
+        'job_assignment_id' => $assignment->id,
+    ]);
+    $review->delete();
+
+    $this->actingAs($guardian)
+        ->patch("/guardian/reviews/{$review->id}/restore")
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseHas('tutor_reviews', [
+        'id' => $review->id,
+        'deleted_at' => null,
+    ]);
+});
+
+it('prevents a guardian from restoring another guardians review', function () {
+    $guardian1 = User::factory()->guardian()->create();
+    $guardian2 = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $assignment = createConfirmedAssignment($guardian1, $tutor);
+
+    $review = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian1->id,
+        'job_assignment_id' => $assignment->id,
+    ]);
+    $review->delete();
+
+    $this->actingAs($guardian2)
+        ->patch("/guardian/reviews/{$review->id}/restore")
+        ->assertForbidden();
+
+    $this->assertSoftDeleted('tutor_reviews', ['id' => $review->id]);
+});
+
+it('returns success message when restoring an already active review', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $assignment = createConfirmedAssignment($guardian, $tutor);
+
+    $review = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian->id,
+        'job_assignment_id' => $assignment->id,
+    ]);
+
+    $this->actingAs($guardian)
+        ->patch("/guardian/reviews/{$review->id}/restore")
+        ->assertRedirect()
+        ->assertSessionHas('success');
+});
+
+it('lists trashed reviews when trash filter is applied', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $assignment = createConfirmedAssignment($guardian, $tutor);
+
+    $review = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian->id,
+        'job_assignment_id' => $assignment->id,
+    ]);
+    $review->delete();
+
+    $this->actingAs($guardian)
+        ->get('/guardian/reviews?trash=1')
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guardian/reviews/Index')
+            ->has('reviews.data', 1)
+            ->where('showTrashed', true)
+            ->where('trashedCount', 1)
+        );
+});
+
+// --- Force Delete ---
+
+it('allows a guardian to permanently delete their own soft-deleted review', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $assignment = createConfirmedAssignment($guardian, $tutor);
+
+    $review = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian->id,
+        'job_assignment_id' => $assignment->id,
+    ]);
+    $review->delete();
+
+    $this->actingAs($guardian)
+        ->delete("/guardian/reviews/{$review->id}/force-delete")
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseMissing('tutor_reviews', ['id' => $review->id]);
+});
+
+it('prevents a guardian from force-deleting another guardians review', function () {
+    $guardian1 = User::factory()->guardian()->create();
+    $guardian2 = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $assignment = createConfirmedAssignment($guardian1, $tutor);
+
+    $review = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian1->id,
+        'job_assignment_id' => $assignment->id,
+    ]);
+    $review->delete();
+
+    $this->actingAs($guardian2)
+        ->delete("/guardian/reviews/{$review->id}/force-delete")
+        ->assertForbidden();
+});
+
+it('prevents force-deleting a non-trashed review', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+    $assignment = createConfirmedAssignment($guardian, $tutor);
+
+    $review = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian->id,
+        'job_assignment_id' => $assignment->id,
+    ]);
+
+    $this->actingAs($guardian)
+        ->delete("/guardian/reviews/{$review->id}/force-delete")
+        ->assertForbidden();
+});
+
+// --- Restore All ---
+
+it('allows a guardian to restore all their soft-deleted reviews', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+
+    $reviews = [];
+    for ($i = 0; $i < 3; $i++) {
+        $assignment = createConfirmedAssignment($guardian, $tutor);
+        $reviews[] = TutorReview::factory()->create([
+            'tutor_user_id' => $tutor->id,
+            'guardian_user_id' => $guardian->id,
+            'job_assignment_id' => $assignment->id,
+        ]);
+    }
+
+    foreach ($reviews as $review) {
+        $review->delete();
+    }
+
+    $this->actingAs($guardian)
+        ->patch('/guardian/reviews/restore-all')
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    foreach ($reviews as $review) {
+        $this->assertDatabaseHas('tutor_reviews', [
+            'id' => $review->id,
+            'deleted_at' => null,
+        ]);
+    }
+});
+
+// --- Empty Recycle Bin ---
+
+it('allows a guardian to permanently delete all their soft-deleted reviews', function () {
+    $guardian = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+
+    $reviews = [];
+    for ($i = 0; $i < 3; $i++) {
+        $assignment = createConfirmedAssignment($guardian, $tutor);
+        $reviews[] = TutorReview::factory()->create([
+            'tutor_user_id' => $tutor->id,
+            'guardian_user_id' => $guardian->id,
+            'job_assignment_id' => $assignment->id,
+        ]);
+    }
+
+    foreach ($reviews as $review) {
+        $review->delete();
+    }
+
+    $this->actingAs($guardian)
+        ->delete('/guardian/reviews/empty-trash')
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    foreach ($reviews as $review) {
+        $this->assertDatabaseMissing('tutor_reviews', ['id' => $review->id]);
+    }
+});
+
+it('does not affect other guardians reviews when emptying recycle bin', function () {
+    $guardian1 = User::factory()->guardian()->create();
+    $guardian2 = User::factory()->guardian()->create();
+    $tutor = User::factory()->tutor()->create();
+
+    $assignment1 = createConfirmedAssignment($guardian1, $tutor);
+    $review1 = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian1->id,
+        'job_assignment_id' => $assignment1->id,
+    ]);
+    $review1->delete();
+
+    $assignment2 = createConfirmedAssignment($guardian2, $tutor);
+    $review2 = TutorReview::factory()->create([
+        'tutor_user_id' => $tutor->id,
+        'guardian_user_id' => $guardian2->id,
+        'job_assignment_id' => $assignment2->id,
+    ]);
+    $review2->delete();
+
+    $this->actingAs($guardian1)
+        ->delete('/guardian/reviews/empty-trash')
+        ->assertRedirect();
+
+    $this->assertDatabaseMissing('tutor_reviews', ['id' => $review1->id]);
+    $this->assertSoftDeleted('tutor_reviews', ['id' => $review2->id]);
+});
+
 // --- Update Review ---
 
 it('allows a guardian to update their own review', function () {

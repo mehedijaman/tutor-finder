@@ -19,7 +19,10 @@ class TutorReviewController extends Controller
         $query = trim($request->string('q')->toString());
         $ratingFilter = $request->integer('rating');
 
+        $showTrashed = $request->boolean('trash');
+
         $reviews = TutorReview::query()
+            ->when($showTrashed, fn ($q) => $q->onlyTrashed())
             ->with([
                 'tutor:id,name,photo_url',
                 'guardian:id,name',
@@ -38,12 +41,16 @@ class TutorReviewController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        $trashedCount = TutorReview::onlyTrashed()->count();
+
         return inertia('admin/reviews/Index', [
             'reviews' => $reviews,
             'filters' => [
                 'q' => $query,
                 'rating' => $ratingFilter ?: '',
+                'trash' => $showTrashed,
             ],
+            'trashedCount' => $trashedCount,
         ]);
     }
 
@@ -65,5 +72,57 @@ class TutorReviewController extends Controller
         $tutorReview->delete();
 
         return back()->with('success', 'Review has been deleted.');
+    }
+
+    /**
+     * Restore a soft-deleted tutor review.
+     */
+    public function restore(TutorReview $tutorReview): RedirectResponse
+    {
+        if (! $tutorReview->trashed()) {
+            return back()->with('success', 'Review is already active.');
+        }
+
+        $tutorReview->restore();
+
+        return back()->with('success', 'Review has been restored.');
+    }
+
+    /**
+     * Permanently delete a soft-deleted tutor review.
+     */
+    public function forceDelete(TutorReview $tutorReview): RedirectResponse
+    {
+        if (! $tutorReview->trashed()) {
+            abort(403);
+        }
+
+        $tutorReview->forceDelete();
+
+        return back()->with('success', 'Review has been permanently deleted.');
+    }
+
+    /**
+     * Restore all soft-deleted tutor reviews.
+     */
+    public function restoreAll(): RedirectResponse
+    {
+        $count = TutorReview::onlyTrashed()->count();
+
+        TutorReview::onlyTrashed()->restore();
+
+        return back()->with('success', "{$count} review(s) have been restored.");
+    }
+
+    /**
+     * Permanently delete all soft-deleted tutor reviews.
+     */
+    public function emptyTrash(): RedirectResponse
+    {
+        $count = TutorReview::onlyTrashed()->count();
+
+        TutorReview::onlyTrashed()->forceDelete();
+
+        return back()->with('success', "{$count} review(s) have been permanently deleted.");
     }
 }

@@ -5,6 +5,7 @@ import {
     Edit3,
     ExternalLink,
     MessageSquare,
+    RotateCcw,
     Send,
     Star,
     Trash2,
@@ -73,6 +74,8 @@ type ReviewableAssignment = {
 const props = defineProps<{
     reviews: PaginatedReviews;
     reviewableAssignments: ReviewableAssignment[];
+    trashedCount: number;
+    showTrashed: boolean;
 }>();
 
 const breadcrumbs = [{ title: 'My Reviews', href: '/guardian/reviews' }];
@@ -190,6 +193,99 @@ function handleDelete(): void {
     });
 }
 
+// --- Restore Review ---
+const isRestoring = ref(false);
+const restoreDialogOpen = ref(false);
+const reviewToRestore = ref<Review | null>(null);
+
+function confirmRestore(review: Review): void {
+    reviewToRestore.value = review;
+    restoreDialogOpen.value = true;
+}
+
+function handleRestore(): void {
+    if (!reviewToRestore.value) {
+        return;
+    }
+
+    isRestoring.value = true;
+    router.patch(
+        `/guardian/reviews/${reviewToRestore.value.id}/restore`,
+        {},
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                isRestoring.value = false;
+                restoreDialogOpen.value = false;
+                reviewToRestore.value = null;
+            },
+        },
+    );
+}
+
+// --- Permanent Delete ---
+const forceDeleteDialogOpen = ref(false);
+const reviewToForceDelete = ref<Review | null>(null);
+const isForceDeleting = ref(false);
+
+function confirmForceDelete(review: Review): void {
+    reviewToForceDelete.value = review;
+    forceDeleteDialogOpen.value = true;
+}
+
+function handleForceDelete(): void {
+    if (!reviewToForceDelete.value) {
+        return;
+    }
+
+    isForceDeleting.value = true;
+    router.delete(
+        `/guardian/reviews/${reviewToForceDelete.value.id}/force-delete`,
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                isForceDeleting.value = false;
+                forceDeleteDialogOpen.value = false;
+                reviewToForceDelete.value = null;
+            },
+        },
+    );
+}
+
+// --- Restore All ---
+const restoreAllDialogOpen = ref(false);
+const isRestoringAll = ref(false);
+
+function handleRestoreAll(): void {
+    isRestoringAll.value = true;
+    router.patch(
+        '/guardian/reviews/restore-all',
+        {},
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                isRestoringAll.value = false;
+                restoreAllDialogOpen.value = false;
+            },
+        },
+    );
+}
+
+// --- Empty Recycle Bin ---
+const emptyTrashDialogOpen = ref(false);
+const isEmptyingTrash = ref(false);
+
+function handleEmptyTrash(): void {
+    isEmptyingTrash.value = true;
+    router.delete('/guardian/reviews/empty-trash', {
+        preserveScroll: true,
+        onFinish: () => {
+            isEmptyingTrash.value = false;
+            emptyTrashDialogOpen.value = false;
+        },
+    });
+}
+
 // --- Helpers ---
 function ratingLabel(rating: number): string {
     const labels: Record<number, string> = {
@@ -259,13 +355,62 @@ function formatPaginationLabel(label: string): string {
                         </p>
                     </div>
 
-                    <Button
-                        v-if="reviewableAssignments.length > 0 && !showNewForm"
-                        @click="showNewForm = true"
-                    >
-                        <MessageSquare class="mr-2 h-4 w-4" />
-                        Write a Review
-                    </Button>
+                    <div class="flex items-center gap-2">
+                        <Button
+                            v-if="!props.showTrashed"
+                            variant="outline"
+                            size="sm"
+                            :disabled="trashedCount === 0"
+                            as-child
+                        >
+                            <Link
+                                href="/guardian/reviews?trash=1"
+                                preserve-scroll
+                            >
+                                <Trash2 class="mr-2 h-4 w-4" />
+                                Recycle Bin ({{ trashedCount }})
+                            </Link>
+                        </Button>
+                        <Button
+                            v-if="props.showTrashed"
+                            variant="outline"
+                            size="sm"
+                            as-child
+                        >
+                            <Link href="/guardian/reviews" preserve-scroll>
+                                Back to Reviews
+                            </Link>
+                        </Button>
+                        <Button
+                            v-if="props.showTrashed && reviews.total > 0"
+                            variant="outline"
+                            size="sm"
+                            @click="restoreAllDialogOpen = true"
+                        >
+                            <RotateCcw class="mr-2 h-4 w-4" />
+                            Restore All
+                        </Button>
+                        <Button
+                            v-if="props.showTrashed && reviews.total > 0"
+                            variant="destructive"
+                            size="sm"
+                            @click="emptyTrashDialogOpen = true"
+                        >
+                            <Trash2 class="mr-2 h-4 w-4" />
+                            Empty Recycle Bin
+                        </Button>
+                        <Button
+                            v-if="
+                                reviewableAssignments.length > 0 &&
+                                !showNewForm &&
+                                !props.showTrashed
+                            "
+                            @click="showNewForm = true"
+                        >
+                            <MessageSquare class="mr-2 h-4 w-4" />
+                            Write a Review
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -280,7 +425,11 @@ function formatPaginationLabel(label: string): string {
 
             <!-- Pending Reviews Alert -->
             <div
-                v-if="reviewableAssignments.length > 0 && !showNewForm"
+                v-if="
+                    reviewableAssignments.length > 0 &&
+                    !showNewForm &&
+                    !props.showTrashed
+                "
                 class="rounded-2xl border border-amber-200/80 bg-amber-50 p-5 shadow-sm"
             >
                 <div class="flex items-start gap-3">
@@ -307,7 +456,7 @@ function formatPaginationLabel(label: string): string {
 
             <!-- New Review Form -->
             <div
-                v-if="showNewForm"
+                v-if="showNewForm && !props.showTrashed"
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
                 <div class="mb-5 flex items-center justify-between">
@@ -468,7 +617,7 @@ function formatPaginationLabel(label: string): string {
             >
                 <div class="border-b border-slate-200/80 px-5 py-4 sm:px-6">
                     <h2 class="text-base font-semibold">
-                        Your Reviews
+                        {{ props.showTrashed ? 'Recycle Bin' : 'Your Reviews' }}
                         <span
                             v-if="reviews.total > 0"
                             class="ml-1 text-sm font-normal text-muted-foreground"
@@ -682,29 +831,49 @@ function formatPaginationLabel(label: string): string {
 
                             <!-- Actions -->
                             <div class="flex flex-shrink-0 items-center gap-1">
-                                <Link
-                                    :href="`/tutors/${review.tutor_user_id}`"
-                                    class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-                                    title="View tutor profile"
-                                >
-                                    <ExternalLink class="h-4 w-4" />
-                                </Link>
-                                <button
-                                    type="button"
-                                    class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-600"
-                                    title="Edit review"
-                                    @click="startEdit(review)"
-                                >
-                                    <Edit3 class="h-4 w-4" />
-                                </button>
-                                <button
-                                    type="button"
-                                    class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                                    title="Delete review"
-                                    @click="confirmDelete(review)"
-                                >
-                                    <Trash2 class="h-4 w-4" />
-                                </button>
+                                <template v-if="props.showTrashed">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        @click="confirmRestore(review)"
+                                    >
+                                        <RotateCcw class="mr-1.5 h-3.5 w-3.5" />
+                                        Restore
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        @click="confirmForceDelete(review)"
+                                    >
+                                        <Trash2 class="mr-1.5 h-3.5 w-3.5" />
+                                        Permanent Delete
+                                    </Button>
+                                </template>
+                                <template v-else>
+                                    <Link
+                                        :href="`/tutors/${review.tutor_user_id}`"
+                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                                        title="View tutor profile"
+                                    >
+                                        <ExternalLink class="h-4 w-4" />
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-600"
+                                        title="Edit review"
+                                        @click="startEdit(review)"
+                                    >
+                                        <Edit3 class="h-4 w-4" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                                        title="Delete review"
+                                        @click="confirmDelete(review)"
+                                    >
+                                        <Trash2 class="h-4 w-4" />
+                                    </button>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -718,16 +887,39 @@ function formatPaginationLabel(label: string): string {
                     <div
                         class="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100"
                     >
-                        <MessageSquare class="h-7 w-7 text-slate-400" />
+                        <component
+                            :is="props.showTrashed ? Trash2 : MessageSquare"
+                            class="h-7 w-7 text-slate-400"
+                        />
                     </div>
                     <p class="mt-4 text-sm font-medium text-slate-600">
-                        No reviews yet
+                        {{
+                            props.showTrashed
+                                ? 'Recycle bin is empty'
+                                : 'No reviews yet'
+                        }}
                     </p>
                     <p class="mt-1 text-xs text-slate-400">
-                        Once you review a tutor, it will appear here.
+                        {{
+                            props.showTrashed
+                                ? 'Deleted reviews will appear here.'
+                                : 'Once you review a tutor, it will appear here.'
+                        }}
                     </p>
                     <Button
-                        v-if="reviewableAssignments.length > 0 && !showNewForm"
+                        v-if="props.showTrashed"
+                        class="mt-4"
+                        variant="outline"
+                        as-child
+                    >
+                        <Link href="/guardian/reviews" preserve-scroll>
+                            Back to Reviews
+                        </Link>
+                    </Button>
+                    <Button
+                        v-else-if="
+                            reviewableAssignments.length > 0 && !showNewForm
+                        "
                         class="mt-4"
                         @click="showNewForm = true"
                     >
@@ -789,6 +981,131 @@ function formatPaginationLabel(label: string): string {
                             @click="handleDelete"
                         >
                             {{ isDeleting ? 'Deleting...' : 'Delete Review' }}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Restore Confirmation Dialog -->
+            <Dialog v-model:open="restoreDialogOpen">
+                <DialogContent>
+                    <DialogHeader class="space-y-2">
+                        <DialogTitle>Restore Review</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to restore this review? It
+                            will be visible again on tutor profiles.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter class="gap-2">
+                        <Button
+                            variant="outline"
+                            :disabled="isRestoring"
+                            @click="restoreDialogOpen = false"
+                        >
+                            Cancel
+                        </Button>
+                        <Button :disabled="isRestoring" @click="handleRestore">
+                            {{
+                                isRestoring ? 'Restoring...' : 'Restore Review'
+                            }}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Permanent Delete Confirmation Dialog -->
+            <Dialog v-model:open="forceDeleteDialogOpen">
+                <DialogContent>
+                    <DialogHeader class="space-y-2">
+                        <DialogTitle>Permanently Delete Review</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to permanently delete this
+                            review? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter class="gap-2">
+                        <Button
+                            variant="outline"
+                            :disabled="isForceDeleting"
+                            @click="forceDeleteDialogOpen = false"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            :disabled="isForceDeleting"
+                            @click="handleForceDelete"
+                        >
+                            {{
+                                isForceDeleting
+                                    ? 'Deleting...'
+                                    : 'Permanently Delete'
+                            }}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Restore All Confirmation Dialog -->
+            <Dialog v-model:open="restoreAllDialogOpen">
+                <DialogContent>
+                    <DialogHeader class="space-y-2">
+                        <DialogTitle>Restore All Reviews</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to restore all
+                            {{ reviews.total }} deleted review(s)? They will be
+                            visible again on tutor profiles.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter class="gap-2">
+                        <Button
+                            variant="outline"
+                            :disabled="isRestoringAll"
+                            @click="restoreAllDialogOpen = false"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            :disabled="isRestoringAll"
+                            @click="handleRestoreAll"
+                        >
+                            {{
+                                isRestoringAll ? 'Restoring...' : 'Restore All'
+                            }}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Empty Recycle Bin Confirmation Dialog -->
+            <Dialog v-model:open="emptyTrashDialogOpen">
+                <DialogContent>
+                    <DialogHeader class="space-y-2">
+                        <DialogTitle>Empty Recycle Bin</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to permanently delete all
+                            {{ reviews.total }} review(s) in the recycle bin?
+                            This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter class="gap-2">
+                        <Button
+                            variant="outline"
+                            :disabled="isEmptyingTrash"
+                            @click="emptyTrashDialogOpen = false"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            :disabled="isEmptyingTrash"
+                            @click="handleEmptyTrash"
+                        >
+                            {{
+                                isEmptyingTrash
+                                    ? 'Deleting...'
+                                    : 'Empty Recycle Bin'
+                            }}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

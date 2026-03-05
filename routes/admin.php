@@ -20,6 +20,11 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
+use App\Http\Controllers\Admin\Report\IncomeReportController;
+use App\Http\Controllers\Admin\Report\JobPerformanceReportController;
+use App\Http\Controllers\Admin\Report\RefundReportController;
+use App\Http\Controllers\Admin\Report\TuitionReportController;
+use App\Http\Controllers\Admin\Report\UserRegistrationReportController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\Tuition\Taxonomies\AreaController as TaxonomyAreaController;
@@ -89,12 +94,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reviews', [AdminTutorReviewController::class, 'index'])
             ->middleware('permission:review-view')
             ->name('reviews.index');
+        Route::patch('/reviews/restore-all', [AdminTutorReviewController::class, 'restoreAll'])
+            ->middleware('permission:review-restore')
+            ->name('reviews.restore-all');
+        Route::delete('/reviews/empty-trash', [AdminTutorReviewController::class, 'emptyTrash'])
+            ->middleware('permission:review-force-delete')
+            ->name('reviews.empty-trash');
         Route::put('/reviews/{tutorReview}', [AdminTutorReviewController::class, 'update'])
             ->middleware('permission:review-update')
             ->name('reviews.update');
         Route::delete('/reviews/{tutorReview}', [AdminTutorReviewController::class, 'destroy'])
             ->middleware('permission:review-delete')
             ->name('reviews.destroy');
+        Route::patch('/reviews/{tutorReview}/restore', [AdminTutorReviewController::class, 'restore'])
+            ->middleware('permission:review-restore')
+            ->withTrashed()
+            ->name('reviews.restore');
+        Route::delete('/reviews/{tutorReview}/force-delete', [AdminTutorReviewController::class, 'forceDelete'])
+            ->middleware('permission:review-force-delete')
+            ->withTrashed()
+            ->name('reviews.force-delete');
         Route::get('/notifications', [AdminNotificationController::class, 'index'])
             ->name('notifications.index');
         Route::patch('/notifications/read-all', [AdminNotificationController::class, 'markAllAsRead'])
@@ -753,6 +772,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/ledger', [FinanceLedgerController::class, 'index'])
                 ->middleware('permission:finance-ledger-view')
                 ->name('ledger.index');
+        });
+
+        Route::prefix('reports')->name('reports.')->middleware('permission:report-view')->group(function () {
+            Route::get('/income', [IncomeReportController::class, 'index'])->name('income');
+            Route::get('/income/export', [IncomeReportController::class, 'export'])->name('income.export');
+            Route::get('/tuition', [TuitionReportController::class, 'index'])->name('tuition');
+            Route::get('/tuition/export', [TuitionReportController::class, 'export'])->name('tuition.export');
+            Route::get('/refunds', [RefundReportController::class, 'index'])->name('refunds');
+            Route::get('/refunds/export', [RefundReportController::class, 'export'])->name('refunds.export');
+            Route::get('/user-registrations', [UserRegistrationReportController::class, 'index'])->name('user-registrations');
+            Route::get('/user-registrations/export', [UserRegistrationReportController::class, 'export'])->name('user-registrations.export');
+            Route::get('/job-performance', [JobPerformanceReportController::class, 'index'])->name('job-performance');
+            Route::get('/job-performance/export', [JobPerformanceReportController::class, 'export'])->name('job-performance.export');
         });
 
     });
