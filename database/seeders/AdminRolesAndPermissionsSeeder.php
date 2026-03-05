@@ -38,6 +38,7 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'notice',
             'ticket',
             'review',
+            'page',
         ])->flatMap(fn (string $resource): array => [
             "{$resource}-create",
             "{$resource}-view",
@@ -104,6 +105,8 @@ class AdminRolesAndPermissionsSeeder extends Seeder
             'ticket-assign',
             'review-restore',
             'review-force-delete',
+            'page-restore',
+            'page-force-delete',
             'report-view',
         )->values()->all();
 

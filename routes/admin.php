@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\Report\IncomeReportController;
 use App\Http\Controllers\Admin\Report\JobPerformanceReportController;
 use App\Http\Controllers\Admin\Report\RefundReportController;
@@ -152,6 +153,39 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/faqs/recycle-bin/empty', [AdminFaqController::class, 'emptyRecycleBin'])
             ->middleware('permission:faq-force-delete')
             ->name('faqs.empty-recycle-bin');
+
+        Route::get('/pages', [AdminPageController::class, 'index'])
+            ->middleware('permission:page-view')
+            ->name('pages.index');
+        Route::get('/pages/create', [AdminPageController::class, 'create'])
+            ->middleware('permission:page-create')
+            ->name('pages.create');
+        Route::post('/pages', [AdminPageController::class, 'store'])
+            ->middleware('permission:page-create')
+            ->name('pages.store');
+        Route::get('/pages/{page}/edit', [AdminPageController::class, 'edit'])
+            ->middleware('permission:page-update')
+            ->name('pages.edit');
+        Route::put('/pages/{page}', [AdminPageController::class, 'update'])
+            ->middleware('permission:page-update')
+            ->name('pages.update');
+        Route::patch('/pages/{page}/status', [AdminPageController::class, 'updateStatus'])
+            ->middleware('permission:page-update')
+            ->name('pages.status');
+        Route::delete('/pages/{page}', [AdminPageController::class, 'destroy'])
+            ->middleware('permission:page-delete')
+            ->name('pages.destroy');
+        Route::patch('/pages/{page}/restore', [AdminPageController::class, 'restore'])
+            ->middleware('permission:page-restore')
+            ->withTrashed()
+            ->name('pages.restore');
+        Route::delete('/pages/{page}/force', [AdminPageController::class, 'forceDelete'])
+            ->middleware('permission:page-force-delete')
+            ->withTrashed()
+            ->name('pages.force-delete');
+        Route::delete('/pages/recycle-bin/empty', [AdminPageController::class, 'emptyRecycleBin'])
+            ->middleware('permission:page-force-delete')
+            ->name('pages.empty-recycle-bin');
 
         Route::prefix('jobs')->name('jobs.')->group(function () {
             Route::get('/', [AdminJobController::class, 'index'])

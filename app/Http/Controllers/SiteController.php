@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\JobStatus;
+use App\Enums\PageStatus;
 use App\Enums\TaxonomyStatus;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use App\Models\Page;
 use App\Models\Testimonial;
 use App\Models\TuitionJob;
 use App\Models\User;
@@ -44,12 +46,58 @@ class SiteController extends Controller
 
     public function privacy(): Response
     {
+        $page = Page::query()
+            ->where('slug', 'privacy-policy')
+            ->where('status', PageStatus::Active)
+            ->first();
+
+        if ($page) {
+            return inertia('Page', ['page' => $this->transformPage($page)]);
+        }
+
         return inertia('PrivacyPolicy');
     }
 
     public function terms(): Response
     {
+        $page = Page::query()
+            ->where('slug', 'terms-of-service')
+            ->where('status', PageStatus::Active)
+            ->first();
+
+        if ($page) {
+            return inertia('Page', ['page' => $this->transformPage($page)]);
+        }
+
         return inertia('TermsOfService');
+    }
+
+    public function showPage(string $slug): Response
+    {
+        $page = Page::query()
+            ->where('slug', $slug)
+            ->where('status', PageStatus::Active)
+            ->firstOrFail();
+
+        return inertia('Page', ['page' => $this->transformPage($page)]);
+    }
+
+    /**
+     * Transform a page model for the frontend.
+     *
+     * @return array<string, mixed>
+     */
+    private function transformPage(Page $page): array
+    {
+        return [
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'content' => $page->content,
+            'meta_title' => $page->meta_title,
+            'meta_description' => $page->meta_description,
+            'featured_image_url' => $page->getFirstMediaUrl('featured_image') ?: null,
+            'updated_at' => $page->updated_at?->toDateTimeString(),
+        ];
     }
 
     /**

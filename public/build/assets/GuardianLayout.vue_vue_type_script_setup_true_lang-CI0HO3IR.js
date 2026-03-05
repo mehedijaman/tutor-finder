@@ -1,1 +1,0 @@
-import{_ as e}from"./AppLayout.vue_vue_type_script_setup_true_lang-Dh1h_Cy-.js";import{d as s,m as t,w as o,C as m,o as c}from"./app-Bkmlw7Vh.js";const _=s({__name:"GuardianLayout",props:{breadcrumbs:{type:Array,default:()=>[]}},setup(r){return(a,n)=>(c(),t(e,{breadcrumbs:r.breadcrumbs},{default:o(()=>[m(a.$slots,"default")]),_:3},8,["breadcrumbs"]))}});export{_};

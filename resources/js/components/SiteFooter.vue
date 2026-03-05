@@ -9,6 +9,7 @@ import {
     home,
     register,
 } from '@/routes';
+import { index as faqIndex } from '@/routes/faq';
 
 withDefaults(
     defineProps<{
@@ -93,6 +94,20 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
                                 :href="contact()"
                                 class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                                 >Contact</Link
+                            >
+                        </li>
+                        <li>
+                            <Link
+                                :href="faqIndex()"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
+                                >FAQ</Link
+                            >
+                        </li>
+                        <li>
+                            <Link
+                                href="/pages/about-us"
+                                class="text-slate-400 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
+                                >About Us</Link
                             >
                         </li>
                     </ul>
@@ -180,6 +195,11 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
                         class="text-slate-500 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
                         >Terms of Service</Link
                     >
+                    <Link
+                        :href="faqIndex()"
+                        class="text-slate-500 transition-colors hover:text-white focus-visible:text-white focus-visible:underline focus-visible:outline-none"
+                        >FAQ</Link
+                    >
                 </div>
             </div>
         </div>
@@ -205,6 +225,11 @@ const { siteName, logoUrl, primaryPhone, primaryEmail, primaryAddress } =
                         :href="termsOfService()"
                         class="font-medium text-slate-600 transition-colors hover:text-blue-700 focus-visible:underline focus-visible:outline-none"
                         >Terms</Link
+                    >
+                    <Link
+                        :href="faqIndex()"
+                        class="font-medium text-slate-600 transition-colors hover:text-blue-700 focus-visible:underline focus-visible:outline-none"
+                        >FAQ</Link
                     >
                 </div>
             </div>

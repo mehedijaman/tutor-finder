@@ -27,6 +27,7 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->name('contact.store');
 Route::get('/privacy-policy', [SiteController::class, 'privacy'])->name('privacy-policy');
 Route::get('/terms-of-service', [SiteController::class, 'terms'])->name('terms-of-service');
+Route::get('/pages/{slug}', [SiteController::class, 'showPage'])->name('pages.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/verify-otp', [VerifyOtpController::class, 'create'])->name('otp.verify');

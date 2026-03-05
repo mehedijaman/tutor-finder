@@ -251,6 +251,7 @@ const mainNavItems = computed<NavItem[]>(() => {
             },
             { title: 'FAQs', href: '/admin/faqs', icon: CircleHelp },
             { title: 'Notices', href: '/admin/notices', icon: Newspaper },
+            { title: 'Pages', href: '/admin/pages', icon: FileText },
             {
                 title: 'Jobs',
                 href: '/admin/jobs',
