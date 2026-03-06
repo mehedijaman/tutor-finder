@@ -1,33 +1,34 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import {
     BarChart3,
+    Briefcase,
+    BookOpen,
+    CircleHelp,
+    ClipboardCheck,
+    Cog,
     FileText,
     FolderOpen,
+    Globe,
     GraduationCap,
-    MessagesSquare,
-    CircleHelp,
-    History,
     HardDrive,
+    History,
+    Key,
     LayoutGrid,
     LifeBuoy,
-    Newspaper,
-    Globe,
+    LogOut,
     MapPin,
-    BookOpen,
+    MessageSquare,
+    MessagesSquare,
+    Newspaper,
+    PlayCircle,
+    ScrollText,
     Shield,
+    Star,
     Tags,
     Users,
     UserRound,
     Wrench,
-    Cog,
-    Key,
-    Briefcase,
-    ClipboardCheck,
-    MessageSquare,
-    Star,
-    PlayCircle,
-    ScrollText,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -35,12 +36,13 @@ import NavMain from '@/components/NavMain.vue';
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, logout } from '@/routes';
 import type { NavItem } from '@/types';
 
 const page = usePage();
@@ -127,6 +129,10 @@ const verificationBadge = computed(() => {
             'border-amber-300/70 bg-amber-500/15 text-amber-700 dark:text-amber-300',
     };
 });
+
+const handleLogout = (): void => {
+    router.flushAll();
+};
 
 const mainNavItems = computed<NavItem[]>(() => {
     const role = panelContext.value;
@@ -620,10 +626,28 @@ const mainNavItems = computed<NavItem[]>(() => {
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <!-- <SidebarSeparator class="mx-3" /> -->
 
         <!-- <SidebarFooter class="pt-3">
-            <NavUser />
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton
+                        as-child
+                        class="text-rose-600 hover:text-rose-700 data-[active=true]:text-rose-700"
+                    >
+                        <Link
+                            :href="logout()"
+                            method="post"
+                            as="button"
+                            class="w-full"
+                            data-test="sidebar-logout-button"
+                            @click="handleLogout"
+                        >
+                            <LogOut />
+                            <span>Logout</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
         </SidebarFooter> -->
     </Sidebar>
     <slot />
