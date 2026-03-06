@@ -4,6 +4,7 @@ import { Filter, List, Plus } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import JobCard from '@/components/jobs/JobCard.vue';
 import JobFiltersDrawer from '@/components/jobs/JobFiltersDrawer.vue';
+import PublicPagination from '@/components/public/PublicPagination.vue';
 import { Button } from '@/components/ui/button';
 
 type PaginationLink = {
@@ -38,6 +39,11 @@ type JobItem = {
 const props = defineProps<{
     jobs: {
         data: JobItem[];
+        current_page: number;
+        last_page: number;
+        from: number | null;
+        to: number | null;
+        total: number;
         links: PaginationLink[];
     };
     total: number;
@@ -86,14 +92,6 @@ const hasJobs = computed(() => jobList.value.length > 0);
 const detailsBasePath = computed(() =>
     window.location.pathname.startsWith('/tutor') ? '/tutor/jobs' : '/jobs',
 );
-
-function formatPaginationLabel(label: string): string {
-    return String(label ?? '')
-        .replaceAll('&laquo;', '«')
-        .replaceAll('&raquo;', '»')
-        .replace(/<[^>]*>/g, '')
-        .trim();
-}
 </script>
 
 <template>
@@ -179,37 +177,15 @@ function formatPaginationLabel(label: string): string {
                 </p>
             </div>
 
-            <div
-                v-if="props.jobs.links && props.jobs.links.length > 3"
-                class="mt-10 flex justify-center"
-            >
-                <nav class="flex items-center gap-1">
-                    <template
-                        v-for="(link, index) in props.jobs.links"
-                        :key="`${index}-${link.label}`"
-                    >
-                        <span
-                            v-if="!link.url"
-                            class="inline-flex h-10 items-center justify-center rounded-lg border px-4 text-sm text-slate-400"
-                        >
-                            {{ formatPaginationLabel(link.label) }}
-                        </span>
-                        <Link
-                            v-else
-                            :href="link.url"
-                            preserve-scroll
-                            class="inline-flex h-10 items-center justify-center rounded-lg border px-4 text-sm font-medium transition-all duration-200"
-                            :class="[
-                                link.active
-                                    ? 'border-blue-600 bg-blue-600 text-white'
-                                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50',
-                            ]"
-                        >
-                            {{ formatPaginationLabel(link.label) }}
-                        </Link>
-                    </template>
-                </nav>
-            </div>
+            <PublicPagination
+                class="mt-10"
+                :links="props.jobs.links"
+                :current-page="props.jobs.current_page"
+                :last-page="props.jobs.last_page"
+                :from="props.jobs.from"
+                :to="props.jobs.to"
+                :total="props.jobs.total"
+            />
         </div>
     </div>
 

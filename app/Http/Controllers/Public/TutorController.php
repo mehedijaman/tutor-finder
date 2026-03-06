@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\TaxonomyStatus;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Area;
+use App\Models\Category;
+use App\Models\SchoolClass;
+use App\Models\Subject;
+use App\Models\TuitionType;
 use App\Models\TutorReview;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,6 +21,52 @@ class TutorController extends Controller
 {
     public function index(Request $request)
     {
+        $allowedDayValues = collect($this->dayOptions())->pluck('value')->all();
+
+        $area = trim($request->string('area')->toString());
+        $gender = trim($request->string('gender')->toString());
+        $availableDay = strtolower(trim($request->string('available_day')->toString()));
+        $verified = trim($request->string('verified')->toString());
+        $tuitionTypeId = (int) $request->integer('tuition_type_id');
+        $categoryId = (int) $request->integer('category_id');
+        $classId = (int) $request->integer('class_id');
+        $subjectId = (int) $request->integer('subject_id');
+        $locationId = (int) $request->integer('location_id');
+        $minBudget = $request->filled('min_budget') ? (int) $request->input('min_budget') : null;
+        $maxBudget = $request->filled('max_budget') ? (int) $request->input('max_budget') : null;
+
+        if (! in_array($gender, ['male', 'female', 'other', 'prefer_not_to_say'], true)) {
+            $gender = '';
+        }
+
+        if (! in_array($availableDay, $allowedDayValues, true)) {
+            $availableDay = '';
+        }
+
+        if (! in_array($verified, ['yes', 'no'], true)) {
+            $verified = '';
+        }
+
+        if ($tuitionTypeId <= 0) {
+            $tuitionTypeId = 0;
+        }
+
+        if ($categoryId <= 0) {
+            $categoryId = 0;
+        }
+
+        if ($classId <= 0) {
+            $classId = 0;
+        }
+
+        if ($subjectId <= 0) {
+            $subjectId = 0;
+        }
+
+        if ($locationId <= 0) {
+            $locationId = 0;
+        }
+
         $query = User::query()
             ->where('role', UserRole::Tutor)
             ->where('status', UserStatus::Active)
@@ -24,40 +77,116 @@ class TutorController extends Controller
             ->withCount('tutorReviews')
             ->withAvg('tutorReviews', 'rating');
 
-        if ($request->filled('gender')) {
-            $query->whereHas('tutorProfile', function ($q) use ($request) {
-                $q->where('gender', $request->gender);
+        if ($gender !== '') {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($gender): void {
+                $q->where('gender', $gender);
             });
         }
 
-        if ($request->filled('area')) {
-            $query->whereHas('tutorProfile', function ($q) use ($request) {
-                $q->where('present_address', 'like', '%'.$request->area.'%');
+        if ($area !== '') {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($area): void {
+                $q->where('present_address', 'like', '%'.$area.'%');
             });
         }
 
-        if ($request->filled('min_budget')) {
-            $query->whereHas('tutorProfile', function ($q) use ($request) {
-                $q->where('expected_salary_min', '>=', (int) $request->min_budget);
+        if ($minBudget !== null) {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($minBudget): void {
+                $q->where('expected_salary_min', '>=', $minBudget);
             });
         }
 
-        if ($request->filled('max_budget')) {
-            $query->whereHas('tutorProfile', function ($q) use ($request) {
-                $q->where('expected_salary_max', '<=', (int) $request->max_budget);
+        if ($maxBudget !== null) {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($maxBudget): void {
+                $q->where('expected_salary_max', '<=', $maxBudget);
             });
+        }
+
+        if ($tuitionTypeId > 0) {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($tuitionTypeId): void {
+                $q->whereJsonContains('preferred_tuition_types', $tuitionTypeId);
+            });
+        }
+
+        if ($categoryId > 0) {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($categoryId): void {
+                $q->whereJsonContains('preferred_categories', $categoryId);
+            });
+        }
+
+        if ($classId > 0) {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($classId): void {
+                $q->whereJsonContains('preferred_classes', $classId);
+            });
+        }
+
+        if ($subjectId > 0) {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($subjectId): void {
+                $q->whereJsonContains('preferred_subjects', $subjectId);
+            });
+        }
+
+        if ($locationId > 0) {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($locationId): void {
+                $q->whereJsonContains('preferred_locations', $locationId);
+            });
+        }
+
+        if ($availableDay !== '') {
+            $query->whereHas('tutorProfile', function (Builder $q) use ($availableDay): void {
+                $q->whereJsonContains('available_days', $availableDay);
+            });
+        }
+
+        if ($verified === 'yes') {
+            $query->whereNotNull('verified_at');
+        }
+
+        if ($verified === 'no') {
+            $query->whereNull('verified_at');
         }
 
         $tutors = $query->orderByDesc('verified_at')->paginate(20)->appends($request->query());
+        $preferenceMaps = $this->preferenceNameMaps();
+
+        $tutors->getCollection()->transform(function (User $tutor) use ($preferenceMaps): User {
+            $this->mapTutorProfilePreferences($tutor, $preferenceMaps);
+
+            return $tutor;
+        });
 
         return inertia('Tutors', [
             'tutors' => $tutors,
             'total' => $tutors->total(),
             'filters' => [
-                'area' => $request->area,
-                'gender' => $request->gender,
-                'min_budget' => $request->min_budget,
-                'max_budget' => $request->max_budget,
+                'area' => $area === '' ? null : $area,
+                'gender' => $gender === '' ? null : $gender,
+                'min_budget' => $minBudget === null ? null : (string) $minBudget,
+                'max_budget' => $maxBudget === null ? null : (string) $maxBudget,
+                'tuition_type_id' => $tuitionTypeId > 0 ? $tuitionTypeId : null,
+                'category_id' => $categoryId > 0 ? $categoryId : null,
+                'class_id' => $classId > 0 ? $classId : null,
+                'subject_id' => $subjectId > 0 ? $subjectId : null,
+                'location_id' => $locationId > 0 ? $locationId : null,
+                'available_day' => $availableDay === '' ? null : $availableDay,
+                'verified' => $verified === '' ? null : $verified,
+            ],
+            'filterOptions' => [
+                'tuitionTypes' => $this->activeTuitionTypes(),
+                'categories' => $this->activeCategories(),
+                'classes' => $this->activeSchoolClasses(),
+                'subjects' => $this->activeSubjects(),
+                'locations' => $this->activeLocations(),
+                'days' => $this->dayOptions(),
+                'genders' => [
+                    ['value' => 'male', 'label' => 'Male'],
+                    ['value' => 'female', 'label' => 'Female'],
+                    ['value' => 'other', 'label' => 'Other'],
+                    ['value' => 'prefer_not_to_say', 'label' => 'Prefer Not to Say'],
+                ],
+                'verified' => [
+                    ['value' => 'yes', 'label' => 'Verified Only'],
+                    ['value' => 'no', 'label' => 'Unverified Only'],
+                ],
             ],
             'meta' => [
                 'title' => 'Find Tutors - '.config('app.name'),
@@ -76,6 +205,7 @@ class TutorController extends Controller
             ->withCount('tutorReviews')
             ->withAvg('tutorReviews', 'rating')
             ->findOrFail($id);
+        $this->mapTutorProfilePreferences($tutor, $this->preferenceNameMaps());
 
         $reviews = TutorReview::query()
             ->where('tutor_user_id', $id)
@@ -128,5 +258,190 @@ class TutorController extends Controller
                 'description' => $tutor->tutorProfile?->bio ?? 'View tutor profile on '.config('app.name'),
             ],
         ]);
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    private function preferenceNameMaps(): array
+    {
+        return [
+            'tuition_types' => TuitionType::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->ordered()
+                ->pluck('name', 'id')
+                ->all(),
+            'categories' => Category::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->ordered()
+                ->pluck('name', 'id')
+                ->all(),
+            'classes' => SchoolClass::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->ordered()
+                ->pluck('name', 'id')
+                ->all(),
+            'subjects' => Subject::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->ordered()
+                ->pluck('name', 'id')
+                ->all(),
+            'locations' => Area::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->ordered()
+                ->pluck('name', 'id')
+                ->all(),
+        ];
+    }
+
+    /**
+     * @param  array<string, array<int, string>>  $preferenceMaps
+     */
+    private function mapTutorProfilePreferences(User $tutor, array $preferenceMaps): void
+    {
+        $profile = $tutor->tutorProfile;
+
+        if ($profile === null) {
+            return;
+        }
+
+        $profile->preferred_tuition_types = $this->mapIdsToNames(
+            $profile->preferred_tuition_types,
+            $preferenceMaps['tuition_types'] ?? [],
+        );
+        $profile->preferred_categories = $this->mapIdsToNames(
+            $profile->preferred_categories,
+            $preferenceMaps['categories'] ?? [],
+        );
+        $profile->preferred_classes = $this->mapIdsToNames(
+            $profile->preferred_classes,
+            $preferenceMaps['classes'] ?? [],
+        );
+        $profile->preferred_subjects = $this->mapIdsToNames(
+            $profile->preferred_subjects,
+            $preferenceMaps['subjects'] ?? [],
+        );
+        $profile->preferred_locations = $this->mapIdsToNames(
+            $profile->preferred_locations,
+            $preferenceMaps['locations'] ?? [],
+        );
+    }
+
+    /**
+     * @param  array<int, int|string>|null  $ids
+     * @param  array<int, string>  $nameMap
+     * @return array<int, string>
+     */
+    private function mapIdsToNames(?array $ids, array $nameMap): array
+    {
+        if ($ids === null || $ids === []) {
+            return [];
+        }
+
+        return collect($ids)
+            ->map(fn (mixed $item): int => (int) $item)
+            ->filter(fn (int $id): bool => $id > 0)
+            ->unique()
+            ->map(fn (int $id): string => $nameMap[$id] ?? (string) $id)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    private function activeTuitionTypes(): array
+    {
+        return TuitionType::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name'])
+            ->map(fn (TuitionType $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    private function activeCategories(): array
+    {
+        return Category::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name'])
+            ->map(fn (Category $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, category_id: int}>
+     */
+    private function activeSchoolClasses(): array
+    {
+        return SchoolClass::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name', 'category_id'])
+            ->map(fn (SchoolClass $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'category_id' => $item->category_id,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, class_id: int}>
+     */
+    private function activeSubjects(): array
+    {
+        return Subject::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name', 'class_id'])
+            ->map(fn (Subject $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'class_id' => $item->class_id,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    private function activeLocations(): array
+    {
+        return Area::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name'])
+            ->map(fn (Area $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{value: string, label: string}>
+     */
+    private function dayOptions(): array
+    {
+        return [
+            ['value' => 'sat', 'label' => 'Saturday'],
+            ['value' => 'sun', 'label' => 'Sunday'],
+            ['value' => 'mon', 'label' => 'Monday'],
+            ['value' => 'tue', 'label' => 'Tuesday'],
+            ['value' => 'wed', 'label' => 'Wednesday'],
+            ['value' => 'thu', 'label' => 'Thursday'],
+            ['value' => 'fri', 'label' => 'Friday'],
+        ];
     }
 }

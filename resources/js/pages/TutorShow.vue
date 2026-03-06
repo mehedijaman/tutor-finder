@@ -45,11 +45,12 @@ type TutorProfile = {
     permanent_address: string | null;
     expected_salary_min: number | null;
     expected_salary_max: number | null;
-    preferred_categories: string | null;
-    preferred_classes: string | null;
-    preferred_subjects: string | null;
-    preferred_locations: string | null;
-    available_days: string[] | null;
+    preferred_tuition_types: Array<string | number> | null;
+    preferred_categories: Array<string | number> | null;
+    preferred_classes: Array<string | number> | null;
+    preferred_subjects: Array<string | number> | null;
+    preferred_locations: Array<string | number> | null;
+    available_days: Array<string | number> | null;
     available_time: string | null;
 };
 
@@ -86,6 +87,7 @@ type Tutor = {
     name: string;
     email: string;
     phone: string | null;
+    photo_url: string | null;
     verified_at: string | null;
     created_at: string;
     tutor_profile: TutorProfile | null;
@@ -155,10 +157,27 @@ function formatDate(dateStr: string | null): string {
     });
 }
 
-function parseJson(jsonStr: string | null): string[] {
-    if (!jsonStr) return [];
+function normalizeList(value: unknown): string[] {
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => String(item).trim())
+            .filter((item) => item !== '');
+    }
+
+    if (typeof value !== 'string' || value.trim() === '') {
+        return [];
+    }
+
     try {
-        return JSON.parse(jsonStr) || [];
+        const parsed = JSON.parse(value);
+
+        if (!Array.isArray(parsed)) {
+            return [];
+        }
+
+        return parsed
+            .map((item) => String(item).trim())
+            .filter((item) => item !== '');
     } catch {
         return [];
     }
@@ -201,22 +220,41 @@ const dayShortMap: Record<string, string> = {
 };
 
 const formattedAvailableDays = computed(() => {
-    const days = props.tutor.tutor_profile?.available_days;
-    if (!days || !Array.isArray(days) || days.length === 0) {
+    const days = normalizeList(props.tutor.tutor_profile?.available_days);
+
+    if (days.length === 0) {
         return [];
     }
-    return days.map((d: string) => ({
-        key: d,
-        short: dayShortMap[d.toLowerCase()] ?? d,
-        full: dayLabelMap[d.toLowerCase()] ?? d,
-    }));
+
+    return days.map((day) => {
+        const normalized = day.toLowerCase().slice(0, 3);
+
+        return {
+            key: day,
+            short: dayShortMap[normalized] ?? day,
+            full: dayLabelMap[normalized] ?? day,
+        };
+    });
 });
+
+const preferredSubjects = computed(() =>
+    normalizeList(props.tutor.tutor_profile?.preferred_subjects),
+);
+const preferredCategories = computed(() =>
+    normalizeList(props.tutor.tutor_profile?.preferred_categories),
+);
+const preferredClasses = computed(() =>
+    normalizeList(props.tutor.tutor_profile?.preferred_classes),
+);
+const preferredLocations = computed(() =>
+    normalizeList(props.tutor.tutor_profile?.preferred_locations),
+);
 
 const hasPreferences = computed(
     () =>
-        tutor.tutor_profile?.preferred_subjects ||
-        tutor.tutor_profile?.preferred_categories ||
-        tutor.tutor_profile?.preferred_classes,
+        preferredSubjects.value.length > 0 ||
+        preferredCategories.value.length > 0 ||
+        preferredClasses.value.length > 0,
 );
 
 const { tutor } = props;
@@ -275,7 +313,15 @@ const { tutor } = props;
                                 <div
                                     class="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-4xl font-bold text-white shadow-xl ring-[5px] shadow-blue-600/30 ring-white sm:h-36 sm:w-36 sm:text-5xl"
                                 >
-                                    {{ tutor.name.charAt(0).toUpperCase() }}
+                                    <img
+                                        v-if="tutor.photo_url"
+                                        :src="tutor.photo_url"
+                                        :alt="tutor.name"
+                                        class="h-full w-full rounded-2xl object-cover"
+                                    />
+                                    <span v-else>{{
+                                        tutor.name.charAt(0).toUpperCase()
+                                    }}</span>
                                 </div>
                                 <div
                                     v-if="isVerified"
@@ -530,7 +576,7 @@ const { tutor } = props;
 
                             <!-- Preferred Locations Card -->
                             <div
-                                v-if="tutor.tutor_profile?.preferred_locations"
+                                v-if="preferredLocations.length > 0"
                                 class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm"
                             >
                                 <h3
@@ -541,10 +587,7 @@ const { tutor } = props;
                                 </h3>
                                 <div class="flex flex-wrap gap-1.5">
                                     <Badge
-                                        v-for="location in parseJson(
-                                            tutor.tutor_profile
-                                                .preferred_locations,
-                                        )"
+                                        v-for="location in preferredLocations"
                                         :key="location"
                                         variant="outline"
                                         class="rounded-lg border-slate-200 bg-slate-50 font-normal text-slate-600"
@@ -721,11 +764,7 @@ const { tutor } = props;
 
                             <div class="mt-5 space-y-5">
                                 <!-- Subjects -->
-                                <div
-                                    v-if="
-                                        tutor.tutor_profile?.preferred_subjects
-                                    "
-                                >
+                                <div v-if="preferredSubjects.length > 0">
                                     <p
                                         class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
                                     >
@@ -734,10 +773,7 @@ const { tutor } = props;
                                     </p>
                                     <div class="flex flex-wrap gap-2">
                                         <Badge
-                                            v-for="subject in parseJson(
-                                                tutor.tutor_profile
-                                                    .preferred_subjects,
-                                            )"
+                                            v-for="subject in preferredSubjects"
                                             :key="subject"
                                             class="rounded-lg border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700"
                                         >
@@ -749,21 +785,14 @@ const { tutor } = props;
                                 <!-- Divider -->
                                 <div
                                     v-if="
-                                        tutor.tutor_profile
-                                            ?.preferred_subjects &&
-                                        tutor.tutor_profile
-                                            ?.preferred_categories
+                                        preferredSubjects.length > 0 &&
+                                        preferredCategories.length > 0
                                     "
                                     class="border-t border-slate-100"
                                 />
 
                                 <!-- Categories -->
-                                <div
-                                    v-if="
-                                        tutor.tutor_profile
-                                            ?.preferred_categories
-                                    "
-                                >
+                                <div v-if="preferredCategories.length > 0">
                                     <p
                                         class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
                                     >
@@ -772,10 +801,7 @@ const { tutor } = props;
                                     </p>
                                     <div class="flex flex-wrap gap-2">
                                         <Badge
-                                            v-for="category in parseJson(
-                                                tutor.tutor_profile
-                                                    .preferred_categories,
-                                            )"
+                                            v-for="category in preferredCategories"
                                             :key="category"
                                             class="rounded-lg border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700"
                                         >
@@ -787,21 +813,15 @@ const { tutor } = props;
                                 <!-- Divider -->
                                 <div
                                     v-if="
-                                        (tutor.tutor_profile
-                                            ?.preferred_subjects ||
-                                            tutor.tutor_profile
-                                                ?.preferred_categories) &&
-                                        tutor.tutor_profile?.preferred_classes
+                                        (preferredSubjects.length > 0 ||
+                                            preferredCategories.length > 0) &&
+                                        preferredClasses.length > 0
                                     "
                                     class="border-t border-slate-100"
                                 />
 
                                 <!-- Classes -->
-                                <div
-                                    v-if="
-                                        tutor.tutor_profile?.preferred_classes
-                                    "
-                                >
+                                <div v-if="preferredClasses.length > 0">
                                     <p
                                         class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
                                     >
@@ -810,10 +830,7 @@ const { tutor } = props;
                                     </p>
                                     <div class="flex flex-wrap gap-2">
                                         <Badge
-                                            v-for="cls in parseJson(
-                                                tutor.tutor_profile
-                                                    .preferred_classes,
-                                            )"
+                                            v-for="cls in preferredClasses"
                                             :key="cls"
                                             class="rounded-lg border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700"
                                         >

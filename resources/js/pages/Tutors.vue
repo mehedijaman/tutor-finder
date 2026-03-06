@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import { List, Filter } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+import PublicPagination from '@/components/public/PublicPagination.vue';
 import TutorCard from '@/components/tutors/TutorCard.vue';
 import TutorFiltersDrawer from '@/components/tutors/TutorFiltersDrawer.vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
@@ -29,11 +30,12 @@ type TutorProfile = {
     present_address: string | null;
     expected_salary_min: number | null;
     expected_salary_max: number | null;
-    preferred_categories: string | null;
-    preferred_classes: string | null;
-    preferred_subjects: string | null;
-    preferred_locations: string | null;
-    available_days: string | null;
+    preferred_tuition_types: string[] | null;
+    preferred_categories: string[] | null;
+    preferred_classes: string[] | null;
+    preferred_subjects: string[] | null;
+    preferred_locations: string[] | null;
+    available_days: string[] | null;
     available_time: string | null;
 };
 
@@ -50,9 +52,41 @@ type Tutor = {
     tutor_educations: TutorEducation[];
 };
 
+type FilterOption = {
+    id: number;
+    name: string;
+};
+
+type ClassFilterOption = {
+    id: number;
+    name: string;
+    category_id: number;
+};
+
+type SubjectFilterOption = {
+    id: number;
+    name: string;
+    class_id: number;
+};
+
+type DayFilterOption = {
+    value: string;
+    label: string;
+};
+
+type SimpleSelectOption = {
+    value: string;
+    label: string;
+};
+
 const props = defineProps<{
     tutors: {
         data: Tutor[];
+        current_page: number;
+        last_page: number;
+        from: number | null;
+        to: number | null;
+        total: number;
         links: PaginationLink[];
     };
     total: number;
@@ -61,10 +95,27 @@ const props = defineProps<{
         description: string;
     };
     filters: {
-        area?: string;
-        gender?: string;
-        min_budget?: string;
-        max_budget?: string;
+        area?: string | null;
+        gender?: string | null;
+        min_budget?: string | null;
+        max_budget?: string | null;
+        tuition_type_id?: number | null;
+        category_id?: number | null;
+        class_id?: number | null;
+        subject_id?: number | null;
+        location_id?: number | null;
+        available_day?: string | null;
+        verified?: string | null;
+    };
+    filterOptions: {
+        tuitionTypes: FilterOption[];
+        categories: FilterOption[];
+        classes: ClassFilterOption[];
+        subjects: SubjectFilterOption[];
+        locations: FilterOption[];
+        days: DayFilterOption[];
+        genders: SimpleSelectOption[];
+        verified: SimpleSelectOption[];
     };
 }>();
 
@@ -72,14 +123,28 @@ const filtersOpen = ref(false);
 
 const tutorList = computed(() => props.tutors.data ?? []);
 const hasTutors = computed(() => tutorList.value.length > 0);
+const activeFilterCount = computed(() => {
+    const values = [
+        props.filters.area,
+        props.filters.gender,
+        props.filters.min_budget,
+        props.filters.max_budget,
+        props.filters.tuition_type_id,
+        props.filters.category_id,
+        props.filters.class_id,
+        props.filters.subject_id,
+        props.filters.location_id,
+        props.filters.available_day,
+        props.filters.verified,
+    ];
 
-function formatPaginationLabel(label: string): string {
-    return String(label ?? '')
-        .replaceAll('&laquo;', '«')
-        .replaceAll('&raquo;', '»')
-        .replace(/<[^>]*>/g, '')
-        .trim();
-}
+    return values.filter(
+        (value) =>
+            value !== null &&
+            value !== undefined &&
+            String(value).trim() !== '',
+    ).length;
+});
 </script>
 
 <template>
@@ -88,24 +153,33 @@ function formatPaginationLabel(label: string): string {
     </Head>
 
     <PublicLayout>
-        <div class="min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-50/50 py-12">
+        <div
+            class="min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-50/50 py-12"
+        >
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Header -->
                 <div class="mb-10 text-center sm:text-left">
-                    <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+                    <h1
+                        class="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl"
+                    >
                         Find Expert Tutors
                     </h1>
                     <p class="mt-3 max-w-2xl text-lg text-slate-600">
-                        Browse our verified tutors to find the perfect match for your learning needs.
+                        Browse our verified tutors to find the perfect match for
+                        your learning needs.
                     </p>
                 </div>
 
                 <!-- Top Bar -->
-                <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div
+                    class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                >
                     <div class="flex items-center gap-2 text-sm text-slate-600">
                         <List class="h-5 w-5" />
                         <span>
-                            <span class="font-semibold text-slate-900">{{ total }}</span>
+                            <span class="font-semibold text-slate-900">{{
+                                total
+                            }}</span>
                             tutors found
                         </span>
                     </div>
@@ -115,6 +189,12 @@ function formatPaginationLabel(label: string): string {
                     >
                         <Filter class="h-4 w-4" />
                         Filters
+                        <span
+                            v-if="activeFilterCount > 0"
+                            class="rounded-full bg-slate-900 px-1.5 py-0.5 text-[11px] font-semibold text-white"
+                        >
+                            {{ activeFilterCount }}
+                        </span>
                     </button>
                 </div>
 
@@ -157,37 +237,15 @@ function formatPaginationLabel(label: string): string {
                 </div>
 
                 <!-- Pagination -->
-                <div
-                    v-if="props.tutors.links && props.tutors.links.length > 3"
-                    class="mt-10 flex justify-center"
-                >
-                    <nav class="flex items-center gap-1">
-                        <template
-                            v-for="(link, index) in props.tutors.links"
-                            :key="`${index}-${link.label}`"
-                        >
-                            <span
-                                v-if="!link.url"
-                                class="inline-flex h-10 items-center justify-center rounded-lg border px-4 text-sm text-slate-400"
-                            >
-                                {{ formatPaginationLabel(link.label) }}
-                            </span>
-                            <Link
-                                v-else
-                                :href="link.url"
-                                preserve-scroll
-                                class="inline-flex h-10 items-center justify-center rounded-lg border px-4 text-sm font-medium transition-all duration-200"
-                                :class="[
-                                    link.active
-                                        ? 'border-blue-600 bg-blue-600 text-white'
-                                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50',
-                                ]"
-                            >
-                                {{ formatPaginationLabel(link.label) }}
-                            </Link>
-                        </template>
-                    </nav>
-                </div>
+                <PublicPagination
+                    class="mt-10"
+                    :links="props.tutors.links"
+                    :current-page="props.tutors.current_page"
+                    :last-page="props.tutors.last_page"
+                    :from="props.tutors.from"
+                    :to="props.tutors.to"
+                    :total="props.tutors.total"
+                />
             </div>
         </div>
 
@@ -195,6 +253,7 @@ function formatPaginationLabel(label: string): string {
         <TutorFiltersDrawer
             :open="filtersOpen"
             :filters="filters"
+            :filter-options="filterOptions"
             @close="filtersOpen = false"
         />
     </PublicLayout>

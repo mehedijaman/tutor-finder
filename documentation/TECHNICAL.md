@@ -4,634 +4,538 @@
 
 1. [System Overview](#system-overview)
 2. [Technology Stack](#technology-stack)
-3. [Architecture](#architecture)
-4. [Installation](#installation)
-5. [Configuration](#configuration)
-6. [Database Schema](#database-schema)
-7. [Authentication & Authorization](#authentication--authorization)
-8. [API & Routes](#api--routes)
-9. [Payment Integration](#payment-integration)
-10. [Queue & Jobs](#queue--jobs)
-11. [Testing](#testing)
-12. [Deployment](#deployment)
-13. [Maintenance](#maintenance)
+3. [Application Architecture](#application-architecture)
+4. [Core Domains and Modules](#core-domains-and-modules)
+5. [Authentication and Authorization](#authentication-and-authorization)
+6. [Route and Panel Structure](#route-and-panel-structure)
+7. [Data Model Overview](#data-model-overview)
+8. [Finance and Payment Workflows](#finance-and-payment-workflows)
+9. [Notifications, Events, and Realtime](#notifications-events-and-realtime)
+10. [Queues, Jobs, and Scheduling](#queues-jobs-and-scheduling)
+11. [Configuration and Environment](#configuration-and-environment)
+12. [Development and QA](#development-and-qa)
+13. [Deployment and Operations](#deployment-and-operations)
+14. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## System Overview
 
-Tutor Finder is a tutoring marketplace platform that connects guardians/students with qualified tutors. The platform provides:
+Tutor Finder is a multi-role tutoring marketplace built with Laravel + Inertia + Vue.
 
-- **Job Board**: Guardians post tutoring jobs, tutors apply
-- **Verification System**: Identity and credential verification for tutors and guardians
-- **Payment Processing**: Integrated payment gateways (bKash, SSLCommerz)
-- **Admin Panel**: Complete administrative control over users, jobs, finance, and content
-- **Wallet System**: Double-entry ledger for tracking payments and refunds
+Primary business flow:
+
+1. Guardians post tuition jobs.
+2. Admin reviews and publishes jobs.
+3. Tutors apply to live jobs.
+4. Guardians shortlist and confirm a tutor.
+5. System creates assignment + billing artifacts (service fee and optional escrow invoice).
+6. Payments are processed via configured gateways.
+7. Verification, finance, reporting, and support are managed through role-specific panels.
+
+Main user roles:
+
+- **Admin**: platform operations, moderation, finance, configuration.
+- **Tutor**: profile, job applications, invoices, refund requests, verification.
+- **Guardian**: job posting, hiring decisions, invoices, tutor reviews, verification.
+- **Platform**: internal finance owner account used in ledger/accounting workflows.
 
 ---
 
 ## Technology Stack
 
 ### Backend
-| Component | Version | Purpose |
-|-----------|---------|---------|
-| PHP | 8.4+ | Runtime |
-| Laravel | 12 | Framework |
-| Laravel Fortify | 1.x | Authentication |
-| Spatie Permission | 6.x | Role-based access control |
-| Spatie Activity Log | 4.x | Audit logging |
-| Spatie Media Library | 11.x | File uploads |
+
+| Component | Version/Package | Purpose |
+|-----------|------------------|---------|
+| PHP | 8.4.x | Runtime |
+| Laravel | 12.x | Web framework |
+| Inertia Laravel | v2 | Server-client page bridge |
+| Laravel Fortify | v1 | Authentication and security |
+| Laravel Reverb | v1 | Realtime broadcasting |
+| Spatie Permission | v6 | RBAC (roles/permissions) |
+| Spatie Activity Log | v4 | Audit logging |
+| Spatie Media Library | v11 | Media/file management |
+| Spatie Backup | v10 | Backup management |
+| Laravel Web Push Channel | v10 | Push notifications |
+| lab404/laravel-impersonate | v1 | Admin impersonation |
 
 ### Frontend
-| Component | Version | Purpose |
-|-----------|---------|---------|
-| Vue.js | 3.x | UI Framework |
-| Inertia.js | 2.x | SPA Bridge |
-| Tailwind CSS | 4.x | Styling |
-| TypeScript | 5.x | Type safety |
-| Vite | 7.x | Build tool |
 
-### Payment Gateways
-| Gateway | Package | Purpose |
-|---------|---------|---------|
-| bKash | theihasan/laravel-bkash | Mobile payments |
-| SSLCommerz | raziul/sslcommerz-laravel | Card/Bank payments |
+| Component | Version/Package | Purpose |
+|-----------|------------------|---------|
+| Vue | v3 | UI framework |
+| @inertiajs/vue3 | v2 | Inertia client |
+| TypeScript | v5 | Type safety |
+| Tailwind CSS | v4 | Styling |
+| Vite | v7 | Bundling/build |
+| Laravel Echo + Pusher JS | v2/v8 | Realtime client |
+| TipTap | v2 | Rich-text editor for CMS content |
 
-### Infrastructure
-| Component | Purpose |
-|-----------|---------|
-| SQLite/MySQL/PostgreSQL | Database |
-| Redis (optional) | Cache & Queue |
-| Laravel Sail | Docker development |
+### Payments and Messaging
 
----
-
-## Architecture
-
-### Directory Structure
-
-```
-app/
-├── Actions/           # Fortify action classes
-├── Console/Commands/  # Artisan commands
-├── Contracts/         # Interfaces
-├── Enums/             # PHP 8.1+ enums
-├── Http/
-│   ├── Controllers/
-│   │   ├── Admin/     # Admin panel controllers
-│   │   ├── Auth/      # Authentication controllers
-│   │   ├── Guardian/  # Guardian panel controllers
-│   │   ├── Public/    # Public page controllers
-│   │   ├── Settings/  # Settings controllers
-│   │   └── Tutor/     # Tutor panel controllers
-│   ├── Middleware/    # Custom middleware
-│   └── Requests/      # Form request validation
-├── Jobs/              # Queued jobs
-├── Models/            # Eloquent models
-├── Notifications/     # Notification classes
-├── Policies/          # Authorization policies
-├── Providers/         # Service providers
-├── Services/          # Business logic services
-│   ├── Finance/       # Financial services
-│   └── Job/           # Job workflow services
-└── Support/           # Helper classes
-```
-
-### Key Design Patterns
-
-1. **Service Layer**: Business logic encapsulated in service classes
-2. **Form Requests**: Validation separated from controllers
-3. **Policies**: Authorization logic in dedicated policy classes
-4. **Enums**: Type-safe status and type constants
-5. **Double-Entry Ledger**: Financial transactions use balanced journal entries
+| Integration | Package/Source | Role |
+|------------|----------------|------|
+| bKash | `theihasan/laravel-bkash` | Payment gateway |
+| SSLCommerz | `raziul/sslcommerz-laravel` | Payment gateway |
+| Manual gateway | Internal workflow | Admin-marked payments |
+| SMS providers | `xenon/laravelbdsms` | OTP and test SMS delivery |
 
 ---
 
-## Installation
+## Application Architecture
 
-### Prerequisites
+### Panel-Oriented Web Architecture
 
-- PHP 8.4+
-- Composer 2.x
-- Node.js 20+
-- npm 10+
+The app is organized into role-based web panels (not a separate REST API project):
 
-### Quick Setup
+- Public web pages (`/`)
+- Admin panel (`/admin/*`)
+- Tutor panel (`/tutor/*`)
+- Guardian panel (`/guardian/*`)
+- Shared account settings (`/settings/*`)
 
-```bash
-# Clone repository
-git clone <repository-url> tutor-finder
-cd tutor-finder
+### Backend Layering
 
-# Run setup script
-composer setup
-```
+- **Controllers**: request orchestration + response mapping.
+- **Form Requests**: validation and request contracts.
+- **Services**: domain workflows (job lifecycle, hiring, verification, finance, refunds, support).
+- **Policies + Middleware**: authorization and access gates.
+- **Events/Listeners/Notifications**: async and decoupled user communication.
+- **Enums**: centralized state/value contracts.
 
-### Manual Setup
+### Frontend Layering
 
-```bash
-# Install PHP dependencies
-composer install
+- Inertia pages in `resources/js/pages`.
+- Shared UI components in `resources/js/components`.
+- Role-based layouts and navigation in `resources/js/layouts`.
+- Wayfinder-generated route helpers in `resources/js/actions` and `resources/js/routes`.
 
-# Copy environment file
-cp .env.example .env
+### High-Level Workflow Boundaries
 
-# Generate application key
-php artisan key:generate
-
-# Run migrations
-php artisan migrate
-
-# Install frontend dependencies
-npm install
-
-# Build assets
-npm run build
-```
+- **Marketplace domain**: jobs, applications, assignment confirmation.
+- **Verification domain**: request, approval/rejection, invoice issuance, payment completion.
+- **Finance domain**: invoices, payment attempts, refunds, double-entry ledger.
+- **Support/content domain**: tickets, blog, pages, FAQ, tutorials, notices.
 
 ---
 
-## Configuration
+## Core Domains and Modules
 
-### Environment Variables
+### 1. Job Marketplace
 
-#### Application
-```env
-APP_NAME="Tutor Finder"
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://your-domain.com
-```
+- Guardian job posting with taxonomy-driven form options.
+- Admin moderation and publication lifecycle.
+- Tutor job board with filtering and sorting.
+- Application management and hiring confirmation.
 
-#### Database
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=tutor_finder
-DB_USERNAME=root
-DB_PASSWORD=
-```
+### 2. Verification
 
-#### Queue
-```env
-QUEUE_CONNECTION=database
-```
+- Tutor/guardian verification request submission.
+- Admin decision workflow (approve/reject/cancel).
+- Verification invoice generation.
+- Auto-finalization of verification status after successful invoice payment.
 
-#### Mail
-```env
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.mailgun.org
-MAIL_PORT=587
-MAIL_USERNAME=
-MAIL_PASSWORD=
-MAIL_ENCRYPTION=tls
-```
+### 3. Finance
 
-#### Payment Gateways
+- Invoice issuance and status lifecycle.
+- Gateway payment attempt orchestration.
+- Admin manual payment overrides.
+- Refund request approval and payout flows.
+- Balanced ledger journal posting.
 
-**bKash**
-```env
-BKASH_SANDBOX=false
-BKASH_APP_KEY=your-app-key
-BKASH_APP_SECRET=your-app-secret
-BKASH_USERNAME=your-username
-BKASH_PASSWORD=your-password
-```
+### 4. Notifications and Realtime
 
-**SSLCommerz**
-```env
-SSLCOMMERZ_SANDBOX=false
-SSLCOMMERZ_STORE_ID=your-store-id
-SSLCOMMERZ_STORE_PASSWORD=your-store-password
-```
+- Database notifications across roles.
+- Role/private broadcast channels.
+- Browser push subscriptions and delivery.
+- Notice fan-out jobs to role audiences.
 
-#### SMS
-```env
-SMS_DRIVER=twilio
-SMS_API_KEY=your-api-key
-```
+### 5. Content and Operations
+
+- Blog with categories/tags/media.
+- FAQ, tutorials, pages, testimonials, notices.
+- Contact message inbox.
+- Backup, activity logs, reporting, system settings.
 
 ---
 
-## Database Schema
-
-### Core Models
-
-| Model | Table | Description |
-|-------|-------|-------------|
-| User | users | All platform users |
-| TutorProfile | tutor_profiles | Tutor-specific profile data |
-| GuardianProfile | guardian_profiles | Guardian-specific profile data |
-| TuitionJob | tuition_jobs | Job postings |
-| TuitionJobApplication | tuition_job_applications | Tutor applications |
-| TuitionJobAssignment | tuition_job_assignments | Confirmed hires |
-
-### Financial Models
-
-| Model | Table | Description |
-|-------|-------|-------------|
-| Invoice | invoices | Payment invoices |
-| Payment | payments | Payment transactions |
-| WalletLedgerEntry | wallet_ledger_entries | Double-entry ledger |
-| RefundRequest | refund_requests | Refund requests |
-| PaymentGateway | payment_gateways | Gateway configuration |
-
-### Taxonomy Models
-
-| Model | Table | Description |
-|-------|-------|-------------|
-| Country | countries | Countries |
-| City | cities | Cities |
-| Area | areas | Areas/localities |
-| Category | categories | Subject categories |
-| Subject | subjects | Subjects |
-| SchoolClass | school_classes | School grade levels |
-| TuitionType | tuition_types | Tuition types |
-
-### Enums
-
-| Enum | Values |
-|------|--------|
-| UserRole | Admin, Tutor, Guardian, Platform |
-| UserStatus | Active, Suspended, Pending, PendingVerification |
-| JobStatus | Open, Closed, Assigned, Cancelled |
-| InvoiceStatus | Draft, Unpaid, Paid, Refunded, Void, Processing, Failed, Cancelled, Expired |
-| PaymentStatus | Pending, Completed, Failed, Refunded |
-| VerificationStatus | Pending, Approved, Rejected |
-| TaxonomyStatus | Active, Inactive |
-
----
-
-## Authentication & Authorization
+## Authentication and Authorization
 
 ### Authentication Flow
 
-1. **Registration**: Users register via `/register` with role selection (Tutor/Guardian)
-2. **OTP Verification**: Phone number verified via SMS OTP
-3. **Email Verification**: Email verified via link
-4. **Two-Factor Authentication**: Optional TOTP-based 2FA
+1. User registers as tutor or guardian.
+2. Account starts in `pending_verification` state.
+3. OTP is issued and verified.
+4. Account is activated.
+5. Optional email verification and optional two-factor challenge.
 
-### User Roles
+### Login Behavior
 
-| Role | Access |
-|------|--------|
-| Admin | Full system access via `/admin` |
-| Tutor | Tutor dashboard via `/tutor` |
-| Guardian | Guardian dashboard via `/guardian` |
-| Platform | System account for ledger entries |
+- Tutor/guardian login is role-aware.
+- Admin has a dedicated login flow under `/admin/login`.
+- Suspended users are blocked.
 
-### Middleware
+### Authorization
 
-```php
-'ensure.active'    // Ensures user account is active
-'ensure.role:tutor' // Ensures user has specific role
-'permission:job-view' // Spatie permission check
-'role:admin'       // Spatie role check
-```
-
-### Policies
-
-- `PaymentPolicy` - Payment viewing/management authorization
-- Admin controllers use `permission` middleware
+- Role middleware (`ensure.role:*`) protects panel scopes.
+- Active status middleware (`ensure.active`) prevents non-active access.
+- Spatie permission middleware protects admin actions.
+- Policies enforce resource ownership/access for invoices, payments, jobs, applications, and support tickets.
 
 ---
 
-## API & Routes
+## Route and Panel Structure
 
 ### Route Files
 
-| File | Prefix | Purpose |
-|------|--------|---------|
-| web.php | / | Public routes |
-| admin.php | /admin | Admin panel |
-| tutor.php | /tutor | Tutor panel |
-| guardian.php | /guardian | Guardian panel |
-| settings.php | /settings | User settings |
+| File | Scope |
+|------|-------|
+| `routes/web.php` | Public + shared authenticated endpoints |
+| `routes/admin.php` | Admin panel |
+| `routes/tutor.php` | Tutor panel |
+| `routes/guardian.php` | Guardian panel |
+| `routes/settings.php` | Shared/user + admin settings |
+| `routes/channels.php` | Broadcast channels |
+| `routes/console.php` | Scheduler and console routes |
 
-### Key Route Groups
+### Notable Public Routes
 
-**Public**
-- `GET /` - Landing page
-- `GET /jobs` - Job board
-- `GET /contact` - Contact page
-- `GET /faq` - FAQ page
-- `GET /blog` - Blog
+- `/` home page
+- `/jobs`, `/jobs/{slug}`
+- `/tutors`, `/tutors/{id}`
+- `/faq`, `/blog`, `/blog/{slug}`
+- `/contact`
+- `/tutorials`
+- `/privacy-policy`, `/terms-of-service`, `/refund-policy`
+- `/pages/{slug}` (dynamic CMS pages)
 
-**Admin** (`/admin`)
-- `/dashboard` - Admin dashboard
-- `/users/*` - User management
-- `/jobs/*` - Job management
-- `/finance/*` - Finance management
-- `/settings/*` - System settings
+### Payment Callback Routes
 
-**Tutor** (`/tutor`)
-- `/dashboard` - Tutor dashboard
-- `/profile` - Profile management
-- `/jobs` - Browse/apply for jobs
-- `/finance/*` - Invoices, payments, wallet
-- `/notifications` - Notifications
+- `GET /payment/bkash/callback`
+- `POST /payment/sslcommerz/ipn`
+- `GET /payment/sslcommerz/success`
+- `GET /payment/sslcommerz/fail`
+- `GET /payment/sslcommerz/cancel`
 
-**Guardian** (`/guardian`)
-- `/dashboard` - Guardian dashboard
-- `/jobs/*` - Post/manage jobs
-- `/finance/*` - Payment history
+### API Note
+
+There is no dedicated `routes/api.php` API surface in the current project; the platform is implemented as an Inertia web application with controller-driven endpoints.
 
 ---
 
-## Payment Integration
+## Data Model Overview
+
+### Core Entities
+
+| Model | Purpose |
+|-------|---------|
+| `User` | Role-based platform account |
+| `TutorProfile` / `TutorEducation` | Tutor profile and education history |
+| `GuardianProfile` | Guardian profile data |
+| `TuitionJob` | Job posting |
+| `TuitionJobApplication` | Tutor application to a job |
+| `TuitionJobAssignment` | Confirmed hire assignment |
+
+### Verification and Finance Entities
+
+| Model | Purpose |
+|-------|---------|
+| `VerificationRequest` | Verification request lifecycle |
+| `Invoice` | Billable record |
+| `Payment` | Gateway/manual payment attempt record |
+| `RefundRequest` | Refund workflow record |
+| `WalletLedgerEntry` | Double-entry accounting record |
+| `PaymentGateway` | Configured gateway credentials/status |
+
+### Content and Support Entities
+
+| Model | Purpose |
+|-------|---------|
+| `BlogPost`, `BlogCategory`, `BlogTag` | Blog module |
+| `Faq`, `Page`, `Tutorial`, `Notice`, `Testimonial` | CMS/content modules |
+| `ContactMessage` | Public contact submissions |
+| `SupportTicket`, `SupportTicketMessage` | Support ticketing and threads |
+| `TutorReview` | Guardian feedback for tutors |
+
+### Taxonomy Entities
+
+- `Country`, `City`, `Area`
+- `Category`, `SchoolClass`, `Subject`, `TuitionType`
+
+### Status Enums (Selected)
+
+- `UserStatus`: `active`, `suspended`, `pending`, `pending_verification`
+- `JobStatus`: `pending`, `live`, `confirmed`, `cancelled`, `closed`
+- `ApplicationStatus`: `applied`, `shortlisted`, `appointed`, `confirmed`, `cancelled`
+- `InvoiceStatus`: `draft`, `unpaid`, `processing`, `paid`, `failed`, `cancelled`, `void`, `expired`, `refunded`
+- `PaymentStatus`: `pending`, `paid`, `failed`, `cancelled`, `refunded`
+- `VerificationStatus`: `unverified`, `pending`, `approved`, `invoiced`, `verified`, `rejected`, `cancelled`
+- `RefundStatus`: `pending`, `approved`, `rejected`, `paid`
+
+---
+
+## Finance and Payment Workflows
+
+### Invoice Lifecycle
+
+- Invoices are issued for verification fees, platform service fees, and optional month-1 escrow.
+- Invoice numbers are generated by a dedicated service.
+- Payable invoices can be paid through bKash/SSLCommerz or manually marked paid by admin.
 
 ### Payment Flow
 
-1. **Invoice Creation**: System creates invoice for verification/service
-2. **Gateway Selection**: User selects bKash or SSLCommerz
-3. **Payment Initiation**: Redirect to payment gateway
-4. **Callback Processing**: Gateway sends success/failure callback
-5. **Ledger Posting**: Double-entry journal entries created
-6. **User Verification**: If verification payment, user is verified
+1. User starts payment from invoice center.
+2. Payment attempt record is created in `pending` state.
+3. Gateway initialization returns redirect URL + reference.
+4. Callback validation finalizes payment.
+5. Invoice is marked paid (or failed/cancelled when applicable).
+6. Ledger journals are posted.
 
-### Payment Callbacks
+### Hire-Triggered Billing
 
-```
-POST /payment/bkash/callback     # bKash callback
-POST /payment/sslcommerz/success # SSLCommerz success
-POST /payment/sslcommerz/fail    # SSLCommerz failure
-POST /payment/sslcommerz/cancel  # SSLCommerz cancel
-POST /payment/sslcommerz/ipn     # SSLCommerz IPN
-```
+On hire confirmation:
 
-### Double-Entry Ledger
+- Assignment is created.
+- Platform service fee invoice is issued (typically tutor payer).
+- Optional month-1 escrow invoice can be issued (guardian payer).
 
-Every payment creates two balanced entries:
-- **Debit** entry for payer (reduces balance)
-- **Credit** entry for payee (increases balance)
+### Refund Flow
 
-Linked by `journal_uuid` for audit trail.
+- Tutor submits refund request on eligible paid service-fee assignment.
+- Admin approves or rejects.
+- On payout, refund payment record is created and invoice is marked refunded.
+- Ledger reversal entries are posted.
 
 ---
 
-## Queue & Jobs
+## Notifications, Events, and Realtime
 
-### Queue Configuration
+### Notifications
 
-Default driver: `database`
+- Database notifications for tutors, guardians, and admins.
+- Notification inbox pages per panel (`/tutor/notifications`, `/guardian/notifications`, `/admin/notifications`).
+- Mark single/all as read support.
 
-```bash
-# Start queue worker
-php artisan queue:listen
+### Push Notifications
 
-# Production worker
-php artisan queue:work --tries=3 --timeout=90
-```
+- Browser push subscription endpoints:
+  - `POST /push-subscriptions`
+  - `DELETE /push-subscriptions`
+- Push notifications are used for selected notice/ticket flows when subscribed.
 
-### Queued Jobs
+### Domain Events (Examples)
 
-| Job | Purpose |
-|-----|---------|
-| SendOtpSmsJob | Send SMS OTP codes |
-| PaymentNotification | Send payment notifications |
+- `ApplicationSubmitted`, `ApplicationWithdrawn`, `ApplicationStatusUpdated`
+- `HireConfirmed`
+- `TicketCreated`, `TicketReplied`
+- `NoticeCreated` (broadcasted)
 
-### Scheduled Tasks
+### Broadcast Channels
 
-```bash
-# Run scheduler (add to crontab)
-* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1
-```
-
-| Command | Schedule | Purpose |
-|---------|----------|---------|
-| app:cleanup | Daily 02:00 | Clean expired records |
-| queue:prune-batches | Daily 03:00 | Prune old batch records |
-| activitylog:clean | Weekly Sunday 04:00 | Clean old activity logs |
+- `App.Models.User.{id}`
+- `role.tutor`
+- `role.guardian`
+- `role.admin`
 
 ---
 
-## Testing
+## Queues, Jobs, and Scheduling
 
-### Test Framework
+### Jobs
 
-Pest PHP v4 with Laravel plugin.
+| Job | Responsibility |
+|-----|----------------|
+| `SendOtpSmsJob` | Sends OTP SMS messages |
+| `SendNoticeNotificationsJob` | Stores notice notifications for target users |
+| `SendNoticePushNotificationsJob` | Sends notice push payloads to subscriptions |
 
-### Running Tests
+### Queue
+
+Default queue driver is database (`QUEUE_CONNECTION=database` by default).
+
+Common commands:
 
 ```bash
-# Run all tests
+php artisan queue:work
+php artisan queue:listen --tries=1 --timeout=0
+```
+
+### Scheduler
+
+Defined in `routes/console.php`:
+
+- `app:cleanup` daily at `02:00`
+- `queue:prune-batches --hours=48` daily at `03:00`
+- `activitylog:clean --days=90` weekly on Sunday at `04:00`
+
+---
+
+## Configuration and Environment
+
+### Primary Config Areas
+
+- Authentication/Fortify: `config/fortify.php`
+- OTP: `config/otp.php`
+- Queue: `config/queue.php`
+- Broadcast/Reverb: `config/broadcasting.php`, `config/reverb.php`
+- Mail/SMTP: `config/mail.php`
+- SMS providers: `config/sms.php`
+- Backups: `config/backup.php`
+- Permissions: `config/permission.php`
+- Activity logs: `config/activitylog.php`
+
+### Settings Managed in Admin UI
+
+- Site settings (branding/contact/social/legal)
+- Payment gateway credentials/status (bKash, SSLCommerz, Manual)
+- SMTP settings (create/update/test)
+- SMS settings (create/update/test)
+
+### Important Env Defaults
+
+- `QUEUE_CONNECTION=database`
+- `OTP_SMS_DRIVER=log|gateway`
+- `SMS_DEFAULT_PROVIDER=...`
+- Standard Laravel mail/database/app env keys
+
+---
+
+## Development and QA
+
+### Local Setup
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install
+npm run build
+```
+
+Or use:
+
+```bash
+composer setup
+```
+
+### Dev Stack
+
+```bash
+composer run dev
+```
+
+Includes server, queue listener, log tailing, and Vite.
+
+### Lint/Format/Type Check
+
+```bash
+composer lint
+vendor/bin/pint --parallel --test
+npm run lint
+npm run lint:check
+npm run format
+npm run format:check
+npm run types:check
+```
+
+### Tests
+
+Framework: Pest (Laravel plugin).
+
+```bash
 php artisan test
-
-# Run with compact output
 php artisan test --compact
-
-# Run specific test file
-php artisan test tests/Feature/FinanceModuleTest.php
-
-# Run specific test by name
-php artisan test --filter="it calculates wallet balance"
-
-# Run with coverage
-php artisan test --coverage
-```
-
-### Test Structure
-
-```
-tests/
-├── Feature/
-│   ├── Admin/           # Admin panel tests
-│   ├── Auth/            # Authentication tests
-│   ├── Authorization/   # Authorization tests
-│   ├── Console/         # Command tests
-│   ├── Finance/         # Finance service tests
-│   ├── Guardian/        # Guardian panel tests
-│   ├── Payments/        # Payment tests
-│   └── Tutor/           # Tutor panel tests
-├── Unit/                # Unit tests
-├── Pest.php             # Pest configuration
-└── TestCase.php         # Base test case
-```
-
-### Current Coverage
-
-- 344+ tests passing
-- Feature tests with RefreshDatabase
-- Unit tests for isolated logic
-
----
-
-## Deployment
-
-### Production Checklist
-
-1. **Environment**
-   ```bash
-   APP_ENV=production
-   APP_DEBUG=false
-   ```
-
-2. **Optimize Application**
-   ```bash
-   composer prod:optimize
-   # Runs: config:cache, route:cache, view:cache, event:cache, icons:cache
-   ```
-
-3. **Build Assets**
-   ```bash
-   npm run build
-   ```
-
-4. **Run Migrations**
-   ```bash
-   php artisan migrate --force
-   ```
-
-5. **Start Queue Worker**
-   ```bash
-   php artisan queue:work --daemon
-   ```
-
-6. **Configure Scheduler**
-   ```bash
-   # Add to crontab
-   * * * * * cd /path && php artisan schedule:run >> /dev/null 2>&1
-   ```
-
-### Server Requirements
-
-- PHP 8.4+ with extensions: BCMath, Ctype, Fileinfo, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML
-- Composer 2.x
-- Node.js 20+ (build only)
-- Web server (Nginx/Apache)
-- SSL certificate
-- Queue worker (Supervisor recommended)
-
-### Nginx Configuration
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-    root /var/www/tutor-finder/public;
-
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-Content-Type-Options "nosniff";
-
-    index index.php;
-
-    charset utf-8;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location = /robots.txt  { access_log off; log_not_found off; }
-
-    error_page 404 /index.php;
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
+php artisan test --feature
+php artisan test --unit
+php artisan test --filter=testName
 ```
 
 ---
 
-## Maintenance
+## Deployment and Operations
 
-### Clear Caches
+### Recommended Production Steps
+
+1. Configure production `.env`.
+2. Install dependencies and build assets.
+3. Run migrations with `--force`.
+4. Cache config/routes/views/events/icons.
+5. Run queue workers under process supervisor.
+6. Configure scheduler cron.
+
+Useful commands:
 
 ```bash
+composer prod:optimize
 composer prod:clear
-# Runs: config:clear, route:clear, view:clear, event:clear, icons:clear
+php artisan migrate --force
+npm run build
 ```
+
+### Backups and Logs
+
+- Backup operations available in admin panel and via Artisan (`backup:run`, `backup:clean`, etc.).
+- Activity logs are queryable in admin UI.
+- Log viewer UI is available for authorized admins.
 
 ### Cleanup Command
 
 ```bash
-# Dry run (preview changes)
-php artisan app:cleanup --dry-run
-
-# Execute cleanup
 php artisan app:cleanup
+php artisan app:cleanup --dry-run
 ```
 
-This command:
-- Deletes expired OTP requests
-- Marks expired unpaid invoices as `Expired`
+Performs:
 
-### Log Management
-
-```bash
-# View logs in real-time
-php artisan pail
-
-# Access log viewer UI
-# Navigate to /log-viewer (admin only)
-```
-
-### Database Backups
-
-```bash
-# Run backup
-php artisan backup:run
-
-# List backups
-php artisan backup:list
-
-# Clean old backups
-php artisan backup:clean
-```
-
-### Activity Logs
-
-Activity logs are automatically recorded for:
-- Invoice changes
-- Payment transactions
-- Wallet ledger entries
-- User profile updates
-
-Clean old logs:
-```bash
-php artisan activitylog:clean --days=90
-```
+- Expired OTP cleanup.
+- Expired invoice status updates.
 
 ---
 
 ## Troubleshooting
 
-### Common Issues
+### Vite Manifest Error
 
-**1. Vite Manifest Error**
-```
-Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest
-```
-Solution: Run `npm run build` or `npm run dev`
+Error:
 
-**2. Queue Jobs Not Processing**
-Solution: Ensure queue worker is running:
+`Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest`
+
+Fix:
+
+```bash
+npm run build
+```
+
+For local development, run:
+
+```bash
+npm run dev
+# or
+composer run dev
+```
+
+### Queue Not Processing
+
 ```bash
 php artisan queue:work
 ```
 
-**3. Payment Callback Failures**
-Check:
-- CSRF exclusion in `bootstrap/app.php` for IPN routes
-- Gateway credentials in `.env`
-- Callback URL configuration in payment gateway dashboard
+Also confirm `QUEUE_CONNECTION` and worker supervision in production.
 
-**4. Permission Denied Errors**
-```bash
-chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
-```
+### Payment Callback Mismatch
+
+- Verify gateway credentials/status in admin settings.
+- Verify callback URL configuration on provider dashboard.
+- Inspect payment attempts and invoice status in admin finance screens.
+
+### OTP Delivery Issues
+
+- Validate `OTP_SMS_DRIVER` and active/default SMS setting.
+- Use admin SMS test endpoint to validate credentials.
+- Review logs/queue worker status.
 
 ---
 
-## Support
-
-For technical support or bug reports, please contact the development team or create an issue in the repository.
+**Last updated: March 2026**

@@ -35,6 +35,11 @@ type JobItem = {
 const props = defineProps<{
     jobs: {
         data: JobItem[];
+        current_page: number;
+        last_page: number;
+        from: number | null;
+        to: number | null;
+        total: number;
         links: PaginationLink[];
     };
     total: number;
@@ -58,7 +63,6 @@ const props = defineProps<{
     genderOptions: Array<{ value: string; label: string }>;
     daysOptions: Array<{ value: string; label: string }>;
 }>();
-
 </script>
 
 <template>

@@ -302,27 +302,75 @@ function handleDelete(): void {
         <!-- Pagination -->
         <div
             v-if="reviews.last_page > 1"
-            class="mt-6 flex items-center justify-center gap-2"
+            class="mt-6"
+            role="navigation"
+            aria-label="Review pagination"
         >
-            <Link
-                v-if="reviews.prev_page_url"
-                :href="reviews.prev_page_url"
-                preserve-scroll
-                class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400"
+            <div class="grid grid-cols-2 gap-2 sm:hidden">
+                <Button
+                    v-if="!reviews.prev_page_url"
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    class="h-9 w-full"
+                >
+                    Previous
+                </Button>
+                <Link
+                    v-else
+                    :href="reviews.prev_page_url"
+                    preserve-scroll
+                    class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                    Previous
+                </Link>
+
+                <Button
+                    v-if="!reviews.next_page_url"
+                    variant="outline"
+                    size="sm"
+                    disabled
+                    class="h-9 w-full"
+                >
+                    Next
+                </Button>
+                <Link
+                    v-else
+                    :href="reviews.next_page_url"
+                    preserve-scroll
+                    class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                >
+                    Next
+                </Link>
+            </div>
+
+            <span
+                class="mt-2 block text-center text-xs text-slate-500 sm:hidden dark:text-slate-400"
             >
-                Previous
-            </Link>
-            <span class="text-sm text-slate-500 dark:text-slate-400">
                 Page {{ reviews.current_page }} of {{ reviews.last_page }}
             </span>
-            <Link
-                v-if="reviews.next_page_url"
-                :href="reviews.next_page_url"
-                preserve-scroll
-                class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400"
-            >
-                Next
-            </Link>
+
+            <div class="hidden items-center justify-center gap-2 sm:flex">
+                <Link
+                    v-if="reviews.prev_page_url"
+                    :href="reviews.prev_page_url"
+                    preserve-scroll
+                    class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400"
+                >
+                    Previous
+                </Link>
+                <span class="text-sm text-slate-500 dark:text-slate-400">
+                    Page {{ reviews.current_page }} of {{ reviews.last_page }}
+                </span>
+                <Link
+                    v-if="reviews.next_page_url"
+                    :href="reviews.next_page_url"
+                    preserve-scroll
+                    class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-400"
+                >
+                    Next
+                </Link>
+            </div>
         </div>
 
         <!-- Delete Confirmation Dialog -->

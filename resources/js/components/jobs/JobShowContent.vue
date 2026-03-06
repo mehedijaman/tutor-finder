@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import {
+    ArrowLeft,
+    BookOpen,
+    CalendarDays,
+    CheckCircle2,
+    Clock3,
+    MapPin,
+    Users,
+    Wallet,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { login, register } from '@/routes';
 
@@ -91,10 +101,22 @@ const hasActiveApplication = computed(
         props.application !== null &&
         props.application.status !== 'cancelled',
 );
-
 const hasCancelledApplication = computed(
     () => isTutor.value && props.application?.status === 'cancelled',
 );
+
+const primaryLocation = computed(() => {
+    if (props.job.area_name && props.job.city_name) {
+        return `${props.job.area_name}, ${props.job.city_name}`;
+    }
+
+    return (
+        props.job.area_name ||
+        props.job.city_name ||
+        props.job.country_name ||
+        'Location not specified'
+    );
+});
 
 const applicationForm = useForm({
     cover_letter: '',
@@ -109,7 +131,11 @@ function formatSalary(amount: string | null, currency: string | null): string {
         return '—';
     }
 
-    const num = parseFloat(amount);
+    const num = Number.parseFloat(amount);
+
+    if (!Number.isFinite(num)) {
+        return '—';
+    }
 
     return new Intl.NumberFormat('en-BD', {
         style: 'currency',
@@ -159,7 +185,7 @@ function shortDay(day: string): string {
         sat: 'Sat',
     };
 
-    return map[day] ?? day;
+    return map[day.toLowerCase()] ?? day;
 }
 
 function genderLabel(gender: string): string {
@@ -206,250 +232,210 @@ function applicationStatusLabel(status: string): string {
     return map[status.toLowerCase()] ?? status;
 }
 
-function getStatusBadgeClass(): string {
+function jobStateLabel(): string {
     if (isExpired.value) {
-        return 'bg-red-100 text-red-700 border-red-200';
+        return 'Expired';
     }
 
     if (props.application) {
-        if (props.application.status === 'confirmed') {
-            return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-        }
+        return applicationStatusLabel(props.application.status);
+    }
 
-        if (props.application.status === 'shortlisted') {
-            return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    return 'Open';
+}
+
+function jobStateClass(): string {
+    if (isExpired.value) {
+        return 'border-red-200 bg-red-50 text-red-700';
+    }
+
+    if (props.application) {
+        if (
+            props.application.status === 'confirmed' ||
+            props.application.status === 'shortlisted'
+        ) {
+            return 'border-emerald-200 bg-emerald-50 text-emerald-700';
         }
 
         if (props.application.status === 'cancelled') {
-            return 'bg-red-100 text-red-700 border-red-200';
+            return 'border-red-200 bg-red-50 text-red-700';
         }
 
-        return 'bg-amber-100 text-amber-700 border-amber-200';
+        return 'border-amber-200 bg-amber-50 text-amber-700';
     }
 
-    return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+}
+
+function openApplicationForm(): void {
+    showApplicationForm.value = true;
+}
+
+function closeApplicationForm(): void {
+    showApplicationForm.value = false;
+    applicationForm.clearErrors();
 }
 </script>
 
 <template>
-    <div class="min-h-screen bg-slate-50 py-12">
+    <div
+        class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100/60 pt-8 pb-28 lg:pt-12 lg:pb-12"
+    >
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mb-8">
-                <Link
-                    :href="backToJobsHref"
-                    class="mb-4 inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
-                >
-                    <svg
-                        class="mr-1 h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                        />
-                    </svg>
-                    Back to Job Board
-                </Link>
-            </div>
+            <Link
+                :href="backToJobsHref"
+                class="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            >
+                <ArrowLeft class="h-4 w-4" />
+                Back to Job Board
+            </Link>
 
             <div class="grid gap-6 lg:grid-cols-12 lg:gap-8">
-                <div class="lg:col-span-8">
+                <div class="space-y-6 lg:col-span-8">
                     <section
-                        class="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm sm:p-6"
+                        class="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/5"
                     >
-                        <h1
-                            class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
-                        >
-                            {{ job.title }}
-                        </h1>
-
                         <div
-                            class="mt-2 flex items-center gap-1 text-sm text-slate-600"
+                            class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-5 text-white sm:p-8"
                         >
-                            <svg
-                                class="h-4 w-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                />
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                            </svg>
-                            <span>
-                                {{
-                                    job.area_name ||
-                                    job.city_name ||
-                                    'Location not specified'
-                                }}
-                                <span
-                                    v-if="job.area_name && job.city_name"
-                                    class="text-slate-400"
-                                    >, {{ job.city_name }}</span
-                                >
-                            </span>
-                        </div>
-
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <span
-                                v-if="job.category_name"
-                                class="inline-flex items-center rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700"
-                            >
-                                {{ job.category_name }}
-                            </span>
-                            <span
-                                v-if="job.class_name"
-                                class="inline-flex items-center rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700"
-                            >
-                                {{ job.class_name }}
-                            </span>
-                            <span
-                                v-if="job.tuition_type_name"
-                                class="inline-flex items-center rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-700"
-                            >
-                                {{ job.tuition_type_name }}
-                            </span>
-                            <span
-                                v-if="application"
-                                class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium"
-                                :class="getStatusBadgeClass()"
-                            >
-                                {{ applicationStatusLabel(application.status) }}
-                            </span>
-                            <span
-                                v-else-if="isExpired"
-                                class="inline-flex items-center rounded-full border border-red-200 bg-red-100 px-3 py-1 text-xs font-medium text-red-700"
-                            >
-                                Expired
-                            </span>
-                        </div>
-
-                        <div
-                            class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 pt-4 text-xs text-slate-500"
-                        >
-                            <span class="flex items-center gap-1">
-                                <svg
-                                    class="h-3.5 w-3.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2-2-2 0 00H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    />
-                                </svg>
-                                Published:
-                                {{ formatDate(job.published_at) }}
-                            </span>
-                            <span class="flex items-center gap-1">
-                                <svg
-                                    class="h-3.5 w-3.5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                                <span :class="{ 'text-red-600': isExpired }">
-                                    {{ isExpired ? 'Expired: ' : 'Expires: '
-                                    }}{{ formatDate(job.expires_at) }}
-                                </span>
-                            </span>
-                        </div>
-                    </section>
-
-                    <section
-                        class="mt-6 rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"
-                    >
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                             <div
-                                class="rounded-xl border border-slate-100 bg-slate-50/50 p-3"
+                                class="mb-4 flex flex-wrap items-center justify-between gap-3"
                             >
-                                <p class="text-xs font-medium text-slate-500">
+                                <span
+                                    class="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide text-white/95 uppercase"
+                                >
+                                    Job #{{ job.id }}
+                                </span>
+                                <span
+                                    class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold"
+                                    :class="jobStateClass()"
+                                >
+                                    {{ jobStateLabel() }}
+                                </span>
+                            </div>
+
+                            <h1
+                                class="text-2xl font-bold tracking-tight sm:text-3xl"
+                            >
+                                {{ job.title }}
+                            </h1>
+
+                            <div
+                                class="mt-3 flex items-center gap-2 text-sm text-white/80"
+                            >
+                                <MapPin class="h-4 w-4 shrink-0" />
+                                <span class="line-clamp-1">{{
+                                    primaryLocation
+                                }}</span>
+                            </div>
+
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span
+                                    v-if="job.category_name"
+                                    class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-medium text-white/90"
+                                >
+                                    {{ job.category_name }}
+                                </span>
+                                <span
+                                    v-if="job.class_name"
+                                    class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-medium text-white/90"
+                                >
+                                    {{ job.class_name }}
+                                </span>
+                                <span
+                                    v-if="job.tuition_type_name"
+                                    class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-xs font-medium text-white/90"
+                                >
+                                    {{ job.tuition_type_name }}
+                                </span>
+                            </div>
+
+                            <div
+                                class="mt-5 flex flex-wrap gap-4 text-xs text-white/75"
+                            >
+                                <span class="inline-flex items-center gap-1.5">
+                                    <CalendarDays class="h-3.5 w-3.5" />
+                                    Published {{ formatDate(job.published_at) }}
+                                </span>
+                                <span class="inline-flex items-center gap-1.5">
+                                    <Clock3 class="h-3.5 w-3.5" />
+                                    {{ isExpired ? 'Expired' : 'Expires' }}
+                                    {{ formatDate(job.expires_at) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="grid grid-cols-2 gap-3 p-5 sm:grid-cols-4 sm:p-6"
+                        >
+                            <div
+                                class="rounded-xl border border-slate-200 bg-slate-50/70 p-3"
+                            >
+                                <p
+                                    class="text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+                                >
                                     Salary
                                 </p>
-                                <p class="mt-1 text-sm font-semibold text-slate-900">
+                                <p
+                                    class="mt-1 text-sm font-semibold text-slate-900"
+                                >
                                     {{ salaryLabel() }}
                                 </p>
                             </div>
+
                             <div
-                                class="rounded-xl border border-slate-100 bg-slate-50/50 p-3"
+                                class="rounded-xl border border-slate-200 bg-slate-50/70 p-3"
                             >
-                                <p class="text-xs font-medium text-slate-500">
-                                    Days/Week
+                                <p
+                                    class="text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+                                >
+                                    Days / Week
                                 </p>
-                                <p class="mt-1 text-sm font-semibold text-slate-900">
+                                <p
+                                    class="mt-1 text-sm font-semibold text-slate-900"
+                                >
                                     {{ job.days_per_week ?? '—' }}
                                 </p>
                             </div>
+
                             <div
-                                class="rounded-xl border border-slate-100 bg-slate-50/50 p-3"
+                                class="rounded-xl border border-slate-200 bg-slate-50/70 p-3"
                             >
-                                <p class="text-xs font-medium text-slate-500">
-                                    Time
-                                </p>
-                                <p class="mt-1 text-sm font-semibold text-slate-900">
-                                    {{ job.tuition_time || '—' }}
-                                </p>
-                            </div>
-                            <div
-                                class="rounded-xl border border-slate-100 bg-slate-50/50 p-3"
-                            >
-                                <p class="text-xs font-medium text-slate-500">
+                                <p
+                                    class="text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+                                >
                                     Duration
                                 </p>
-                                <p class="mt-1 text-sm font-semibold text-slate-900">
-                                    {{ job.tuition_duration || '—' }}
+                                <p
+                                    class="mt-1 text-sm font-semibold text-slate-900"
+                                >
+                                    {{ job.tuition_duration || 'Flexible' }}
                                 </p>
                             </div>
+
                             <div
-                                class="rounded-xl border border-slate-100 bg-slate-50/50 p-3"
+                                class="rounded-xl border border-slate-200 bg-slate-50/70 p-3"
                             >
-                                <p class="text-xs font-medium text-slate-500">
+                                <p
+                                    class="text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+                                >
                                     Students
                                 </p>
-                                <p class="mt-1 text-sm font-semibold text-slate-900">
+                                <p
+                                    class="mt-1 text-sm font-semibold text-slate-900"
+                                >
                                     {{ job.no_of_students ?? '—' }}
-                                </p>
-                            </div>
-                            <div
-                                class="rounded-xl border border-slate-100 bg-slate-50/50 p-3"
-                            >
-                                <p class="text-xs font-medium text-slate-500">
-                                    Tutor Gender
-                                </p>
-                                <p class="mt-1 text-sm font-semibold text-slate-900">
-                                    {{ genderLabel(job.tutor_gender) }}
                                 </p>
                             </div>
                         </div>
                     </section>
 
                     <section
-                        class="mt-6 rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                     >
-                        <h2 class="text-lg font-semibold text-slate-900">Job Details</h2>
+                        <h2 class="text-lg font-semibold text-slate-900">
+                            Job Description
+                        </h2>
                         <div
                             v-if="job.description"
                             class="mt-4 leading-relaxed whitespace-pre-line text-slate-700"
@@ -461,9 +447,9 @@ function getStatusBadgeClass(): string {
                         </p>
                     </section>
 
-                    <div class="mt-6 grid gap-6 md:grid-cols-2">
+                    <div class="grid gap-6 md:grid-cols-2">
                         <section
-                            class="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"
+                            class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
                         >
                             <h2 class="text-lg font-semibold text-slate-900">
                                 Subjects
@@ -475,8 +461,9 @@ function getStatusBadgeClass(): string {
                                 <span
                                     v-for="subject in job.subject_names"
                                     :key="subject"
-                                    class="inline-flex items-center rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700"
+                                    class="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700"
                                 >
+                                    <BookOpen class="mr-1.5 h-3.5 w-3.5" />
                                     {{ subject }}
                                 </span>
                             </div>
@@ -486,7 +473,7 @@ function getStatusBadgeClass(): string {
                         </section>
 
                         <section
-                            class="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"
+                            class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
                         >
                             <h2 class="text-lg font-semibold text-slate-900">
                                 Schedule
@@ -498,7 +485,7 @@ function getStatusBadgeClass(): string {
                                 <span
                                     v-for="day in job.tuition_days"
                                     :key="day"
-                                    class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700"
+                                    class="inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-700"
                                 >
                                     {{ shortDay(day) }}
                                 </span>
@@ -506,48 +493,70 @@ function getStatusBadgeClass(): string {
                             <p v-else class="mt-3 text-sm text-slate-400">
                                 No schedule specified.
                             </p>
-                            <p
-                                v-if="job.tuition_time"
-                                class="mt-3 text-sm text-slate-600"
+
+                            <div
+                                class="mt-4 space-y-1.5 text-sm text-slate-600"
                             >
-                                <span class="font-medium">Time:</span>
-                                {{ job.tuition_time }}
-                            </p>
-                            <p
-                                v-if="job.days_per_week"
-                                class="mt-1 text-sm text-slate-600"
-                            >
-                                <span class="font-medium">Days/Week:</span>
-                                {{ job.days_per_week }}
-                            </p>
+                                <p>
+                                    <span class="font-medium text-slate-800"
+                                        >Time:</span
+                                    >
+                                    {{ job.tuition_time || 'Flexible' }}
+                                </p>
+                                <p>
+                                    <span class="font-medium text-slate-800"
+                                        >Tutor Preference:</span
+                                    >
+                                    {{ genderLabel(job.tutor_gender) }}
+                                </p>
+                                <p>
+                                    <span class="font-medium text-slate-800"
+                                        >Student Gender:</span
+                                    >
+                                    {{ genderLabel(job.student_gender) }}
+                                </p>
+                            </div>
                         </section>
                     </div>
 
                     <section
-                        class="mt-6 rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                     >
                         <h2 class="text-lg font-semibold text-slate-900">
-                            Location
+                            Location Details
                         </h2>
                         <div class="mt-3 space-y-2 text-sm text-slate-700">
                             <p v-if="job.country_name">
-                                <span class="font-medium">Country:</span>
+                                <span class="font-medium text-slate-900"
+                                    >Country:</span
+                                >
                                 {{ job.country_name }}
                             </p>
                             <p v-if="job.city_name">
-                                <span class="font-medium">City:</span>
+                                <span class="font-medium text-slate-900"
+                                    >City:</span
+                                >
                                 {{ job.city_name }}
                             </p>
                             <p v-if="job.area_name">
-                                <span class="font-medium">Area:</span>
+                                <span class="font-medium text-slate-900"
+                                    >Area:</span
+                                >
                                 {{ job.area_name }}
                             </p>
                             <p v-if="job.location">
-                                <span class="font-medium">Address:</span>
+                                <span class="font-medium text-slate-900"
+                                    >Address:</span
+                                >
                                 {{ job.location }}
                             </p>
                             <p
-                                v-if="!job.country_name && !job.city_name && !job.area_name"
+                                v-if="
+                                    !job.country_name &&
+                                    !job.city_name &&
+                                    !job.area_name &&
+                                    !job.location
+                                "
                                 class="text-slate-400"
                             >
                                 Location details not available.
@@ -556,32 +565,34 @@ function getStatusBadgeClass(): string {
                     </section>
                 </div>
 
-                <aside class="hidden lg:col-span-4 lg:block">
+                <aside class="hidden space-y-4 lg:col-span-4 lg:block">
                     <div class="sticky top-24 space-y-4">
                         <div
-                            class="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"
+                            class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
                         >
                             <div
                                 v-if="page.props.flash?.status"
-                                class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                                class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
                             >
                                 {{ page.props.flash.status }}
                             </div>
                             <div
                                 v-if="page.props.errors?.job"
-                                class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+                                class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
                             >
                                 {{ page.props.errors.job }}
                             </div>
 
                             <div
-                                v-if="hasActiveApplication && !showApplicationForm"
+                                v-if="
+                                    hasActiveApplication && !showApplicationForm
+                                "
                                 class="space-y-4"
                             >
                                 <div
-                                    class="rounded-lg border border-amber-200 bg-amber-50 p-4"
+                                    class="rounded-xl border border-amber-200 bg-amber-50 p-4"
                                 >
-                                    <p class="font-medium text-amber-800">
+                                    <p class="font-semibold text-amber-800">
                                         Application Submitted
                                     </p>
                                     <p class="mt-1 text-sm text-amber-700">
@@ -598,69 +609,81 @@ function getStatusBadgeClass(): string {
                                     >
                                         {{
                                             formatDateTime(
-                                                application?.created_at || null,
+                                                application.created_at,
                                             )
                                         }}
                                     </p>
                                 </div>
                                 <Link
                                     href="/tutor/job-applications"
-                                    class="flex w-full items-center justify-center rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+                                    class="flex h-11 w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-100 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
                                 >
                                     View My Applications
                                 </Link>
                             </div>
 
                             <div
-                                v-else-if="hasCancelledApplication && canApply && !showApplicationForm"
+                                v-else-if="
+                                    hasCancelledApplication &&
+                                    canApply &&
+                                    !showApplicationForm
+                                "
                                 class="space-y-4"
                             >
                                 <div
-                                    class="rounded-lg border border-red-200 bg-red-50 p-4"
+                                    class="rounded-xl border border-red-200 bg-red-50 p-4"
                                 >
-                                    <p class="font-medium text-red-800">
+                                    <p class="font-semibold text-red-800">
                                         Previous Application Cancelled
                                     </p>
                                     <p class="mt-1 text-sm text-red-700">
-                                        You can submit a new application for this
-                                        job.
+                                        You can submit a new application for
+                                        this job.
                                     </p>
                                     <p
                                         v-if="application?.cancel_reason"
                                         class="mt-1 text-xs text-red-600"
                                     >
-                                        Reason:
-                                        {{ application?.cancel_reason }}
+                                        Reason: {{ application.cancel_reason }}
                                     </p>
                                 </div>
                                 <button
-                                    @click="showApplicationForm = true"
-                                    class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
+                                    class="flex h-11 w-full items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                                    @click="openApplicationForm"
                                 >
                                     Re-Apply for this Job
                                 </button>
                             </div>
 
                             <div
-                                v-else-if="isTutor && canApply && !showApplicationForm"
+                                v-else-if="
+                                    isTutor && canApply && !showApplicationForm
+                                "
                             >
                                 <button
-                                    @click="showApplicationForm = true"
-                                    class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
+                                    class="flex h-11 w-full items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                                    @click="openApplicationForm"
                                 >
                                     Apply for this Job
                                 </button>
-                                <p class="mt-3 text-center text-xs text-slate-500">
-                                    Verified tutors get priority response
+                                <p
+                                    class="mt-3 text-center text-xs text-slate-500"
+                                >
+                                    Verified tutors usually get faster
+                                    responses.
                                 </p>
                             </div>
 
                             <form
-                                v-else-if="isTutor && canApply && showApplicationForm"
+                                v-else-if="
+                                    isTutor && canApply && showApplicationForm
+                                "
                                 class="space-y-4"
                                 @submit.prevent="submitApplication"
                             >
-                                <h3 class="font-semibold text-slate-900">
+                                <h3
+                                    class="text-base font-semibold text-slate-900"
+                                >
                                     Submit Application
                                 </h3>
                                 <div>
@@ -675,33 +698,63 @@ function getStatusBadgeClass(): string {
                                         class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                         placeholder="Write a short cover letter (optional)"
                                     />
+                                    <p
+                                        v-if="
+                                            applicationForm.errors.cover_letter
+                                        "
+                                        class="mt-1 text-xs text-rose-600"
+                                    >
+                                        {{
+                                            applicationForm.errors.cover_letter
+                                        }}
+                                    </p>
                                 </div>
                                 <div>
                                     <label
                                         class="mb-1 block text-sm font-medium text-slate-700"
                                     >
-                                        Expected Salary
+                                        Expected Salary (BDT)
                                     </label>
                                     <input
-                                        v-model="applicationForm.expected_salary_amount"
+                                        v-model="
+                                            applicationForm.expected_salary_amount
+                                        "
                                         type="number"
                                         min="0"
                                         step="100"
                                         class="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                         placeholder="Expected salary (optional)"
                                     />
+                                    <p
+                                        v-if="
+                                            applicationForm.errors
+                                                .expected_salary_amount
+                                        "
+                                        class="mt-1 text-xs text-rose-600"
+                                    >
+                                        {{
+                                            applicationForm.errors
+                                                .expected_salary_amount
+                                        }}
+                                    </p>
                                 </div>
+                                <p
+                                    v-if="applicationForm.errors.job"
+                                    class="text-sm text-rose-600"
+                                >
+                                    {{ applicationForm.errors.job }}
+                                </p>
                                 <div class="flex gap-2">
                                     <button
                                         type="button"
-                                        class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
-                                        @click="showApplicationForm = false"
+                                        class="h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+                                        @click="closeApplicationForm"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        class="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-70"
+                                        class="h-11 flex-1 rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-70"
                                         :disabled="applicationForm.processing"
                                     >
                                         {{
@@ -720,35 +773,34 @@ function getStatusBadgeClass(): string {
                                 </p>
                                 <Link
                                     :href="login()"
-                                    class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98]"
+                                    class="flex h-11 w-full items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
                                 >
                                     Sign in to Apply
                                 </Link>
                                 <Link
                                     :href="register()"
-                                    class="flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                                    class="flex h-11 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                                 >
                                     Create Tutor Account
                                 </Link>
                             </div>
 
-                            <div v-else-if="isExpired" class="space-y-3">
-                                <div
-                                    class="rounded-lg border border-red-200 bg-red-50 p-4"
-                                >
-                                    <p class="font-medium text-red-800">
-                                        Job Expired
-                                    </p>
-                                    <p class="mt-1 text-sm text-red-700">
-                                        This job is no longer accepting
-                                        applications.
-                                    </p>
-                                </div>
+                            <div
+                                v-else-if="isExpired"
+                                class="rounded-xl border border-red-200 bg-red-50 p-4"
+                            >
+                                <p class="font-semibold text-red-800">
+                                    Job Expired
+                                </p>
+                                <p class="mt-1 text-sm text-red-700">
+                                    This job is no longer accepting
+                                    applications.
+                                </p>
                             </div>
 
                             <div
                                 v-else
-                                class="rounded-lg border border-slate-200 bg-slate-50 p-4"
+                                class="rounded-xl border border-slate-200 bg-slate-50 p-4"
                             >
                                 <p class="text-sm text-slate-600">
                                     Job applications are available for tutor
@@ -758,59 +810,31 @@ function getStatusBadgeClass(): string {
                         </div>
 
                         <div
-                            class="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"
+                            class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
                         >
-                            <h3 class="font-semibold text-slate-900">
-                                Quick Info
+                            <h3 class="text-base font-semibold text-slate-900">
+                                Why This Listing Stands Out
                             </h3>
-                            <ul class="mt-3 space-y-2 text-sm text-slate-600">
+                            <ul class="mt-3 space-y-2.5 text-sm text-slate-600">
                                 <li class="flex items-start gap-2">
-                                    <svg
-                                        class="mt-0.5 h-4 w-4 text-slate-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
-                                    <span>Verified guardian</span>
+                                    <CheckCircle2
+                                        class="mt-0.5 h-4 w-4 text-emerald-600"
+                                    />
+                                    Structured details with transparent
+                                    requirements
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <svg
-                                        class="mt-0.5 h-4 w-4 text-slate-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                                        />
-                                    </svg>
-                                    <span>Quick response time</span>
+                                    <Wallet
+                                        class="mt-0.5 h-4 w-4 text-blue-600"
+                                    />
+                                    Clear salary and schedule expectations
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <svg
-                                        class="mt-0.5 h-4 w-4 text-slate-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
-                                    <span>Flexible schedule</span>
+                                    <Users
+                                        class="mt-0.5 h-4 w-4 text-indigo-600"
+                                    />
+                                    Balanced student and tutor preference
+                                    details
                                 </li>
                             </ul>
                         </div>
@@ -822,44 +846,51 @@ function getStatusBadgeClass(): string {
         <div
             class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-sm lg:hidden"
         >
-            <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
+            <div
+                class="mx-auto flex max-w-6xl items-center justify-between gap-3"
+            >
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-medium text-slate-900">
+                    <p class="truncate text-sm font-semibold text-slate-900">
                         {{ job.title }}
                     </p>
                     <p class="truncate text-xs text-slate-500">
-                        {{ job.area_name || job.city_name }}
+                        {{ salaryLabel() }} · {{ primaryLocation }}
                     </p>
                 </div>
+
                 <Link
                     v-if="!isAuthenticated"
                     :href="login()"
-                    class="flex h-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98]"
+                    class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
                 >
                     Sign In
                 </Link>
+
+                <span
+                    v-else-if="hasActiveApplication"
+                    class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 px-4 text-sm font-medium text-amber-700"
+                >
+                    {{ applicationStatusLabel(application?.status || '') }}
+                </span>
+
                 <button
                     v-else-if="isTutor && canApply"
-                    @click="showApplicationForm = true"
-                    class="flex h-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98]"
+                    class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                    @click="openApplicationForm"
                 >
-                    Apply Now
+                    {{ hasCancelledApplication ? 'Re-Apply' : 'Apply Now' }}
                 </button>
+
                 <span
                     v-else-if="isExpired"
-                    class="flex h-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 px-5 text-sm font-medium text-slate-500"
+                    class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 px-5 text-sm font-medium text-slate-500"
                 >
                     Expired
                 </span>
-                <span
-                    v-else-if="application"
-                    class="flex h-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 px-5 text-sm font-medium text-amber-700"
-                >
-                    {{ applicationStatusLabel(application.status) }}
-                </span>
+
                 <span
                     v-else
-                    class="flex h-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 px-5 text-sm font-medium text-slate-500"
+                    class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 px-5 text-sm font-medium text-slate-500"
                 >
                     Tutors Only
                 </span>
@@ -869,22 +900,23 @@ function getStatusBadgeClass(): string {
         <Teleport to="body">
             <div
                 v-if="showApplicationForm && canApply"
-                class="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+                class="fixed inset-0 z-50 flex items-end justify-center sm:items-center lg:hidden"
             >
                 <div
                     class="absolute inset-0 bg-slate-900/50"
-                    @click="showApplicationForm = false"
+                    @click="closeApplicationForm"
                 />
                 <div
-                    class="relative w-full rounded-t-2xl bg-white p-5 sm:max-w-md sm:rounded-2xl"
+                    class="relative max-h-[85vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 sm:max-w-md sm:rounded-2xl"
                 >
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-slate-900">
                             Apply for this Job
                         </h3>
                         <button
-                            @click="showApplicationForm = false"
                             class="rounded-lg p-1 text-slate-400 hover:text-slate-600"
+                            aria-label="Close application form"
+                            @click="closeApplicationForm"
                         >
                             <svg
                                 class="h-5 w-5"
@@ -901,24 +933,34 @@ function getStatusBadgeClass(): string {
                             </svg>
                         </button>
                     </div>
-                    <form @submit.prevent="submitApplication" class="space-y-4">
+
+                    <form class="space-y-4" @submit.prevent="submitApplication">
                         <div>
                             <label
                                 class="mb-1.5 block text-sm font-medium text-slate-700"
-                                >Cover Letter</label
                             >
+                                Cover Letter
+                            </label>
                             <textarea
                                 v-model="applicationForm.cover_letter"
                                 rows="3"
                                 class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                 placeholder="Write a short cover letter (optional)"
                             />
+                            <p
+                                v-if="applicationForm.errors.cover_letter"
+                                class="mt-1 text-xs text-rose-600"
+                            >
+                                {{ applicationForm.errors.cover_letter }}
+                            </p>
                         </div>
+
                         <div>
                             <label
                                 class="mb-1.5 block text-sm font-medium text-slate-700"
-                                >Expected Salary (BDT)</label
                             >
+                                Expected Salary (BDT)
+                            </label>
                             <input
                                 v-model="applicationForm.expected_salary_amount"
                                 type="number"
@@ -927,10 +969,30 @@ function getStatusBadgeClass(): string {
                                 class="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                 placeholder="Your expected salary"
                             />
+                            <p
+                                v-if="
+                                    applicationForm.errors
+                                        .expected_salary_amount
+                                "
+                                class="mt-1 text-xs text-rose-600"
+                            >
+                                {{
+                                    applicationForm.errors
+                                        .expected_salary_amount
+                                }}
+                            </p>
                         </div>
+
+                        <p
+                            v-if="applicationForm.errors.job"
+                            class="text-sm text-rose-600"
+                        >
+                            {{ applicationForm.errors.job }}
+                        </p>
+
                         <button
                             type="submit"
-                            class="flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-700 active:scale-[0.98] disabled:opacity-70"
+                            class="flex h-11 w-full items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-70"
                             :disabled="applicationForm.processing"
                         >
                             {{

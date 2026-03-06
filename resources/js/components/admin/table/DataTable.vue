@@ -44,9 +44,15 @@ const emit = defineEmits(['sort']);
 const rows = computed(() => props.items?.data ?? []);
 const links = computed(() => props.items?.links ?? []);
 const currentPage = computed(() => props.items?.current_page ?? 1);
+const lastPage = computed(() => props.items?.last_page ?? 1);
 const perPage = computed(() => props.items?.per_page ?? rows.value.length);
 const totalColumns = computed(
     () => props.columns.length + (props.showSerial ? 1 : 0),
+);
+const hasPagination = computed(() => links.value.length > 3);
+const previousLink = computed(() => links.value[0] ?? null);
+const nextLink = computed(() =>
+    links.value.length > 0 ? links.value[links.value.length - 1] : null,
 );
 
 function serialNumber(index: number): number {
@@ -80,6 +86,17 @@ function formatPaginationLabel(label) {
         .replace(/<[^>]*>/g, '')
         .trim();
 }
+
+function mobilePaginationLabel(): string {
+    if (
+        !Number.isFinite(currentPage.value) ||
+        !Number.isFinite(lastPage.value)
+    ) {
+        return '';
+    }
+
+    return `Page ${currentPage.value} of ${lastPage.value}`;
+}
 </script>
 
 <template>
@@ -98,7 +115,7 @@ function formatPaginationLabel(label) {
                     <tr>
                         <th
                             v-if="showSerial"
-                            class="whitespace-nowrap px-4 py-3.5 text-center text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
+                            class="px-4 py-3.5 text-center text-xs font-semibold tracking-wider whitespace-nowrap text-slate-500 uppercase dark:text-slate-400"
                             style="width: 56px"
                         >
                             SL
@@ -106,7 +123,7 @@ function formatPaginationLabel(label) {
                         <th
                             v-for="column in columns"
                             :key="column.key"
-                            class="whitespace-nowrap px-4 py-3.5 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
+                            class="px-4 py-3.5 text-xs font-semibold tracking-wider whitespace-nowrap text-slate-500 uppercase dark:text-slate-400"
                             :class="column.headerClass"
                         >
                             <Button
@@ -155,7 +172,7 @@ function formatPaginationLabel(label) {
                         >
                             <td
                                 v-if="showSerial"
-                                class="whitespace-nowrap px-4 py-3.5 text-center text-xs font-medium tabular-nums text-slate-400 dark:text-slate-500"
+                                class="px-4 py-3.5 text-center text-xs font-medium whitespace-nowrap text-slate-400 tabular-nums dark:text-slate-500"
                             >
                                 {{ serialNumber(index) }}
                             </td>
@@ -204,47 +221,98 @@ function formatPaginationLabel(label) {
         </div>
 
         <div
-            v-if="links.length > 3"
-            class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 px-4 py-3 dark:border-slate-700/80"
+            v-if="hasPagination"
+            class="border-t border-slate-200/80 px-4 py-3 dark:border-slate-700/80"
             role="navigation"
             aria-label="Pagination"
         >
-            <span
-                class="text-xs text-slate-500 dark:text-slate-400"
-                v-if="items.from && items.to && items.total"
+            <div
+                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
-                Showing {{ items.from }}–{{ items.to }} of {{ items.total }}
-            </span>
-            <div class="flex flex-wrap items-center gap-1.5">
-                <template
-                    v-for="(link, index) in links"
-                    :key="`${index}-${link.label}`"
+                <span
+                    v-if="items.from && items.to && items.total"
+                    class="text-center text-xs text-slate-500 sm:text-left dark:text-slate-400"
                 >
+                    Showing {{ items.from }}–{{ items.to }} of {{ items.total }}
+                </span>
+
+                <div class="grid grid-cols-2 gap-2 sm:hidden">
                     <Button
-                        v-if="!link.url"
+                        v-if="!previousLink?.url"
                         variant="outline"
                         size="sm"
                         disabled
-                        class="h-8 min-w-8 px-2.5 text-xs"
+                        class="h-9 w-full"
                     >
-                        {{ formatPaginationLabel(link.label) }}
+                        Previous
                     </Button>
 
                     <Link
                         v-else
-                        :href="link.url"
+                        :href="previousLink.url"
                         preserve-scroll
-                        class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2.5 text-xs font-medium transition-colors"
-                        :class="
-                            link.active
-                                ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                        "
-                        :aria-current="link.active ? 'page' : undefined"
+                        class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
-                        {{ formatPaginationLabel(link.label) }}
+                        Previous
                     </Link>
-                </template>
+
+                    <Button
+                        v-if="!nextLink?.url"
+                        variant="outline"
+                        size="sm"
+                        disabled
+                        class="h-9 w-full"
+                    >
+                        Next
+                    </Button>
+
+                    <Link
+                        v-else
+                        :href="nextLink.url"
+                        preserve-scroll
+                        class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                    >
+                        Next
+                    </Link>
+                </div>
+
+                <span
+                    class="text-center text-xs text-slate-500 sm:hidden dark:text-slate-400"
+                >
+                    {{ mobilePaginationLabel() }}
+                </span>
+
+                <div class="hidden flex-wrap items-center gap-1.5 sm:flex">
+                    <template
+                        v-for="(link, index) in links"
+                        :key="`${index}-${link.label}`"
+                    >
+                        <Button
+                            v-if="!link.url"
+                            variant="outline"
+                            size="sm"
+                            disabled
+                            class="h-8 min-w-8 px-2.5 text-xs"
+                        >
+                            {{ formatPaginationLabel(link.label) }}
+                        </Button>
+
+                        <Link
+                            v-else
+                            :href="link.url"
+                            preserve-scroll
+                            class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2.5 text-xs font-medium transition-colors"
+                            :class="
+                                link.active
+                                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                            "
+                            :aria-current="link.active ? 'page' : undefined"
+                        >
+                            {{ formatPaginationLabel(link.label) }}
+                        </Link>
+                    </template>
+                </div>
             </div>
         </div>
     </div>
