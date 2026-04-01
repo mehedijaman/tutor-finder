@@ -107,6 +107,7 @@ class TutorManagementController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
+                    'photo_url' => $user->photo_url,
                     'status' => $user->status,
                     'verification_status' => $user->verification_status,
                     'verification_request_id' => $latestVerificationRequest?->id,

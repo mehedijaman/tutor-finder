@@ -107,7 +107,7 @@ function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
                                 :key="option"
                                 :value="option"
                             >
-                                {{ option.charAt(0).toUpperCase() + option.slice(1) }}
+                                {{ option.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') }}
                             </SelectItem>
                         </SelectContent>
                     </Select>
@@ -132,7 +132,7 @@ function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
                                   : 'secondary'
                         "
                     >
-                        {{ value.charAt(0).toUpperCase() + value.slice(1) }}
+                        {{ value.replace('_', ' ').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') }}
                     </Badge>
                 </template>
                 <template #cell-due_at="{ value }">

@@ -11,6 +11,7 @@ import {
 import { computed, ref } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import InputError from '@/components/InputError.vue';
+import ProfilePhotoUpload from '@/components/ProfilePhotoUpload.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -103,7 +104,7 @@ const profileCompletion = computed(() => {
     let filled = 0;
 
     for (const field of profileCompletionFields) {
-        if (form[field]) {
+        if ((form as any)[field]) {
             filled++;
         }
     }
@@ -263,18 +264,9 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
             >
                 <div class="flex flex-col items-center text-center">
-                    <Avatar class="h-28 w-28">
-                        <AvatarImage
-                            v-if="authUser?.avatar"
-                            :src="authUser.avatar"
-                            :alt="form.name"
-                        />
-                        <AvatarFallback class="text-lg font-semibold">
-                            {{ getInitials(form.name || authUser?.name || 'Guardian') }}
-                        </AvatarFallback>
-                    </Avatar>
+                    <ProfilePhotoUpload />
 
-                    <h2 class="mt-4 text-2xl font-semibold tracking-tight">
+                    <h2 class="mt-2 text-2xl font-semibold tracking-tight">
                         {{ form.name || authUser?.name || 'Guardian' }}
                     </h2>
                     <p class="mt-1 text-sm text-muted-foreground">

@@ -4,6 +4,7 @@ import { onBeforeUnmount, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
 import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AdminLayout from '@/layouts/AdminLayout.vue';
@@ -25,7 +26,7 @@ const breadcrumbs = [{ title: 'Admin Users', href: '/admin/users' }];
 const baseUrl = '/admin/users';
 
 const columns = [
-    { key: 'name', label: 'Name', sortable: true },
+    { key: 'name', label: 'Identity', sortable: true },
     { key: 'email', label: 'Email', sortable: true },
     { key: 'status', label: 'Status', sortable: true },
     { key: 'roles', label: 'Roles' },
@@ -40,8 +41,8 @@ const confirmTitle = ref('');
 const confirmDescription = ref('');
 const confirmLabel = ref('Confirm');
 const confirmDestructive = ref(true);
-const pendingAction = ref(null);
-let searchDebounceTimer = null;
+const pendingAction = ref<{ action: string; row: any } | null>(null);
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(
     () => props.filters.search,
@@ -88,7 +89,7 @@ function applyFilters(overrides = {}) {
     );
 }
 
-function handleSort(columnKey) {
+function handleSort(columnKey: string) {
     const nextDirection =
         props.filters.sort === columnKey && props.filters.direction === 'asc'
             ? 'desc'
@@ -97,7 +98,7 @@ function handleSort(columnKey) {
     applyFilters({ sort: columnKey, direction: nextDirection, page: 1 });
 }
 
-function openConfirm(action, row = null) {
+function openConfirm(action: string, row: any = null) {
     pendingAction.value = { action, row };
     confirmTitle.value = 'Confirm Action';
     confirmDescription.value = '';
@@ -179,7 +180,7 @@ function runConfirmedAction() {
     resetConfirmState();
 }
 
-function actionItemsForRow(row) {
+function actionItemsForRow(row: any) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
@@ -202,7 +203,7 @@ function actionItemsForRow(row) {
     ];
 }
 
-function canImpersonateRow(row) {
+function canImpersonateRow(row: any) {
     const currentUserId = page.props.auth?.user?.id;
     const isImpersonating = Boolean(
         page.props.auth?.impersonation?.is_impersonating,
@@ -213,7 +214,7 @@ function canImpersonateRow(row) {
     );
 }
 
-function handleRowAction(actionKey, row) {
+function handleRowAction(actionKey: string, row: any) {
     if (actionKey === 'edit') {
         router.visit(`/admin/users/${row.id}/edit`);
         return;
@@ -313,6 +314,18 @@ function handleRowAction(actionKey, row) {
                 empty-text="No admin users found."
                 @sort="handleSort"
             >
+                <template #cell-name="{ row }">
+                    <div class="flex items-center gap-3">
+                        <Avatar class="h-8 w-8 border border-slate-200">
+                            <AvatarImage v-if="row.photo_url" :src="row.photo_url" :alt="row.name" />
+                            <AvatarFallback class="bg-indigo-50 text-indigo-700 font-bold uppercase text-[10px]">
+                                {{ row.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) }}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span class="font-medium text-slate-900">{{ row.name }}</span>
+                    </div>
+                </template>
+
                 <template #cell-roles="{ row }">
                     {{ row.roles?.join(', ') || '—' }}
                 </template>

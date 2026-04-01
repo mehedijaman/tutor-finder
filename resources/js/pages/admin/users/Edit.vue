@@ -1,25 +1,17 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
-defineProps({
-    adminUser: {
-        type: Object,
-        required: true,
-    },
-    roles: {
-        type: Array,
-        default: () => [],
-    },
-    permissions: {
-        type: Array,
-        default: () => [],
-    },
-});
+const props = defineProps<{
+    adminUser: any;
+    roles: string[];
+    permissions: string[];
+}>();
 
 const breadcrumbs = [
     { title: 'Admin Users', href: '/admin/users' },
@@ -33,17 +25,25 @@ const breadcrumbs = [
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6">
             <div
-                class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
-                <div class="space-y-1">
-                    <h1
-                        class="text-2xl font-semibold tracking-tight text-slate-900"
-                    >
-                        Edit Admin User
-                    </h1>
-                    <p class="text-sm text-slate-600">
-                        Update account details, status, roles, and permissions.
-                    </p>
+                <div class="flex items-center gap-4">
+                    <Avatar class="h-14 w-14 border-2 border-white shadow-sm ring-1 ring-slate-100">
+                        <AvatarImage v-if="adminUser.photo_url" :src="adminUser.photo_url" :alt="adminUser.name" />
+                        <AvatarFallback class="bg-indigo-50 text-indigo-700 font-bold uppercase text-lg">
+                            {{ adminUser.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) }}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div class="space-y-1">
+                        <h1
+                            class="text-2xl font-semibold tracking-tight text-slate-900"
+                        >
+                            Edit Admin User
+                        </h1>
+                        <p class="text-sm text-slate-600">
+                            Update account details, status, roles, and permissions.
+                        </p>
+                    </div>
                 </div>
                 <Link
                     href="/admin/users"

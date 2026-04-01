@@ -106,8 +106,8 @@ function toggleAppearance(): void {
                     >
                         <Avatar class="size-8 overflow-hidden rounded-full ring-2 ring-white dark:ring-slate-800">
                             <AvatarImage
-                                v-if="user.avatar"
-                                :src="user.avatar"
+                                v-if="user.photo_url"
+                                :src="user.photo_url"
                                 :alt="user.name"
                             />
                             <AvatarFallback

@@ -124,6 +124,7 @@ const tabs = [
                         <CardContent class="relative pt-0">
                             <div class="flex flex-col items-center -mt-12 text-center">
                                 <Avatar class="h-24 w-24 border-4 border-white shadow-lg ring-1 ring-slate-100">
+                                    <AvatarImage v-if="guardian.photo_url" :src="guardian.photo_url" :alt="guardian.name" />
                                     <AvatarFallback class="bg-slate-100 text-2xl font-bold text-slate-400 uppercase">
                                         {{ initials }}
                                     </AvatarFallback>

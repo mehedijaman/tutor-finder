@@ -22,7 +22,7 @@ import {
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import ResetPasswordDialog from '@/components/admin/dialogs/ResetPasswordDialog.vue';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -360,6 +360,7 @@ function closeResetPasswordDialog() {
                             <td class="p-4 px-6">
                                 <div class="flex items-center gap-4">
                                     <Avatar class="h-10 w-10 border-2 border-white shadow-sm ring-1 ring-slate-100">
+                                        <AvatarImage v-if="row.photo_url" :src="row.photo_url" :alt="row.name" />
                                         <AvatarFallback class="bg-indigo-50 text-indigo-700 font-bold uppercase text-xs">
                                             {{ row.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) }}
                                         </AvatarFallback>

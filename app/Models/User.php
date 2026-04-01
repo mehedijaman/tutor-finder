@@ -17,12 +17,14 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasPushSubscriptions, HasRoles, ImpersonateModel, LogsActivity, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+    use HasFactory, HasPushSubscriptions, HasRoles, ImpersonateModel, InteractsWithMedia, LogsActivity, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -41,6 +43,15 @@ class User extends Authenticatable
         'verified_at',
         'verification_status',
         'verification_type',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'photo_url',
     ];
 
     /**
@@ -296,5 +307,22 @@ class User extends Authenticatable
     public function assignedTickets(): HasMany
     {
         return $this->hasMany(SupportTicket::class, 'assigned_to');
+    }
+
+    /**
+     * Register media collections.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('profile_photo')
+            ->singleFile();
+    }
+
+    /**
+     * Get the profile photo URL.
+     */
+    public function getPhotoUrlAttribute(): string
+    {
+        return $this->getFirstMediaUrl('profile_photo') ?: 'https://www.gravatar.com/avatar/'.md5($this->email).'?s=200&d=mp';
     }
 }

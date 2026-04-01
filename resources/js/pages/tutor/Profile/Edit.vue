@@ -13,6 +13,7 @@ import {
 import { computed, ref } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import InputError from '@/components/InputError.vue';
+import ProfilePhotoUpload from '@/components/ProfilePhotoUpload.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -58,7 +59,7 @@ const props = defineProps({
         default: () => [],
     },
     genderOptions: {
-        type: Array,
+        type: Array as () => Array<{ value: string; label: string }>,
         default: () => [],
     },
     verification: {
@@ -170,7 +171,7 @@ const profileCompletion = computed(() => {
     let filled = 0;
 
     for (const field of profileCompletionFields) {
-        const value = form[field];
+        const value = (form as any)[field];
 
         if (Array.isArray(value)) {
             if (value.length > 0) {
@@ -370,8 +371,8 @@ function moveEducation(index, direction) {
     form.educations.splice(targetIndex, 0, current);
 }
 
-function toggleMultiSelect(field, value) {
-    const current = new Set(form[field]);
+function toggleMultiSelect(field: string, value: any) {
+    const current = new Set((form as any)[field]);
 
     if (current.has(value)) {
         current.delete(value);
@@ -379,11 +380,11 @@ function toggleMultiSelect(field, value) {
         current.add(value);
     }
 
-    form[field] = Array.from(current);
+    (form as any)[field] = Array.from(current);
 }
 
-function hasSelected(field, value) {
-    return form[field].includes(value);
+function hasSelected(field: string, value: any) {
+    return ((form as any)[field] as any[]).includes(value);
 }
 
 const requestDialogOpen = ref(false);
@@ -474,18 +475,9 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
             >
                 <div class="flex flex-col items-center text-center">
-                    <Avatar class="h-28 w-28">
-                        <AvatarImage
-                            v-if="authUser?.avatar"
-                            :src="authUser.avatar"
-                            :alt="form.name"
-                        />
-                        <AvatarFallback class="text-lg font-semibold">
-                            {{ getInitials(form.name || authUser?.name || 'Tutor') }}
-                        </AvatarFallback>
-                    </Avatar>
+                    <ProfilePhotoUpload />
 
-                    <h2 class="mt-4 text-2xl font-semibold tracking-tight">
+                    <h2 class="mt-2 text-2xl font-semibold tracking-tight">
                         {{ form.name || authUser?.name || 'Tutor' }}
                     </h2>
                     <p class="mt-1 text-sm text-muted-foreground">

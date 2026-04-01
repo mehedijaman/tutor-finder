@@ -15,17 +15,14 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { getInitials } = useInitials();
 
-// Compute whether we should show the avatar image
-const showAvatar = computed(
-    () => props.user.avatar && props.user.avatar !== '',
-);
+// No additional layout needed here
 </script>
 
 <template>
     <Avatar
         class="h-8 w-8 overflow-hidden rounded-xl ring-1 ring-sidebar-border/70"
     >
-        <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
+        <AvatarImage :src="user.photo_url" :alt="user.name" />
         <AvatarFallback
             class="rounded-xl bg-sidebar-accent text-black dark:text-white"
         >

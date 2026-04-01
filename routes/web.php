@@ -53,6 +53,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/payment/sslcommerz/{invoice}', [PaymentController::class, 'startSslCommerz'])
         ->whereNumber('invoice')
         ->name('payment.sslcommerz.start');
+
+    Route::post('/profile/photo', [\App\Http\Controllers\ProfilePhotoController::class, 'update'])->name('profile.photo.update');
+    Route::delete('/profile/photo', [\App\Http\Controllers\ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
 });
 
 Route::get('/payment/bkash/callback', [PaymentController::class, 'bkashCallback'])->name('payment.bkash.callback');
