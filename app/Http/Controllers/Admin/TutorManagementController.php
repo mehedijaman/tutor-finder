@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ProfileStatus;
+use App\Enums\TaxonomyStatus;
 use App\Enums\UserRole;
 use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
@@ -9,11 +11,23 @@ use App\Http\Requests\Admin\ManagedUserPasswordResetRequest;
 use App\Http\Requests\Admin\ManagedUserStoreRequest;
 use App\Http\Requests\Admin\ManagedUserUpdateRequest;
 use App\Http\Requests\Admin\UserStatusUpdateRequest;
+use App\Models\Area;
+use App\Models\Category;
+use App\Models\City;
+use App\Models\SchoolClass;
+use App\Models\Subject;
+use App\Models\TuitionType;
+use App\Models\TutorEducation;
+use App\Models\TutorProfile;
 use App\Models\User;
+use App\Models\VerificationRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class TutorManagementController extends Controller
@@ -149,8 +163,86 @@ class TutorManagementController extends Controller
             abort(404);
         }
 
+        $user->load(['tutorProfile', 'tutorEducations', 'tutorReviews.guardian', 'tutorReviews.jobAssignment']);
+
+        $profile = $user->tutorProfile;
+        $educations = $user->tutorEducations;
+
+        $verificationRequest = VerificationRequest::query()
+            ->with('invoice')
+            ->where('user_id', $user->getKey())
+            ->latest('id')
+            ->first();
+
         return inertia('admin/tutors/Show', [
             'tutor' => $user,
+            'profile' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'status' => $user->status,
+                'gender' => $profile?->gender ?? 'none',
+                'date_of_birth' => $profile?->date_of_birth?->toDateString(),
+                'present_address' => $profile?->present_address,
+                'permanent_address' => $profile?->permanent_address,
+                'nid_no' => $profile?->nid_no,
+                'bio' => $profile?->bio,
+                'preferred_tuition_types' => $profile?->preferred_tuition_types ?? [],
+                'preferred_categories' => $profile?->preferred_categories ?? [],
+                'preferred_classes' => $profile?->preferred_classes ?? [],
+                'preferred_subjects' => $profile?->preferred_subjects ?? [],
+                'preferred_locations' => $profile?->preferred_locations ?? [],
+                'expected_salary_min' => $profile?->expected_salary_min,
+                'expected_salary_max' => $profile?->expected_salary_max,
+                'available_days' => $profile?->available_days ?? [],
+                'available_time' => $profile?->available_time,
+                'profile_status' => $profile?->status ?? ProfileStatus::Active,
+                'educations' => $educations->map(fn (TutorEducation $education): array => [
+                    'id' => $education->id,
+                    'degree' => $education->degree,
+                    'institute' => $education->institute,
+                    'department' => $education->department,
+                    'graduation_year' => $education->graduation_year,
+                    'result' => $education->result,
+                    'is_current' => $education->is_current,
+                    'sort_order' => $education->sort_order,
+                ])->values()->all(),
+            ],
+            'tuitionTypes' => $this->activeTuitionTypes(),
+            'categories' => $this->activeCategories(),
+            'schoolClasses' => $this->activeSchoolClasses(),
+            'subjects' => $this->activeSubjects(),
+            'locations' => $this->activeLocations(),
+            'dayOptions' => $this->dayOptions(),
+            'genderOptions' => [
+                ['value' => 'male', 'label' => 'Male'],
+                ['value' => 'female', 'label' => 'Female'],
+                ['value' => 'other', 'label' => 'Other'],
+                ['value' => 'prefer_not_to_say', 'label' => 'Prefer Not to Say'],
+            ],
+            'verification' => $verificationRequest ? [
+                'id' => $verificationRequest->id,
+                'status' => $verificationRequest->status,
+                'role' => $verificationRequest->role,
+                'fee_amount' => $verificationRequest->fee_amount,
+                'currency' => $verificationRequest->currency,
+                'submitted_at' => $verificationRequest->submitted_at?->toDateTimeString(),
+                'reviewed_at' => $verificationRequest->reviewed_at?->toDateTimeString(),
+                'decision_reason' => $verificationRequest->decision_reason,
+                'invoice' => $verificationRequest->invoice ? [
+                    'id' => $verificationRequest->invoice->id,
+                    'invoice_no' => $verificationRequest->invoice->invoice_no,
+                    'amount' => $verificationRequest->invoice->amount,
+                    'currency' => $verificationRequest->invoice->currency,
+                    'status' => $verificationRequest->invoice->status,
+                    'due_at' => $verificationRequest->invoice->due_at?->toDateTimeString(),
+                    'expires_at' => $verificationRequest->invoice->expires_at?->toDateTimeString(),
+                    'paid_at' => $verificationRequest->invoice->paid_at?->toDateTimeString(),
+                    'payment_gateway' => $verificationRequest->invoice->payment_gateway,
+                ] : null,
+            ] : null,
+            'verificationStatus' => $user->verification_status,
+            'verifiedAt' => $user->verified_at?->toDateTimeString(),
         ]);
     }
 
@@ -171,22 +263,220 @@ class TutorManagementController extends Controller
     /**
      * Update a tutor profile.
      */
-    public function update(ManagedUserUpdateRequest $request, User $user): RedirectResponse
+    public function update(Request $request, User $user): RedirectResponse
     {
         if ($user->role !== UserRole::Tutor) {
             abort(404);
         }
 
-        $validated = $request->validated();
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user)],
+            'phone' => ['nullable', 'string', 'max:30', Rule::unique('users', 'phone')->ignore($user)],
+            'status' => ['required', 'string'],
+            'gender' => ['nullable', 'string'],
+            'date_of_birth' => ['nullable', 'date'],
+            'present_address' => ['nullable', 'string'],
+            'permanent_address' => ['nullable', 'string'],
+            'nid_no' => ['nullable', 'string'],
+            'bio' => ['nullable', 'string'],
+            'preferred_tuition_types' => ['nullable', 'array'],
+            'preferred_categories' => ['nullable', 'array'],
+            'preferred_classes' => ['nullable', 'array'],
+            'preferred_subjects' => ['nullable', 'array'],
+            'preferred_locations' => ['nullable', 'array'],
+            'expected_salary_min' => ['nullable', 'numeric'],
+            'expected_salary_max' => ['nullable', 'numeric'],
+            'available_days' => ['nullable', 'array'],
+            'available_time' => ['nullable', 'string'],
+            'profile_status' => ['nullable', 'string'],
+            'educations' => ['nullable', 'array'],
+        ]);
 
-        $user->forceFill([
-            'name' => $validated['name'],
-            'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'] ?? null,
-            'status' => $validated['status'],
-        ])->save();
+        DB::transaction(function () use ($validated, $user): void {
+            $user->forceFill([
+                'name' => $validated['name'],
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'status' => $validated['status'],
+            ])->save();
 
-        return redirect()->route('admin.tutors.index')->with('status', 'Tutor updated successfully.');
+            $profileData = Arr::except($validated, ['name', 'email', 'phone', 'status', 'educations', 'profile_status']);
+
+            $profile = TutorProfile::query()->firstOrNew([
+                'user_id' => $user->getKey(),
+            ]);
+
+            $profile->fill($profileData);
+            $profile->gender = $validated['gender'] === 'none' ? null : $validated['gender'];
+            $profile->status = $validated['profile_status'] ?? ProfileStatus::Active;
+            $profile->save();
+
+            $this->syncEducations($user->getKey(), $validated['educations'] ?? []);
+        });
+
+        return redirect()->back()->with('status', 'Tutor updated successfully.');
+    }
+
+    /**
+     * Sync tutor education records.
+     *
+     * @param  array<int, array<string, mixed>>  $educations
+     */
+    private function syncEducations(int $userId, array $educations): void
+    {
+        $submittedIds = collect($educations)
+            ->pluck('id')
+            ->filter()
+            ->map(fn (mixed $id): int => (int) $id)
+            ->values()
+            ->all();
+
+        TutorEducation::query()
+            ->where('user_id', $userId)
+            ->when($submittedIds !== [], fn ($query) => $query->whereNotIn('id', $submittedIds))
+            ->when($submittedIds === [], fn ($query) => $query)
+            ->get()
+            ->each(fn (TutorEducation $education) => $education->delete());
+
+        foreach ($educations as $index => $payload) {
+            /** @var TutorEducation $education */
+            $education = isset($payload['id']) && $payload['id']
+                ? TutorEducation::query()
+                    ->withTrashed()
+                    ->where('user_id', $userId)
+                    ->whereKey($payload['id'])
+                    ->firstOrFail()
+                : new TutorEducation;
+
+            if ($education->trashed()) {
+                $education->restore();
+            }
+
+            $education->forceFill([
+                'user_id' => $userId,
+                'degree' => (string) $payload['degree'],
+                'institute' => (string) $payload['institute'],
+                'department' => $payload['department'] ?? null,
+                'graduation_year' => $payload['graduation_year'] ?? null,
+                'result' => $payload['result'] ?? null,
+                'is_current' => (bool) ($payload['is_current'] ?? false),
+                'sort_order' => isset($payload['sort_order']) ? (int) $payload['sort_order'] : $index,
+            ])->save();
+        }
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    private function activeTuitionTypes(): array
+    {
+        return TuitionType::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name'])
+            ->map(fn (TuitionType $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string}>
+     */
+    private function activeCategories(): array
+    {
+        return Category::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name'])
+            ->map(fn (Category $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, category_id: int}>
+     */
+    private function activeSchoolClasses(): array
+    {
+        return SchoolClass::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name', 'category_id'])
+            ->map(fn (SchoolClass $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'category_id' => $item->category_id,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, class_id: int}>
+     */
+    private function activeSubjects(): array
+    {
+        return Subject::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name', 'class_id'])
+            ->map(fn (Subject $item): array => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'class_id' => $item->class_id,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, city_id: int|null}>
+     */
+    private function activeLocations(): array
+    {
+        $cityLocations = City::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name'])
+            ->map(fn (City $city): array => [
+                'id' => $city->id,
+                'name' => $city->name,
+                'city_id' => null,
+            ]);
+
+        $areaLocations = Area::query()
+            ->where('status', TaxonomyStatus::Active)
+            ->ordered()
+            ->get(['id', 'name', 'city_id'])
+            ->map(fn (Area $area): array => [
+                'id' => $area->id,
+                'name' => $area->name,
+                'city_id' => $area->city_id,
+            ]);
+
+        return $cityLocations
+            ->concat($areaLocations)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{value: string, label: string}>
+     */
+    private function dayOptions(): array
+    {
+        return [
+            ['value' => 'sat', 'label' => 'Saturday'],
+            ['value' => 'sun', 'label' => 'Sunday'],
+            ['value' => 'mon', 'label' => 'Monday'],
+            ['value' => 'tue', 'label' => 'Tuesday'],
+            ['value' => 'wed', 'label' => 'Wednesday'],
+            ['value' => 'thu', 'label' => 'Thursday'],
+            ['value' => 'fri', 'label' => 'Friday'],
+        ];
     }
 
     /**
