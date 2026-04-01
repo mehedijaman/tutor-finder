@@ -27,6 +27,7 @@ Route::prefix('guardian')
         Route::get('/jobs/closed', [TuitionJobController::class, 'closed'])->name('jobs.closed');
         Route::get('/jobs/create', [TuitionJobController::class, 'create'])->name('jobs.create');
         Route::post('/jobs', [TuitionJobController::class, 'store'])->name('jobs.store');
+        Route::post('/jobs/{tuitionJob}/request-tutor', [TuitionJobController::class, 'requestTutor'])->name('jobs.request-tutor');
         Route::get('/jobs/{tuitionJob}/applications', [JobApplicationController::class, 'index'])
             ->name('jobs.applications.index');
         Route::patch('/jobs/{tuitionJob}/applications/{tuitionJobApplication}/status', [JobApplicationController::class, 'updateStatus'])

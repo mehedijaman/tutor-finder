@@ -28,7 +28,6 @@ class JobStoreRequest extends FormRequest
 
         $this->merge([
             'title' => trim((string) $this->input('title')),
-            'slug' => trim((string) $this->input('slug')),
             'description' => trim((string) $this->input('description')),
             'location' => trim((string) $this->input('location')),
             'student_gender' => strtolower(trim((string) $this->input('student_gender', JobGender::Any->value))),
@@ -61,7 +60,6 @@ class JobStoreRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'guardian_id' => [
                 'required',

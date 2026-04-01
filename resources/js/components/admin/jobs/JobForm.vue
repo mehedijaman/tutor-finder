@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Link, useForm } from '@inertiajs/vue3';
-import { computed, toRef, watch } from 'vue';
+import { computed, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { slugify, useAutoSlug } from '@/composables/useAutoSlug';
+
+interface Taxonomy { id: number | string; name: string; category_id?: number | string; country_id?: number | string; city_id?: number | string; class_id?: number | string; }
+interface Option { value: string; label: string; }
 
 const props = defineProps({
     action: { type: String, required: true },
@@ -13,22 +15,22 @@ const props = defineProps({
     submitLabel: { type: String, required: true },
     cancelHref: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
-    tuitionTypes: { type: Array, default: () => [] },
-    categories: { type: Array, default: () => [] },
-    schoolClasses: { type: Array, default: () => [] },
-    countries: { type: Array, default: () => [] },
-    cities: { type: Array, default: () => [] },
-    areas: { type: Array, default: () => [] },
-    subjects: { type: Array, default: () => [] },
-    guardians: { type: Array, default: () => [] },
-    statusOptions: { type: Array, default: () => [] },
-    genderOptions: { type: Array, default: () => [] },
-    dayOptions: { type: Array, default: () => [] },
+    tuitionTypes: { type: Array as () => Taxonomy[], default: () => [] },
+    categories: { type: Array as () => Taxonomy[], default: () => [] },
+    schoolClasses: { type: Array as () => Taxonomy[], default: () => [] },
+    countries: { type: Array as () => Taxonomy[], default: () => [] },
+    cities: { type: Array as () => Taxonomy[], default: () => [] },
+    areas: { type: Array as () => Taxonomy[], default: () => [] },
+    subjects: { type: Array as () => Taxonomy[], default: () => [] },
+    guardians: { type: Array as () => any[], default: () => [] },
+    statusOptions: { type: Array as () => Option[], default: () => [] },
+    genderOptions: { type: Array as () => Option[], default: () => [] },
+    dayOptions: { type: Array as () => Option[], default: () => [] },
+    hideCurrency: { type: Boolean, default: false },
     initial: {
         type: Object,
         default: () => ({
             title: '',
-            slug: '',
             description: '',
             tuition_type_id: '',
             category_id: '',
@@ -53,13 +55,13 @@ const props = defineProps({
             expires_at: '',
             published_at: '',
             subject_ids: [],
+            requested_tutor_id: null,
         }),
     },
 });
 
 const form = useForm({
     title: props.initial.title ?? '',
-    slug: props.initial.slug ?? '',
     description: props.initial.description ?? '',
     tuition_type_id: props.initial.tuition_type_id ?? '',
     category_id: props.initial.category_id ?? '',
@@ -84,26 +86,10 @@ const form = useForm({
     expires_at: props.initial.expires_at ?? '',
     published_at: props.initial.published_at ?? '',
     subject_ids: props.initial.subject_ids ?? [],
+    requested_tutor_id: props.initial.requested_tutor_id ?? null,
 });
 
-const isInitiallyAuto = (() => {
-    const sourceTitle = String(props.initial.title ?? '');
-    const currentSlug = String(props.initial.slug ?? '');
 
-    if (currentSlug === '') {
-        return true;
-    }
-
-    return slugify(sourceTitle) === currentSlug;
-})();
-
-const { autoSlug, onManualSlugInput, toggleAutoSlug } = useAutoSlug(
-    toRef(form, 'title'),
-    toRef(form, 'slug'),
-    {
-        initiallyAuto: isInitiallyAuto,
-    },
-);
 
 const filteredClasses = computed(() => {
     const categoryId = Number(form.category_id);
@@ -154,6 +140,7 @@ const subjectError = computed(() => {
         return form.errors.subject_ids;
     }
 
+    // @ts-ignore
     return form.errors['subject_ids.0'] ?? '';
 });
 
@@ -200,14 +187,14 @@ watch(
         const subjectIds = filteredSubjects.value.map((subject) =>
             Number(subject.id),
         );
-        form.subject_ids = (form.subject_ids ?? []).filter((subjectId) =>
+        form.subject_ids = (form.subject_ids ?? []).filter((subjectId: any) =>
             subjectIds.includes(Number(subjectId)),
         );
     },
 );
 
 function submit() {
-    const transformPayload = (data) => {
+    const transformPayload = (data: any) => {
         if (props.isAdmin) {
             return data;
         }
@@ -253,26 +240,7 @@ function submit() {
                 <InputError :message="form.errors.title" />
             </div>
 
-            <div class="grid gap-2">
-                <div class="flex items-center justify-between gap-3">
-                    <Label for="job-slug">Slug</Label>
-                    <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        @click="toggleAutoSlug"
-                    >
-                        Auto: {{ autoSlug ? 'On' : 'Off' }}
-                    </Button>
-                </div>
-                <Input
-                    id="job-slug"
-                    :model-value="form.slug"
-                    type="text"
-                    @update:model-value="onManualSlugInput"
-                />
-                <InputError :message="form.errors.slug" />
-            </div>
+
 
             <div class="grid gap-2">
                 <Label for="job-description">Description</Label>
@@ -600,7 +568,7 @@ function submit() {
                 <InputError :message="form.errors.salary_amount" />
             </div>
 
-            <div class="grid gap-2">
+            <div v-if="!hideCurrency" class="grid gap-2">
                 <Label for="job-salary-currency">Salary Currency</Label>
                 <Input
                     id="job-salary-currency"

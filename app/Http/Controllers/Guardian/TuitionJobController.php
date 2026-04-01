@@ -50,11 +50,7 @@ class TuitionJobController extends Controller
             ])
             ->where('guardian_id', $user?->getAuthIdentifier())
             ->when($search !== '', function ($builder) use ($search): void {
-                $builder->where(function ($subQuery) use ($search): void {
-                    $subQuery
-                        ->where('title', 'like', "%{$search}%")
-                        ->orWhere('slug', 'like', "%{$search}%");
-                });
+                $builder->where('title', 'like', "%{$search}%");
             })
             ->when($effectiveStatus !== '', fn ($builder) => $builder->where('status', $effectiveStatus))
             ->latest()
@@ -63,7 +59,6 @@ class TuitionJobController extends Controller
             ->through(fn (TuitionJob $job): array => [
                 'id' => $job->id,
                 'title' => $job->title,
-                'slug' => $job->slug,
                 'status' => $job->status,
                 'category_name' => $job->category?->name,
                 'class_name' => $job->schoolClass?->name,
@@ -78,6 +73,7 @@ class TuitionJobController extends Controller
                 'published_at' => $job->published_at?->toDateTimeString(),
                 'expires_at' => $job->expires_at?->toDateTimeString(),
                 'updated_at' => $job->updated_at?->toDateTimeString(),
+                'requested_tutor_id' => $job->requested_tutor_id,
             ]);
 
         return inertia('guardian/jobs/Index', [
@@ -154,20 +150,17 @@ class TuitionJobController extends Controller
      */
     public function store(
         JobStoreRequest $request,
-        SlugService $slugService,
     ): RedirectResponse {
         $validated = $request->validated();
         $user = $request->user();
 
         $title = trim((string) $validated['title']);
-        $slugBase = trim((string) ($validated['slug'] ?: $title));
         $tuitionDays = $validated['tuition_days'] ?? [];
         $daysPerWeek = count($tuitionDays) > 0 ? count($tuitionDays) : null;
 
-        DB::transaction(function () use ($validated, $title, $slugBase, $tuitionDays, $daysPerWeek, $slugService, $user): void {
+        DB::transaction(function () use ($validated, $title, $tuitionDays, $daysPerWeek, $user): void {
             $job = TuitionJob::query()->create([
                 'title' => $title,
-                'slug' => $slugService->unique(TuitionJob::class, $slugBase),
                 'description' => (string) $validated['description'],
                 'tuition_type_id' => (int) $validated['tuition_type_id'],
                 'category_id' => (int) $validated['category_id'],
@@ -197,14 +190,66 @@ class TuitionJobController extends Controller
                 'updated_by' => null,
                 'confirmed_by' => null,
                 'confirmed_at' => null,
+                'requested_tutor_id' => $validated['requested_tutor_id'] ?? null,
+                'requested_at' => ($validated['requested_tutor_id'] ?? null) ? now() : null,
             ]);
 
             $job->subjects()->sync($validated['subject_ids'] ?? []);
+
+            if ($validated['requested_tutor_id'] ?? null) {
+                \App\Models\TuitionJobApplication::query()->create([
+                    'job_id' => $job->id,
+                    'tutor_user_id' => $validated['requested_tutor_id'],
+                    'status' => ApplicationStatus::Shortlisted,
+                    'cover_letter' => 'Direct request from guardian.',
+                    'expected_salary_amount' => $job->salary_amount,
+                    'salary_currency' => $job->salary_currency,
+                ]);
+            }
         });
 
         return redirect()
             ->route('guardian.jobs.index')
             ->with('status', 'Job request submitted successfully.');
+    }
+
+    /**
+     * Request a tutor for an existing job.
+     */
+    public function requestTutor(Request $request, TuitionJob $tuitionJob): RedirectResponse
+    {
+        $request->validate([
+            'tutor_id' => ['required', 'integer', 'exists:users,id'],
+        ]);
+
+        if ($tuitionJob->guardian_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if ($tuitionJob->status !== JobStatus::Live) {
+            return back()->with('error', 'Only live jobs can accept tutor requests.');
+        }
+
+        $tutorId = (int) $request->integer('tutor_id');
+
+        DB::transaction(function () use ($tuitionJob, $tutorId): void {
+            $tuitionJob->update([
+                'requested_tutor_id' => $tutorId,
+                'requested_at' => now(),
+            ]);
+
+            \App\Models\TuitionJobApplication::query()->updateOrCreate([
+                'job_id' => $tuitionJob->id,
+                'tutor_user_id' => $tutorId,
+            ], [
+                'status' => ApplicationStatus::Shortlisted,
+                'cover_letter' => 'Direct request from guardian for existing job.',
+                'expected_salary_amount' => $tuitionJob->salary_amount,
+                'salary_currency' => $tuitionJob->salary_currency,
+            ]);
+        });
+
+        return back()->with('status', 'Request sent to tutor successfully.');
     }
 
     /**

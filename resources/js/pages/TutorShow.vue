@@ -23,6 +23,7 @@ import { computed, ref } from 'vue';
 import ReviewForm from '@/components/tutors/ReviewForm.vue';
 import ReviewSection from '@/components/tutors/ReviewSection.vue';
 import StarRating from '@/components/tutors/StarRating.vue';
+import TutorRequestModal from '@/components/tutors/TutorRequestModal.vue';
 import { Badge } from '@/components/ui/badge';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
@@ -100,6 +101,8 @@ const props = defineProps<{
     ratingDistribution: Record<number, number>;
     canReview: boolean;
     reviewableAssignments: ReviewableAssignment[];
+    guardianJobs: Array<{ id: number; title: string }>;
+    filterOptions: any;
     meta: {
         title: string;
         description: string;
@@ -407,6 +410,28 @@ const { tutor } = props;
                         class="order-2 lg:order-1 lg:col-span-4 xl:col-span-3"
                     >
                         <div class="space-y-5 lg:sticky lg:top-24">
+                            <!-- Request Tutor Modal -->
+                            <div
+                                v-if="
+                                    !$page.props.auth.user ||
+                                    $page.props.auth.user.role === 'guardian'
+                                "
+                            >
+                                <TutorRequestModal
+                                    v-if="$page.props.auth.user"
+                                    :tutor="tutor"
+                                    :filter-options="filterOptions"
+                                    :guardian-jobs="guardianJobs"
+                                />
+                                <Link
+                                    v-else
+                                    href="/login"
+                                    class="inline-flex h-12 w-full items-center justify-center rounded-lg bg-blue-600 text-lg font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    Login to Request
+                                </Link>
+                            </div>
+
                             <!-- Salary Card -->
                             <div
                                 class="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm"

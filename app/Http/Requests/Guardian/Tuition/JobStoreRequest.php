@@ -27,7 +27,6 @@ class JobStoreRequest extends FormRequest
 
         $this->merge([
             'title' => trim((string) $this->input('title')),
-            'slug' => trim((string) $this->input('slug')),
             'description' => trim((string) $this->input('description')),
             'location' => trim((string) $this->input('location')),
             'student_gender' => strtolower(trim((string) $this->input('student_gender', JobGender::Any->value))),
@@ -46,6 +45,7 @@ class JobStoreRequest extends FormRequest
             'city_id' => (int) $this->input('city_id'),
             'area_id' => $this->filled('area_id') ? (int) $this->input('area_id') : null,
             'no_of_students' => $this->filled('no_of_students') ? (int) $this->input('no_of_students') : null,
+            'requested_tutor_id' => $this->filled('requested_tutor_id') ? (int) $this->input('requested_tutor_id') : null,
         ]);
     }
 
@@ -58,7 +58,6 @@ class JobStoreRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'tuition_type_id' => [
                 'required',
@@ -125,6 +124,7 @@ class JobStoreRequest extends FormRequest
             'salary_currency' => ['nullable', 'string', 'max:10'],
             'salary_negotiable' => ['required', 'boolean'],
             'expires_at' => ['nullable', 'date', 'after:now'],
+            'requested_tutor_id' => ['nullable', 'integer', Rule::exists('users', 'id')->where('status', 'active')],
             'status' => ['prohibited'],
             'guardian_id' => ['prohibited'],
             'created_by' => ['prohibited'],

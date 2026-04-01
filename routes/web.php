@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'index'])->name('home');
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
-Route::get('/jobs/{slug}', [JobController::class, 'show'])->name('jobs.show');
+Route::get('/jobs/{id}', [JobController::class, 'show'])->whereNumber('id')->name('jobs.show');
 Route::get('/tutors', [TutorController::class, 'index'])->name('tutors');
 Route::get('/tutors/{id}', [TutorController::class, 'show'])->name('tutors.show');
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');

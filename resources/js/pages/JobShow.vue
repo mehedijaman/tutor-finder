@@ -8,7 +8,6 @@ import TutorLayout from '@/layouts/TutorLayout.vue';
 type JobDetail = {
     id: number;
     title: string;
-    slug: string;
     description: string;
     salary_amount: string | null;
     salary_currency: string | null;

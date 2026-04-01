@@ -15,7 +15,6 @@ import {
 type JobItem = {
     id: number;
     title: string;
-    slug: string;
     description: string;
     salary_amount: string | null;
     salary_currency: string | null;
@@ -147,7 +146,7 @@ function genderPreferenceClass(gender: string): string {
 }
 
 async function shareJob(): Promise<void> {
-    const url = `${window.location.origin}/jobs/${props.job.slug}`;
+    const url = `${window.location.origin}/jobs/${props.job.id}`;
 
     try {
         await navigator.clipboard.writeText(url);
@@ -178,7 +177,7 @@ function closeApplyModal(): void {
 }
 
 function submitApplication(): void {
-    applicationForm.post(`/tutor/jobs/${props.job.slug}/apply`, {
+    applicationForm.post(`/tutor/jobs/${props.job.id}/apply`, {
         preserveScroll: true,
         onSuccess: () => {
             applicationForm.reset('cover_letter', 'expected_salary_amount');
@@ -330,7 +329,7 @@ function submitApplication(): void {
                 class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
             >
                 <Link
-                    :href="`${props.detailsBasePath}/${job.slug}`"
+                    :href="`${props.detailsBasePath}/${job.id}`"
                     class="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
                 >
                     View Details
@@ -414,10 +413,10 @@ function submitApplication(): void {
                     </div>
 
                     <p
-                        v-if="applicationForm.errors.job"
+                        v-if="(applicationForm.errors as any).job"
                         class="text-sm text-red-600"
                     >
-                        {{ applicationForm.errors.job }}
+                        {{ (applicationForm.errors as any).job }}
                     </p>
 
                     <DialogFooter class="gap-2">

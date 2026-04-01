@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\JobStatus;
 use App\Enums\TaxonomyStatus;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
@@ -10,6 +11,7 @@ use App\Models\Area;
 use App\Models\Category;
 use App\Models\SchoolClass;
 use App\Models\Subject;
+use App\Models\TuitionJob;
 use App\Models\TuitionType;
 use App\Models\TutorReview;
 use App\Models\User;
@@ -227,8 +229,16 @@ class TutorController extends Controller
 
         $canReview = false;
         $reviewableAssignments = [];
+        $guardianJobs = [];
 
         if (auth()->check() && auth()->user()->role === UserRole::Guardian) {
+            $guardianJobs = TuitionJob::query()
+                ->where('guardian_id', auth()->id())
+                ->where('status', JobStatus::Live)
+                ->latest()
+                ->get(['id', 'title'])
+                ->toArray();
+
             $reviewableAssignments = DB::table('tuition_job_assignments')
                 ->join('tuition_jobs', 'tuition_job_assignments.job_id', '=', 'tuition_jobs.id')
                 ->leftJoin('tutor_reviews', 'tuition_job_assignments.id', '=', 'tutor_reviews.job_assignment_id')
@@ -253,6 +263,23 @@ class TutorController extends Controller
             'ratingDistribution' => $distribution,
             'canReview' => $canReview,
             'reviewableAssignments' => $reviewableAssignments,
+            'guardianJobs' => $guardianJobs,
+            'filterOptions' => [
+                'tuitionTypes' => $this->activeTuitionTypes(),
+                'categories' => $this->activeCategories(),
+                'classes' => $this->activeSchoolClasses(),
+                'subjects' => $this->activeSubjects(),
+                'locations' => $this->activeLocations(),
+                'countries' => \App\Models\Country::query()->where('status', \App\Enums\TaxonomyStatus::Active)->ordered()->get(['id', 'name'])->toArray(),
+                'cities' => \App\Models\City::query()->where('status', \App\Enums\TaxonomyStatus::Active)->ordered()->get(['id', 'name', 'country_id'])->toArray(),
+                'areas' => \App\Models\Area::query()->where('status', \App\Enums\TaxonomyStatus::Active)->ordered()->get(['id', 'name', 'city_id'])->toArray(),
+                'days' => $this->dayOptions(),
+                'genderOptions' => [
+                    ['value' => 'any', 'label' => 'Any'],
+                    ['value' => 'male', 'label' => 'Male'],
+                    ['value' => 'female', 'label' => 'Female'],
+                ],
+            ],
             'meta' => [
                 'title' => $tutor->name.' - Tutor',
                 'description' => $tutor->tutorProfile?->bio ?? 'View tutor profile on '.config('app.name'),

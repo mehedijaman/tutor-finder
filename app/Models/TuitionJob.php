@@ -35,6 +35,8 @@ class TuitionJob extends Model
         'city_id',
         'area_id',
         'guardian_id',
+        'requested_tutor_id',
+        'requested_at',
         'location',
         'latitude',
         'longitude',
@@ -88,6 +90,7 @@ class TuitionJob extends Model
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
             'confirmed_at' => 'datetime',
+            'requested_at' => 'datetime',
             'days_per_week' => 'integer',
             'no_of_students' => 'integer',
             'view_count' => 'integer',
@@ -100,6 +103,14 @@ class TuitionJob extends Model
     public function guardian(): BelongsTo
     {
         return $this->belongsTo(User::class, 'guardian_id');
+    }
+
+    /**
+     * Get the specific tutor requested for this job.
+     */
+    public function requestedTutor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_tutor_id');
     }
 
     /**

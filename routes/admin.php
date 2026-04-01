@@ -276,6 +276,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->middleware('permission:job-update')
                 ->name('status');
 
+            Route::get('/{job}/settle', [AdminJobController::class, 'settle'])
+                ->middleware('permission:job-update')
+                ->name('settle');
+            Route::post('/{job}/settle', [AdminJobController::class, 'confirmSettlement'])
+                ->middleware('permission:job-update')
+                ->name('confirm-settlement');
+
             Route::delete('/{job}', [AdminJobController::class, 'destroy'])
                 ->middleware('permission:job-delete')
                 ->name('destroy');

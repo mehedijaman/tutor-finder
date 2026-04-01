@@ -53,12 +53,12 @@ class JobController extends Controller
 
         $sortMap = [
             'title' => 'title',
-            'slug' => 'slug',
             'status' => 'status',
             'published_at' => 'published_at',
             'expires_at' => 'expires_at',
+            'confirmed_at' => 'confirmed_at',
+            'requested_at' => 'requested_at',
             'updated_at' => 'updated_at',
-            'created_at' => 'created_at',
         ];
 
         $sortColumn = $sortMap[$sort] ?? 'updated_at';
@@ -76,6 +76,7 @@ class JobController extends Controller
                 'subjects:id,name',
                 'assignment:id,job_id,tutor_user_id,appointed_at,confirmed_at',
                 'assignment.tutor:id,name',
+                'requestedTutor:id,name',
             ])
             ->withCount('applications')
             ->withCount([
@@ -89,7 +90,6 @@ class JobController extends Controller
                 $builder->where(function (Builder $subQuery) use ($search): void {
                     $subQuery
                         ->where('title', 'like', "%{$search}%")
-                        ->orWhere('slug', 'like', "%{$search}%")
                         ->orWhereHas('guardian', fn (Builder $guardianQuery): Builder => $guardianQuery->where('name', 'like', "%{$search}%"));
                 });
             })
@@ -106,7 +106,6 @@ class JobController extends Controller
             ->through(fn (TuitionJob $job): array => [
                 'id' => $job->id,
                 'title' => $job->title,
-                'slug' => $job->slug,
                 'status' => $job->status,
                 'guardian_id' => $job->guardian_id,
                 'guardian_name' => $job->guardian?->name,
@@ -128,6 +127,9 @@ class JobController extends Controller
                 'expires_at' => $job->expires_at?->toDateTimeString(),
                 'updated_at' => $job->updated_at?->toDateTimeString(),
                 'deleted_at' => $job->deleted_at?->toDateTimeString(),
+                'requested_tutor_id' => $job->requested_tutor_id,
+                'requested_tutor_name' => $job->requestedTutor?->name,
+                'requested_at' => $job->requested_at?->toDateTimeString(),
             ]);
 
         return inertia('admin/jobs/Index', [
@@ -245,7 +247,6 @@ class JobController extends Controller
             'job' => [
                 'id' => $job->id,
                 'title' => $job->title,
-                'slug' => $job->slug,
                 'status' => $job->status,
                 'guardian_name' => $job->guardian?->name,
                 'is_expired' => $job->status === JobStatus::Live && $job->isExpired(),
@@ -292,20 +293,18 @@ class JobController extends Controller
     /**
      * Store a new job by admin.
      */
-    public function store(JobStoreRequest $request, SlugService $slugService): RedirectResponse
+    public function store(JobStoreRequest $request): RedirectResponse
     {
         $validated = $request->validated();
         $adminId = $request->user()?->getAuthIdentifier();
 
         $title = trim((string) $validated['title']);
-        $slugBase = trim((string) ($validated['slug'] ?: $title));
         $tuitionDays = $validated['tuition_days'] ?? [];
         $status = (string) $validated['status'];
 
-        DB::transaction(function () use ($validated, $title, $slugBase, $tuitionDays, $status, $adminId, $slugService): void {
+        DB::transaction(function () use ($validated, $title, $tuitionDays, $status, $adminId): void {
             $job = TuitionJob::query()->create([
                 'title' => $title,
-                'slug' => $slugService->unique(TuitionJob::class, $slugBase),
                 'description' => (string) $validated['description'],
                 'tuition_type_id' => (int) $validated['tuition_type_id'],
                 'category_id' => (int) $validated['category_id'],
@@ -371,20 +370,18 @@ class JobController extends Controller
     /**
      * Update a job.
      */
-    public function update(JobUpdateRequest $request, TuitionJob $job, SlugService $slugService): RedirectResponse
+    public function update(JobUpdateRequest $request, TuitionJob $job): RedirectResponse
     {
         $validated = $request->validated();
         $adminId = $request->user()?->getAuthIdentifier();
 
         $title = trim((string) $validated['title']);
-        $slugBase = trim((string) ($validated['slug'] ?: $title));
         $tuitionDays = $validated['tuition_days'] ?? [];
         $status = (string) $validated['status'];
 
-        DB::transaction(function () use ($validated, $job, $title, $slugBase, $tuitionDays, $status, $adminId, $slugService): void {
+        DB::transaction(function () use ($validated, $job, $title, $tuitionDays, $status, $adminId): void {
             $job->forceFill([
                 'title' => $title,
-                'slug' => $slugService->unique(TuitionJob::class, $slugBase, $job->id),
                 'description' => (string) $validated['description'],
                 'tuition_type_id' => (int) $validated['tuition_type_id'],
                 'category_id' => (int) $validated['category_id'],
@@ -453,6 +450,91 @@ class JobController extends Controller
     }
 
     /**
+     * Show settlement preview for a direct tutor request.
+     */
+    public function settle(TuitionJob $job): Response
+    {
+        if ($job->requested_tutor_id === null) {
+            throw new DomainException('Only jobs with a direct tutor request can be settled directly.');
+        }
+
+        $application = TuitionJobApplication::query()
+            ->where('job_id', $job->id)
+            ->where('tutor_user_id', $job->requested_tutor_id)
+            ->firstOrFail();
+
+        $siteSetting = \App\Models\SiteSetting::current();
+        $salaryAmount = (float) ($job->salary_amount ?? 0);
+        $commissionRate = (float) ($siteSetting->platform_service_fee_rate ?? 0.60000);
+        $commissionAmount = round($salaryAmount * $commissionRate, 2);
+
+        return inertia('admin/jobs/Settle', [
+            'job' => [
+                'id' => $job->id,
+                'title' => $job->title,
+                'salary_amount' => $salaryAmount,
+                'salary_currency' => $job->salary_currency,
+            ],
+            'tutor' => [
+                'id' => $job->requestedTutor->id,
+                'name' => $job->requestedTutor->name,
+            ],
+            'application' => [
+                'id' => $application->id,
+            ],
+            'finance' => [
+                'commission_rate' => $commissionRate,
+                'commission_amount' => $commissionAmount,
+                'currency' => $siteSetting->default_fee_currency ?? 'BDT',
+            ],
+        ]);
+    }
+
+    /**
+     * Confirm settlement and create assignment.
+     */
+    public function confirmSettlement(
+        TuitionJob $job,
+        Request $request,
+        \App\Services\Job\HiringWorkflowService $hiringWorkflowService
+    ): RedirectResponse {
+        if ($job->requested_tutor_id === null) {
+            return redirect()->back()->withErrors(['job' => 'This job does not have a direct request.']);
+        }
+
+        $application = TuitionJobApplication::query()
+            ->where('job_id', $job->id)
+            ->where('tutor_user_id', $job->requested_tutor_id)
+            ->firstOrFail();
+
+        try {
+            // Force status to Live if it's Pending so that HiringWorkflowService can process it
+            if ($job->status === JobStatus::Pending) {
+                $job->forceFill(['status' => JobStatus::Live])->save();
+            }
+
+            $hiringWorkflowService->confirmHire(
+                $job,
+                $application,
+                $job->guardian,
+                [
+                    'month1_escrow_required' => false,
+                    'notes' => 'Settled by admin via direct request.',
+                    'salary_base_amount' => $request->input('salary_base_amount'),
+                ]
+            );
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            return redirect()->back()->withErrors($exception->errors());
+        } catch (\Exception $exception) {
+            return redirect()->back()->withErrors(['job' => $exception->getMessage()]);
+        }
+
+        return redirect()
+            ->route('admin.jobs.index')
+            ->with('status', 'Direct request settled and tutor assigned successfully.');
+    }
+
+    /**
      * Soft delete job.
      */
     public function destroy(TuitionJob $job): RedirectResponse
@@ -510,7 +592,6 @@ class JobController extends Controller
         return [
             'id' => $job->id,
             'title' => $job->title,
-            'slug' => $job->slug,
             'description' => $job->description,
             'tuition_type_id' => $job->tuition_type_id,
             'category_id' => $job->category_id,
@@ -552,10 +633,14 @@ class JobController extends Controller
         }
 
         if (is_string($publishedAt) && trim($publishedAt) !== '') {
-            return Carbon::parse($publishedAt);
+            $parsed = Carbon::parse($publishedAt);
+
+            return $parsed instanceof Carbon ? $parsed : Carbon::instance($parsed);
         }
 
-        return now();
+        $now = now();
+
+        return $now instanceof Carbon ? $now : Carbon::instance($now);
     }
 
     /**

@@ -89,8 +89,13 @@ class HiringWorkflowService
                     throw new DomainException('Platform finance account is not configured.');
                 }
 
-                $salaryBaseAmount = (float) ($lockedJob->salary_amount ?? 0);
-                $salaryBaseSource = 'job';
+                $salaryBaseAmount = (float) ($data['salary_base_amount'] ?? 0);
+                $salaryBaseSource = 'override';
+
+                if ($salaryBaseAmount <= 0) {
+                    $salaryBaseAmount = (float) ($lockedJob->salary_amount ?? 0);
+                    $salaryBaseSource = 'job';
+                }
 
                 if ($salaryBaseAmount <= 0 && $lockedApplication->expected_salary_amount !== null) {
                     $salaryBaseAmount = (float) $lockedApplication->expected_salary_amount;

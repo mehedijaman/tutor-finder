@@ -16,7 +16,6 @@ import { login, register } from '@/routes';
 type JobDetail = {
     id: number;
     title: string;
-    slug: string;
     description: string;
     salary_amount: string | null;
     salary_currency: string | null;
@@ -211,7 +210,7 @@ function salaryLabel(): string {
 }
 
 function submitApplication(): void {
-    applicationForm.post(`/tutor/jobs/${props.job.slug}/apply`, {
+    applicationForm.post(`/tutor/jobs/${props.job.id}/apply`, {
         preserveScroll: true,
         onSuccess: () => {
             applicationForm.reset('cover_letter', 'expected_salary_amount');

@@ -107,7 +107,6 @@ class JobController extends Controller
             ->through(fn (TuitionJob $job): array => [
                 'id' => $job->id,
                 'title' => $job->title,
-                'slug' => $job->slug,
                 'description' => Str::limit((string) $job->description, 180),
                 'salary_amount' => $job->salary_amount,
                 'salary_currency' => $job->salary_currency,
@@ -171,17 +170,17 @@ class JobController extends Controller
     /**
      * Display a single public job by slug.
      */
-    public function show(Request $request, string $slug): Response
+    public function show(Request $request, int $id): Response
     {
-        return inertia('JobShow', $this->buildJobShowPayload($request, $slug));
+        return inertia('JobShow', $this->buildJobShowPayload($request, $id));
     }
 
     /**
      * Display a single job by slug in tutor dashboard context.
      */
-    public function tutorShow(Request $request, string $slug): Response
+    public function tutorShow(Request $request, int $id): Response
     {
-        return inertia('JobShow', $this->buildJobShowPayload($request, $slug));
+        return inertia('JobShow', $this->buildJobShowPayload($request, $id));
     }
 
     /**
@@ -189,7 +188,7 @@ class JobController extends Controller
      *
      * @return array<string, mixed>
      */
-    private function buildJobShowPayload(Request $request, string $slug): array
+    private function buildJobShowPayload(Request $request, int $id): array
     {
         $job = $this->publicJobsQuery()
             ->with([
@@ -202,7 +201,7 @@ class JobController extends Controller
                 'area:id,name',
                 'assignment:id,job_id,tutor_user_id',
             ])
-            ->where('slug', $slug)
+            ->whereKey($id)
             ->firstOrFail();
 
         $user = $request->user();
@@ -226,7 +225,6 @@ class JobController extends Controller
             'job' => [
                 'id' => $job->id,
                 'title' => $job->title,
-                'slug' => $job->slug,
                 'description' => $job->description,
                 'salary_amount' => $job->salary_amount,
                 'salary_currency' => $job->salary_currency,
