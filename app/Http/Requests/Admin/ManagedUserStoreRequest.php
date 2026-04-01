@@ -45,6 +45,14 @@ class ManagedUserStoreRequest extends FormRequest
             'expected_salary_max' => ['nullable', 'numeric', 'min:0'],
             'available_days' => ['nullable', 'array'],
             'available_time' => ['nullable', 'string'],
+
+            // Guardian profile fields
+            'guardian_name' => ['nullable', 'string', 'max:255'],
+            'occupation' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string'],
+            'phone_alt' => ['nullable', 'string', 'max:30'],
+            'notes' => ['nullable', 'string'],
+
             'educations' => ['nullable', 'array'],
             'educations.*.degree' => ['required', 'string', 'max:255'],
             'educations.*.institute' => ['required', 'string', 'max:255'],

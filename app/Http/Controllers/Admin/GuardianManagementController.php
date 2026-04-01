@@ -9,9 +9,12 @@ use App\Http\Requests\Admin\ManagedUserPasswordResetRequest;
 use App\Http\Requests\Admin\ManagedUserStoreRequest;
 use App\Http\Requests\Admin\ManagedUserUpdateRequest;
 use App\Http\Requests\Admin\UserStatusUpdateRequest;
+use App\Models\GuardianProfile;
 use App\Models\User;
+use App\Models\VerificationRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Inertia\Response;
@@ -65,7 +68,7 @@ class GuardianManagementController extends Controller
 
         $items = User::query()
             ->where('role', UserRole::Guardian)
-            ->with(['latestVerificationRequest.invoice'])
+            ->with(['guardianProfile', 'latestVerificationRequest.invoice'])
             ->when($filters['trash'], fn ($query) => $query->onlyTrashed())
             ->when($filters['search'] !== '', function ($query) use ($filters): void {
                 $search = $filters['search'];
@@ -99,6 +102,8 @@ class GuardianManagementController extends Controller
                     'verification_request_status' => $latestVerificationRequest?->status,
                     'verification_submitted_at' => $latestVerificationRequest?->submitted_at?->toDateTimeString(),
                     'verification_invoice_status' => $latestVerificationRequest?->invoice?->status,
+                    'occupation' => $user->guardianProfile?->occupation,
+                    'address' => $user->guardianProfile?->address,
                     'created_at' => $user->created_at?->toDateTimeString(),
                     'deleted_at' => $user->deleted_at?->toDateTimeString(),
                 ];
@@ -125,17 +130,26 @@ class GuardianManagementController extends Controller
     {
         $validated = $request->validated();
 
-        User::query()->create([
-            'name' => $validated['name'],
-            'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'] ?? null,
-            'password' => Hash::make($validated['password']),
-            'role' => 'guardian',
-            'status' => $validated['status'],
-            'verification_status' => VerificationStatus::Unverified,
-            'verification_type' => null,
-            'verified_at' => null,
-        ]);
+        DB::transaction(function () use ($validated) {
+            $user = User::forceCreate([
+                'name' => $validated['name'],
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'password' => Hash::make($validated['password']),
+                'role' => UserRole::Guardian,
+                'status' => $validated['status'],
+                'email_verified_at' => now(),
+            ]);
+
+            GuardianProfile::forceCreate([
+                'user_id' => $user->id,
+                'guardian_name' => $validated['guardian_name'] ?? $validated['name'],
+                'occupation' => $validated['occupation'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'phone_alt' => $validated['phone_alt'] ?? null,
+                'notes' => $validated['notes'] ?? null,
+            ]);
+        });
 
         return redirect()->route('admin.guardians.index')->with('status', 'Guardian created successfully.');
     }
@@ -149,8 +163,42 @@ class GuardianManagementController extends Controller
             abort(404);
         }
 
+        $user->load(['guardianProfile']);
+
+        $verificationRequest = VerificationRequest::query()
+            ->with('invoice')
+            ->where('user_id', $user->getKey())
+            ->latest('id')
+            ->first();
+
         return inertia('admin/guardians/Show', [
-            'guardian' => $user,
+            'guardian' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'status' => $user->status,
+                'verification_status' => $user->verification_status,
+                'created_at' => $user->created_at?->toDateTimeString(),
+            ],
+            'profile' => [
+                'occupation' => $user->guardianProfile?->occupation,
+                'address' => $user->guardianProfile?->address,
+                'phone_alt' => $user->guardianProfile?->phone_alt,
+                'notes' => $user->guardianProfile?->notes,
+            ],
+            'verification' => $verificationRequest ? [
+                'id' => $verificationRequest->id,
+                'status' => $verificationRequest->status,
+                'role' => $verificationRequest->role,
+                'submitted_at' => $verificationRequest->submitted_at?->toDateTimeString(),
+                'reviewed_at' => $verificationRequest->reviewed_at?->toDateTimeString(),
+                'invoice' => $verificationRequest->invoice ? [
+                    'id' => $verificationRequest->invoice->id,
+                    'status' => $verificationRequest->invoice->status,
+                    'amount' => $verificationRequest->invoice->amount,
+                ] : null,
+            ] : null,
         ]);
     }
 
@@ -179,14 +227,26 @@ class GuardianManagementController extends Controller
 
         $validated = $request->validated();
 
-        $user->forceFill([
-            'name' => $validated['name'],
-            'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'] ?? null,
-            'status' => $validated['status'],
-        ])->save();
+        DB::transaction(function () use ($validated, $user) {
+            $user->forceFill([
+                'name' => $validated['name'],
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'status' => $validated['status'],
+            ])->save();
 
-        return redirect()->route('admin.guardians.index')->with('status', 'Guardian updated successfully.');
+            GuardianProfile::query()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'occupation' => $validated['occupation'] ?? null,
+                    'address' => $validated['address'] ?? null,
+                    'phone_alt' => $validated['phone_alt'] ?? null,
+                    'notes' => $validated['notes'] ?? null,
+                ]
+            );
+        });
+
+        return back()->with('status', 'Guardian updated successfully.');
     }
 
     /**

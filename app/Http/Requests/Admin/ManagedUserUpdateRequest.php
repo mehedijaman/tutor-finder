@@ -32,6 +32,12 @@ class ManagedUserUpdateRequest extends FormRequest
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user)],
             'phone' => ['nullable', 'string', 'max:30', Rule::unique('users', 'phone')->ignore($user)],
             'status' => ['required', Rule::in([UserStatus::Active, UserStatus::Suspended, UserStatus::PendingVerification])],
+
+            // Guardian profile fields
+            'occupation' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string'],
+            'phone_alt' => ['nullable', 'string', 'max:30'],
+            'notes' => ['nullable', 'string'],
         ];
     }
 }
