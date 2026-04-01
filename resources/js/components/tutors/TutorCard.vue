@@ -45,8 +45,6 @@ type Tutor = {
     id: number;
     name: string;
     slug: string;
-    email: string;
-    phone: string | null;
     verified_at: string | null;
     created_at: string;
     photo_url: string | null;

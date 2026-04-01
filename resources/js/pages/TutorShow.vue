@@ -85,8 +85,6 @@ type ReviewableAssignment = {
 type Tutor = {
     id: number;
     name: string;
-    email: string;
-    phone: string | null;
     photo_url: string | null;
     verified_at: string | null;
     created_at: string;
@@ -382,23 +380,7 @@ const { tutor } = props;
                                 <div
                                     class="mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start"
                                 >
-                                    <span
-                                        v-if="tutor.phone"
-                                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200"
-                                    >
-                                        <Phone
-                                            class="h-3.5 w-3.5 text-slate-400"
-                                        />
-                                        {{ tutor.phone }}
-                                    </span>
-                                    <span
-                                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200"
-                                    >
-                                        <Mail
-                                            class="h-3.5 w-3.5 text-slate-400"
-                                        />
-                                        {{ tutor.email }}
-                                    </span>
+
                                     <span
                                         v-if="
                                             tutor.tutor_profile?.present_address
