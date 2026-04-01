@@ -129,7 +129,14 @@ class TutorManagementController extends Controller
      */
     public function create(): Response
     {
-        return inertia('admin/tutors/Create');
+        return inertia('admin/tutors/Create', [
+            'tuitionTypes' => $this->activeTuitionTypes(),
+            'categories' => $this->activeCategories(),
+            'schoolClasses' => $this->activeSchoolClasses(),
+            'subjects' => $this->activeSubjects(),
+            'locations' => $this->activeLocations(),
+            'dayOptions' => $this->dayOptions(),
+        ]);
     }
 
     /**
@@ -139,19 +146,56 @@ class TutorManagementController extends Controller
     {
         $validated = $request->validated();
 
-        User::query()->create([
-            'name' => $validated['name'],
-            'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'] ?? null,
-            'password' => Hash::make($validated['password']),
-            'role' => 'tutor',
-            'status' => $validated['status'],
-            'verification_status' => VerificationStatus::Unverified,
-            'verification_type' => null,
-            'verified_at' => null,
-        ]);
+        $user = DB::transaction(function () use ($validated) {
+            $user = User::query()->create([
+                'name' => $validated['name'],
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'password' => Hash::make($validated['password']),
+                'role' => 'tutor',
+                'status' => $validated['status'],
+                'verification_status' => VerificationStatus::Unverified,
+            ]);
 
-        return redirect()->route('admin.tutors.index')->with('status', 'Tutor created successfully.');
+            TutorProfile::query()->create([
+                'user_id' => $user->id,
+                'gender' => $validated['gender'] ?? null,
+                'date_of_birth' => $validated['date_of_birth'] ?? null,
+                'present_address' => $validated['present_address'] ?? null,
+                'permanent_address' => $validated['permanent_address'] ?? null,
+                'nid_no' => $validated['nid_no'] ?? null,
+                'bio' => $validated['bio'] ?? null,
+                'preferred_tuition_types' => $validated['preferred_tuition_types'] ?? [],
+                'preferred_categories' => $validated['preferred_categories'] ?? [],
+                'preferred_classes' => $validated['preferred_classes'] ?? [],
+                'preferred_subjects' => $validated['preferred_subjects'] ?? [],
+                'preferred_locations' => $validated['preferred_locations'] ?? [],
+                'expected_salary_min' => $validated['expected_salary_min'] ?? null,
+                'expected_salary_max' => $validated['expected_salary_max'] ?? null,
+                'available_days' => $validated['available_days'] ?? [],
+                'available_time' => $validated['available_time'] ?? null,
+                'status' => ProfileStatus::Active,
+            ]);
+
+            if (! empty($validated['educations'])) {
+                foreach ($validated['educations'] as $index => $edu) {
+                    TutorEducation::query()->create([
+                        'user_id' => $user->id,
+                        'degree' => $edu['degree'],
+                        'institute' => $edu['institute'],
+                        'department' => $edu['department'] ?? null,
+                        'graduation_year' => $edu['graduation_year'] ?? null,
+                        'result' => $edu['result'] ?? null,
+                        'is_current' => $edu['is_current'] ?? false,
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            return $user;
+        });
+
+        return redirect()->route('admin.tutors.index')->with('status', 'Tutor account and profile created successfully.');
     }
 
     /**
