@@ -38,10 +38,10 @@ const panelLabel = computed(() => {
     }
 
     if (role === 'tutor') {
-        return 'Tutor Dashboard';
+        return 'Tutor Panel';
     }
 
-    return 'Guardian Dashboard';
+    return 'Guardian Panel';
 });
 
 function toggleAppearance(): void {

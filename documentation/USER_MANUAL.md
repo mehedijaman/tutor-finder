@@ -82,7 +82,7 @@ From **Settings > Profile** you can delete your account after password confirmat
 
 ## Guardian Guide
 
-### 1. Guardian Dashboard
+### 1. Guardian Panel
 
 The dashboard shows:
 
@@ -161,7 +161,7 @@ From **My Reviews** you can:
 
 ## Tutor Guide
 
-### 1. Tutor Dashboard
+### 1. Tutor Panel
 
 The dashboard shows:
 

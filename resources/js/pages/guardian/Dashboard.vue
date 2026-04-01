@@ -35,7 +35,7 @@ const props = defineProps<{
 }>();
 
 const breadcrumbs = [
-    { title: 'Guardian Dashboard', href: '/guardian/dashboard' },
+    { title: 'Dashboard', href: '/guardian/dashboard' },
 ];
 
 const jobStatCards = computed(() => [
@@ -181,7 +181,7 @@ const quickActionCards = [
 </script>
 
 <template>
-    <Head title="Guardian Dashboard" />
+    <Head title="Guardian Panel" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-4 sm:p-6 lg:p-8">

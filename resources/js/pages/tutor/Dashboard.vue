@@ -36,7 +36,7 @@ const props = defineProps<{
     };
 }>();
 
-const breadcrumbs = [{ title: 'Tutor Dashboard', href: '/tutor/dashboard' }];
+const breadcrumbs = [{ title: 'Dashboard', href: '/tutor/dashboard' }];
 
 const applicationStatCards = computed(() => [
     {
@@ -181,7 +181,7 @@ const quickActionCards = [
 </script>
 
 <template>
-    <Head title="Tutor Dashboard" />
+    <Head title="Tutor Panel" />
 
     <TutorLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-8 p-4 sm:p-6 lg:p-8">
