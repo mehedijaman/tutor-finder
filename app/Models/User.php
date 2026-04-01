@@ -323,6 +323,14 @@ class User extends Authenticatable implements HasMedia
      */
     public function getPhotoUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('profile_photo') ?: 'https://www.gravatar.com/avatar/'.md5($this->email).'?s=200&d=mp';
+        $mediaUrl = $this->getFirstMediaUrl('profile_photo');
+
+        if ($mediaUrl !== '') {
+            return $mediaUrl;
+        }
+
+        $emailHash = md5(strtolower(trim($this->email ?? '')) ?: 'default');
+
+        return 'https://www.gravatar.com/avatar/'.$emailHash.'?s=200&d=mp';
     }
 }

@@ -21,6 +21,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import { sanitizeHtml } from '@/lib/utils';
 import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
 
@@ -67,6 +68,13 @@ const modalConfig = computed<TwoFactorConfigContent>(() => {
             'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app',
         buttonText: 'Continue',
     };
+});
+
+const sanitizedQrCode = computed(() => {
+    if (!qrCodeSvg.value) {
+        return null;
+    }
+    return sanitizeHtml(qrCodeSvg.value);
 });
 
 const handleModalNextStep = () => {
@@ -170,7 +178,7 @@ watch(
                                     class="relative z-10 overflow-hidden border p-5"
                                 >
                                     <div
-                                        v-html="qrCodeSvg"
+                                        v-html="sanitizedQrCode"
                                         class="flex aspect-square size-full items-center justify-center"
                                         :style="{
                                             filter:

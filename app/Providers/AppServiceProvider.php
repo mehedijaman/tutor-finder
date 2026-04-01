@@ -7,6 +7,7 @@ use App\Services\Sms\GatewaySmsSender;
 use App\Services\Sms\LogSmsSender;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
@@ -61,6 +62,13 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+
+        Model::preventAccessingMissingAttributes(
+            app()->isProduction() === false,
+        );
+        Model::preventSilentlyDiscardingAttributes(
+            app()->isProduction(),
+        );
     }
 
     /**
@@ -112,6 +120,20 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return Limit::perMinute(5)->by('contact-form:'.$request->ip().'|'.$identifier);
+        });
+
+        RateLimiter::for('payment-callback', function (Request $request) {
+            $invoiceId = $request->route('invoice');
+            $ip = $request->ip();
+
+            return Limit::perMinute(30)
+                ->by('payment-callback:'.$invoiceId.'|'.$ip)
+                ->response(function (Request $request, array $headers): RedirectResponse {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => 'Too many payment callback requests. Please try again later.',
+                    ], 429);
+                });
         });
     }
 

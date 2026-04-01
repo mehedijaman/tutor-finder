@@ -58,11 +58,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/photo', [\App\Http\Controllers\ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
 });
 
-Route::get('/payment/bkash/callback', [PaymentController::class, 'bkashCallback'])->name('payment.bkash.callback');
-Route::post('/payment/sslcommerz/ipn', [PaymentController::class, 'sslIpn'])->name('payment.sslcommerz.ipn');
-Route::get('/payment/sslcommerz/success', [PaymentController::class, 'sslSuccess'])->name('payment.sslcommerz.success');
-Route::get('/payment/sslcommerz/fail', [PaymentController::class, 'sslFail'])->name('payment.sslcommerz.fail');
-Route::get('/payment/sslcommerz/cancel', [PaymentController::class, 'sslCancel'])->name('payment.sslcommerz.cancel');
+Route::get('/payment/bkash/callback', [PaymentController::class, 'bkashCallback'])
+    ->middleware('throttle:payment-callback')
+    ->name('payment.bkash.callback');
+Route::post('/payment/sslcommerz/ipn', [PaymentController::class, 'sslIpn'])
+    ->middleware('throttle:payment-callback')
+    ->name('payment.sslcommerz.ipn');
+Route::get('/payment/sslcommerz/success', [PaymentController::class, 'sslSuccess'])
+    ->middleware('throttle:payment-callback')
+    ->name('payment.sslcommerz.success');
+Route::get('/payment/sslcommerz/fail', [PaymentController::class, 'sslFail'])
+    ->middleware('throttle:payment-callback')
+    ->name('payment.sslcommerz.fail');
+Route::get('/payment/sslcommerz/cancel', [PaymentController::class, 'sslCancel'])
+    ->middleware('throttle:payment-callback')
+    ->name('payment.sslcommerz.cancel');
 
 require __DIR__.'/tutor.php';
 require __DIR__.'/guardian.php';

@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
+import { sanitizeHtml } from '@/lib/utils';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 type FaqItem = {
@@ -59,6 +60,10 @@ const audienceTabs = [
 
 function toggleFaq(id: number): void {
     openFaqId.value = openFaqId.value === id ? null : id;
+}
+
+function getSanitizedAnswer(answer: string): string {
+    return sanitizeHtml(answer);
 }
 </script>
 
@@ -158,7 +163,7 @@ function toggleFaq(id: number): void {
                             <div
                                 v-if="openFaqId === faq.id"
                                 class="prose prose-sm mt-3 max-w-none text-slate-700"
-                                v-html="faq.answer"
+                                v-html="getSanitizedAnswer(faq.answer)"
                             />
                         </transition>
                     </section>

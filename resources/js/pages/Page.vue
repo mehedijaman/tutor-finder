@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
+import { sanitizeHtml } from '@/lib/utils';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 const props = defineProps<{
@@ -16,6 +18,10 @@ const props = defineProps<{
 }>();
 
 const { siteName } = useSiteSettings();
+
+const sanitizedContent = computed(() =>
+    props.page.content ? sanitizeHtml(props.page.content) : null,
+);
 
 const formattedDate = new Date(props.page.updated_at).toLocaleDateString(
     'en-US',
@@ -71,14 +77,11 @@ const formattedDate = new Date(props.page.updated_at).toLocaleDateString(
                 class="rounded-2xl border border-slate-100 bg-white p-6 shadow-[0_10px_30px_rgba(2,32,71,0.06)] md:p-10"
             >
                 <div
-                    v-if="page.content"
+                    v-if="sanitizedContent"
                     class="prose prose-slate prose-h2:mt-8 prose-h2:mb-3 prose-h3:mt-6 prose-h3:mb-2 max-w-none"
-                    v-html="page.content"
+                    v-html="sanitizedContent"
                 />
-                <div
-                    v-else
-                    class="py-12 text-center text-slate-500"
-                >
+                <div v-else class="py-12 text-center text-slate-500">
                     <p>This page has no content yet.</p>
                 </div>
             </div>

@@ -14,6 +14,7 @@ use App\Models\TuitionJobApplication;
 use App\Models\TuitionType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Inertia\Response;
 
@@ -308,17 +309,19 @@ class JobController extends Controller
      */
     private function categoryOptions(): array
     {
-        return Category::query()
-            ->where('status', TaxonomyStatus::Active)
-            ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
-            ->ordered()
-            ->get(['id', 'name', 'slug'])
-            ->map(fn (Category $category): array => [
-                'id' => $category->id,
-                'name' => $category->name,
-                'slug' => $category->slug,
-            ])
-            ->all();
+        return Cache::remember('job-board:categories', now()->addMinutes(30), function (): array {
+            return Category::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
+                ->ordered()
+                ->get(['id', 'name', 'slug'])
+                ->map(fn (Category $category): array => [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                ])
+                ->all();
+        });
     }
 
     /**
@@ -328,17 +331,19 @@ class JobController extends Controller
      */
     private function tuitionTypeOptions(): array
     {
-        return TuitionType::query()
-            ->where('status', TaxonomyStatus::Active)
-            ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
-            ->ordered()
-            ->get(['id', 'name', 'slug'])
-            ->map(fn (TuitionType $type): array => [
-                'id' => $type->id,
-                'name' => $type->name,
-                'slug' => $type->slug,
-            ])
-            ->all();
+        return Cache::remember('job-board:tuition-types', now()->addMinutes(30), function (): array {
+            return TuitionType::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
+                ->ordered()
+                ->get(['id', 'name', 'slug'])
+                ->map(fn (TuitionType $type): array => [
+                    'id' => $type->id,
+                    'name' => $type->name,
+                    'slug' => $type->slug,
+                ])
+                ->all();
+        });
     }
 
     /**
@@ -348,16 +353,18 @@ class JobController extends Controller
      */
     private function subjectOptions(): array
     {
-        return Subject::query()
-            ->where('status', TaxonomyStatus::Active)
-            ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (Subject $subject): array => [
-                'id' => $subject->id,
-                'name' => $subject->name,
-            ])
-            ->all();
+        return Cache::remember('job-board:subjects', now()->addMinutes(30), function (): array {
+            return Subject::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
+                ->ordered()
+                ->get(['id', 'name'])
+                ->map(fn (Subject $subject): array => [
+                    'id' => $subject->id,
+                    'name' => $subject->name,
+                ])
+                ->all();
+        });
     }
 
     /**
@@ -367,16 +374,18 @@ class JobController extends Controller
      */
     private function cityOptions(): array
     {
-        return City::query()
-            ->where('status', TaxonomyStatus::Active)
-            ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
-            ->ordered()
-            ->get(['id', 'name'])
-            ->map(fn (City $city): array => [
-                'id' => $city->id,
-                'name' => $city->name,
-            ])
-            ->all();
+        return Cache::remember('job-board:cities', now()->addMinutes(30), function (): array {
+            return City::query()
+                ->where('status', TaxonomyStatus::Active)
+                ->whereHas('tuitionJobs', fn (Builder $builder) => $this->applyPublicScope($builder))
+                ->ordered()
+                ->get(['id', 'name'])
+                ->map(fn (City $city): array => [
+                    'id' => $city->id,
+                    'name' => $city->name,
+                ])
+                ->all();
+        });
     }
 
     /**

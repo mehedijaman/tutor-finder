@@ -9,6 +9,7 @@ import {
     UserRound,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { sanitizeHtml } from '@/lib/utils';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 type BlogPostShow = {
@@ -47,6 +48,8 @@ const publishedLabel = computed(() => {
 });
 
 const authorLabel = computed(() => props.post.author_name || 'Editorial Team');
+
+const sanitizedContent = computed(() => sanitizeHtml(props.post.content));
 
 const readingTimeMinutes = computed(() => {
     const plainText = props.post.content
@@ -166,7 +169,7 @@ const readingTimeMinutes = computed(() => {
 
                             <div
                                 class="prose prose-slate prose-headings:mt-8 prose-headings:font-semibold prose-p:leading-7 prose-a:text-blue-700 hover:prose-a:text-blue-800 prose-img:rounded-xl prose-img:shadow-sm mt-6 max-w-none"
-                                v-html="post.content"
+                                v-html="sanitizedContent"
                             ></div>
                         </section>
 
