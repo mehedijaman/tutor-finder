@@ -121,9 +121,7 @@ const tuitionMethodDecoration = (index: number) => {
                     <p
                         class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl"
                     >
-                        Quickly connect with qualified and trusted tutors for
-                        any subject or grade, giving your child the support they
-                        need to succeed.
+                        Quickly match with competent tutors tailored to your child's need to succeed.
                     </p>
 
                     <div
