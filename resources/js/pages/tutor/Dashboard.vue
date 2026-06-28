@@ -113,7 +113,8 @@ function formatStatCount(value: number): string {
 const quickActionCards = [
     {
         title: 'Browse Jobs',
-        description: 'Discover new tutoring opportunities matching your skills.',
+        description:
+            'Discover new tutoring opportunities matching your skills.',
         href: '/jobs',
         icon: Search,
         cardClass:
@@ -225,7 +226,9 @@ const quickActionCards = [
                         :class="card.footerClass"
                     >
                         <span>{{ card.hint }}</span>
-                        <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight
+                            class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                        />
                     </div>
                 </Link>
             </div>
@@ -244,14 +247,21 @@ const quickActionCards = [
                 >
                     <div
                         class="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br text-white shadow-lg transition-transform duration-300 group-hover:scale-110"
-                        :class="[action.iconGradientClass, action.iconShadowClass]"
+                        :class="[
+                            action.iconGradientClass,
+                            action.iconShadowClass,
+                        ]"
                     >
                         <component :is="action.icon" class="h-6 w-6" />
                     </div>
-                    <h3 class="mt-5 text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
+                    <h3
+                        class="mt-5 text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
+                    >
                         {{ action.title }}
                     </h3>
-                    <p class="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    <p
+                        class="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400"
+                    >
                         {{ action.description }}
                     </p>
                     <ArrowRight

@@ -83,7 +83,9 @@ watch(
         <div class="space-y-2">
             <Label>
                 Attach Images
-                <span class="text-xs text-slate-500">(optional, max {{ maxAttachments ?? 3 }} images)</span>
+                <span class="text-xs text-slate-500"
+                    >(optional, max {{ maxAttachments ?? 3 }} images)</span
+                >
             </Label>
 
             <div v-if="previews.length > 0" class="flex flex-wrap gap-2">
@@ -102,7 +104,9 @@ watch(
                         class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition group-hover:opacity-100"
                         @click="removeAttachment(index)"
                     >
-                        <span class="text-xs font-medium text-white">Remove</span>
+                        <span class="text-xs font-medium text-white"
+                            >Remove</span
+                        >
                     </button>
                 </div>
             </div>
@@ -115,10 +119,26 @@ watch(
                 class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-slate-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-100"
                 @change="handleFileSelect"
             />
-            <InputError :message="(form.errors as Record<string, string>)['attachments']" />
-            <InputError :message="(form.errors as Record<string, string>)['attachments.0']" />
-            <InputError :message="(form.errors as Record<string, string>)['attachments.1']" />
-            <InputError :message="(form.errors as Record<string, string>)['attachments.2']" />
+            <InputError
+                :message="
+                    (form.errors as Record<string, string>)['attachments']
+                "
+            />
+            <InputError
+                :message="
+                    (form.errors as Record<string, string>)['attachments.0']
+                "
+            />
+            <InputError
+                :message="
+                    (form.errors as Record<string, string>)['attachments.1']
+                "
+            />
+            <InputError
+                :message="
+                    (form.errors as Record<string, string>)['attachments.2']
+                "
+            />
         </div>
 
         <div class="flex justify-end">

@@ -3,11 +3,7 @@ import { Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import PublicLayout from '@/layouts/PublicLayout.vue';
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 type Tutorial = {
     id: number;
@@ -123,7 +119,8 @@ function getThumbnailUrl(tutorial: Tutorial): string | null {
                     Tutorials
                 </h1>
                 <p class="mt-4 text-sm text-white/80">
-                    Step-by-step video guides to help you get the most out of our platform.
+                    Step-by-step video guides to help you get the most out of
+                    our platform.
                 </p>
             </div>
         </section>
@@ -160,7 +157,9 @@ function getThumbnailUrl(tutorial: Tutorial): string | null {
                     @click="openVideo(tutorial)"
                 >
                     <!-- Thumbnail -->
-                    <div class="relative aspect-video w-full overflow-hidden bg-slate-100">
+                    <div
+                        class="relative aspect-video w-full overflow-hidden bg-slate-100"
+                    >
                         <img
                             v-if="getThumbnailUrl(tutorial)"
                             :src="getThumbnailUrl(tutorial)!"
@@ -197,7 +196,7 @@ function getThumbnailUrl(tutorial: Tutorial): string | null {
                             class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/20"
                         >
                             <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg opacity-0 transition-opacity group-hover:opacity-100"
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -217,7 +216,9 @@ function getThumbnailUrl(tutorial: Tutorial): string | null {
 
                     <!-- Content -->
                     <div class="p-4">
-                        <h3 class="line-clamp-2 text-sm font-semibold text-slate-900">
+                        <h3
+                            class="line-clamp-2 text-sm font-semibold text-slate-900"
+                        >
                             {{ tutorial.title }}
                         </h3>
                         <button
@@ -272,7 +273,15 @@ function getThumbnailUrl(tutorial: Tutorial): string | null {
                         :src="getEmbedUrl(activeVideo.video_url)"
                         class="h-full w-full"
                         frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allow="
+                            accelerometer;
+                            autoplay;
+                            clipboard-write;
+                            encrypted-media;
+                            gyroscope;
+                            picture-in-picture;
+                            web-share;
+                        "
                         allowfullscreen
                     />
                 </div>

@@ -164,9 +164,7 @@ function formatCategory(category: string): string {
                 </template>
 
                 <template #cell-created_at="{ value }">
-                    {{
-                        value ? new Date(value).toLocaleDateString() : '—'
-                    }}
+                    {{ value ? new Date(value).toLocaleDateString() : '—' }}
                 </template>
 
                 <template #cell-actions="{ row }">

@@ -37,7 +37,9 @@ function formatDate(dateString: string): string {
                         :src="message.user.avatar"
                         :alt="message.user?.name ?? 'User'"
                     />
-                    <AvatarFallback class="bg-slate-100 text-xs font-medium text-slate-600">
+                    <AvatarFallback
+                        class="bg-slate-100 text-xs font-medium text-slate-600"
+                    >
                         {{ getInitials(message.user?.name ?? 'U') }}
                     </AvatarFallback>
                 </Avatar>
@@ -80,7 +82,10 @@ function formatDate(dateString: string): string {
                     </div>
 
                     <div
-                        v-if="message.attachments && message.attachments.length > 0"
+                        v-if="
+                            message.attachments &&
+                            message.attachments.length > 0
+                        "
                         class="mt-2 flex flex-wrap gap-2"
                         :class="{
                             'justify-end': message.user_id === currentUserId,

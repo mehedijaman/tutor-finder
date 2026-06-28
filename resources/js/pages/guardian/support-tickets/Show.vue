@@ -35,9 +35,7 @@ function formatDate(dateString: string): string {
             <div
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
-                <div
-                    class="flex flex-wrap items-start justify-between gap-4"
-                >
+                <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
                             <h1
@@ -46,7 +44,9 @@ function formatDate(dateString: string): string {
                                 {{ ticket.subject }}
                             </h1>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                        <div
+                            class="flex flex-wrap items-center gap-2 text-sm text-slate-500"
+                        >
                             <span class="font-mono text-xs">
                                 {{ ticket.ticket_number }}
                             </span>
@@ -92,9 +92,7 @@ function formatDate(dateString: string): string {
             <div
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
-                <h2 class="mb-4 text-lg font-semibold text-slate-900">
-                    Reply
-                </h2>
+                <h2 class="mb-4 text-lg font-semibold text-slate-900">Reply</h2>
                 <TicketReplyForm
                     :action="`/guardian/support-tickets/${ticket.id}/reply`"
                     :max-attachments="3"

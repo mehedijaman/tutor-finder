@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import Autoplay from 'embla-carousel-autoplay';
-import { Calendar, ChevronLeft, ChevronRight, Megaphone } from 'lucide-vue-next';
+import {
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    Megaphone,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,7 +46,9 @@ function scrollNext() {
 }
 
 const canScrollPrev = computed(() => currentIndex.value > 0);
-const canScrollNext = computed(() => currentIndex.value < props.notices.length - 1);
+const canScrollNext = computed(
+    () => currentIndex.value < props.notices.length - 1,
+);
 
 function formatDate(value: string): string {
     return new Date(value).toLocaleDateString('en-US', {
@@ -63,9 +70,13 @@ function stripHtml(html: string): string {
         v-if="notices.length"
         class="relative overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 shadow-sm"
     >
-        <div class="flex items-center justify-between border-b border-amber-200/60 bg-amber-100/50 px-5 py-3">
+        <div
+            class="flex items-center justify-between border-b border-amber-200/60 bg-amber-100/50 px-5 py-3"
+        >
             <div class="flex items-center gap-2">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm">
+                <div
+                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm"
+                >
                     <Megaphone class="h-4 w-4" />
                 </div>
                 <h2 class="text-sm font-semibold text-amber-900">Notices</h2>
@@ -103,16 +114,25 @@ function stripHtml(html: string): string {
             <CarouselContent>
                 <CarouselItem v-for="notice in notices" :key="notice.id">
                     <div class="p-5">
-                        <h3 class="text-base font-semibold text-slate-900 line-clamp-1">
+                        <h3
+                            class="line-clamp-1 text-base font-semibold text-slate-900"
+                        >
                             {{ notice.title }}
                         </h3>
-                        <p class="mt-2 text-sm leading-relaxed text-slate-600 line-clamp-2">
+                        <p
+                            class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600"
+                        >
                             {{ stripHtml(notice.body) }}
                         </p>
-                        <div class="mt-3 flex items-center gap-1.5 text-xs text-amber-700">
+                        <div
+                            class="mt-3 flex items-center gap-1.5 text-xs text-amber-700"
+                        >
                             <Calendar class="h-3.5 w-3.5" />
                             <span>{{ formatDate(notice.published_at) }}</span>
-                            <span v-if="notice.expires_at" class="text-slate-400">
+                            <span
+                                v-if="notice.expires_at"
+                                class="text-slate-400"
+                            >
                                 · Expires {{ formatDate(notice.expires_at) }}
                             </span>
                         </div>

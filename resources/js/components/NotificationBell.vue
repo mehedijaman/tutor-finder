@@ -55,12 +55,15 @@ const localUnreadCount = ref(0);
 const localNotifications = ref<Notification[]>([]);
 
 const unreadCount = computed(() => localUnreadCount.value);
-const recentNotifications = computed<Notification[]>(() => localNotifications.value);
+const recentNotifications = computed<Notification[]>(
+    () => localNotifications.value,
+);
 const userRole = computed(() => page.props.auth?.user?.role as string);
 
 function syncFromProps() {
     localUnreadCount.value = Number(page.props.notificationCounts?.unread ?? 0);
-    localNotifications.value = (page.props.notificationCounts?.recent as Notification[]) ?? [];
+    localNotifications.value =
+        (page.props.notificationCounts?.recent as Notification[]) ?? [];
 }
 
 function handleNoticeCreated(event: NoticeCreatedEvent) {
@@ -77,7 +80,10 @@ function handleNoticeCreated(event: NoticeCreatedEvent) {
         created_at: event.created_at ?? new Date().toISOString(),
     };
 
-    localNotifications.value = [newNotification, ...localNotifications.value].slice(0, 5);
+    localNotifications.value = [
+        newNotification,
+        ...localNotifications.value,
+    ].slice(0, 5);
 }
 
 function handleTicketEvent(event: TicketBroadcastEvent) {
@@ -103,7 +109,10 @@ function handleTicketEvent(event: TicketBroadcastEvent) {
         created_at: new Date().toISOString(),
     };
 
-    localNotifications.value = [newNotification, ...localNotifications.value].slice(0, 5);
+    localNotifications.value = [
+        newNotification,
+        ...localNotifications.value,
+    ].slice(0, 5);
 }
 
 onMounted(() => {
@@ -112,8 +121,10 @@ onMounted(() => {
 
     const role = userRole.value;
     if (role && window.Echo && (role === 'tutor' || role === 'guardian')) {
-        window.Echo.private(`role.${role}`)
-            .listen('.notice.created', handleNoticeCreated);
+        window.Echo.private(`role.${role}`).listen(
+            '.notice.created',
+            handleNoticeCreated,
+        );
     }
 
     if (role === 'admin' && window.Echo) {
@@ -132,7 +143,11 @@ async function togglePushSubscription() {
 }
 
 const pushToggleDisabled = computed(() => {
-    return !pushSupported.value || pushPermission.value === 'denied' || pushLoading.value;
+    return (
+        !pushSupported.value ||
+        pushPermission.value === 'denied' ||
+        pushLoading.value
+    );
 });
 
 const pushToggleLabel = computed(() => {
@@ -193,12 +208,16 @@ function markAllAsRead() {
     }
 
     localUnreadCount.value = 0;
-    router.patch(markAsReadUrl.value, {}, {
-        preserveScroll: true,
-        onSuccess: () => {
-            syncFromProps();
+    router.patch(
+        markAsReadUrl.value,
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                syncFromProps();
+            },
         },
-    });
+    );
 }
 
 function formatTimeAgo(dateString: string): string {
@@ -249,7 +268,9 @@ function formatTimeAgo(dateString: string): string {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="w-80">
             <div class="flex items-center justify-between px-3 py-2">
-                <span class="text-sm font-semibold text-slate-900 dark:text-white">
+                <span
+                    class="text-sm font-semibold text-slate-900 dark:text-white"
+                >
                     Notifications
                 </span>
                 <Button
@@ -265,8 +286,13 @@ function formatTimeAgo(dateString: string): string {
             </div>
             <DropdownMenuSeparator />
 
-            <div v-if="recentNotifications.length === 0" class="px-3 py-6 text-center">
-                <Bell class="mx-auto h-8 w-8 text-slate-300 dark:text-slate-600" />
+            <div
+                v-if="recentNotifications.length === 0"
+                class="px-3 py-6 text-center"
+            >
+                <Bell
+                    class="mx-auto h-8 w-8 text-slate-300 dark:text-slate-600"
+                />
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
                     No new notifications
                 </p>
@@ -279,7 +305,9 @@ function formatTimeAgo(dateString: string): string {
                     class="cursor-pointer flex-col items-start gap-1 px-3 py-2.5"
                 >
                     <div class="flex w-full items-start justify-between gap-2">
-                        <span class="font-medium text-slate-900 line-clamp-1 dark:text-white">
+                        <span
+                            class="line-clamp-1 font-medium text-slate-900 dark:text-white"
+                        >
                             {{ notification.title }}
                         </span>
                         <span class="shrink-0 text-xs text-slate-400">
@@ -288,7 +316,7 @@ function formatTimeAgo(dateString: string): string {
                     </div>
                     <p
                         v-if="notification.data.message"
-                        class="text-xs text-slate-500 line-clamp-2 dark:text-slate-400"
+                        class="line-clamp-2 text-xs text-slate-500 dark:text-slate-400"
                     >
                         {{ notification.data.message }}
                     </p>
@@ -309,13 +337,19 @@ function formatTimeAgo(dateString: string): string {
                     <Label
                         for="push-toggle"
                         class="text-sm font-medium text-slate-700 dark:text-slate-300"
-                        :class="{ 'cursor-not-allowed': pushToggleDisabled, 'cursor-pointer': !pushToggleDisabled }"
+                        :class="{
+                            'cursor-not-allowed': pushToggleDisabled,
+                            'cursor-pointer': !pushToggleDisabled,
+                        }"
                     >
                         {{ pushToggleLabel }}
                     </Label>
                 </div>
                 <div class="flex items-center">
-                    <Loader2 v-if="pushLoading" class="h-4 w-4 animate-spin text-slate-400" />
+                    <Loader2
+                        v-if="pushLoading"
+                        class="h-4 w-4 animate-spin text-slate-400"
+                    />
                     <Switch
                         v-else
                         id="push-toggle"

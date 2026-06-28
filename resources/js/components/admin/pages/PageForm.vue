@@ -59,7 +59,9 @@ const form = useForm({
 
 const slugDisabled = computed(() => props.isSystem);
 
-const imagePreviewUrl = ref<string | null>(props.initial.featured_image_url ?? null);
+const imagePreviewUrl = ref<string | null>(
+    props.initial.featured_image_url ?? null,
+);
 const temporaryImageUrl = ref<string | null>(null);
 
 function clearTemporaryImageUrl(): void {
@@ -96,7 +98,9 @@ function removeImage(): void {
     form.remove_featured_image = true;
     imagePreviewUrl.value = null;
 
-    const fileInput = document.getElementById('page-featured-image') as HTMLInputElement | null;
+    const fileInput = document.getElementById(
+        'page-featured-image',
+    ) as HTMLInputElement | null;
     if (fileInput) {
         fileInput.value = '';
     }
@@ -167,9 +171,14 @@ function submit() {
                         type="text"
                         required
                         :disabled="slugDisabled"
-                        :class="{ 'bg-slate-100 cursor-not-allowed': slugDisabled }"
+                        :class="{
+                            'cursor-not-allowed bg-slate-100': slugDisabled,
+                        }"
                     />
-                    <p v-if="slugDisabled" class="text-xs text-muted-foreground">
+                    <p
+                        v-if="slugDisabled"
+                        class="text-xs text-muted-foreground"
+                    >
                         System page slugs cannot be changed.
                     </p>
                     <InputError :message="form.errors.slug" />
@@ -242,7 +251,9 @@ function submit() {
                         <InputError :message="form.errors.featured_image" />
 
                         <button
-                            v-if="imagePreviewUrl && !form.remove_featured_image"
+                            v-if="
+                                imagePreviewUrl && !form.remove_featured_image
+                            "
                             type="button"
                             class="text-sm font-medium text-red-600 hover:text-red-800"
                             @click="removeImage"
@@ -275,7 +286,9 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="page-meta-description">Meta Description</Label>
+                        <Label for="page-meta-description"
+                            >Meta Description</Label
+                        >
                         <textarea
                             id="page-meta-description"
                             v-model="form.meta_description"

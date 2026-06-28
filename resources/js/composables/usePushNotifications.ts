@@ -12,7 +12,9 @@ export function usePushNotifications() {
 
     function urlBase64ToUint8Array(base64String: string): Uint8Array {
         const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const base64 = (base64String + padding)
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
         const rawData = window.atob(base64);
         const outputArray = new Uint8Array(rawData.length);
         for (let i = 0; i < rawData.length; ++i) {
@@ -27,14 +29,16 @@ export function usePushNotifications() {
     }
 
     async function checkSupport(): Promise<void> {
-        isSupported.value = 'serviceWorker' in navigator && 'PushManager' in window;
+        isSupported.value =
+            'serviceWorker' in navigator && 'PushManager' in window;
 
         if (isSupported.value) {
             permission.value = Notification.permission;
 
             if (permission.value === 'granted') {
                 const registration = await navigator.serviceWorker.ready;
-                const subscription = await registration.pushManager.getSubscription();
+                const subscription =
+                    await registration.pushManager.getSubscription();
                 isSubscribed.value = !!subscription;
             }
         }
@@ -56,12 +60,15 @@ export function usePushNotifications() {
                 return false;
             }
 
-            const registration = await navigator.serviceWorker.register('/sw.js');
+            const registration =
+                await navigator.serviceWorker.register('/sw.js');
             await navigator.serviceWorker.ready;
 
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(vapidPublicKey.value),
+                applicationServerKey: urlBase64ToUint8Array(
+                    vapidPublicKey.value,
+                ),
             });
 
             const subscriptionJson = subscription.toJSON();
@@ -70,7 +77,7 @@ export function usePushNotifications() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
+                    Accept: 'application/json',
                     'X-CSRF-TOKEN': getCsrfToken(),
                 },
                 body: JSON.stringify({
@@ -105,7 +112,8 @@ export function usePushNotifications() {
 
         try {
             const registration = await navigator.serviceWorker.ready;
-            const subscription = await registration.pushManager.getSubscription();
+            const subscription =
+                await registration.pushManager.getSubscription();
 
             if (!subscription) {
                 isSubscribed.value = false;
@@ -120,7 +128,7 @@ export function usePushNotifications() {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
+                    Accept: 'application/json',
                     'X-CSRF-TOKEN': getCsrfToken(),
                 },
                 body: JSON.stringify({ endpoint }),

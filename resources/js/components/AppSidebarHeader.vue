@@ -54,10 +54,14 @@ function toggleAppearance(): void {
         class="sticky top-0 z-20 flex shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-4 py-3.5 backdrop-blur-lg transition-[width,height] ease-linear md:px-6 dark:border-slate-800/80 dark:bg-slate-950/95"
     >
         <div class="flex min-w-0 flex-1 items-center gap-3">
-            <SidebarTrigger class="-ml-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800" />
+            <SidebarTrigger
+                class="-ml-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            />
 
             <div class="min-w-0">
-                <p class="truncate text-sm font-semibold tracking-tight text-slate-900 dark:text-white">
+                <p
+                    class="truncate text-sm font-semibold tracking-tight text-slate-900 dark:text-white"
+                >
                     {{ panelLabel }}
                 </p>
 
@@ -76,7 +80,7 @@ function toggleAppearance(): void {
             <Button
                 variant="ghost"
                 size="icon"
-                class="h-9 w-9 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800"
+                class="h-9 w-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                 type="button"
                 @click="toggleAppearance"
             >
@@ -88,7 +92,7 @@ function toggleAppearance(): void {
             <Button
                 variant="ghost"
                 size="icon"
-                class="h-9 w-9 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800"
+                class="h-9 w-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                 as-child
             >
                 <Link href="/">
@@ -102,9 +106,11 @@ function toggleAppearance(): void {
                     <Button
                         variant="ghost"
                         size="icon"
-                        class="relative size-10 w-auto rounded-full p-1 hover:bg-slate-100 focus-within:ring-2 focus-within:ring-primary/50 dark:hover:bg-slate-800"
+                        class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary/50 hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
-                        <Avatar class="size-8 overflow-hidden rounded-full ring-2 ring-white dark:ring-slate-800">
+                        <Avatar
+                            class="size-8 overflow-hidden rounded-full ring-2 ring-white dark:ring-slate-800"
+                        >
                             <AvatarImage
                                 v-if="user.photo_url"
                                 :src="user.photo_url"

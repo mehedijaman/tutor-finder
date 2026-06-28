@@ -47,7 +47,7 @@ import { store } from '@/routes/register';
                             <input
                                 type="radio"
                                 name="role"
-                                value="guardian"                                
+                                value="guardian"
                                 class="peer sr-only"
                             />
                             <div
@@ -56,7 +56,6 @@ import { store } from '@/routes/register';
                                 Guardian
                             </div>
                         </label>
-                        
                     </div>
                     <InputError :message="errors.role" />
                 </div>

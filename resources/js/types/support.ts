@@ -51,4 +51,3 @@ export interface TicketDetail {
     closed_by?: { id: number; name: string } | null;
     messages: TicketMessage[];
 }
-

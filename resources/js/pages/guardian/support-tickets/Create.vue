@@ -71,9 +71,7 @@ function submit(): void {
             <div
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
-                <div
-                    class="flex flex-wrap items-center justify-between gap-3"
-                >
+                <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
                         <h1 class="text-2xl font-semibold tracking-tight">
                             Create Support Ticket
@@ -168,7 +166,10 @@ function submit(): void {
                         </span>
                     </Label>
 
-                    <div v-if="previews.length > 0" class="flex flex-wrap gap-2">
+                    <div
+                        v-if="previews.length > 0"
+                        class="flex flex-wrap gap-2"
+                    >
                         <div
                             v-for="(preview, index) in previews"
                             :key="index"
@@ -200,10 +201,18 @@ function submit(): void {
                         @change="handleFileSelect"
                     />
                     <InputError
-                        :message="(form.errors as Record<string, string>)['attachments']"
+                        :message="
+                            (form.errors as Record<string, string>)[
+                                'attachments'
+                            ]
+                        "
                     />
                     <InputError
-                        :message="(form.errors as Record<string, string>)['attachments.0']"
+                        :message="
+                            (form.errors as Record<string, string>)[
+                                'attachments.0'
+                            ]
+                        "
                     />
                 </div>
 

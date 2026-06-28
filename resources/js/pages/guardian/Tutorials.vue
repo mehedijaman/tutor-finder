@@ -40,7 +40,9 @@ function getYouTubeThumbnail(url: string): string | null {
     const match = url.match(
         /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
     );
-    return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : null;
+    return match
+        ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`
+        : null;
 }
 
 function getThumbnailUrl(tutorial: Tutorial): string | null {
@@ -67,10 +69,13 @@ function onModalChange(open: boolean): void {
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6">
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+            <div
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            >
                 <h1 class="text-2xl font-semibold tracking-tight">Tutorials</h1>
                 <p class="mt-1 text-sm text-muted-foreground">
-                    Watch video guides to help you get the most out of our platform.
+                    Watch video guides to help you get the most out of our
+                    platform.
                 </p>
             </div>
 
@@ -84,7 +89,9 @@ function onModalChange(open: boolean): void {
                     class="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
                     @click="openVideo(tutorial)"
                 >
-                    <div class="relative aspect-video w-full overflow-hidden bg-slate-100">
+                    <div
+                        class="relative aspect-video w-full overflow-hidden bg-slate-100"
+                    >
                         <img
                             v-if="getThumbnailUrl(tutorial)"
                             :src="getThumbnailUrl(tutorial)!"
@@ -120,7 +127,7 @@ function onModalChange(open: boolean): void {
                             class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/20"
                         >
                             <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg opacity-0 transition-opacity group-hover:opacity-100"
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -139,7 +146,9 @@ function onModalChange(open: boolean): void {
                     </div>
 
                     <div class="p-4">
-                        <h3 class="line-clamp-2 text-sm font-semibold text-slate-900">
+                        <h3
+                            class="line-clamp-2 text-sm font-semibold text-slate-900"
+                        >
                             {{ tutorial.title }}
                         </h3>
                         <button
@@ -192,7 +201,15 @@ function onModalChange(open: boolean): void {
                         :src="getEmbedUrl(activeVideo.video_url)"
                         class="h-full w-full"
                         frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allow="
+                            accelerometer;
+                            autoplay;
+                            clipboard-write;
+                            encrypted-media;
+                            gyroscope;
+                            picture-in-picture;
+                            web-share;
+                        "
                         allowfullscreen
                     />
                 </div>

@@ -52,7 +52,6 @@ defineProps({
                 <div class="grid gap-2">
                     <Label>I want to log in as</Label>
                     <div class="grid grid-cols-2 gap-3">
-                        
                         <label class="cursor-pointer">
                             <input
                                 type="radio"
@@ -72,7 +71,7 @@ defineProps({
                             <input
                                 type="radio"
                                 name="role"
-                                value="guardian"                                
+                                value="guardian"
                                 class="peer sr-only"
                             />
                             <div

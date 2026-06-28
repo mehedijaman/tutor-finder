@@ -28,10 +28,24 @@ const breadcrumbs = [
                 class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
                 <div class="flex items-center gap-4">
-                    <Avatar class="h-14 w-14 border-2 border-white shadow-sm ring-1 ring-slate-100">
-                        <AvatarImage v-if="adminUser.photo_url" :src="adminUser.photo_url" :alt="adminUser.name" />
-                        <AvatarFallback class="bg-indigo-50 text-indigo-700 font-bold uppercase text-lg">
-                            {{ adminUser.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) }}
+                    <Avatar
+                        class="h-14 w-14 border-2 border-white shadow-sm ring-1 ring-slate-100"
+                    >
+                        <AvatarImage
+                            v-if="adminUser.photo_url"
+                            :src="adminUser.photo_url"
+                            :alt="adminUser.name"
+                        />
+                        <AvatarFallback
+                            class="bg-indigo-50 text-lg font-bold text-indigo-700 uppercase"
+                        >
+                            {{
+                                adminUser.name
+                                    ?.split(' ')
+                                    .map((n: string) => n[0])
+                                    .join('')
+                                    .slice(0, 2)
+                            }}
                         </AvatarFallback>
                     </Avatar>
                     <div class="space-y-1">
@@ -41,7 +55,8 @@ const breadcrumbs = [
                             Edit Admin User
                         </h1>
                         <p class="text-sm text-slate-600">
-                            Update account details, status, roles, and permissions.
+                            Update account details, status, roles, and
+                            permissions.
                         </p>
                     </div>
                 </div>

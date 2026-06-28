@@ -128,7 +128,8 @@ function applyFilters(): void {
 
 function handleSort(column: string): void {
     const isSameColumn = props.filters.sort === column;
-    const direction = isSameColumn && props.filters.direction === 'asc' ? 'desc' : 'asc';
+    const direction =
+        isSameColumn && props.filters.direction === 'asc' ? 'desc' : 'asc';
 
     router.get(
         baseUrl,
@@ -319,9 +320,7 @@ function formatCategory(category: string): string {
                 </template>
 
                 <template #cell-created_at="{ value }">
-                    {{
-                        value ? new Date(value).toLocaleDateString() : '—'
-                    }}
+                    {{ value ? new Date(value).toLocaleDateString() : '—' }}
                 </template>
 
                 <template #cell-actions="{ row }">

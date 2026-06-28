@@ -383,7 +383,6 @@ const { tutor } = props;
                                 <div
                                     class="mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start"
                                 >
-
                                     <span
                                         v-if="
                                             tutor.tutor_profile?.present_address
@@ -426,7 +425,7 @@ const { tutor } = props;
                                 <Link
                                     v-else
                                     href="/login"
-                                    class="inline-flex h-12 w-full items-center justify-center rounded-lg bg-blue-600 text-lg font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98]"
+                                    class="inline-flex h-12 w-full items-center justify-center rounded-lg bg-blue-600 text-lg font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02] hover:bg-blue-700 active:scale-[0.98]"
                                 >
                                     Login to Request
                                 </Link>

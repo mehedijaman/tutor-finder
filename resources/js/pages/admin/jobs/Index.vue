@@ -461,15 +461,20 @@ function statusBadge(row: any) {
             <div class="flex flex-wrap items-center justify-between gap-6 pb-2">
                 <div class="space-y-1">
                     <div class="flex items-center gap-3">
-                        <div class="rounded-xl bg-blue-600 p-2 text-white shadow-lg shadow-blue-200">
+                        <div
+                            class="rounded-xl bg-blue-600 p-2 text-white shadow-lg shadow-blue-200"
+                        >
                             <Briefcase class="h-6 w-6" />
                         </div>
-                        <h1 class="text-3xl font-bold tracking-tight text-slate-900">
+                        <h1
+                            class="text-3xl font-bold tracking-tight text-slate-900"
+                        >
                             {{ pageTitle }}
                         </h1>
                     </div>
-                    <p class="text-sm text-slate-500 pl-11">
-                        Manage and track tuition recruitment opportunities across the platform.
+                    <p class="pl-11 text-sm text-slate-500">
+                        Manage and track tuition recruitment opportunities
+                        across the platform.
                     </p>
                 </div>
 
@@ -478,9 +483,16 @@ function statusBadge(row: any) {
                         :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
                         class="group inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:shadow-md active:scale-95"
                     >
-                        <Trash2 class="h-4 w-4 transition-colors group-hover:text-rose-500" />
+                        <Trash2
+                            class="h-4 w-4 transition-colors group-hover:text-rose-500"
+                        />
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
-                        <Badge v-if="counts.trash_count > 0 && !filters.trash" variant="secondary" class="ml-1 bg-rose-50 text-rose-600">{{ counts.trash_count }}</Badge>
+                        <Badge
+                            v-if="counts.trash_count > 0 && !filters.trash"
+                            variant="secondary"
+                            class="ml-1 bg-rose-50 text-rose-600"
+                            >{{ counts.trash_count }}</Badge
+                        >
                     </Link>
 
                     <Button
@@ -506,71 +518,121 @@ function statusBadge(row: any) {
             </div>
 
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                <Card class="border-blue-100 bg-blue-50/30 transition-all hover:shadow-md">
+                <Card
+                    class="border-blue-100 bg-blue-50/30 transition-all hover:shadow-md"
+                >
                     <CardContent class="p-4">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-blue-100 p-2 text-blue-600">
+                            <div
+                                class="rounded-lg bg-blue-100 p-2 text-blue-600"
+                            >
                                 <FileText class="h-5 w-5" />
                             </div>
                             <div class="space-y-0.5">
-                                <p class="text-xs font-bold uppercase tracking-wider text-blue-600/70">Total</p>
-                                <p class="text-2xl font-black text-blue-700">{{ counts.total_count ?? 0 }}</p>
+                                <p
+                                    class="text-xs font-bold tracking-wider text-blue-600/70 uppercase"
+                                >
+                                    Total
+                                </p>
+                                <p class="text-2xl font-black text-blue-700">
+                                    {{ counts.total_count ?? 0 }}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
-                
-                <Card class="border-amber-100 bg-amber-50/30 transition-all hover:shadow-md">
+
+                <Card
+                    class="border-amber-100 bg-amber-50/30 transition-all hover:shadow-md"
+                >
                     <CardContent class="p-4">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-amber-100 p-2 text-amber-600">
+                            <div
+                                class="rounded-lg bg-amber-100 p-2 text-amber-600"
+                            >
                                 <Clock class="h-5 w-5" />
                             </div>
                             <div class="space-y-0.5">
-                                <p class="text-xs font-bold uppercase tracking-wider text-amber-600/70">Pending</p>
-                                <p class="text-2xl font-black text-amber-700">{{ counts.pending_count ?? 0 }}</p>
+                                <p
+                                    class="text-xs font-bold tracking-wider text-amber-600/70 uppercase"
+                                >
+                                    Pending
+                                </p>
+                                <p class="text-2xl font-black text-amber-700">
+                                    {{ counts.pending_count ?? 0 }}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card class="border-emerald-100 bg-emerald-50/30 transition-all hover:shadow-md">
+                <Card
+                    class="border-emerald-100 bg-emerald-50/30 transition-all hover:shadow-md"
+                >
                     <CardContent class="p-4">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-emerald-100 p-2 text-emerald-600">
+                            <div
+                                class="rounded-lg bg-emerald-100 p-2 text-emerald-600"
+                            >
                                 <LayoutDashboard class="h-5 w-5" />
                             </div>
                             <div class="space-y-0.5">
-                                <p class="text-xs font-bold uppercase tracking-wider text-emerald-600/70">Live</p>
-                                <p class="text-2xl font-black text-emerald-700">{{ counts.live_count ?? 0 }}</p>
+                                <p
+                                    class="text-xs font-bold tracking-wider text-emerald-600/70 uppercase"
+                                >
+                                    Live
+                                </p>
+                                <p class="text-2xl font-black text-emerald-700">
+                                    {{ counts.live_count ?? 0 }}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card class="border-indigo-100 bg-indigo-50/30 transition-all hover:shadow-md">
+                <Card
+                    class="border-indigo-100 bg-indigo-50/30 transition-all hover:shadow-md"
+                >
                     <CardContent class="p-4">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-indigo-100 p-2 text-indigo-600">
+                            <div
+                                class="rounded-lg bg-indigo-100 p-2 text-indigo-600"
+                            >
                                 <CheckCircle2 class="h-5 w-5" />
                             </div>
                             <div class="space-y-0.5">
-                                <p class="text-xs font-bold uppercase tracking-wider text-indigo-600/70">Confirmed</p>
-                                <p class="text-2xl font-black text-indigo-700">{{ counts.confirmed_count ?? 0 }}</p>
+                                <p
+                                    class="text-xs font-bold tracking-wider text-indigo-600/70 uppercase"
+                                >
+                                    Confirmed
+                                </p>
+                                <p class="text-2xl font-black text-indigo-700">
+                                    {{ counts.confirmed_count ?? 0 }}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card class="border-rose-100 bg-rose-50/30 transition-all hover:shadow-md hidden lg:block">
+                <Card
+                    class="hidden border-rose-100 bg-rose-50/30 transition-all hover:shadow-md lg:block"
+                >
                     <CardContent class="p-4">
                         <div class="flex items-center gap-3">
-                            <div class="rounded-lg bg-rose-100 p-2 text-rose-600">
+                            <div
+                                class="rounded-lg bg-rose-100 p-2 text-rose-600"
+                            >
                                 <Trash2 class="h-5 w-5" />
                             </div>
                             <div class="space-y-0.5">
-                                <p class="text-xs font-bold uppercase tracking-wider text-rose-600/70">Trashed</p>
-                                <p class="text-2xl font-black text-rose-700">{{ counts.trash_count ?? 0 }}</p>
+                                <p
+                                    class="text-xs font-bold tracking-wider text-rose-600/70 uppercase"
+                                >
+                                    Trashed
+                                </p>
+                                <p class="text-2xl font-black text-rose-700">
+                                    {{ counts.trash_count ?? 0 }}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -578,27 +640,35 @@ function statusBadge(row: any) {
             </div>
 
             <div
-                class="flex flex-wrap items-center gap-4 rounded-3xl border border-slate-200/80 bg-white/50 backdrop-blur-sm p-4 shadow-sm"
+                class="flex flex-wrap items-center gap-4 rounded-3xl border border-slate-200/80 bg-white/50 p-4 shadow-sm backdrop-blur-sm"
             >
-                <div class="relative flex-1 min-w-[240px]">
-                    <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <div class="relative min-w-[240px] flex-1">
+                    <Search
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400"
+                    />
                     <Input
                         v-model="search"
                         type="text"
                         placeholder="Search by title, location or ID..."
-                        class="pl-10 h-11 border-slate-200 bg-white/80 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all"
+                        class="h-11 rounded-2xl border-slate-200 bg-white/80 pl-10 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5"
                     />
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
                     <Select v-if="!presetStatus" v-model="statusFilter">
-                        <SelectTrigger class="h-11 w-[160px] rounded-2xl border-slate-200 bg-white/80">
+                        <SelectTrigger
+                            class="h-11 w-[160px] rounded-2xl border-slate-200 bg-white/80"
+                        >
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
-                        <SelectContent class="rounded-2xl border-slate-200 shadow-xl">
-                            <SelectItem value="all" class="rounded-lg">All Statuses</SelectItem>
+                        <SelectContent
+                            class="rounded-2xl border-slate-200 shadow-xl"
+                        >
+                            <SelectItem value="all" class="rounded-lg"
+                                >All Statuses</SelectItem
+                            >
                             <SelectItem
-                                v-for="status in (statusOptions as any[])"
+                                v-for="status in statusOptions as any[]"
                                 :key="status.value"
                                 :value="status.value"
                                 class="rounded-lg"
@@ -609,13 +679,19 @@ function statusBadge(row: any) {
                     </Select>
 
                     <Select v-model="guardianFilter">
-                        <SelectTrigger class="h-11 w-[180px] rounded-2xl border-slate-200 bg-white/80">
+                        <SelectTrigger
+                            class="h-11 w-[180px] rounded-2xl border-slate-200 bg-white/80"
+                        >
                             <SelectValue placeholder="Guardian" />
                         </SelectTrigger>
-                        <SelectContent class="rounded-2xl border-slate-200 shadow-xl">
-                            <SelectItem value="all" class="rounded-lg">All Guardians</SelectItem>
+                        <SelectContent
+                            class="rounded-2xl border-slate-200 shadow-xl"
+                        >
+                            <SelectItem value="all" class="rounded-lg"
+                                >All Guardians</SelectItem
+                            >
                             <SelectItem
-                                v-for="guardian in (guardianOptions as any[])"
+                                v-for="guardian in guardianOptions as any[]"
                                 :key="guardian.id"
                                 :value="String(guardian.id)"
                                 class="rounded-lg"
@@ -625,19 +701,32 @@ function statusBadge(row: any) {
                         </SelectContent>
                     </Select>
 
-                    <Separator orientation="vertical" class="h-6 hidden sm:block" />
+                    <Separator
+                        orientation="vertical"
+                        class="hidden h-6 sm:block"
+                    />
 
-                    <div class="flex border border-slate-200 rounded-2xl bg-white/80 p-0.5 overflow-hidden">
+                    <div
+                        class="flex overflow-hidden rounded-2xl border border-slate-200 bg-white/80 p-0.5"
+                    >
                         <button
-                            class="px-3 py-1.5 text-xs font-bold transition-all rounded-[13px]"
-                            :class="direction === 'desc' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'"
+                            class="rounded-[13px] px-3 py-1.5 text-xs font-bold transition-all"
+                            :class="
+                                direction === 'desc'
+                                    ? 'bg-slate-900 text-white shadow-sm'
+                                    : 'text-slate-500 hover:bg-slate-100'
+                            "
                             @click="direction = 'desc'"
                         >
                             DESC
                         </button>
                         <button
-                            class="px-3 py-1.5 text-xs font-bold transition-all rounded-[13px]"
-                            :class="direction === 'asc' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'"
+                            class="rounded-[13px] px-3 py-1.5 text-xs font-bold transition-all"
+                            :class="
+                                direction === 'asc'
+                                    ? 'bg-slate-900 text-white shadow-sm'
+                                    : 'text-slate-500 hover:bg-slate-100'
+                            "
                             @click="direction = 'asc'"
                         >
                             ASC
@@ -646,7 +735,9 @@ function statusBadge(row: any) {
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40 overflow-hidden">
+            <div
+                class="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40"
+            >
                 <DataTable
                     :items="items"
                     :columns="columns"
@@ -656,10 +747,20 @@ function statusBadge(row: any) {
                 >
                     <template #cell-title="{ value, row }">
                         <div class="flex flex-col gap-0.5 pb-1">
-                            <span class="font-bold text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">{{ value }}</span>
+                            <span
+                                class="line-clamp-1 font-bold text-slate-900 transition-colors group-hover:text-blue-600"
+                                >{{ value }}</span
+                            >
                             <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">ID: {{ row.id }}</span>
-                                <Badge v-if="row.requested_tutor_id" variant="outline" class="h-4 px-1.5 text-[10px] border-blue-200 bg-blue-50 text-blue-700">
+                                <span
+                                    class="text-[10px] font-bold tracking-tight text-slate-400 uppercase"
+                                    >ID: {{ row.id }}</span
+                                >
+                                <Badge
+                                    v-if="row.requested_tutor_id"
+                                    variant="outline"
+                                    class="h-4 border-blue-200 bg-blue-50 px-1.5 text-[10px] text-blue-700"
+                                >
                                     Direct Request
                                 </Badge>
                             </div>
@@ -668,24 +769,37 @@ function statusBadge(row: any) {
 
                     <template #cell-guardian_name="{ value }">
                         <div class="flex items-center gap-2">
-                            <div class="h-7 w-7 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-500 border border-slate-200">
+                            <div
+                                class="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-[10px] font-black text-slate-500"
+                            >
                                 {{ value?.charAt(0) || 'G' }}
                             </div>
-                            <span class="text-sm font-semibold text-slate-700">{{ value }}</span>
+                            <span
+                                class="text-sm font-semibold text-slate-700"
+                                >{{ value }}</span
+                            >
                         </div>
                     </template>
 
                     <template #cell-category_info="{ row }">
                         <div class="space-y-0.5">
-                            <p class="text-sm font-bold text-slate-800">{{ row.tuition_type_name || 'Home Tuition' }}</p>
-                            <p class="text-xs text-slate-500 font-medium">{{ row.category_name }} • {{ row.class_name }}</p>
+                            <p class="text-sm font-bold text-slate-800">
+                                {{ row.tuition_type_name || 'Home Tuition' }}
+                            </p>
+                            <p class="text-xs font-medium text-slate-500">
+                                {{ row.category_name }} • {{ row.class_name }}
+                            </p>
                         </div>
                     </template>
 
                     <template #cell-location_info="{ row }">
                         <div class="space-y-0.5">
-                            <p class="text-sm font-semibold text-slate-800">{{ row.area_name || 'Location N/A' }}</p>
-                            <p class="text-xs text-slate-500 font-medium">{{ row.city_name }}</p>
+                            <p class="text-sm font-semibold text-slate-800">
+                                {{ row.area_name || 'Location N/A' }}
+                            </p>
+                            <p class="text-xs font-medium text-slate-500">
+                                {{ row.city_name }}
+                            </p>
                         </div>
                     </template>
 
@@ -695,47 +809,119 @@ function statusBadge(row: any) {
                             class="group/link flex flex-col gap-0.5"
                         >
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-black text-blue-600 group-hover/link:underline">{{ row.applications_count ?? 0 }}</span>
-                                <Badge variant="secondary" class="h-4 px-1.5 text-[10px] bg-blue-50 text-blue-600 border-none shrink-0">
+                                <span
+                                    class="text-sm font-black text-blue-600 group-hover/link:underline"
+                                    >{{ row.applications_count ?? 0 }}</span
+                                >
+                                <Badge
+                                    variant="secondary"
+                                    class="h-4 shrink-0 border-none bg-blue-50 px-1.5 text-[10px] text-blue-600"
+                                >
                                     {{ row.open_applications_count ?? 0 }} open
                                 </Badge>
                             </div>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Total Applicants</span>
+                            <span
+                                class="text-[10px] font-bold tracking-tight text-slate-400 uppercase"
+                                >Total Applicants</span
+                            >
                         </Link>
                     </template>
 
                     <template #cell-hiring_outcome="{ row }">
                         <div v-if="row.has_assignment" class="space-y-1">
                             <div class="flex items-center gap-1.5">
-                                <CheckCircle2 class="h-3.5 w-3.5 text-emerald-500" />
-                                <span class="text-sm font-bold text-slate-800">{{ row.selected_tutor_name || 'Assigned' }}</span>
+                                <CheckCircle2
+                                    class="h-3.5 w-3.5 text-emerald-500"
+                                />
+                                <span
+                                    class="text-sm font-bold text-slate-800"
+                                    >{{
+                                        row.selected_tutor_name || 'Assigned'
+                                    }}</span
+                                >
                             </div>
-                            <div class="flex flex-col text-[10px] text-slate-400 pl-5">
-                                <span v-if="row.assignment_confirmed_at">Finalized: {{ new Date(row.assignment_confirmed_at).toLocaleDateString() }}</span>
+                            <div
+                                class="flex flex-col pl-5 text-[10px] text-slate-400"
+                            >
+                                <span v-if="row.assignment_confirmed_at"
+                                    >Finalized:
+                                    {{
+                                        new Date(
+                                            row.assignment_confirmed_at,
+                                        ).toLocaleDateString()
+                                    }}</span
+                                >
                                 <span v-else>Matching Phase</span>
                             </div>
                         </div>
-                        <div v-else class="flex items-center gap-1.5 text-slate-300">
-                             <div class="h-1.5 w-1.5 rounded-full bg-slate-200 animate-pulse"></div>
-                             <span class="text-xs font-bold uppercase tracking-wider">Recruiting</span>
+                        <div
+                            v-else
+                            class="flex items-center gap-1.5 text-slate-300"
+                        >
+                            <div
+                                class="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-200"
+                            ></div>
+                            <span
+                                class="text-xs font-bold tracking-wider uppercase"
+                                >Recruiting</span
+                            >
                         </div>
                     </template>
 
                     <template #cell-status="{ row }">
-                        <Badge :variant="(statusBadge(row).variant as any)" :class="statusBadge(row).class + ' h-6 px-2.5 rounded-lg border font-bold text-[11px] uppercase tracking-wide'">
+                        <Badge
+                            :variant="statusBadge(row).variant as any"
+                            :class="
+                                statusBadge(row).class +
+                                ' h-6 rounded-lg border px-2.5 text-[11px] font-bold tracking-wide uppercase'
+                            "
+                        >
                             {{ statusBadge(row).label }}
                         </Badge>
                     </template>
 
                     <template #cell-dates="{ row }">
                         <div class="flex flex-col gap-1 pr-4">
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Published</span>
-                                <span class="text-[11px] font-bold text-slate-600">{{ row.published_at ? new Date(row.published_at).toLocaleDateString() : 'Draft' }}</span>
+                            <div
+                                class="flex items-center justify-between gap-4"
+                            >
+                                <span
+                                    class="text-[10px] font-black tracking-widest text-slate-400 uppercase"
+                                    >Published</span
+                                >
+                                <span
+                                    class="text-[11px] font-bold text-slate-600"
+                                    >{{
+                                        row.published_at
+                                            ? new Date(
+                                                  row.published_at,
+                                              ).toLocaleDateString()
+                                            : 'Draft'
+                                    }}</span
+                                >
                             </div>
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Expiry</span>
-                                <span class="text-[11px] font-bold" :class="row.is_expired ? 'text-rose-500' : 'text-slate-600'">{{ row.expires_at ? new Date(row.expires_at).toLocaleDateString() : 'N/A' }}</span>
+                            <div
+                                class="flex items-center justify-between gap-4"
+                            >
+                                <span
+                                    class="text-[10px] font-black tracking-widest text-slate-400 uppercase"
+                                    >Expiry</span
+                                >
+                                <span
+                                    class="text-[11px] font-bold"
+                                    :class="
+                                        row.is_expired
+                                            ? 'text-rose-500'
+                                            : 'text-slate-600'
+                                    "
+                                    >{{
+                                        row.expires_at
+                                            ? new Date(
+                                                  row.expires_at,
+                                              ).toLocaleDateString()
+                                            : 'N/A'
+                                    }}</span
+                                >
                             </div>
                         </div>
                     </template>

@@ -37,7 +37,17 @@ import { computed } from 'vue';
 import { Bar, Doughnut, Line } from 'vue-chartjs';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Tooltip, Legend, Filler);
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    ArcElement,
+    Tooltip,
+    Legend,
+    Filler,
+);
 
 interface UserStats {
     totalTutors: number;
@@ -373,7 +383,8 @@ const revenueChartOptions = computed(() => ({
             cornerRadius: 8,
             padding: 10,
             callbacks: {
-                label: (context: { parsed: { y: number } }) => `৳${context.parsed.y.toLocaleString()}`,
+                label: (context: { parsed: { y: number } }) =>
+                    `৳${context.parsed.y.toLocaleString()}`,
             },
         },
     },
@@ -389,7 +400,8 @@ const revenueChartOptions = computed(() => ({
             ticks: {
                 color: '#94a3b8',
                 font: { size: 10 },
-                callback: (value: number) => (value >= 1000 ? `৳${value / 1000}K` : `৳${value}`),
+                callback: (value: number) =>
+                    value >= 1000 ? `৳${value / 1000}K` : `৳${value}`,
             },
             border: { display: false },
         },
@@ -444,24 +456,43 @@ const jobDoughnutOptions = computed(() => ({
 }));
 
 const jobStatusBreakdown = computed(() => [
-    { label: 'Pending', value: props.stats.jobs.pending, color: 'bg-amber-500' },
+    {
+        label: 'Pending',
+        value: props.stats.jobs.pending,
+        color: 'bg-amber-500',
+    },
     { label: 'Live', value: props.stats.jobs.live, color: 'bg-blue-500' },
-    { label: 'Confirmed', value: props.stats.jobs.confirmed, color: 'bg-emerald-500' },
-    { label: 'Cancelled', value: props.stats.jobs.cancelled, color: 'bg-rose-500' },
+    {
+        label: 'Confirmed',
+        value: props.stats.jobs.confirmed,
+        color: 'bg-emerald-500',
+    },
+    {
+        label: 'Cancelled',
+        value: props.stats.jobs.cancelled,
+        color: 'bg-rose-500',
+    },
     { label: 'Closed', value: props.stats.jobs.closed, color: 'bg-slate-400' },
 ]);
 
 function statusBadgeClass(status: string): string {
     const map: Record<string, string> = {
-        pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
+        pending:
+            'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
         live: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
-        confirmed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
-        cancelled: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400',
+        confirmed:
+            'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
+        cancelled:
+            'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400',
         closed: 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-400',
         open: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
-        in_progress: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
+        in_progress:
+            'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
     };
-    return map[status] ?? 'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-400';
+    return (
+        map[status] ??
+        'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-400'
+    );
 }
 
 function priorityBadgeClass(priority: string): string {
@@ -578,13 +609,19 @@ const quickActions = [
                     ></div>
                     <div class="flex items-start justify-between gap-4">
                         <div class="min-w-0 flex-1">
-                            <p class="text-[11px] font-semibold tracking-[0.15em] text-slate-400 uppercase dark:text-slate-500">
+                            <p
+                                class="text-[11px] font-semibold tracking-[0.15em] text-slate-400 uppercase dark:text-slate-500"
+                            >
                                 {{ card.label }}
                             </p>
-                            <p class="mt-3 text-[2rem] leading-none font-extrabold tracking-tight text-slate-900 dark:text-white">
+                            <p
+                                class="mt-3 text-[2rem] leading-none font-extrabold tracking-tight text-slate-900 dark:text-white"
+                            >
                                 {{ card.value }}
                             </p>
-                            <p class="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+                            <p
+                                class="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400"
+                            >
                                 {{ card.subValue }}
                             </p>
                         </div>
@@ -592,7 +629,11 @@ const quickActions = [
                             class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ring-1 ring-slate-900/5 dark:ring-slate-700/50"
                             :class="card.iconBg"
                         >
-                            <component :is="card.icon" class="h-7 w-7" :class="card.iconColor" />
+                            <component
+                                :is="card.icon"
+                                class="h-7 w-7"
+                                :class="card.iconColor"
+                            />
                         </div>
                     </div>
                     <ArrowUpRight
@@ -606,7 +647,9 @@ const quickActions = [
                 v-if="attentionItems.length > 0"
                 class="rounded-2xl border border-amber-200/60 bg-gradient-to-r from-amber-50/80 to-orange-50/40 p-4 sm:p-5 dark:border-amber-900/40 dark:from-amber-950/20 dark:to-orange-950/10"
             >
-                <h3 class="mb-3 text-sm font-semibold tracking-wide text-amber-800 uppercase dark:text-amber-400">
+                <h3
+                    class="mb-3 text-sm font-semibold tracking-wide text-amber-800 uppercase dark:text-amber-400"
+                >
                     Needs Attention
                 </h3>
                 <div class="flex flex-wrap gap-2 sm:gap-3">
@@ -617,11 +660,17 @@ const quickActions = [
                         class="group flex items-center gap-2 rounded-xl border border-white/60 px-3 py-2 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:px-4 sm:py-2.5"
                         :class="item.bgColor"
                     >
-                        <component :is="item.icon" class="h-4 w-4 shrink-0" :class="item.color" />
+                        <component
+                            :is="item.icon"
+                            class="h-4 w-4 shrink-0"
+                            :class="item.color"
+                        />
                         <span class="text-sm font-semibold" :class="item.color">
                             {{ item.count }}
                         </span>
-                        <span class="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300">
+                        <span
+                            class="hidden text-sm font-medium text-slate-700 sm:inline dark:text-slate-300"
+                        >
                             {{ item.label }}
                         </span>
                         <ArrowRight
@@ -634,40 +683,59 @@ const quickActions = [
             <!-- Charts Row -->
             <div class="grid gap-6 lg:grid-cols-2">
                 <!-- User Registration Chart -->
-                <div class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                >
                     <div class="mb-5 flex items-center justify-between">
                         <div>
-                            <h3 class="text-base font-semibold text-slate-900 dark:text-white">
+                            <h3
+                                class="text-base font-semibold text-slate-900 dark:text-white"
+                            >
                                 User Registrations
                             </h3>
-                            <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                            <p
+                                class="mt-0.5 text-sm text-slate-500 dark:text-slate-400"
+                            >
                                 Last 12 months
                             </p>
                         </div>
                         <div class="flex items-center gap-4 text-xs">
                             <span class="flex items-center gap-1.5">
-                                <span class="inline-block h-2.5 w-2.5 rounded-full bg-blue-500"></span>
+                                <span
+                                    class="inline-block h-2.5 w-2.5 rounded-full bg-blue-500"
+                                ></span>
                                 Tutors
                             </span>
                             <span class="flex items-center gap-1.5">
-                                <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                                <span
+                                    class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"
+                                ></span>
                                 Guardians
                             </span>
                         </div>
                     </div>
                     <div class="relative h-56 sm:h-64">
-                        <Bar :data="userRegistrationChartData" :options="userRegistrationChartOptions" />
+                        <Bar
+                            :data="userRegistrationChartData"
+                            :options="userRegistrationChartOptions"
+                        />
                     </div>
                 </div>
 
                 <!-- Revenue Chart -->
-                <div class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                >
                     <div class="mb-5 flex items-center justify-between">
                         <div>
-                            <h3 class="text-base font-semibold text-slate-900 dark:text-white">
+                            <h3
+                                class="text-base font-semibold text-slate-900 dark:text-white"
+                            >
                                 Revenue Trend
                             </h3>
-                            <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                            <p
+                                class="mt-0.5 text-sm text-slate-500 dark:text-slate-400"
+                            >
                                 Last 12 months
                             </p>
                         </div>
@@ -679,7 +747,10 @@ const quickActions = [
                         </Link>
                     </div>
                     <div class="relative h-56 sm:h-64">
-                        <Line :data="revenueChartData" :options="revenueChartOptions" />
+                        <Line
+                            :data="revenueChartData"
+                            :options="revenueChartOptions"
+                        />
                     </div>
                 </div>
             </div>
@@ -687,9 +758,13 @@ const quickActions = [
             <!-- Jobs Breakdown + Platform Health -->
             <div class="grid gap-6 lg:grid-cols-2">
                 <!-- Job Status Breakdown -->
-                <div class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                >
                     <div class="mb-5 flex items-center justify-between">
-                        <h3 class="text-base font-semibold text-slate-900 dark:text-white">
+                        <h3
+                            class="text-base font-semibold text-slate-900 dark:text-white"
+                        >
                             Job Status Breakdown
                         </h3>
                         <Link
@@ -700,13 +775,24 @@ const quickActions = [
                         </Link>
                     </div>
                     <div class="flex items-center gap-6">
-                        <div class="relative h-40 w-40 shrink-0 sm:h-44 sm:w-44">
-                            <Doughnut :data="jobDoughnutData" :options="jobDoughnutOptions" />
-                            <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                                <span class="text-2xl font-extrabold tabular-nums text-slate-900 dark:text-white">
+                        <div
+                            class="relative h-40 w-40 shrink-0 sm:h-44 sm:w-44"
+                        >
+                            <Doughnut
+                                :data="jobDoughnutData"
+                                :options="jobDoughnutOptions"
+                            />
+                            <div
+                                class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
+                            >
+                                <span
+                                    class="text-2xl font-extrabold text-slate-900 tabular-nums dark:text-white"
+                                >
                                     {{ stats.jobs.total }}
                                 </span>
-                                <span class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                                <span
+                                    class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500"
+                                >
                                     Total
                                 </span>
                             </div>
@@ -718,12 +804,19 @@ const quickActions = [
                                 class="flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
                             >
                                 <div class="flex items-center gap-2.5">
-                                    <span class="inline-block h-2.5 w-2.5 rounded-full" :class="segment.color"></span>
-                                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">
+                                    <span
+                                        class="inline-block h-2.5 w-2.5 rounded-full"
+                                        :class="segment.color"
+                                    ></span>
+                                    <span
+                                        class="text-sm font-medium text-slate-600 dark:text-slate-300"
+                                    >
                                         {{ segment.label }}
                                     </span>
                                 </div>
-                                <span class="text-sm font-bold tabular-nums text-slate-900 dark:text-white">
+                                <span
+                                    class="text-sm font-bold text-slate-900 tabular-nums dark:text-white"
+                                >
                                     {{ segment.value }}
                                 </span>
                             </div>
@@ -732,44 +825,84 @@ const quickActions = [
                 </div>
 
                 <!-- Ticket & Verification Summary -->
-                <div class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900">
-                    <h3 class="mb-5 text-base font-semibold text-slate-900 dark:text-white">
+                <div
+                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                >
+                    <h3
+                        class="mb-5 text-base font-semibold text-slate-900 dark:text-white"
+                    >
                         Platform Health
                     </h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="rounded-xl border border-blue-100 bg-blue-50/60 p-4 dark:border-blue-900/30 dark:bg-blue-950/20">
-                            <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                        <div
+                            class="rounded-xl border border-blue-100 bg-blue-50/60 p-4 dark:border-blue-900/30 dark:bg-blue-950/20"
+                        >
+                            <div
+                                class="flex items-center gap-2 text-blue-600 dark:text-blue-400"
+                            >
                                 <TicketCheck class="h-4 w-4" />
-                                <span class="text-[10px] font-semibold tracking-wider uppercase">Open Tickets</span>
+                                <span
+                                    class="text-[10px] font-semibold tracking-wider uppercase"
+                                    >Open Tickets</span
+                                >
                             </div>
-                            <p class="mt-2.5 text-2xl font-extrabold tabular-nums text-blue-700 dark:text-blue-300">
+                            <p
+                                class="mt-2.5 text-2xl font-extrabold text-blue-700 tabular-nums dark:text-blue-300"
+                            >
                                 {{ stats.tickets.open }}
                             </p>
                         </div>
-                        <div class="rounded-xl border border-amber-100 bg-amber-50/60 p-4 dark:border-amber-900/30 dark:bg-amber-950/20">
-                            <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                        <div
+                            class="rounded-xl border border-amber-100 bg-amber-50/60 p-4 dark:border-amber-900/30 dark:bg-amber-950/20"
+                        >
+                            <div
+                                class="flex items-center gap-2 text-amber-600 dark:text-amber-400"
+                            >
                                 <Clock class="h-4 w-4" />
-                                <span class="text-[10px] font-semibold tracking-wider uppercase">In Progress</span>
+                                <span
+                                    class="text-[10px] font-semibold tracking-wider uppercase"
+                                    >In Progress</span
+                                >
                             </div>
-                            <p class="mt-2.5 text-2xl font-extrabold tabular-nums text-amber-700 dark:text-amber-300">
+                            <p
+                                class="mt-2.5 text-2xl font-extrabold text-amber-700 tabular-nums dark:text-amber-300"
+                            >
                                 {{ stats.tickets.inProgress }}
                             </p>
                         </div>
-                        <div class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-900/30 dark:bg-emerald-950/20">
-                            <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                        <div
+                            class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-900/30 dark:bg-emerald-950/20"
+                        >
+                            <div
+                                class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400"
+                            >
                                 <CheckCircle class="h-4 w-4" />
-                                <span class="text-[10px] font-semibold tracking-wider uppercase">Verified Users</span>
+                                <span
+                                    class="text-[10px] font-semibold tracking-wider uppercase"
+                                    >Verified Users</span
+                                >
                             </div>
-                            <p class="mt-2.5 text-2xl font-extrabold tabular-nums text-emerald-700 dark:text-emerald-300">
+                            <p
+                                class="mt-2.5 text-2xl font-extrabold text-emerald-700 tabular-nums dark:text-emerald-300"
+                            >
                                 {{ stats.verifications.verified }}
                             </p>
                         </div>
-                        <div class="rounded-xl border border-rose-100 bg-rose-50/60 p-4 dark:border-rose-900/30 dark:bg-rose-950/20">
-                            <div class="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+                        <div
+                            class="rounded-xl border border-rose-100 bg-rose-50/60 p-4 dark:border-rose-900/30 dark:bg-rose-950/20"
+                        >
+                            <div
+                                class="flex items-center gap-2 text-rose-600 dark:text-rose-400"
+                            >
                                 <XCircle class="h-4 w-4" />
-                                <span class="text-[10px] font-semibold tracking-wider uppercase">Rejected</span>
+                                <span
+                                    class="text-[10px] font-semibold tracking-wider uppercase"
+                                    >Rejected</span
+                                >
                             </div>
-                            <p class="mt-2.5 text-2xl font-extrabold tabular-nums text-rose-700 dark:text-rose-300">
+                            <p
+                                class="mt-2.5 text-2xl font-extrabold text-rose-700 tabular-nums dark:text-rose-300"
+                            >
                                 {{ stats.verifications.rejected }}
                             </p>
                         </div>
@@ -780,9 +913,15 @@ const quickActions = [
             <!-- Recent Activity Tables -->
             <div class="grid gap-6 lg:grid-cols-2">
                 <!-- Recent Jobs -->
-                <div class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900">
-                    <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
-                        <h3 class="text-base font-semibold text-slate-900 dark:text-white">
+                <div
+                    class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900"
+                >
+                    <div
+                        class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800"
+                    >
+                        <h3
+                            class="text-base font-semibold text-slate-900 dark:text-white"
+                        >
                             Recent Jobs
                         </h3>
                         <Link
@@ -792,7 +931,9 @@ const quickActions = [
                             View all
                         </Link>
                     </div>
-                    <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <div
+                        class="divide-y divide-slate-100 dark:divide-slate-800"
+                    >
                         <div
                             v-for="job in recentActivity.recentJobs"
                             :key="job.id"
@@ -805,7 +946,9 @@ const quickActions = [
                                 >
                                     {{ job.title }}
                                 </Link>
-                                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                                <p
+                                    class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                                >
                                     {{ job.guardian }} · {{ job.createdAt }}
                                 </p>
                             </div>
@@ -826,9 +969,15 @@ const quickActions = [
                 </div>
 
                 <!-- Recent Tickets -->
-                <div class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900">
-                    <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
-                        <h3 class="text-base font-semibold text-slate-900 dark:text-white">
+                <div
+                    class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900"
+                >
+                    <div
+                        class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800"
+                    >
+                        <h3
+                            class="text-base font-semibold text-slate-900 dark:text-white"
+                        >
                             Recent Tickets
                         </h3>
                         <Link
@@ -838,7 +987,9 @@ const quickActions = [
                             View all
                         </Link>
                     </div>
-                    <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <div
+                        class="divide-y divide-slate-100 dark:divide-slate-800"
+                    >
                         <div
                             v-for="ticket in recentActivity.recentTickets"
                             :key="ticket.id"
@@ -850,11 +1001,15 @@ const quickActions = [
                                     class="truncate text-sm font-medium text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                 >
                                     {{ ticket.ticketNumber }}
-                                    <span class="font-normal text-slate-500 dark:text-slate-400">
+                                    <span
+                                        class="font-normal text-slate-500 dark:text-slate-400"
+                                    >
                                         — {{ ticket.subject }}
                                     </span>
                                 </Link>
-                                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                                <p
+                                    class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                                >
                                     {{ ticket.user }} · {{ ticket.createdAt }}
                                 </p>
                             </div>
@@ -888,8 +1043,12 @@ const quickActions = [
                 v-if="recentActivity.pendingVerifications.length > 0"
                 class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900"
             >
-                <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800">
-                    <h3 class="text-base font-semibold text-slate-900 dark:text-white">
+                <div
+                    class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800"
+                >
+                    <h3
+                        class="text-base font-semibold text-slate-900 dark:text-white"
+                    >
                         Pending Verifications
                     </h3>
                     <Link
@@ -899,21 +1058,31 @@ const quickActions = [
                         View all
                     </Link>
                 </div>
-                <div class="grid gap-3 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
+                <div
+                    class="grid gap-3 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3"
+                >
                     <Link
                         v-for="v in recentActivity.pendingVerifications"
                         :key="v.id"
                         :href="`/admin/verifications/${v.id}`"
                         class="group flex items-center gap-3 rounded-xl border border-slate-200/80 p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md dark:border-slate-700 dark:hover:border-blue-800"
                     >
-                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40">
-                            <FileCheck class="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        <div
+                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40"
+                        >
+                            <FileCheck
+                                class="h-5 w-5 text-blue-600 dark:text-blue-400"
+                            />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="truncate text-sm font-medium text-slate-900 dark:text-white">
+                            <p
+                                class="truncate text-sm font-medium text-slate-900 dark:text-white"
+                            >
                                 {{ v.userName }}
                             </p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">
+                            <p
+                                class="text-xs text-slate-500 dark:text-slate-400"
+                            >
                                 {{ v.roleLabel }} · {{ v.createdAt }}
                             </p>
                         </div>
@@ -926,7 +1095,9 @@ const quickActions = [
 
             <!-- Quick Access -->
             <div>
-                <h3 class="mb-4 text-base font-semibold text-slate-900 dark:text-white">
+                <h3
+                    class="mb-4 text-base font-semibold text-slate-900 dark:text-white"
+                >
                     Quick Access
                 </h3>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -943,10 +1114,14 @@ const quickActions = [
                         >
                             <component :is="action.icon" class="h-5 w-5" />
                         </div>
-                        <h4 class="mt-3.5 text-sm font-semibold tracking-tight text-slate-900 dark:text-white">
+                        <h4
+                            class="mt-3.5 text-sm font-semibold tracking-tight text-slate-900 dark:text-white"
+                        >
                             {{ action.title }}
                         </h4>
-                        <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                        <p
+                            class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400"
+                        >
                             {{ action.description }}
                         </p>
                         <ArrowRight

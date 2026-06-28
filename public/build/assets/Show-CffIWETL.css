@@ -1,0 +1,1 @@
+.animate-in[data-v-7f97fe3c]{animation-fill-mode:forwards}@keyframes fadeIn-7f97fe3c{0%{opacity:0}to{opacity:1}}@keyframes slideUp-7f97fe3c{0%{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}main>div[data-v-7f97fe3c]{animation:slideUp-7f97fe3c .4s ease-out forwards}aside[data-v-7f97fe3c]{animation:fadeIn-7f97fe3c .6s ease-out forwards}

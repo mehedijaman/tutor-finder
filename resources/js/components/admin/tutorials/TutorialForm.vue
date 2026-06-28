@@ -51,7 +51,9 @@ const props = withDefaults(
 
 const isEdit = computed(() => props.method === 'put');
 
-const resolveAudience = (audience: { value: string } | string | undefined): string => {
+const resolveAudience = (
+    audience: { value: string } | string | undefined,
+): string => {
     if (!audience) {
         return 'all';
     }
@@ -73,7 +75,9 @@ const form = useForm({
     remove_thumbnail: false,
 });
 
-const imagePreviewUrl = ref<string | null>(props.initial?.thumbnail_url ?? null);
+const imagePreviewUrl = ref<string | null>(
+    props.initial?.thumbnail_url ?? null,
+);
 const temporaryImageUrl = ref<string | null>(null);
 const isDragging = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
@@ -193,7 +197,9 @@ const submit = (): void => {
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
             <!-- Main Content -->
             <div class="space-y-6 lg:col-span-8">
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div
+                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+                >
                     <div class="space-y-4">
                         <div>
                             <Label for="title">Title</Label>
@@ -204,7 +210,10 @@ const submit = (): void => {
                                 class="mt-1"
                                 placeholder="Enter tutorial title"
                             />
-                            <InputError :message="form.errors.title" class="mt-1" />
+                            <InputError
+                                :message="form.errors.title"
+                                class="mt-1"
+                            />
                         </div>
 
                         <div>
@@ -216,7 +225,10 @@ const submit = (): void => {
                                 class="mt-1"
                                 placeholder="auto-generated-from-title"
                             />
-                            <InputError :message="form.errors.slug" class="mt-1" />
+                            <InputError
+                                :message="form.errors.slug"
+                                class="mt-1"
+                            />
                         </div>
 
                         <div>
@@ -229,9 +241,13 @@ const submit = (): void => {
                                 placeholder="https://www.youtube.com/watch?v=..."
                             />
                             <p class="mt-1 text-xs text-slate-500">
-                                Supports YouTube, Vimeo, or any embeddable video URL.
+                                Supports YouTube, Vimeo, or any embeddable video
+                                URL.
                             </p>
-                            <InputError :message="form.errors.video_url" class="mt-1" />
+                            <InputError
+                                :message="form.errors.video_url"
+                                class="mt-1"
+                            />
 
                             <!-- Video Preview -->
                             <div
@@ -243,7 +259,13 @@ const submit = (): void => {
                                         :src="videoPreviewUrl"
                                         class="h-full w-full"
                                         frameborder="0"
-                                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allow="
+                                            accelerometer;
+                                            clipboard-write;
+                                            encrypted-media;
+                                            gyroscope;
+                                            picture-in-picture;
+                                        "
                                         allowfullscreen
                                     />
                                 </div>
@@ -251,7 +273,9 @@ const submit = (): void => {
                         </div>
 
                         <div>
-                            <Label for="description">Description (optional)</Label>
+                            <Label for="description"
+                                >Description (optional)</Label
+                            >
                             <Textarea
                                 id="description"
                                 v-model="form.description"
@@ -259,7 +283,10 @@ const submit = (): void => {
                                 rows="3"
                                 placeholder="Brief description of this tutorial..."
                             />
-                            <InputError :message="form.errors.description" class="mt-1" />
+                            <InputError
+                                :message="form.errors.description"
+                                class="mt-1"
+                            />
                         </div>
                     </div>
                 </div>
@@ -268,14 +295,20 @@ const submit = (): void => {
             <!-- Sidebar -->
             <div class="space-y-6 lg:col-span-4">
                 <!-- Publishing -->
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 class="mb-4 text-sm font-semibold text-slate-900">Publishing</h3>
+                <div
+                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+                >
+                    <h3 class="mb-4 text-sm font-semibold text-slate-900">
+                        Publishing
+                    </h3>
                     <div class="space-y-4">
                         <div>
                             <Label for="audience">Audience</Label>
                             <Select v-model="form.audience">
                                 <SelectTrigger id="audience" class="mt-1">
-                                    <SelectValue placeholder="Select audience" />
+                                    <SelectValue
+                                        placeholder="Select audience"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem
@@ -287,7 +320,10 @@ const submit = (): void => {
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <InputError :message="form.errors.audience" class="mt-1" />
+                            <InputError
+                                :message="form.errors.audience"
+                                class="mt-1"
+                            />
                         </div>
 
                         <div class="flex items-center justify-between">
@@ -295,15 +331,21 @@ const submit = (): void => {
                             <Switch
                                 id="is_active"
                                 :model-value="form.is_active"
-                                @update:model-value="(val: boolean) => form.is_active = val"
+                                @update:model-value="
+                                    (val: boolean) => (form.is_active = val)
+                                "
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- Thumbnail -->
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 class="mb-4 text-sm font-semibold text-slate-900">Thumbnail</h3>
+                <div
+                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+                >
+                    <h3 class="mb-4 text-sm font-semibold text-slate-900">
+                        Thumbnail
+                    </h3>
                     <div class="space-y-3">
                         <div
                             v-if="imagePreviewUrl"
@@ -347,7 +389,11 @@ const submit = (): void => {
                         >
                             <Upload class="mb-2 h-8 w-8 text-slate-400" />
                             <p class="text-sm font-medium text-slate-600">
-                                {{ isDragging ? 'Drop image here' : 'Click or drag & drop' }}
+                                {{
+                                    isDragging
+                                        ? 'Drop image here'
+                                        : 'Click or drag & drop'
+                                }}
                             </p>
                             <p class="mt-1 text-xs text-slate-500">
                                 Recommended: 640×360px (16:9). Max 2MB.
@@ -360,13 +406,20 @@ const submit = (): void => {
                                 @change="onImageChange"
                             />
                         </div>
-                        <InputError :message="form.errors.thumbnail" class="mt-1" />
+                        <InputError
+                            :message="form.errors.thumbnail"
+                            class="mt-1"
+                        />
                     </div>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex items-center gap-3">
-                    <Button type="submit" :disabled="form.processing" class="flex-1">
+                    <Button
+                        type="submit"
+                        :disabled="form.processing"
+                        class="flex-1"
+                    >
                         {{ form.processing ? 'Saving...' : submitLabel }}
                     </Button>
                     <Button

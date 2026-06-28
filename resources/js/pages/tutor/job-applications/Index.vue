@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import {
-    CircleCheck,
-    CircleX,
-    Send,
-    Star,
-    UserRound,
-} from 'lucide-vue-next';
+import { CircleCheck, CircleX, Send, Star, UserRound } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import DataTable from '@/components/admin/table/DataTable.vue';
@@ -205,29 +199,36 @@ function menuCount(key: string): number {
                     class="flex flex-wrap items-center justify-between gap-3 border-b border-blue-200/80"
                 >
                     <div
-                        class="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] md:w-auto"
+                        class="w-full [scrollbar-width:none] overflow-x-auto [-ms-overflow-style:none] md:w-auto"
                     >
-                        <div class="flex min-w-max items-center gap-6 pr-2 [&::-webkit-scrollbar]:hidden">
-                        <Link
-                            v-for="menu in statusMenus"
-                            :key="menu.key"
-                            :href="menu.href"
-                            class="inline-flex items-center gap-1.5 border-b-2 py-3 text-sm font-medium transition"
-                            :class="
-                                (menu.key === 'all' && presetStatus === '') ||
-                                presetStatus === menu.key
-                                    ? 'border-blue-500 text-blue-500'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700'
-                            "
+                        <div
+                            class="flex min-w-max items-center gap-6 pr-2 [&::-webkit-scrollbar]:hidden"
                         >
-                            <component :is="menu.icon" class="h-4 w-4" />
-                            <span>{{ menu.label }}</span>
-                            <span>{{ formatCount(menuCount(menu.key)) }}</span>
-                        </Link>
+                            <Link
+                                v-for="menu in statusMenus"
+                                :key="menu.key"
+                                :href="menu.href"
+                                class="inline-flex items-center gap-1.5 border-b-2 py-3 text-sm font-medium transition"
+                                :class="
+                                    (menu.key === 'all' &&
+                                        presetStatus === '') ||
+                                    presetStatus === menu.key
+                                        ? 'border-blue-500 text-blue-500'
+                                        : 'border-transparent text-slate-500 hover:text-slate-700'
+                                "
+                            >
+                                <component :is="menu.icon" class="h-4 w-4" />
+                                <span>{{ menu.label }}</span>
+                                <span>{{
+                                    formatCount(menuCount(menu.key))
+                                }}</span>
+                            </Link>
                         </div>
                     </div>
 
-                    <p class="hidden pb-3 text-sm font-medium text-slate-600 md:block">
+                    <p
+                        class="hidden pb-3 text-sm font-medium text-slate-600 md:block"
+                    >
                         Applied {{ formatCount(appliedCount) }}
                     </p>
                 </div>

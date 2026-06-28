@@ -107,7 +107,17 @@ function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
                                 :key="option"
                                 :value="option"
                             >
-                                {{ option.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') }}
+                                {{
+                                    option
+                                        .replace('_', ' ')
+                                        .split(' ')
+                                        .map(
+                                            (w) =>
+                                                w.charAt(0).toUpperCase() +
+                                                w.slice(1),
+                                        )
+                                        .join(' ')
+                                }}
                             </SelectItem>
                         </SelectContent>
                     </Select>
@@ -132,7 +142,16 @@ function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
                                   : 'secondary'
                         "
                     >
-                        {{ value.replace('_', ' ').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') }}
+                        {{
+                            value
+                                .replace('_', ' ')
+                                .split(' ')
+                                .map(
+                                    (w: string) =>
+                                        w.charAt(0).toUpperCase() + w.slice(1),
+                                )
+                                .join(' ')
+                        }}
                     </Badge>
                 </template>
                 <template #cell-due_at="{ value }">

@@ -17,6 +17,18 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
 
+    --color-blue-50: hsl(205 95% 96%);
+    --color-blue-100: hsl(205 95% 90%);
+    --color-blue-200: hsl(205 95% 80%);
+    --color-blue-300: hsl(205 95% 70%);
+    --color-blue-400: hsl(205 95% 60%);
+    --color-blue-500: hsl(205 100% 53%);
+    --color-blue-600: hsl(205 92% 46%);
+    --color-blue-700: hsl(204 94% 39%);
+    --color-blue-800: hsl(205 95% 30%);
+    --color-blue-900: hsl(205 95% 20%);
+    --color-blue-950: hsl(205 95% 10%);
+
     --color-background: var(--background);
     --color-foreground: var(--foreground);
 
@@ -96,7 +108,7 @@
     --card-foreground: hsl(222 47% 11%);
     --popover: hsl(0 0% 100%);
     --popover-foreground: hsl(222 47% 11%);
-    --primary: hsl(221 83% 53%);
+    --primary: hsl(205 92% 46%);
     --primary-foreground: hsl(0 0% 100%);
     --secondary: hsl(210 40% 96%);
     --secondary-foreground: hsl(222 47% 11%);
@@ -108,8 +120,8 @@
     --destructive-foreground: hsl(0 0% 100%);
     --border: hsl(214 32% 91%);
     --input: hsl(214 32% 91%);
-    --ring: hsl(221 83% 53%);
-    --chart-1: hsl(221 83% 53%);
+    --ring: hsl(205 92% 46%);
+    --chart-1: hsl(205 92% 46%);
     --chart-2: hsl(160 84% 39%);
     --chart-3: hsl(30 100% 50%);
     --chart-4: hsl(280 67% 60%);
@@ -117,12 +129,12 @@
     --radius: 0.625rem;
     --sidebar-background: hsl(222 47% 11%);
     --sidebar-foreground: hsl(210 40% 98%);
-    --sidebar-primary: hsl(221 83% 53%);
+    --sidebar-primary: hsl(205 92% 46%);
     --sidebar-primary-foreground: hsl(0 0% 100%);
     --sidebar-accent: hsl(217 33% 17%);
     --sidebar-accent-foreground: hsl(210 40% 98%);
     --sidebar-border: hsl(217 33% 17%);
-    --sidebar-ring: hsl(221 83% 53%);
+    --sidebar-ring: hsl(205 92% 46%);
     --sidebar: hsl(222 47% 11%);
 
     /* Premium accent colors */
@@ -141,7 +153,7 @@
     --card-foreground: hsl(210 40% 98%);
     --popover: hsl(222 47% 9%);
     --popover-foreground: hsl(210 40% 98%);
-    --primary: hsl(217 91% 60%);
+    --primary: hsl(205 95% 58%);
     --primary-foreground: hsl(222 47% 6%);
     --secondary: hsl(217 33% 17%);
     --secondary-foreground: hsl(210 40% 98%);
@@ -153,20 +165,20 @@
     --destructive-foreground: hsl(210 40% 98%);
     --border: hsl(217 33% 17%);
     --input: hsl(217 33% 17%);
-    --ring: hsl(224 76% 48%);
-    --chart-1: hsl(220 70% 50%);
+    --ring: hsl(205 95% 58%);
+    --chart-1: hsl(205 95% 58%);
     --chart-2: hsl(160 60% 45%);
     --chart-3: hsl(30 80% 55%);
     --chart-4: hsl(280 65% 60%);
     --chart-5: hsl(340 75% 55%);
     --sidebar-background: hsl(222 47% 6%);
     --sidebar-foreground: hsl(210 40% 98%);
-    --sidebar-primary: hsl(217 91% 60%);
+    --sidebar-primary: hsl(205 95% 58%);
     --sidebar-primary-foreground: hsl(0 0% 100%);
     --sidebar-accent: hsl(217 33% 17%);
     --sidebar-accent-foreground: hsl(210 40% 98%);
     --sidebar-border: hsl(217 33% 17%);
-    --sidebar-ring: hsl(221 83% 53%);
+    --sidebar-ring: hsl(205 95% 58%);
     --sidebar: hsl(222 47% 6%);
 
     /* Premium accent colors */
@@ -207,7 +219,7 @@
     }
 
     ::-webkit-scrollbar-thumb {
-        @apply bg-slate-300 rounded-full transition-colors;
+        @apply rounded-full bg-slate-300 transition-colors;
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -235,7 +247,7 @@
     }
 
     .glass-card {
-        @apply bg-white/90 backdrop-blur-md border border-white/20 shadow-xl shadow-slate-900/5 dark:bg-slate-900/90 dark:border-slate-700/50;
+        @apply border border-white/20 bg-white/90 shadow-xl shadow-slate-900/5 backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-900/90;
     }
 
     /* Premium gradients */
@@ -263,7 +275,7 @@
 
     .btn-shine::before {
         content: '';
-        @apply absolute top-0 -left-[100%] h-full w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-25deg] transition-all duration-700;
+        @apply absolute top-0 -left-[100%] h-full w-1/2 skew-x-[-25deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-700;
     }
 
     .btn-shine:hover::before {

@@ -317,12 +317,26 @@ function handleRowAction(actionKey: string, row: any) {
                 <template #cell-name="{ row }">
                     <div class="flex items-center gap-3">
                         <Avatar class="h-8 w-8 border border-slate-200">
-                            <AvatarImage v-if="row.photo_url" :src="row.photo_url" :alt="row.name" />
-                            <AvatarFallback class="bg-indigo-50 text-indigo-700 font-bold uppercase text-[10px]">
-                                {{ row.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) }}
+                            <AvatarImage
+                                v-if="row.photo_url"
+                                :src="row.photo_url"
+                                :alt="row.name"
+                            />
+                            <AvatarFallback
+                                class="bg-indigo-50 text-[10px] font-bold text-indigo-700 uppercase"
+                            >
+                                {{
+                                    row.name
+                                        ?.split(' ')
+                                        .map((n: string) => n[0])
+                                        .join('')
+                                        .slice(0, 2)
+                                }}
                             </AvatarFallback>
                         </Avatar>
-                        <span class="font-medium text-slate-900">{{ row.name }}</span>
+                        <span class="font-medium text-slate-900">{{
+                            row.name
+                        }}</span>
                     </div>
                 </template>
 

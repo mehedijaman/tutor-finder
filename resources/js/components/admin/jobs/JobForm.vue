@@ -6,8 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-interface Taxonomy { id: number | string; name: string; category_id?: number | string; country_id?: number | string; city_id?: number | string; class_id?: number | string; }
-interface Option { value: string; label: string; }
+interface Taxonomy {
+    id: number | string;
+    name: string;
+    category_id?: number | string;
+    country_id?: number | string;
+    city_id?: number | string;
+    class_id?: number | string;
+}
+interface Option {
+    value: string;
+    label: string;
+}
 
 const props = defineProps({
     action: { type: String, required: true },
@@ -88,8 +98,6 @@ const form = useForm({
     subject_ids: props.initial.subject_ids ?? [],
     requested_tutor_id: props.initial.requested_tutor_id ?? null,
 });
-
-
 
 const filteredClasses = computed(() => {
     const categoryId = Number(form.category_id);
@@ -239,8 +247,6 @@ function submit() {
                 />
                 <InputError :message="form.errors.title" />
             </div>
-
-
 
             <div class="grid gap-2">
                 <Label for="job-description">Description</Label>

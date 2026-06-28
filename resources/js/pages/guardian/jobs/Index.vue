@@ -60,7 +60,9 @@ const breadcrumbs = [{ title: 'My Jobs', href: '/guardian/jobs' }];
 const presetStatus = computed(() => props.filters.preset_status || '');
 const baseUrl = computed(() => {
     const status = presetStatus.value;
-    if (['pending', 'live', 'confirmed', 'cancelled', 'closed'].includes(status)) {
+    if (
+        ['pending', 'live', 'confirmed', 'cancelled', 'closed'].includes(status)
+    ) {
         return `/guardian/jobs/${status}`;
     }
     return '/guardian/jobs';
@@ -114,7 +116,11 @@ function applyFilters(overrides = {}) {
         baseUrl.value,
         {
             q: search.value,
-            status: presetStatus.value ? '' : statusFilter.value === 'all' ? '' : statusFilter.value,
+            status: presetStatus.value
+                ? ''
+                : statusFilter.value === 'all'
+                  ? ''
+                  : statusFilter.value,
             ...overrides,
         },
         {
@@ -127,18 +133,38 @@ function applyFilters(overrides = {}) {
 
 function statusBadge(row: GuardianJobRow) {
     if (row.status === 'live' && row.is_expired) {
-        return { label: 'Expired', variant: 'destructive', class: 'bg-rose-50 text-rose-700 border-rose-100' };
+        return {
+            label: 'Expired',
+            variant: 'destructive',
+            class: 'bg-rose-50 text-rose-700 border-rose-100',
+        };
     }
     if (row.status === 'live') {
-        return { label: 'Live', variant: 'default', class: 'bg-emerald-50 text-emerald-700 border-emerald-100' };
+        return {
+            label: 'Live',
+            variant: 'default',
+            class: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+        };
     }
     if (row.status === 'pending') {
-        return { label: 'Pending', variant: 'secondary', class: 'bg-amber-50 text-amber-700 border-amber-100' };
+        return {
+            label: 'Pending',
+            variant: 'secondary',
+            class: 'bg-amber-50 text-amber-700 border-amber-100',
+        };
     }
     if (row.status === 'confirmed') {
-        return { label: 'Confirmed', variant: 'outline', class: 'bg-indigo-50 text-indigo-700 border-indigo-100' };
+        return {
+            label: 'Confirmed',
+            variant: 'outline',
+            class: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+        };
     }
-    return { label: row.status, variant: 'secondary', class: 'bg-slate-50 text-slate-700 border-slate-100' };
+    return {
+        label: row.status,
+        variant: 'secondary',
+        class: 'bg-slate-50 text-slate-700 border-slate-100',
+    };
 }
 </script>
 
@@ -151,20 +177,31 @@ function statusBadge(row: GuardianJobRow) {
             <div class="flex flex-wrap items-center justify-between gap-6 pb-2">
                 <div class="space-y-1">
                     <div class="flex items-center gap-3">
-                        <div class="rounded-xl bg-indigo-600 p-2 text-white shadow-lg shadow-indigo-200">
+                        <div
+                            class="rounded-xl bg-indigo-600 p-2 text-white shadow-lg shadow-indigo-200"
+                        >
                             <Briefcase class="h-6 w-6" />
                         </div>
-                        <h1 class="text-3xl font-bold tracking-tight text-slate-900">
+                        <h1
+                            class="text-3xl font-bold tracking-tight text-slate-900"
+                        >
                             My Job Postings
                         </h1>
                     </div>
-                    <p class="text-sm text-slate-500 pl-11">
-                        Manage your tuition requirements and connect with the best tutors.
+                    <p class="pl-11 text-sm text-slate-500">
+                        Manage your tuition requirements and connect with the
+                        best tutors.
                     </p>
                 </div>
 
-                <Button as-child class="rounded-xl bg-indigo-600 px-6 py-2.5 h-auto text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-95">
-                    <Link href="/guardian/jobs/create" class="flex items-center gap-2">
+                <Button
+                    as-child
+                    class="h-auto rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-95"
+                >
+                    <Link
+                        href="/guardian/jobs/create"
+                        class="flex items-center gap-2"
+                    >
                         <Plus class="h-5 w-5" />
                         Post New Job
                     </Link>
@@ -172,23 +209,33 @@ function statusBadge(row: GuardianJobRow) {
             </div>
 
             <!-- Filters Section -->
-            <div class="flex flex-wrap items-center gap-4 rounded-3xl border border-slate-200/80 bg-white/50 backdrop-blur-sm p-4 shadow-sm">
-                <div class="relative flex-1 min-w-[280px]">
-                    <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <div
+                class="flex flex-wrap items-center gap-4 rounded-3xl border border-slate-200/80 bg-white/50 p-4 shadow-sm backdrop-blur-sm"
+            >
+                <div class="relative min-w-[280px] flex-1">
+                    <Search
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400"
+                    />
                     <Input
                         v-model="search"
                         type="text"
                         placeholder="Search by title or job details..."
-                        class="pl-10 h-11 border-slate-200 bg-white/80 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all"
+                        class="h-11 rounded-2xl border-slate-200 bg-white/80 pl-10 transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5"
                     />
                 </div>
 
                 <Select v-if="!presetStatus" v-model="statusFilter">
-                    <SelectTrigger class="h-11 w-[180px] rounded-2xl border-slate-200 bg-white/80">
+                    <SelectTrigger
+                        class="h-11 w-[180px] rounded-2xl border-slate-200 bg-white/80"
+                    >
                         <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
-                    <SelectContent class="rounded-2xl border-slate-200 shadow-xl">
-                        <SelectItem value="all" class="rounded-lg">All Statuses</SelectItem>
+                    <SelectContent
+                        class="rounded-2xl border-slate-200 shadow-xl"
+                    >
+                        <SelectItem value="all" class="rounded-lg"
+                            >All Statuses</SelectItem
+                        >
                         <SelectItem
                             v-for="status in statusOptionsList"
                             :key="status.value"
@@ -202,7 +249,9 @@ function statusBadge(row: GuardianJobRow) {
             </div>
 
             <!-- Table Section -->
-            <div class="rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40 overflow-hidden">
+            <div
+                class="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40"
+            >
                 <DataTable
                     :items="items"
                     :columns="columns"
@@ -213,12 +262,22 @@ function statusBadge(row: GuardianJobRow) {
                     <!-- Job Details -->
                     <template #cell-title="{ row }">
                         <div class="flex flex-col gap-1 pb-1">
-                            <Link :href="`/guardian/jobs/${row.id}`" class="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                            <Link
+                                :href="`/guardian/jobs/${row.id}`"
+                                class="line-clamp-1 font-bold text-slate-900 transition-colors group-hover:text-indigo-600"
+                            >
                                 {{ row.title }}
                             </Link>
                             <div class="flex items-center gap-2">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">ID: #{{ row.id }}</span>
-                                <Badge v-if="row.requested_tutor_id" variant="outline" class="h-4 px-1.5 text-[10px] border-indigo-200 bg-indigo-50 text-indigo-700">
+                                <span
+                                    class="text-[10px] font-bold tracking-tight text-slate-400 uppercase"
+                                    >ID: #{{ row.id }}</span
+                                >
+                                <Badge
+                                    v-if="row.requested_tutor_id"
+                                    variant="outline"
+                                    class="h-4 border-indigo-200 bg-indigo-50 px-1.5 text-[10px] text-indigo-700"
+                                >
                                     Direct Request
                                 </Badge>
                             </div>
@@ -228,22 +287,34 @@ function statusBadge(row: GuardianJobRow) {
                     <!-- Type & Class -->
                     <template #cell-category_info="{ row }">
                         <div class="flex flex-col gap-0.5">
-                            <span class="text-sm font-bold text-slate-800 flex items-center gap-1">
-                                <GraduationCap class="h-3.5 w-3.5 text-slate-400" />
+                            <span
+                                class="flex items-center gap-1 text-sm font-bold text-slate-800"
+                            >
+                                <GraduationCap
+                                    class="h-3.5 w-3.5 text-slate-400"
+                                />
                                 {{ row.category_name }}
                             </span>
-                            <span class="text-xs text-slate-500 font-medium ml-4.5">{{ row.class_name }}</span>
+                            <span
+                                class="ml-4.5 text-xs font-medium text-slate-500"
+                                >{{ row.class_name }}</span
+                            >
                         </div>
                     </template>
 
                     <!-- Location -->
                     <template #cell-location="{ row }">
                         <div class="flex flex-col gap-0.5">
-                            <span class="text-sm font-semibold text-slate-800 flex items-center gap-1 pr-4">
+                            <span
+                                class="flex items-center gap-1 pr-4 text-sm font-semibold text-slate-800"
+                            >
                                 <MapPin class="h-3.5 w-3.5 text-slate-400" />
                                 {{ row.area_name }}
                             </span>
-                            <span class="text-xs text-slate-500 font-medium ml-4.5">{{ row.city_name }}</span>
+                            <span
+                                class="ml-4.5 text-xs font-medium text-slate-500"
+                                >{{ row.city_name }}</span
+                            >
                         </div>
                     </template>
 
@@ -255,17 +326,29 @@ function statusBadge(row: GuardianJobRow) {
                         >
                             <div class="flex items-center gap-2">
                                 <div class="flex -space-x-1.5 overflow-hidden">
-                                    <div v-for="i in Math.min(3, row.applications_count || 0)" :key="i" class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-100 flex items-center justify-center">
+                                    <div
+                                        v-for="i in Math.min(
+                                            3,
+                                            row.applications_count || 0,
+                                        )"
+                                        :key="i"
+                                        class="flex inline-block h-6 w-6 items-center justify-center rounded-full bg-slate-100 ring-2 ring-white"
+                                    >
                                         <User class="h-3 w-3 text-slate-400" />
                                     </div>
                                 </div>
-                                <span class="text-sm font-black text-indigo-600 group-hover/link:underline">
+                                <span
+                                    class="text-sm font-black text-indigo-600 group-hover/link:underline"
+                                >
                                     {{ row.applications_count ?? 0 }}
                                 </span>
                             </div>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight flex items-center gap-1">
+                            <span
+                                class="flex items-center gap-1 text-[10px] font-bold tracking-tight text-slate-400 uppercase"
+                            >
                                 <Users class="h-3 w-3" />
-                                {{ row.open_applications_count ?? 0 }} Pending Review
+                                {{ row.open_applications_count ?? 0 }} Pending
+                                Review
                             </span>
                         </Link>
                     </template>
@@ -274,28 +357,59 @@ function statusBadge(row: GuardianJobRow) {
                     <template #cell-hiring_status="{ row }">
                         <div v-if="row.has_assignment" class="space-y-1">
                             <div class="flex items-center gap-1.5">
-                                <div class="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center">
-                                    <CheckCircle2 class="h-3.5 w-3.5 text-emerald-600" />
+                                <div
+                                    class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100"
+                                >
+                                    <CheckCircle2
+                                        class="h-3.5 w-3.5 text-emerald-600"
+                                    />
                                 </div>
-                                <span class="text-sm font-bold text-slate-800">{{ row.selected_tutor_name || 'Tutor Assigned' }}</span>
+                                <span
+                                    class="text-sm font-bold text-slate-800"
+                                    >{{
+                                        row.selected_tutor_name ||
+                                        'Tutor Assigned'
+                                    }}</span
+                                >
                             </div>
-                            <p v-if="row.hiring_confirmed_at" class="text-[10px] text-slate-400 flex items-center gap-1 pl-7">
+                            <p
+                                v-if="row.hiring_confirmed_at"
+                                class="flex items-center gap-1 pl-7 text-[10px] text-slate-400"
+                            >
                                 <Calendar class="h-3 w-3" />
-                                Confirmed on {{ new Date(row.hiring_confirmed_at).toLocaleDateString() }}
+                                Confirmed on
+                                {{
+                                    new Date(
+                                        row.hiring_confirmed_at,
+                                    ).toLocaleDateString()
+                                }}
                             </p>
                         </div>
                         <div v-else class="flex flex-col gap-1">
                             <div class="flex items-center gap-2">
-                                <div class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></div>
-                                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Recruiting</span>
+                                <div
+                                    class="h-2 w-2 animate-pulse rounded-full bg-indigo-500"
+                                ></div>
+                                <span
+                                    class="text-xs font-bold tracking-wider text-slate-700 uppercase"
+                                    >Recruiting</span
+                                >
                             </div>
-                            <p class="text-[10px] text-slate-400 pl-4">Reviewing matches...</p>
+                            <p class="pl-4 text-[10px] text-slate-400">
+                                Reviewing matches...
+                            </p>
                         </div>
                     </template>
 
                     <!-- Status -->
                     <template #cell-status="{ row }">
-                        <Badge :variant="(statusBadge(row).variant as any)" :class="statusBadge(row).class + ' h-6 px-2.5 rounded-lg border font-bold text-[11px] uppercase tracking-wide'">
+                        <Badge
+                            :variant="statusBadge(row).variant as any"
+                            :class="
+                                statusBadge(row).class +
+                                ' h-6 rounded-lg border px-2.5 text-[11px] font-bold tracking-wide uppercase'
+                            "
+                        >
                             {{ statusBadge(row).label }}
                         </Badge>
                     </template>

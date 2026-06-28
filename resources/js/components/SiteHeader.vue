@@ -92,7 +92,10 @@ const socialLinks = computed(() =>
                     >Email: {{ primaryEmail }}</span
                 >
 
-                <div v-if="socialLinks.length" class="ml-auto flex items-center gap-2">
+                <div
+                    v-if="socialLinks.length"
+                    class="ml-auto flex items-center gap-2"
+                >
                     <a
                         v-for="link in socialLinks"
                         :key="link.platform"
@@ -189,7 +192,10 @@ const socialLinks = computed(() =>
                                 <Menu class="h-5 w-5" />
                             </button>
                         </SheetTrigger>
-                        <SheetContent side="right" class="w-[300px] sm:w-[360px]">
+                        <SheetContent
+                            side="right"
+                            class="w-[300px] sm:w-[360px]"
+                        >
                             <SheetHeader>
                                 <SheetTitle class="text-left">Menu</SheetTitle>
                             </SheetHeader>
@@ -314,7 +320,10 @@ const socialLinks = computed(() =>
                     >Email: {{ primaryEmail }}</span
                 >
 
-                <div v-if="socialLinks.length" class="ml-auto flex items-center gap-2">
+                <div
+                    v-if="socialLinks.length"
+                    class="ml-auto flex items-center gap-2"
+                >
                     <a
                         v-for="link in socialLinks"
                         :key="link.platform"

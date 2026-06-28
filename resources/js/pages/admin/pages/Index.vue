@@ -364,7 +364,9 @@ function handleRowAction(actionKey, row) {
                 </template>
 
                 <template #cell-slug="{ row }">
-                    <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600">
+                    <code
+                        class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600"
+                    >
                         {{ row.slug }}
                     </code>
                 </template>
@@ -380,13 +382,12 @@ function handleRowAction(actionKey, row) {
                 </template>
 
                 <template #cell-is_system="{ row }">
-                    <Badge
-                        v-if="row.is_system"
-                        variant="outline"
-                    >
+                    <Badge v-if="row.is_system" variant="outline">
                         System
                     </Badge>
-                    <span v-else class="text-muted-foreground text-sm">Custom</span>
+                    <span v-else class="text-sm text-muted-foreground"
+                        >Custom</span
+                    >
                 </template>
 
                 <template #cell-updated_at="{ value }">

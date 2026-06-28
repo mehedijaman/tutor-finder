@@ -16,7 +16,10 @@ const props = defineProps({
 
 const breadcrumbs = [
     { title: 'Tutorials', href: '/admin/tutorials' },
-    { title: 'Edit Tutorial', href: `/admin/tutorials/${props.tutorial.id}/edit` },
+    {
+        title: 'Edit Tutorial',
+        href: `/admin/tutorials/${props.tutorial.id}/edit`,
+    },
 ];
 </script>
 

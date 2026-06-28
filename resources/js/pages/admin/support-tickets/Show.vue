@@ -119,9 +119,7 @@ function resetConfirmState(): void {
             <div
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
-                <div
-                    class="flex flex-wrap items-start justify-between gap-4"
-                >
+                <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
                             <h1
@@ -130,7 +128,9 @@ function resetConfirmState(): void {
                                 {{ ticket.subject }}
                             </h1>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                        <div
+                            class="flex flex-wrap items-center gap-2 text-sm text-slate-500"
+                        >
                             <span class="font-mono text-xs">
                                 {{ ticket.ticket_number }}
                             </span>
@@ -159,7 +159,7 @@ function resetConfirmState(): void {
             </div>
 
             <div class="grid gap-6 lg:grid-cols-3">
-                <div class="lg:col-span-2 space-y-6">
+                <div class="space-y-6 lg:col-span-2">
                     <div
                         class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                     >
@@ -238,7 +238,9 @@ function resetConfirmState(): void {
                                 <Label>Status</Label>
                                 <Select v-model="selectedStatus">
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select status" />
+                                        <SelectValue
+                                            placeholder="Select status"
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem

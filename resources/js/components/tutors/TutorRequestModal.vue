@@ -54,38 +54,46 @@ function handleSuccess() {
 function submitExisting() {
     if (!existingJobForm.job_id) return;
 
-    existingJobForm.post(`/guardian/jobs/${existingJobForm.job_id}/request-tutor`, {
-        onSuccess: () => {
-            isOpen.value = false;
-            existingJobForm.reset();
+    existingJobForm.post(
+        `/guardian/jobs/${existingJobForm.job_id}/request-tutor`,
+        {
+            onSuccess: () => {
+                isOpen.value = false;
+                existingJobForm.reset();
+            },
         },
-    });
+    );
 }
 </script>
 
 <template>
     <Dialog v-model:open="isOpen">
         <Button
-            class="w-full h-12 text-lg font-semibold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            class="h-12 w-full text-lg font-semibold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             @click="isOpen = true"
         >
             Request This Tutor
         </Button>
--
--        <DialogContent class="max-w-7xl max-h-[95vh] overflow-y-auto">
-             <DialogHeader>
+        - -
+        <DialogContent class="max-h-[95vh] max-w-7xl overflow-y-auto">
+            <DialogHeader>
                 <DialogTitle>Request {{ tutor.name }}</DialogTitle>
                 <DialogDescription>
                     Choose how you want to request {{ tutor.name }}.
                 </DialogDescription>
             </DialogHeader>
 
-            <div v-if="guardianJobs.length > 0" class="flex p-1 bg-slate-100 rounded-lg mb-6 max-w-md">
+            <div
+                v-if="guardianJobs.length > 0"
+                class="mb-6 flex max-w-md rounded-lg bg-slate-100 p-1"
+            >
                 <button
                     @click="activeTab = 'existing'"
                     :class="[
-                        'flex-1 py-2 text-sm font-medium rounded-md transition-all',
-                        activeTab === 'existing' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                        'flex-1 rounded-md py-2 text-sm font-medium transition-all',
+                        activeTab === 'existing'
+                            ? 'bg-white text-blue-600 shadow-sm'
+                            : 'text-slate-500 hover:text-slate-700',
                     ]"
                 >
                     Use Existing Job
@@ -93,8 +101,10 @@ function submitExisting() {
                 <button
                     @click="activeTab = 'new'"
                     :class="[
-                        'flex-1 py-2 text-sm font-medium rounded-md transition-all',
-                        activeTab === 'new' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                        'flex-1 rounded-md py-2 text-sm font-medium transition-all',
+                        activeTab === 'new'
+                            ? 'bg-white text-blue-600 shadow-sm'
+                            : 'text-slate-500 hover:text-slate-700',
                     ]"
                 >
                     Create New Job
@@ -102,7 +112,7 @@ function submitExisting() {
             </div>
 
             <div v-if="activeTab === 'existing'" class="space-y-6 py-4">
-                <div class="space-y-4 max-w-xl">
+                <div class="max-w-xl space-y-4">
                     <div class="space-y-2">
                         <Label>Select your live job</Label>
                         <Select v-model="existingJobForm.job_id">
@@ -119,16 +129,27 @@ function submitExisting() {
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        <p class="text-xs text-slate-500">Only your active live jobs are listed here.</p>
+                        <p class="text-xs text-slate-500">
+                            Only your active live jobs are listed here.
+                        </p>
                     </div>
 
                     <div class="flex gap-3 pt-4">
-                        <Button variant="outline" @click="isOpen = false">Cancel</Button>
+                        <Button variant="outline" @click="isOpen = false"
+                            >Cancel</Button
+                        >
                         <Button
                             @click="submitExisting"
-                            :disabled="!existingJobForm.job_id || existingJobForm.processing"
+                            :disabled="
+                                !existingJobForm.job_id ||
+                                existingJobForm.processing
+                            "
                         >
-                            {{ existingJobForm.processing ? 'Sending...' : 'Send Request' }}
+                            {{
+                                existingJobForm.processing
+                                    ? 'Sending...'
+                                    : 'Send Request'
+                            }}
                         </Button>
                     </div>
                 </div>

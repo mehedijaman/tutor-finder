@@ -55,7 +55,11 @@ const confirmTitle = ref('');
 const confirmDescription = ref('');
 const confirmLabel = ref('Confirm');
 const confirmDestructive = ref(false);
-const pendingAction = ref<{ action: string; row?: Record<string, unknown>; payload?: Record<string, unknown> } | null>(null);
+const pendingAction = ref<{
+    action: string;
+    row?: Record<string, unknown>;
+    payload?: Record<string, unknown>;
+} | null>(null);
 let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 const audienceLabels: Record<string, string> = {
@@ -109,7 +113,8 @@ function applyFilters(overrides: Record<string, unknown> = {}) {
         {
             trash: props.filters.trash ? 1 : 0,
             q: search.value,
-            audience: audienceFilter.value === 'all' ? '' : audienceFilter.value,
+            audience:
+                audienceFilter.value === 'all' ? '' : audienceFilter.value,
             ...overrides,
         },
         {
@@ -120,7 +125,11 @@ function applyFilters(overrides: Record<string, unknown> = {}) {
     );
 }
 
-function openConfirm(action: string, row: Record<string, unknown> | null = null, payload: Record<string, unknown> = {}) {
+function openConfirm(
+    action: string,
+    row: Record<string, unknown> | null = null,
+    payload: Record<string, unknown> = {},
+) {
     pendingAction.value = { action, row: row ?? undefined, payload };
     confirmTitle.value = 'Confirm Action';
     confirmDescription.value = '';
@@ -129,14 +138,16 @@ function openConfirm(action: string, row: Record<string, unknown> | null = null,
 
     if (action === 'delete') {
         confirmTitle.value = 'Delete Tutorial';
-        confirmDescription.value = 'This will move the tutorial to the recycle bin.';
+        confirmDescription.value =
+            'This will move the tutorial to the recycle bin.';
         confirmLabel.value = 'Delete';
         confirmDestructive.value = true;
     }
 
     if (action === 'restore') {
         confirmTitle.value = 'Restore Tutorial';
-        confirmDescription.value = 'This will restore the tutorial from the recycle bin.';
+        confirmDescription.value =
+            'This will restore the tutorial from the recycle bin.';
         confirmLabel.value = 'Restore';
     }
 
@@ -149,14 +160,17 @@ function openConfirm(action: string, row: Record<string, unknown> | null = null,
 
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
-        confirmDescription.value = 'This will permanently remove all trashed tutorials. This action cannot be undone.';
+        confirmDescription.value =
+            'This will permanently remove all trashed tutorials. This action cannot be undone.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
 
     if (action === 'toggle-status') {
         const willDeactivate = payload.is_active === false;
-        confirmTitle.value = willDeactivate ? 'Deactivate Tutorial' : 'Activate Tutorial';
+        confirmTitle.value = willDeactivate
+            ? 'Deactivate Tutorial'
+            : 'Activate Tutorial';
         confirmDescription.value = willDeactivate
             ? 'This tutorial will no longer be visible on the website.'
             : 'This tutorial will be visible on the website.';
@@ -207,7 +221,11 @@ function actionItemsForRow(row: Record<string, unknown>) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            { key: 'force-delete', label: 'Permanently Delete', destructive: true },
+            {
+                key: 'force-delete',
+                label: 'Permanently Delete',
+                destructive: true,
+            },
         ];
     }
 
@@ -257,19 +275,30 @@ function handleRowAction(actionKey: string, row: Record<string, unknown>) {
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
                         <h1 class="text-2xl font-semibold tracking-tight">
-                            {{ filters.trash ? 'Tutorial Recycle Bin' : 'Tutorials' }}
+                            {{
+                                filters.trash
+                                    ? 'Tutorial Recycle Bin'
+                                    : 'Tutorials'
+                            }}
                         </h1>
                         <p class="text-sm text-muted-foreground">
-                            Active: {{ counts.active ?? 0 }} | Trash: {{ counts.trash ?? 0 }}
+                            Active: {{ counts.active ?? 0 }} | Trash:
+                            {{ counts.trash ?? 0 }}
                         </p>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
                         <Link
-                            :href="filters.trash ? '/admin/tutorials' : '/admin/tutorials?trash=1'"
+                            :href="
+                                filters.trash
+                                    ? '/admin/tutorials'
+                                    : '/admin/tutorials?trash=1'
+                            "
                             class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                         >
-                            {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
+                            {{
+                                filters.trash ? 'Back to Active' : 'Recycle Bin'
+                            }}
                         </Link>
 
                         <Button
@@ -356,7 +385,11 @@ function handleRowAction(actionKey: string, row: Record<string, unknown>) {
 
                 <template #cell-audience="{ row }">
                     <Badge variant="outline">
-                        {{ audienceLabels[row.audience?.value ?? row.audience] ?? row.audience }}
+                        {{
+                            audienceLabels[
+                                row.audience?.value ?? row.audience
+                            ] ?? row.audience
+                        }}
                     </Badge>
                 </template>
 
@@ -373,7 +406,9 @@ function handleRowAction(actionKey: string, row: Record<string, unknown>) {
                 <template #cell-actions="{ row }">
                     <RowActionsDropdown
                         :actions="actionItemsForRow(row)"
-                        @select="(action: string) => handleRowAction(action, row)"
+                        @select="
+                            (action: string) => handleRowAction(action, row)
+                        "
                     />
                 </template>
             </DataTable>
