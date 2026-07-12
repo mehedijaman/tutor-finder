@@ -14,7 +14,6 @@ import {
 } from 'chart.js';
 import {
     ArrowRight,
-    ArrowUpRight,
     Banknote,
     Briefcase,
     CheckCircle,
@@ -35,7 +34,11 @@ import {
 import type { Component } from 'vue';
 import { computed } from 'vue';
 import { Bar, Doughnut, Line } from 'vue-chartjs';
+import ActionCard from '@/components/ActionCard.vue';
+import DashboardWelcome from '@/components/DashboardWelcome.vue';
+import StatCard from '@/components/StatCard.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import type { ActionCardConfig, StatCardConfig } from '@/types/dashboard';
 
 ChartJS.register(
     CategoryScale,
@@ -164,29 +167,14 @@ function formatCurrency(value: number): string {
     return '৳' + formatNumber(value);
 }
 
-interface OverviewCard {
-    label: string;
-    value: string;
-    subValue: string;
-    href: string;
-    icon: Component;
-    iconBg: string;
-    iconColor: string;
-    borderHover: string;
-    gradientBar: string;
-}
-
-const overviewCards = computed<OverviewCard[]>(() => [
+const overviewCards = computed<StatCardConfig[]>(() => [
     {
         label: 'Total Tutors',
         value: formatNumber(props.stats.users.totalTutors),
         subValue: `${formatNumber(props.stats.users.activeTutors)} active`,
         href: '/admin/tutors',
         icon: GraduationCap,
-        iconBg: 'bg-blue-50 dark:bg-blue-950/40',
-        iconColor: 'text-blue-600 dark:text-blue-400',
-        borderHover: 'hover:border-blue-200 dark:hover:border-blue-800',
-        gradientBar: 'from-blue-500 to-indigo-500',
+        color: 'blue',
     },
     {
         label: 'Total Guardians',
@@ -194,10 +182,7 @@ const overviewCards = computed<OverviewCard[]>(() => [
         subValue: `${formatNumber(props.stats.users.activeGuardians)} active`,
         href: '/admin/guardians',
         icon: UserCheck,
-        iconBg: 'bg-emerald-50 dark:bg-emerald-950/40',
-        iconColor: 'text-emerald-600 dark:text-emerald-400',
-        borderHover: 'hover:border-emerald-200 dark:hover:border-emerald-800',
-        gradientBar: 'from-emerald-500 to-teal-500',
+        color: 'emerald',
     },
     {
         label: 'Total Jobs',
@@ -205,10 +190,7 @@ const overviewCards = computed<OverviewCard[]>(() => [
         subValue: `${formatNumber(props.stats.jobs.live)} live now`,
         href: '/admin/jobs',
         icon: Briefcase,
-        iconBg: 'bg-violet-50 dark:bg-violet-950/40',
-        iconColor: 'text-violet-600 dark:text-violet-400',
-        borderHover: 'hover:border-violet-200 dark:hover:border-violet-800',
-        gradientBar: 'from-violet-500 to-purple-500',
+        color: 'violet',
     },
     {
         label: 'Monthly Revenue',
@@ -216,10 +198,7 @@ const overviewCards = computed<OverviewCard[]>(() => [
         subValue: `${formatCurrency(props.stats.finance.totalRevenue)} total`,
         href: '/admin/finance/invoices',
         icon: TrendingUp,
-        iconBg: 'bg-amber-50 dark:bg-amber-950/40',
-        iconColor: 'text-amber-600 dark:text-amber-400',
-        borderHover: 'hover:border-amber-200 dark:hover:border-amber-800',
-        gradientBar: 'from-amber-500 to-orange-500',
+        color: 'amber',
     },
 ]);
 
@@ -335,7 +314,11 @@ const userRegistrationChartOptions = computed(() => ({
     scales: {
         x: {
             grid: { display: false },
-            ticks: { color: '#94a3b8', font: { size: 10 } },
+            ticks: {
+                color: '#94a3b8',
+                font: { size: 10 },
+                maxTicksLimit: 7,
+            },
             border: { display: false },
         },
         y: {
@@ -391,7 +374,11 @@ const revenueChartOptions = computed(() => ({
     scales: {
         x: {
             grid: { display: false },
-            ticks: { color: '#94a3b8', font: { size: 10 } },
+            ticks: {
+                color: '#94a3b8',
+                font: { size: 10 },
+                maxTicksLimit: 7,
+            },
             border: { display: false },
         },
         y: {
@@ -505,86 +492,62 @@ function priorityBadgeClass(priority: string): string {
     return map[priority] ?? 'bg-slate-100 text-slate-600';
 }
 
-const quickActions = [
+const quickActions: ActionCardConfig[] = [
     {
         title: 'Manage Users',
         description: 'Admin accounts & roles',
         href: '/admin/users',
         icon: Users,
-        gradient: 'from-blue-500 to-blue-600',
-        shadow: 'shadow-blue-500/30',
-        hoverBorder: 'hover:border-blue-200',
-        arrowColor: 'group-hover:text-blue-600',
+        color: 'blue',
     },
     {
         title: 'Roles & Permissions',
         description: 'Access control management',
         href: '/admin/roles',
         icon: Shield,
-        gradient: 'from-violet-500 to-violet-600',
-        shadow: 'shadow-violet-500/30',
-        hoverBorder: 'hover:border-violet-200',
-        arrowColor: 'group-hover:text-violet-600',
+        color: 'violet',
     },
     {
         title: 'Manage Tutors',
         description: 'Profiles & verification',
         href: '/admin/tutors',
         icon: GraduationCap,
-        gradient: 'from-emerald-500 to-emerald-600',
-        shadow: 'shadow-emerald-500/30',
-        hoverBorder: 'hover:border-emerald-200',
-        arrowColor: 'group-hover:text-emerald-600',
+        color: 'emerald',
     },
     {
         title: 'Manage Guardians',
         description: 'Profiles & activity',
         href: '/admin/guardians',
         icon: UserCheck,
-        gradient: 'from-amber-500 to-amber-600',
-        shadow: 'shadow-amber-500/30',
-        hoverBorder: 'hover:border-amber-200',
-        arrowColor: 'group-hover:text-amber-600',
+        color: 'amber',
     },
     {
         title: 'Verifications',
-        description: 'Approve & review',
+        description: 'Approve & review documents',
         href: '/admin/verifications',
         icon: FileCheck,
-        gradient: 'from-cyan-500 to-cyan-600',
-        shadow: 'shadow-cyan-500/30',
-        hoverBorder: 'hover:border-cyan-200',
-        arrowColor: 'group-hover:text-cyan-600',
+        color: 'cyan',
     },
     {
         title: 'Finance',
         description: 'Invoices & payments',
         href: '/admin/finance/invoices',
         icon: CreditCard,
-        gradient: 'from-rose-500 to-rose-600',
-        shadow: 'shadow-rose-500/30',
-        hoverBorder: 'hover:border-rose-200',
-        arrowColor: 'group-hover:text-rose-600',
+        color: 'rose',
     },
     {
         title: 'CMS & Content',
         description: 'Pages, blog & FAQs',
         href: '/admin/blog/posts',
         icon: Layout,
-        gradient: 'from-indigo-500 to-indigo-600',
-        shadow: 'shadow-indigo-500/30',
-        hoverBorder: 'hover:border-indigo-200',
-        arrowColor: 'group-hover:text-indigo-600',
+        color: 'indigo',
     },
     {
         title: 'Settings',
         description: 'Site & system config',
-        href: '/settings/site',
+        href: '/admin/settings',
         icon: Settings,
-        gradient: 'from-slate-600 to-slate-700',
-        shadow: 'shadow-slate-500/30',
-        hoverBorder: 'hover:border-slate-300',
-        arrowColor: 'group-hover:text-slate-600',
+        color: 'slate',
     },
 ];
 </script>
@@ -593,53 +556,16 @@ const quickActions = [
     <Head title="Admin Dashboard" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-8 p-4 sm:p-6 lg:p-8">
+        <div class="space-y-6 p-4 sm:p-6 lg:p-8">
+            <DashboardWelcome />
+
             <!-- Overview Stat Cards -->
-            <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                <Link
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard
                     v-for="card in overviewCards"
                     :key="card.label"
-                    :href="card.href"
-                    class="group relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-700/60 dark:bg-slate-900"
-                    :class="card.borderHover"
-                >
-                    <div
-                        class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r"
-                        :class="card.gradientBar"
-                    ></div>
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="min-w-0 flex-1">
-                            <p
-                                class="text-[11px] font-semibold tracking-[0.15em] text-slate-400 uppercase dark:text-slate-500"
-                            >
-                                {{ card.label }}
-                            </p>
-                            <p
-                                class="mt-3 text-[2rem] leading-none font-extrabold tracking-tight text-slate-900 dark:text-white"
-                            >
-                                {{ card.value }}
-                            </p>
-                            <p
-                                class="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400"
-                            >
-                                {{ card.subValue }}
-                            </p>
-                        </div>
-                        <div
-                            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ring-1 ring-slate-900/5 dark:ring-slate-700/50"
-                            :class="card.iconBg"
-                        >
-                            <component
-                                :is="card.icon"
-                                class="h-7 w-7"
-                                :class="card.iconColor"
-                            />
-                        </div>
-                    </div>
-                    <ArrowUpRight
-                        class="absolute top-5 right-5 h-4 w-4 text-slate-300 opacity-0 transition-all duration-300 group-hover:opacity-100 dark:text-slate-600"
-                    />
-                </Link>
+                    v-bind="card"
+                />
             </div>
 
             <!-- Needs Attention Banner -->
@@ -665,7 +591,10 @@ const quickActions = [
                             class="h-4 w-4 shrink-0"
                             :class="item.color"
                         />
-                        <span class="text-sm font-semibold" :class="item.color">
+                        <span
+                            class="text-sm font-semibold"
+                            :class="item.color"
+                        >
                             {{ item.count }}
                         </span>
                         <span
@@ -674,47 +603,49 @@ const quickActions = [
                             {{ item.label }}
                         </span>
                         <ArrowRight
-                            class="h-3.5 w-3.5 text-slate-400 transition-transform group-hover:translate-x-0.5"
+                            class="h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5"
                         />
                     </Link>
                 </div>
             </div>
 
             <!-- Charts Row -->
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div class="grid min-w-0 gap-6 lg:grid-cols-2">
                 <!-- User Registration Chart -->
                 <div
-                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-6"
                 >
-                    <div class="mb-5 flex items-center justify-between">
+                    <div class="mb-4 flex flex-wrap items-start justify-between gap-2 sm:mb-5">
                         <div>
                             <h3
-                                class="text-base font-semibold text-slate-900 dark:text-white"
+                                class="text-base font-semibold text-card-foreground"
                             >
                                 User Registrations
                             </h3>
                             <p
-                                class="mt-0.5 text-sm text-slate-500 dark:text-slate-400"
+                                class="mt-0.5 text-sm text-muted-foreground"
                             >
                                 Last 12 months
                             </p>
                         </div>
-                        <div class="flex items-center gap-4 text-xs">
+                        <div
+                            class="flex items-center gap-3 text-xs text-muted-foreground sm:gap-4"
+                        >
                             <span class="flex items-center gap-1.5">
                                 <span
-                                    class="inline-block h-2.5 w-2.5 rounded-full bg-blue-500"
-                                ></span>
+                                    class="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-blue-500"
+                                />
                                 Tutors
                             </span>
                             <span class="flex items-center gap-1.5">
                                 <span
-                                    class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"
-                                ></span>
+                                    class="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500"
+                                />
                                 Guardians
                             </span>
                         </div>
                     </div>
-                    <div class="relative h-56 sm:h-64">
+                    <div class="relative h-56 w-full sm:h-64">
                         <Bar
                             :data="userRegistrationChartData"
                             :options="userRegistrationChartOptions"
@@ -724,29 +655,29 @@ const quickActions = [
 
                 <!-- Revenue Chart -->
                 <div
-                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-6"
                 >
                     <div class="mb-5 flex items-center justify-between">
                         <div>
                             <h3
-                                class="text-base font-semibold text-slate-900 dark:text-white"
+                                class="text-base font-semibold text-card-foreground"
                             >
                                 Revenue Trend
                             </h3>
                             <p
-                                class="mt-0.5 text-sm text-slate-500 dark:text-slate-400"
+                                class="mt-0.5 text-sm text-muted-foreground"
                             >
                                 Last 12 months
                             </p>
                         </div>
                         <Link
                             href="/admin/finance/invoices"
-                            class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                            class="text-sm font-medium text-primary hover:text-primary/80"
                         >
                             View all
                         </Link>
                     </div>
-                    <div class="relative h-56 sm:h-64">
+                    <div class="relative h-56 w-full sm:h-64">
                         <Line
                             :data="revenueChartData"
                             :options="revenueChartOptions"
@@ -756,27 +687,27 @@ const quickActions = [
             </div>
 
             <!-- Jobs Breakdown + Platform Health -->
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div class="grid min-w-0 gap-6 lg:grid-cols-2">
                 <!-- Job Status Breakdown -->
                 <div
-                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-6"
                 >
                     <div class="mb-5 flex items-center justify-between">
                         <h3
-                            class="text-base font-semibold text-slate-900 dark:text-white"
+                            class="text-base font-semibold text-card-foreground"
                         >
                             Job Status Breakdown
                         </h3>
                         <Link
                             href="/admin/jobs"
-                            class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                            class="text-sm font-medium text-primary hover:text-primary/80"
                         >
                             View all
                         </Link>
                     </div>
-                    <div class="flex items-center gap-6">
+                    <div class="flex w-full flex-col items-center gap-4 sm:flex-row sm:gap-6">
                         <div
-                            class="relative h-40 w-40 shrink-0 sm:h-44 sm:w-44"
+                            class="relative h-36 w-36 shrink-0 sm:h-44 sm:w-44"
                         >
                             <Doughnut
                                 :data="jobDoughnutData"
@@ -786,36 +717,36 @@ const quickActions = [
                                 class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
                             >
                                 <span
-                                    class="text-2xl font-extrabold text-slate-900 tabular-nums dark:text-white"
+                                    class="text-2xl font-extrabold text-card-foreground tabular-nums"
                                 >
                                     {{ stats.jobs.total }}
                                 </span>
                                 <span
-                                    class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500"
+                                    class="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase"
                                 >
                                     Total
                                 </span>
                             </div>
                         </div>
-                        <div class="flex flex-1 flex-col gap-2">
+                        <div class="flex w-full flex-1 flex-col gap-2">
                             <div
                                 v-for="segment in jobStatusBreakdown"
                                 :key="segment.label"
-                                class="flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                                class="flex items-center justify-between rounded-lg px-3 py-2 transition-colors hover:bg-muted/50"
                             >
                                 <div class="flex items-center gap-2.5">
                                     <span
                                         class="inline-block h-2.5 w-2.5 rounded-full"
                                         :class="segment.color"
-                                    ></span>
+                                    />
                                     <span
-                                        class="text-sm font-medium text-slate-600 dark:text-slate-300"
+                                        class="text-sm font-medium text-muted-foreground"
                                     >
                                         {{ segment.label }}
                                     </span>
                                 </div>
                                 <span
-                                    class="text-sm font-bold text-slate-900 tabular-nums dark:text-white"
+                                    class="text-sm font-bold text-card-foreground tabular-nums"
                                 >
                                     {{ segment.value }}
                                 </span>
@@ -826,82 +757,86 @@ const quickActions = [
 
                 <!-- Ticket & Verification Summary -->
                 <div
-                    class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700/60 dark:bg-slate-900"
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-6"
                 >
                     <h3
-                        class="mb-5 text-base font-semibold text-slate-900 dark:text-white"
+                        class="mb-5 text-base font-semibold text-card-foreground"
                     >
                         Platform Health
                     </h3>
                     <div class="grid grid-cols-2 gap-3">
                         <div
-                            class="rounded-xl border border-blue-100 bg-blue-50/60 p-4 dark:border-blue-900/30 dark:bg-blue-950/20"
+                            class="rounded-xl border border-blue-100 bg-blue-50/60 p-3 dark:border-blue-900/30 dark:bg-blue-950/20 md:p-4"
                         >
                             <div
-                                class="flex items-center gap-2 text-blue-600 dark:text-blue-400"
+                                class="flex items-center gap-1.5 text-blue-600 md:gap-2 dark:text-blue-400"
                             >
-                                <TicketCheck class="h-4 w-4" />
+                                <TicketCheck class="h-4 w-4 shrink-0" />
                                 <span
-                                    class="text-[10px] font-semibold tracking-wider uppercase"
-                                    >Open Tickets</span
+                                    class="text-[9px] font-semibold tracking-wider uppercase md:text-[10px]"
                                 >
+                                    Open Tickets
+                                </span>
                             </div>
                             <p
-                                class="mt-2.5 text-2xl font-extrabold text-blue-700 tabular-nums dark:text-blue-300"
+                                class="mt-2 text-xl font-extrabold text-blue-700 tabular-nums md:mt-2.5 md:text-2xl dark:text-blue-300"
                             >
                                 {{ stats.tickets.open }}
                             </p>
                         </div>
                         <div
-                            class="rounded-xl border border-amber-100 bg-amber-50/60 p-4 dark:border-amber-900/30 dark:bg-amber-950/20"
+                            class="rounded-xl border border-amber-100 bg-amber-50/60 p-3 dark:border-amber-900/30 dark:bg-amber-950/20 md:p-4"
                         >
                             <div
-                                class="flex items-center gap-2 text-amber-600 dark:text-amber-400"
+                                class="flex items-center gap-1.5 text-amber-600 md:gap-2 dark:text-amber-400"
                             >
-                                <Clock class="h-4 w-4" />
+                                <Clock class="h-4 w-4 shrink-0" />
                                 <span
-                                    class="text-[10px] font-semibold tracking-wider uppercase"
-                                    >In Progress</span
+                                    class="text-[9px] font-semibold tracking-wider uppercase md:text-[10px]"
                                 >
+                                    In Progress
+                                </span>
                             </div>
                             <p
-                                class="mt-2.5 text-2xl font-extrabold text-amber-700 tabular-nums dark:text-amber-300"
+                                class="mt-2 text-xl font-extrabold text-amber-700 tabular-nums md:mt-2.5 md:text-2xl dark:text-amber-300"
                             >
                                 {{ stats.tickets.inProgress }}
                             </p>
                         </div>
                         <div
-                            class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-900/30 dark:bg-emerald-950/20"
+                            class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 dark:border-emerald-900/30 dark:bg-emerald-950/20 md:p-4"
                         >
                             <div
-                                class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400"
+                                class="flex items-center gap-1.5 text-emerald-600 md:gap-2 dark:text-emerald-400"
                             >
-                                <CheckCircle class="h-4 w-4" />
+                                <CheckCircle class="h-4 w-4 shrink-0" />
                                 <span
-                                    class="text-[10px] font-semibold tracking-wider uppercase"
-                                    >Verified Users</span
+                                    class="text-[9px] font-semibold tracking-wider uppercase md:text-[10px]"
                                 >
+                                    Verified Users
+                                </span>
                             </div>
                             <p
-                                class="mt-2.5 text-2xl font-extrabold text-emerald-700 tabular-nums dark:text-emerald-300"
+                                class="mt-2 text-xl font-extrabold text-emerald-700 tabular-nums md:mt-2.5 md:text-2xl dark:text-emerald-300"
                             >
                                 {{ stats.verifications.verified }}
                             </p>
                         </div>
                         <div
-                            class="rounded-xl border border-rose-100 bg-rose-50/60 p-4 dark:border-rose-900/30 dark:bg-rose-950/20"
+                            class="rounded-xl border border-rose-100 bg-rose-50/60 p-3 dark:border-rose-900/30 dark:bg-rose-950/20 md:p-4"
                         >
                             <div
-                                class="flex items-center gap-2 text-rose-600 dark:text-rose-400"
+                                class="flex items-center gap-1.5 text-rose-600 md:gap-2 dark:text-rose-400"
                             >
-                                <XCircle class="h-4 w-4" />
+                                <XCircle class="h-4 w-4 shrink-0" />
                                 <span
-                                    class="text-[10px] font-semibold tracking-wider uppercase"
-                                    >Rejected</span
+                                    class="text-[9px] font-semibold tracking-wider uppercase md:text-[10px]"
                                 >
+                                    Rejected
+                                </span>
                             </div>
                             <p
-                                class="mt-2.5 text-2xl font-extrabold text-rose-700 tabular-nums dark:text-rose-300"
+                                class="mt-2 text-xl font-extrabold text-rose-700 tabular-nums md:mt-2.5 md:text-2xl dark:text-rose-300"
                             >
                                 {{ stats.verifications.rejected }}
                             </p>
@@ -911,49 +846,47 @@ const quickActions = [
             </div>
 
             <!-- Recent Activity Tables -->
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div class="grid min-w-0 gap-6 lg:grid-cols-2">
                 <!-- Recent Jobs -->
                 <div
-                    class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900"
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm"
                 >
                     <div
-                        class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800"
+                        class="flex items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6"
                     >
                         <h3
-                            class="text-base font-semibold text-slate-900 dark:text-white"
+                            class="text-base font-semibold text-card-foreground"
                         >
                             Recent Jobs
                         </h3>
                         <Link
                             href="/admin/jobs"
-                            class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                            class="text-sm font-medium text-primary hover:text-primary/80"
                         >
                             View all
                         </Link>
                     </div>
-                    <div
-                        class="divide-y divide-slate-100 dark:divide-slate-800"
-                    >
+                    <div class="divide-y divide-border/50">
                         <div
                             v-for="job in recentActivity.recentJobs"
                             :key="job.id"
-                            class="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-slate-50 sm:px-6 dark:hover:bg-slate-800/50"
+                            class="group flex items-center gap-2 px-4 py-3 transition-colors hover:bg-muted/30 sm:gap-3 sm:px-6 sm:py-3.5"
                         >
                             <div class="min-w-0 flex-1">
                                 <Link
                                     :href="`/admin/jobs/${job.id}/edit`"
-                                    class="truncate text-sm font-medium text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                    class="block truncate text-sm font-medium text-card-foreground hover:text-primary"
                                 >
                                     {{ job.title }}
                                 </Link>
                                 <p
-                                    class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                                    class="mt-0.5 truncate text-xs text-muted-foreground"
                                 >
                                     {{ job.guardian }} · {{ job.createdAt }}
                                 </p>
                             </div>
                             <span
-                                class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                                class="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold sm:px-2.5 sm:text-xs"
                                 :class="statusBadgeClass(job.status)"
                             >
                                 {{ job.statusLabel }}
@@ -961,7 +894,7 @@ const quickActions = [
                         </div>
                         <div
                             v-if="recentActivity.recentJobs.length === 0"
-                            class="px-5 py-8 text-center text-sm text-slate-500 sm:px-6 dark:text-slate-400"
+                            class="px-5 py-8 text-center text-sm text-muted-foreground sm:px-6"
                         >
                             No recent jobs found.
                         </div>
@@ -970,59 +903,63 @@ const quickActions = [
 
                 <!-- Recent Tickets -->
                 <div
-                    class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900"
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm"
                 >
                     <div
-                        class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800"
+                        class="flex items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6"
                     >
                         <h3
-                            class="text-base font-semibold text-slate-900 dark:text-white"
+                            class="text-base font-semibold text-card-foreground"
                         >
                             Recent Tickets
                         </h3>
                         <Link
                             href="/admin/tickets"
-                            class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                            class="text-sm font-medium text-primary hover:text-primary/80"
                         >
                             View all
                         </Link>
                     </div>
-                    <div
-                        class="divide-y divide-slate-100 dark:divide-slate-800"
-                    >
+                    <div class="divide-y divide-border/50">
                         <div
                             v-for="ticket in recentActivity.recentTickets"
                             :key="ticket.id"
-                            class="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-slate-50 sm:px-6 dark:hover:bg-slate-800/50"
+                            class="group flex items-start gap-2 px-4 py-3 transition-colors hover:bg-muted/30 sm:items-center sm:gap-3 sm:px-6 sm:py-3.5"
                         >
                             <div class="min-w-0 flex-1">
                                 <Link
                                     :href="`/admin/tickets/${ticket.id}`"
-                                    class="truncate text-sm font-medium text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                    class="block truncate text-sm font-medium text-card-foreground hover:text-primary"
                                 >
                                     {{ ticket.ticketNumber }}
                                     <span
-                                        class="font-normal text-slate-500 dark:text-slate-400"
+                                        class="font-normal text-muted-foreground"
                                     >
                                         — {{ ticket.subject }}
                                     </span>
                                 </Link>
                                 <p
-                                    class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                                    class="mt-0.5 truncate text-xs text-muted-foreground"
                                 >
                                     {{ ticket.user }} · {{ ticket.createdAt }}
                                 </p>
                             </div>
-                            <div class="flex shrink-0 items-center gap-1.5">
+                            <div
+                                class="flex shrink-0 flex-wrap items-center justify-end gap-1"
+                            >
                                 <span
-                                    class="rounded-full px-2 py-0.5 text-xs font-semibold"
-                                    :class="priorityBadgeClass(ticket.priority)"
+                                    class="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                                    :class="
+                                        priorityBadgeClass(ticket.priority)
+                                    "
                                 >
                                     {{ ticket.priorityLabel }}
                                 </span>
                                 <span
-                                    class="rounded-full px-2 py-0.5 text-xs font-semibold"
-                                    :class="statusBadgeClass(ticket.status)"
+                                    class="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                                    :class="
+                                        statusBadgeClass(ticket.status)
+                                    "
                                 >
                                     {{ ticket.statusLabel }}
                                 </span>
@@ -1030,7 +967,7 @@ const quickActions = [
                         </div>
                         <div
                             v-if="recentActivity.recentTickets.length === 0"
-                            class="px-5 py-8 text-center text-sm text-slate-500 sm:px-6 dark:text-slate-400"
+                            class="px-5 py-8 text-center text-sm text-muted-foreground sm:px-6"
                         >
                             No recent tickets found.
                         </div>
@@ -1041,19 +978,19 @@ const quickActions = [
             <!-- Pending Verifications -->
             <div
                 v-if="recentActivity.pendingVerifications.length > 0"
-                class="rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-700/60 dark:bg-slate-900"
+                class="rounded-2xl border border-border/60 bg-card shadow-sm"
             >
                 <div
-                    class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-slate-800"
+                    class="flex items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6"
                 >
                     <h3
-                        class="text-base font-semibold text-slate-900 dark:text-white"
+                        class="text-base font-semibold text-card-foreground"
                     >
                         Pending Verifications
                     </h3>
                     <Link
                         href="/admin/verifications/pending"
-                        class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                        class="text-sm font-medium text-primary hover:text-primary/80"
                     >
                         View all
                     </Link>
@@ -1065,10 +1002,10 @@ const quickActions = [
                         v-for="v in recentActivity.pendingVerifications"
                         :key="v.id"
                         :href="`/admin/verifications/${v.id}`"
-                        class="group flex items-center gap-3 rounded-xl border border-slate-200/80 p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md dark:border-slate-700 dark:hover:border-blue-800"
+                        class="group flex items-center gap-3 rounded-xl border border-border/60 p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
                     >
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40"
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40"
                         >
                             <FileCheck
                                 class="h-5 w-5 text-blue-600 dark:text-blue-400"
@@ -1076,18 +1013,16 @@ const quickActions = [
                         </div>
                         <div class="min-w-0 flex-1">
                             <p
-                                class="truncate text-sm font-medium text-slate-900 dark:text-white"
+                                class="truncate text-sm font-medium text-card-foreground"
                             >
                                 {{ v.userName }}
                             </p>
-                            <p
-                                class="text-xs text-slate-500 dark:text-slate-400"
-                            >
+                            <p class="text-xs text-muted-foreground">
                                 {{ v.roleLabel }} · {{ v.createdAt }}
                             </p>
                         </div>
                         <ArrowRight
-                            class="h-4 w-4 shrink-0 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-blue-500 dark:text-slate-600"
+                            class="h-4 w-4 shrink-0 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
                         />
                     </Link>
                 </div>
@@ -1095,40 +1030,17 @@ const quickActions = [
 
             <!-- Quick Access -->
             <div>
-                <h3
-                    class="mb-4 text-base font-semibold text-slate-900 dark:text-white"
+                <h2
+                    class="mb-4 text-base font-semibold text-card-foreground"
                 >
                     Quick Access
-                </h3>
+                </h2>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <Link
+                    <ActionCard
                         v-for="action in quickActions"
                         :key="action.title"
-                        :href="action.href"
-                        class="group relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-700/60 dark:bg-slate-900"
-                        :class="action.hoverBorder"
-                    >
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br text-white shadow-lg transition-transform duration-300 group-hover:scale-110"
-                            :class="[action.gradient, action.shadow]"
-                        >
-                            <component :is="action.icon" class="h-5 w-5" />
-                        </div>
-                        <h4
-                            class="mt-3.5 text-sm font-semibold tracking-tight text-slate-900 dark:text-white"
-                        >
-                            {{ action.title }}
-                        </h4>
-                        <p
-                            class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400"
-                        >
-                            {{ action.description }}
-                        </p>
-                        <ArrowRight
-                            class="mt-3 h-4 w-4 text-slate-400 transition-transform duration-300 group-hover:translate-x-1"
-                            :class="action.arrowColor"
-                        />
-                    </Link>
+                        v-bind="action"
+                    />
                 </div>
             </div>
         </div>

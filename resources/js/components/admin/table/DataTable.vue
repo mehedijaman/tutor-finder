@@ -35,7 +35,7 @@ const props = defineProps({
     },
     showSerial: {
         type: Boolean,
-        default: true,
+        default: false,
     },
 });
 
@@ -101,7 +101,7 @@ function mobilePaginationLabel(): string {
 
 <template>
     <div
-        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-slate-900/5 dark:border-slate-700/80 dark:bg-slate-900 dark:ring-slate-50/5"
+        class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
         <div class="overflow-x-auto">
             <table
@@ -110,12 +110,12 @@ function mobilePaginationLabel(): string {
                 aria-label="Data table"
             >
                 <thead
-                    class="border-b border-slate-200/80 bg-slate-50/80 dark:border-slate-700/60 dark:bg-slate-800/50"
+                    class="border-b border-border bg-muted/50"
                 >
                     <tr>
                         <th
                             v-if="showSerial"
-                            class="px-4 py-3.5 text-center text-xs font-semibold tracking-wider whitespace-nowrap text-slate-500 uppercase dark:text-slate-400"
+                            class="px-4 py-3.5 text-center text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
                             style="width: 56px"
                         >
                             SL
@@ -123,14 +123,14 @@ function mobilePaginationLabel(): string {
                         <th
                             v-for="column in columns"
                             :key="column.key"
-                            class="px-4 py-3.5 text-xs font-semibold tracking-wider whitespace-nowrap text-slate-500 uppercase dark:text-slate-400"
+                            class="px-4 py-3.5 text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
                             :class="column.headerClass"
                         >
                             <Button
                                 v-if="column.sortable"
                                 variant="ghost"
                                 size="sm"
-                                class="-ml-3 h-auto p-0 text-xs font-semibold tracking-wide text-slate-600 uppercase hover:bg-transparent hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                                class="-ml-3 h-auto p-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase hover:bg-transparent hover:text-foreground"
                                 :aria-label="`Sort by ${column.label}`"
                                 @click="toggleSort(column)"
                             >
@@ -145,7 +145,7 @@ function mobilePaginationLabel(): string {
                     </tr>
                 </thead>
 
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody class="divide-y divide-border/50">
                     <template v-if="loading">
                         <tr>
                             <td
@@ -156,7 +156,7 @@ function mobilePaginationLabel(): string {
                                     class="flex flex-col items-center gap-2 text-muted-foreground"
                                 >
                                     <div
-                                        class="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-blue-500"
+                                        class="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary"
                                     />
                                     <span class="text-sm">Loading...</span>
                                 </div>
@@ -168,18 +168,18 @@ function mobilePaginationLabel(): string {
                         <tr
                             v-for="(row, index) in rows"
                             :key="row[rowKey] ?? row.id"
-                            class="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/40"
+                            class="transition-colors hover:bg-muted/30"
                         >
                             <td
                                 v-if="showSerial"
-                                class="px-4 py-3.5 text-center text-xs font-medium whitespace-nowrap text-slate-400 tabular-nums dark:text-slate-500"
+                                class="px-4 py-3.5 text-center text-xs font-medium whitespace-nowrap text-muted-foreground tabular-nums"
                             >
                                 {{ serialNumber(index) }}
                             </td>
                             <td
                                 v-for="column in columns"
                                 :key="column.key"
-                                class="px-4 py-3.5 align-middle text-sm text-slate-700 dark:text-slate-200"
+                                class="px-4 py-3.5 align-middle text-sm text-card-foreground"
                                 :class="column.cellClass"
                             >
                                 <slot
@@ -203,10 +203,10 @@ function mobilePaginationLabel(): string {
                                     class="flex flex-col items-center gap-3 text-muted-foreground"
                                 >
                                     <div
-                                        class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800"
+                                        class="flex h-12 w-12 items-center justify-center rounded-full bg-muted"
                                     >
                                         <Inbox
-                                            class="h-6 w-6 text-slate-400 dark:text-slate-500"
+                                            class="h-6 w-6 text-muted-foreground"
                                         />
                                     </div>
                                     <p class="text-sm font-medium">
@@ -222,7 +222,7 @@ function mobilePaginationLabel(): string {
 
         <div
             v-if="hasPagination"
-            class="border-t border-slate-200/80 px-4 py-3 dark:border-slate-700/80"
+            class="border-t border-border px-4 py-3"
             role="navigation"
             aria-label="Pagination"
         >
@@ -231,7 +231,7 @@ function mobilePaginationLabel(): string {
             >
                 <span
                     v-if="items.from && items.to && items.total"
-                    class="text-center text-xs text-slate-500 sm:text-left dark:text-slate-400"
+                    class="text-center text-xs text-muted-foreground sm:text-left"
                 >
                     Showing {{ items.from }}–{{ items.to }} of {{ items.total }}
                 </span>
@@ -251,7 +251,7 @@ function mobilePaginationLabel(): string {
                         v-else
                         :href="previousLink.url"
                         preserve-scroll
-                        class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-medium text-card-foreground transition-colors hover:bg-muted"
                     >
                         Previous
                     </Link>
@@ -270,14 +270,14 @@ function mobilePaginationLabel(): string {
                         v-else
                         :href="nextLink.url"
                         preserve-scroll
-                        class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        class="inline-flex h-9 w-full items-center justify-center rounded-lg border border-border bg-card px-3 text-xs font-medium text-card-foreground transition-colors hover:bg-muted"
                     >
                         Next
                     </Link>
                 </div>
 
                 <span
-                    class="text-center text-xs text-slate-500 sm:hidden dark:text-slate-400"
+                    class="text-center text-xs text-muted-foreground sm:hidden"
                 >
                     {{ mobilePaginationLabel() }}
                 </span>
@@ -305,7 +305,7 @@ function mobilePaginationLabel(): string {
                             :class="
                                 link.active
                                     ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                                    : 'border-border bg-card text-card-foreground hover:bg-muted'
                             "
                             :aria-current="link.active ? 'page' : undefined"
                         >

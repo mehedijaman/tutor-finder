@@ -2,25 +2,28 @@
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import {
     Search,
-    Filter,
-    UserPlus,
     Trash2,
     RefreshCcw,
-    MoreHorizontal,
     Eye,
     ShieldAlert,
     ShieldCheck,
     Key,
     UserCircle,
-    ChevronDown,
     Shield,
     Phone,
     Mail,
     Clock,
+    Filter,
+    MoreHorizontal,
 } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import ResetPasswordDialog from '@/components/admin/dialogs/ResetPasswordDialog.vue';
+import DataTable from '@/components/admin/table/DataTable.vue';
+import PageHeading from '@/components/PageHeading.vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -29,12 +32,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -72,10 +70,24 @@ const resetPasswordUser = ref<any>(null);
 let searchDebounceTimer: any = null;
 
 const formErrors = computed(() => page.props.errors ?? {});
-
 const filteredItemsCount = computed(() => props.items.total || 0);
+const isTrash = computed(() => !!props.filters.trash);
 
-// Watchers for filter synchronization
+const columns = [
+    { key: 'identity', label: 'Tutor Identity', sortable: true },
+    { key: 'contact', label: 'Contact / Location' },
+    { key: 'status', label: 'Status', sortable: true },
+    { key: 'qualification', label: 'Qualification' },
+    { key: 'registered', label: 'Registered', sortable: true },
+    { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap text-right' },
+];
+
+const sortKeyMap: Record<string, string> = {
+    identity: 'name',
+    status: 'status',
+    registered: 'created_at',
+};
+
 watch(
     () => props.filters.search,
     (val) => (search.value = val ?? ''),
@@ -132,7 +144,8 @@ function applyFilters(overrides = {}) {
     );
 }
 
-function handleSort(key: string) {
+function handleSort(columnKey: string) {
+    const key = sortKeyMap[columnKey] ?? columnKey;
     const direction =
         props.filters.sort === key && props.filters.direction === 'asc'
             ? 'desc'
@@ -272,6 +285,7 @@ const formatDate = (date: string) => {
         year: 'numeric',
     });
 };
+
 function submitResetPassword(payload: any) {
     if (!resetPasswordUser.value) return;
     router.put(
@@ -287,6 +301,7 @@ function submitResetPassword(payload: any) {
         },
     );
 }
+
 function closeResetPasswordDialog() {
     resetPasswordOpen.value = false;
     resetPasswordUser.value = null;
@@ -294,539 +309,299 @@ function closeResetPasswordDialog() {
 </script>
 
 <template>
-    <Head title="Tutor Directory" />
+    <Head :title="isTrash ? 'Recycle Bin' : 'Tutor Directory'" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
-            <!-- Header Section -->
-            <div
-                class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
+            <PageHeading
+                :title="isTrash ? 'Recycle Bin' : 'Tutor Directory'"
+                :description="isTrash ? 'Manage recently deleted tutor profiles and data.' : `Total of ${filteredItemsCount} professional tutors registered.`"
             >
-                <div class="space-y-1">
-                    <h1
-                        class="text-3xl font-bold tracking-tight text-slate-900"
-                    >
-                        {{ filters.trash ? 'Recycle Bin' : 'Tutor Directory' }}
-                    </h1>
-                    <p class="text-sm font-medium text-slate-500">
-                        {{
-                            filters.trash
-                                ? 'Manage recently deleted tutor profiles and data.'
-                                : `Total of ${filteredItemsCount} profesional tutors registered.`
-                        }}
-                    </p>
-                </div>
-
-                <div class="flex items-center gap-2.5">
+                <template #actions>
                     <Button
                         variant="outline"
                         as-child
-                        class="rounded-xl border-slate-200"
                     >
                         <Link
                             :href="
-                                filters.trash
+                                isTrash
                                     ? '/admin/tutors'
                                     : '/admin/tutors?trash=1'
                             "
                         >
                             <Trash2
-                                v-if="!filters.trash"
-                                class="mr-2 h-4 w-4 text-slate-400"
+                                v-if="!isTrash"
+                                class="mr-2 h-4 w-4 text-muted-foreground"
                             />
                             <RefreshCcw
                                 v-else
-                                class="mr-2 h-4 w-4 text-slate-400"
+                                class="mr-2 h-4 w-4 text-muted-foreground"
                             />
-                            {{
-                                filters.trash
-                                    ? 'Back to Directory'
-                                    : 'Recycle Bin'
-                            }}
+                            {{ isTrash ? 'Back to Directory' : 'Recycle Bin' }}
                         </Link>
                     </Button>
 
-                    <template v-if="filters.trash">
+                    <template v-if="isTrash">
                         <Button
                             variant="outline"
                             @click="openConfirm('restore-all')"
-                            class="rounded-xl border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                            class="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                         >
                             Restore All
                         </Button>
                         <Button
                             variant="destructive"
                             @click="openConfirm('empty-recycle-bin')"
-                            class="rounded-xl shadow-lg shadow-red-100"
+                            class="shadow-lg shadow-red-100"
                         >
                             Clear Trash
                         </Button>
                     </template>
+                </template>
+            </PageHeading>
+
+            <!-- Filters -->
+            <div
+                class="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:flex-row sm:p-6"
+            >
+                <div class="relative flex-1">
+                    <Search
+                        class="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                        v-model="search"
+                        placeholder="Search by name, phone or email..."
+                        class="h-11 rounded-xl border-border bg-muted/30 pl-10 focus-visible:ring-primary"
+                    />
                 </div>
+
+                <Select v-model="statusFilter">
+                    <SelectTrigger
+                        class="h-11 min-w-[180px] rounded-xl border-border"
+                    >
+                        <Filter class="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                        <SelectValue placeholder="All Status" />
+                    </SelectTrigger>
+                    <SelectContent class="rounded-xl">
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="suspended">Suspended</SelectItem>
+                        <SelectItem value="pending_verification">Pending Approval</SelectItem>
+                    </SelectContent>
+                </Select>
+
+                <Select v-model="verificationFilter">
+                    <SelectTrigger
+                        class="h-11 min-w-[180px] rounded-xl border-border"
+                    >
+                        <Shield class="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                        <SelectValue placeholder="Verification" />
+                    </SelectTrigger>
+                    <SelectContent class="rounded-xl">
+                        <SelectItem value="all">All Records</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="verified">Verified</SelectItem>
+                        <SelectItem value="unverified">Unverified</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
 
-            <!-- Filters & Stats Card -->
-            <Card
-                class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm"
+            <DataTable
+                :items="items"
+                :columns="columns"
+                :sort-by="filters.sort ?? ''"
+                :sort-direction="filters.direction ?? 'desc'"
+                @sort="handleSort"
             >
-                <CardContent class="p-6">
-                    <div
-                        class="grid grid-cols-1 gap-4 md:grid-cols-[1fr_200px_200px]"
-                    >
-                        <div class="relative">
-                            <Search
-                                class="absolute top-3.5 left-3.5 h-4 w-4 text-slate-400"
-                            />
-                            <Input
-                                v-model="search"
-                                placeholder="Search by name, phone or email identifier..."
-                                class="h-11 rounded-xl border-slate-200 bg-slate-50/50 pl-10 focus-visible:ring-indigo-500"
-                            />
-                        </div>
-
-                        <Select v-model="statusFilter">
-                            <SelectTrigger
-                                class="h-11 rounded-xl border-slate-200"
-                            >
-                                <Filter class="mr-2 h-4 w-4 text-slate-400" />
-                                <SelectValue placeholder="All Status" />
-                            </SelectTrigger>
-                            <SelectContent class="rounded-xl">
-                                <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="suspended"
-                                    >Suspended</SelectItem
-                                >
-                                <SelectItem value="pending_verification"
-                                    >Pending Approval</SelectItem
-                                >
-                            </SelectContent>
-                        </Select>
-
-                        <Select v-model="verificationFilter">
-                            <SelectTrigger
-                                class="h-11 rounded-xl border-slate-200"
-                            >
-                                <Shield class="mr-2 h-4 w-4 text-slate-400" />
-                                <SelectValue placeholder="Verification" />
-                            </SelectTrigger>
-                            <SelectContent class="rounded-xl">
-                                <SelectItem value="all">All Records</SelectItem>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="verified"
-                                    >Verified</SelectItem
-                                >
-                                <SelectItem value="unverified"
-                                    >Unverified</SelectItem
-                                >
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <!-- Main Table Grid -->
-            <div
-                class="overflow-hidden overflow-x-auto rounded-2xl border border-slate-200/60 bg-white shadow-sm"
-            >
-                <table class="w-full min-w-[1000px] border-collapse text-left">
-                    <thead>
-                        <tr class="border-b border-slate-100 bg-slate-50/50">
-                            <th
-                                @click="handleSort('name')"
-                                class="cursor-pointer p-4 px-6 text-[11px] font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
-                            >
-                                <div class="flex items-center gap-2">
-                                    Tutor Identity
-                                    <ChevronDown
-                                        v-if="filters.sort === 'name'"
-                                        :class="
-                                            cn(
-                                                'h-3 w-3',
-                                                filters.direction === 'desc'
-                                                    ? 'rotate-180'
-                                                    : '',
-                                            )
-                                        "
-                                    />
-                                </div>
-                            </th>
-                            <th
-                                class="p-4 px-6 text-[11px] font-bold tracking-widest text-slate-400 uppercase"
-                            >
-                                Contact / Location
-                            </th>
-                            <th
-                                @click="handleSort('status')"
-                                class="cursor-pointer p-4 px-6 text-[11px] font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
-                            >
-                                <div class="flex items-center gap-2">
-                                    Status
-                                    <ChevronDown
-                                        v-if="filters.sort === 'status'"
-                                        :class="
-                                            cn(
-                                                'h-3 w-3',
-                                                filters.direction === 'desc'
-                                                    ? 'rotate-180'
-                                                    : '',
-                                            )
-                                        "
-                                    />
-                                </div>
-                            </th>
-                            <th
-                                class="p-4 px-6 text-[11px] font-bold tracking-widest text-slate-400 uppercase"
-                            >
-                                Qualification
-                            </th>
-                            <th
-                                @click="handleSort('created_at')"
-                                class="cursor-pointer p-4 px-6 text-[11px] font-bold tracking-widest text-slate-400 uppercase transition-colors hover:text-indigo-600"
-                            >
-                                <div class="flex items-center gap-2">
-                                    Registered
-                                    <ChevronDown
-                                        v-if="filters.sort === 'created_at'"
-                                        :class="
-                                            cn(
-                                                'h-3 w-3',
-                                                filters.direction === 'desc'
-                                                    ? 'rotate-180'
-                                                    : '',
-                                            )
-                                        "
-                                    />
-                                </div>
-                            </th>
-                            <th
-                                class="p-4 px-6 text-right text-[11px] font-bold tracking-widest text-slate-400 uppercase"
-                            >
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        <tr
-                            v-for="row in items.data"
-                            :key="row.id"
-                            class="group transition-colors hover:bg-slate-50/50"
+                <template #cell-identity="{ row }">
+                    <div class="flex items-center gap-4">
+                        <Avatar
+                            class="h-12 w-12 border-2 border-border shadow-sm"
                         >
-                            <td class="p-4 px-6">
-                                <div class="flex items-center gap-4">
-                                    <Avatar
-                                        class="h-12 w-12 border-2 border-white shadow-sm transition-transform group-hover:scale-105"
-                                    >
-                                        <AvatarImage
-                                            v-if="row.photo_url"
-                                            :src="row.photo_url"
-                                        />
-                                        <AvatarFallback
-                                            class="bg-indigo-50 font-bold text-indigo-700 uppercase"
-                                        >
-                                            {{
-                                                row.name
-                                                    ?.split(' ')
-                                                    .map((n: string) => n[0])
-                                                    .join('')
-                                                    .slice(0, 2)
-                                            }}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div class="space-y-0.5">
-                                        <p
-                                            class="leading-none font-bold tracking-tight text-slate-900"
-                                        >
-                                            {{ row.name }}
-                                        </p>
-                                        <div
-                                            class="flex items-center gap-1.5 pt-1"
-                                        >
-                                            <Badge
-                                                variant="outline"
-                                                :class="
-                                                    cn(
-                                                        'h-4 rounded-md px-1.5 text-[9px] font-bold tracking-widest uppercase',
-                                                        verificationStatusColor(
-                                                            row.verification_status,
-                                                        ),
-                                                    )
-                                                "
-                                            >
-                                                {{
-                                                    row.verification_status ||
-                                                    'Unverified'
-                                                }}
-                                            </Badge>
-                                            <p
-                                                class="text-[10px] font-medium tracking-tighter text-slate-400 uppercase"
-                                            >
-                                                #{{ row.id }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="p-4 px-6">
-                                <div class="space-y-1.5">
-                                    <div
-                                        class="flex items-center gap-2 text-xs font-semibold text-slate-600"
-                                    >
-                                        <Phone
-                                            class="h-3 w-3 text-emerald-400"
-                                        />
-                                        {{ row.phone || '—' }}
-                                    </div>
-                                    <div
-                                        class="flex max-w-[200px] items-center gap-2 truncate text-[10px] font-medium text-slate-400"
-                                    >
-                                        <Mail class="h-3 w-3 opacity-60" />
-                                        {{ row.email || '—' }}
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="p-4 px-6">
+                            <AvatarImage
+                                v-if="row.photo_url"
+                                :src="row.photo_url"
+                            />
+                            <AvatarFallback
+                                class="bg-primary/10 font-bold text-primary uppercase"
+                            >
+                                {{
+                                    row.name
+                                        ?.split(' ')
+                                        .map((n: string) => n[0])
+                                        .join('')
+                                        .slice(0, 2)
+                                }}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div class="space-y-0.5">
+                            <p class="leading-none font-bold tracking-tight text-card-foreground">
+                                {{ row.name }}
+                            </p>
+                            <div class="flex items-center gap-1.5 pt-1">
                                 <Badge
                                     variant="outline"
                                     :class="
                                         cn(
-                                            'rounded-full px-2.5 py-0.5 text-[9px] font-bold tracking-widest uppercase',
-                                            statusColor(row.status),
+                                            'h-4 rounded-md px-1.5 text-[9px] font-bold tracking-widest uppercase',
+                                            verificationStatusColor(
+                                                row.verification_status,
+                                            ),
                                         )
                                     "
                                 >
-                                    {{ row.status?.replace('_', ' ') }}
+                                    {{ row.verification_status || 'Unverified' }}
                                 </Badge>
-                            </td>
-                            <td class="p-4 px-6">
-                                <div
-                                    class="flex items-center gap-2 text-xs font-bold text-slate-700"
-                                >
-                                    <div
-                                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50"
-                                    >
-                                        <Clock
-                                            class="h-4 w-4 text-indigo-500"
-                                        />
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p
-                                            class="truncate tracking-tight uppercase"
-                                        >
-                                            {{
-                                                row.profile?.educations?.[0]
-                                                    ?.degree || 'No Degree'
-                                            }}
-                                        </p>
-                                        <p
-                                            class="truncate text-[10px] font-medium text-slate-400"
-                                        >
-                                            {{
-                                                row.profile?.educations?.[0]
-                                                    ?.institute ||
-                                                'Institution missing'
-                                            }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="p-4 px-6">
-                                <p class="text-xs font-bold text-slate-600">
-                                    {{ formatDate(row.created_at) }}
-                                </p>
-                                <p
-                                    class="text-[10px] font-medium text-slate-300"
-                                >
-                                    Registered
-                                </p>
-                            </td>
-                            <td class="p-4 px-6 text-right">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger as-child>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            class="h-9 w-9 rounded-xl hover:bg-slate-100"
-                                        >
-                                            <MoreHorizontal class="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent
-                                        align="end"
-                                        class="w-48 rounded-xl border-slate-100 p-1.5 shadow-xl"
-                                    >
-                                        <DropdownMenuLabel
-                                            class="px-2 py-1.5 text-[10px] font-bold tracking-widest text-slate-400 uppercase"
-                                            >Record Actions</DropdownMenuLabel
-                                        >
-                                        <DropdownMenuItem
-                                            @click="
-                                                handleRowAction('view', row)
-                                            "
-                                            class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
-                                        >
-                                            <Eye
-                                                class="h-4 w-4 text-indigo-500"
-                                            />
-                                            View / Edit Profile
-                                        </DropdownMenuItem>
+                                <span class="text-[10px] font-medium tracking-tighter text-muted-foreground uppercase">
+                                    #{{ row.id }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
 
-                                        <template v-if="!filters.trash">
-                                            <DropdownMenuItem
-                                                @click="
-                                                    handleRowAction(
-                                                        'reset-password',
-                                                        row,
-                                                    )
-                                                "
-                                                class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
-                                            >
-                                                <Key
-                                                    class="h-4 w-4 text-emerald-500"
-                                                />
-                                                Reset Password
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                v-if="canImpersonateRow(row)"
-                                                @click="
-                                                    handleRowAction(
-                                                        'impersonate',
-                                                        row,
-                                                    )
-                                                "
-                                                class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
-                                            >
-                                                <UserCircle
-                                                    class="h-4 w-4 text-blue-500"
-                                                />
-                                                Impersonate
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                                @click="
-                                                    handleRowAction(
-                                                        row.status === 'active'
-                                                            ? 'suspend'
-                                                            : 'unsuspend',
-                                                        row,
-                                                    )
-                                                "
-                                                class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
-                                            >
-                                                <ShieldAlert
-                                                    v-if="
-                                                        row.status === 'active'
-                                                    "
-                                                    class="h-4 w-4 text-orange-500"
-                                                />
-                                                <ShieldCheck
-                                                    v-else
-                                                    class="h-4 w-4 text-emerald-500"
-                                                />
-                                                {{
-                                                    row.status === 'active'
-                                                        ? 'Suspend'
-                                                        : 'Unsuspend'
-                                                }}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                @click="
-                                                    handleRowAction(
-                                                        'delete',
-                                                        row,
-                                                    )
-                                                "
-                                                class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold text-red-600 focus:bg-red-50 focus:text-red-700"
-                                            >
-                                                <Trash2 class="h-4 w-4" /> Move
-                                                to Trash
-                                            </DropdownMenuItem>
-                                        </template>
+                <template #cell-contact="{ row }">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2 text-xs font-semibold text-card-foreground">
+                            <Phone class="h-3 w-3 text-emerald-400" />
+                            {{ row.phone || '—' }}
+                        </div>
+                        <div class="flex max-w-[200px] items-center gap-2 truncate text-[10px] font-medium text-muted-foreground">
+                            <Mail class="h-3 w-3 opacity-60" />
+                            {{ row.email || '—' }}
+                        </div>
+                    </div>
+                </template>
 
-                                        <template v-else>
-                                            <DropdownMenuItem
-                                                @click="
-                                                    handleRowAction(
-                                                        'restore',
-                                                        row,
-                                                    )
-                                                "
-                                                class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold text-emerald-600 focus:text-emerald-700"
-                                            >
-                                                <RefreshCcw class="h-4 w-4" />
-                                                Restore Profile
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                @click="
-                                                    handleRowAction(
-                                                        'force-delete',
-                                                        row,
-                                                    )
-                                                "
-                                                class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold text-red-600 focus:text-red-700"
-                                            >
-                                                <Trash2 class="h-4 w-4" />
-                                                Delete Permanently
-                                            </DropdownMenuItem>
-                                        </template>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </td>
-                        </tr>
-                        <tr v-if="items.data.length === 0">
-                            <td colspan="6" class="p-12 text-center">
-                                <div
-                                    class="flex flex-col items-center justify-center space-y-3"
-                                >
-                                    <div
-                                        class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50"
-                                    >
-                                        <Search
-                                            class="h-6 w-6 text-slate-200"
-                                        />
-                                    </div>
-                                    <div class="space-y-1">
-                                        <p
-                                            class="text-sm font-bold text-slate-900"
-                                        >
-                                            No results found
-                                        </p>
-                                        <p
-                                            class="text-xs font-medium text-slate-500"
-                                        >
-                                            Try adjusting your filters or search
-                                            query.
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="flex items-center justify-between px-2">
-                <p
-                    class="text-xs font-bold tracking-widest text-slate-400 uppercase"
-                >
-                    Showing {{ items.from || 0 }} - {{ items.to || 0 }} of
-                    {{ items.total || 0 }}
-                </p>
-                <div class="flex items-center gap-1.5">
-                    <Button
-                        v-for="link in items.links"
-                        :key="link.label"
+                <template #cell-status="{ row }">
+                    <Badge
                         variant="outline"
-                        size="sm"
-                        class="h-9 rounded-lg text-xs font-bold"
-                        :disabled="!link.url || link.active"
-                        @click="router.visit(link.url)"
+                        :class="
+                            cn(
+                                'rounded-full px-2.5 py-0.5 text-[9px] font-bold tracking-widest uppercase',
+                                statusColor(row.status),
+                            )
+                        "
                     >
-                        <span v-html="link.label"></span>
-                    </Button>
-                </div>
-            </div>
+                        {{ row.status?.replace('_', ' ') }}
+                    </Badge>
+                </template>
+
+                <template #cell-qualification="{ row }">
+                    <div class="flex items-center gap-2 text-xs font-bold text-card-foreground">
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                            <Clock class="h-4 w-4 text-primary" />
+                        </div>
+                        <div class="min-w-0">
+                            <p class="truncate tracking-tight uppercase">
+                                {{ row.profile?.educations?.[0]?.degree || 'No Degree' }}
+                            </p>
+                            <p class="truncate text-[10px] font-medium text-muted-foreground">
+                                {{ row.profile?.educations?.[0]?.institute || 'Institution missing' }}
+                            </p>
+                        </div>
+                    </div>
+                </template>
+
+                <template #cell-registered="{ row }">
+                    <p class="text-xs font-bold text-card-foreground">
+                        {{ formatDate(row.created_at) }}
+                    </p>
+                    <p class="text-[10px] font-medium text-muted-foreground">
+                        Registered
+                    </p>
+                </template>
+
+                <template #cell-actions="{ row }">
+                    <div class="flex items-center justify-end">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="h-9 w-9 rounded-xl hover:bg-muted"
+                                >
+                                    <MoreHorizontal class="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="end"
+                                class="w-48 rounded-xl border-border p-1.5 shadow-xl"
+                            >
+                                <DropdownMenuLabel
+                                    class="px-2 py-1.5 text-[10px] font-bold tracking-widest text-muted-foreground uppercase"
+                                >
+                                    Record Actions
+                                </DropdownMenuLabel>
+                                <DropdownMenuItem
+                                    @click="handleRowAction('view', row)"
+                                    class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
+                                >
+                                    <Eye class="h-4 w-4 text-primary" />
+                                    View / Edit Profile
+                                </DropdownMenuItem>
+
+                                <template v-if="!isTrash">
+                                    <DropdownMenuItem
+                                        @click="handleRowAction('reset-password', row)"
+                                        class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
+                                    >
+                                        <Key class="h-4 w-4 text-emerald-500" />
+                                        Reset Password
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        v-if="canImpersonateRow(row)"
+                                        @click="handleRowAction('impersonate', row)"
+                                        class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
+                                    >
+                                        <UserCircle class="h-4 w-4 text-blue-500" />
+                                        Impersonate
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        @click="handleRowAction(row.status === 'active' ? 'suspend' : 'unsuspend', row)"
+                                        class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
+                                    >
+                                        <ShieldAlert
+                                            v-if="row.status === 'active'"
+                                            class="h-4 w-4 text-orange-500"
+                                        />
+                                        <ShieldCheck
+                                            v-else
+                                            class="h-4 w-4 text-emerald-500"
+                                        />
+                                        {{ row.status === 'active' ? 'Suspend' : 'Unsuspend' }}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        @click="handleRowAction('delete', row)"
+                                        class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold text-red-600 focus:bg-red-50 focus:text-red-700"
+                                    >
+                                        <Trash2 class="h-4 w-4" />
+                                        Move to Trash
+                                    </DropdownMenuItem>
+                                </template>
+
+                                <template v-else>
+                                    <DropdownMenuItem
+                                        @click="handleRowAction('restore', row)"
+                                        class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold text-emerald-600 focus:text-emerald-700"
+                                    >
+                                        <RefreshCcw class="h-4 w-4" />
+                                        Restore Profile
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        @click="handleRowAction('force-delete', row)"
+                                        class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold text-red-600 focus:text-red-700"
+                                    >
+                                        <Trash2 class="h-4 w-4" />
+                                        Delete Permanently
+                                    </DropdownMenuItem>
+                                </template>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                </template>
+            </DataTable>
         </div>
 
         <ConfirmDialog
@@ -847,42 +622,3 @@ function closeResetPasswordDialog() {
         />
     </AdminLayout>
 </template>
-
-<style scoped>
-.divide-y > tr:last-child {
-    border-bottom: none;
-}
-
-::-webkit-scrollbar {
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #cbd5e1;
-}
-
-/* Custom animation */
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-tbody tr {
-    animation: slideUp 0.3s ease-out forwards;
-}
-</style>

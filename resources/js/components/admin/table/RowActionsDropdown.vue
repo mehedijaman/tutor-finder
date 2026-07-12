@@ -33,6 +33,12 @@ function selectAction(action) {
 
     emit('select', action.key);
 }
+
+function getIconComponent(iconName) {
+    if (!iconName) return null;
+
+    return iconName;
+}
 </script>
 
 <template>
@@ -51,6 +57,11 @@ function selectAction(action) {
                 :variant="action.destructive ? 'destructive' : 'default'"
                 @select.prevent="selectAction(action)"
             >
+                <component
+                    :is="getIconComponent(action.icon)"
+                    v-if="action.icon"
+                    class="mr-2 h-4 w-4"
+                />
                 {{ action.label }}
             </DropdownMenuItem>
         </DropdownMenuContent>

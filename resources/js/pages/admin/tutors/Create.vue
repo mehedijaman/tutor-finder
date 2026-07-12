@@ -2,7 +2,6 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import {
     BookOpen,
-    Briefcase,
     Calendar,
     CheckCircle2,
     ChevronLeft,
@@ -17,9 +16,9 @@ import {
     Shield,
     Trash2,
     User,
-    UserPlus,
 } from 'lucide-vue-next';
 import InputError from '@/components/InputError.vue';
+import PageHeading from '@/components/PageHeading.vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -63,14 +62,12 @@ const form = useForm({
     status: 'active',
     password: '',
     password_confirmation: '',
-    // Basic Profile
     gender: 'male',
     date_of_birth: '',
     present_address: '',
     permanent_address: '',
     nid_no: '',
     bio: '',
-    // Preferences
     preferred_tuition_types: [] as number[],
     preferred_categories: [] as number[],
     preferred_classes: [] as number[],
@@ -80,7 +77,6 @@ const form = useForm({
     expected_salary_max: '',
     available_days: [] as string[],
     available_time: '',
-    // Education
     educations: [] as any[],
 });
 
@@ -124,39 +120,26 @@ const submit = () => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto max-w-5xl space-y-8 p-4 sm:p-6 lg:p-10">
-            <!-- Header Section -->
-            <div
-                class="mb-2 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-            >
-                <div class="space-y-1">
-                    <h1
-                        class="flex items-center gap-3 text-3xl font-bold tracking-tight text-slate-900"
-                    >
-                        <div
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 shadow-lg shadow-indigo-200"
-                        >
-                            <UserPlus class="h-6 w-6 text-white" />
-                        </div>
-                        Register Complete Tutor
-                    </h1>
-                    <p class="text-sm font-medium text-slate-500">
-                        Create account, set preferences and add education
-                        history in one step.
-                    </p>
-                </div>
-
-                <Button
-                    variant="ghost"
-                    as-child
-                    class="group rounded-xl transition-all hover:bg-slate-100"
+            <div class="flex items-center justify-between">
+                <PageHeading
+                    title="Register Complete Tutor"
+                    description="Create account, set preferences and add education history in one step."
                 >
-                    <Link href="/admin/tutors" class="flex items-center">
-                        <ChevronLeft
-                            class="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
-                        />
-                        Back to Directory
-                    </Link>
-                </Button>
+                    <template #actions>
+                        <Button
+                            variant="ghost"
+                            as-child
+                            class="group"
+                        >
+                            <Link href="/admin/tutors" class="flex items-center">
+                                <ChevronLeft
+                                    class="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
+                                />
+                                Back to Directory
+                            </Link>
+                        </Button>
+                    </template>
+                </PageHeading>
             </div>
 
             <form @submit.prevent="submit" class="space-y-8 pb-20">
@@ -176,9 +159,10 @@ const submit = () => {
                         </ul>
                     </div>
                 </div>
+
                 <!-- Section 1: Account Credentials -->
                 <Card
-                    class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm"
+                    class="overflow-hidden rounded-2xl border-border/60 shadow-sm"
                 >
                     <CardHeader
                         class="border-b border-indigo-100/50 bg-indigo-50/30 p-6"
@@ -191,13 +175,15 @@ const submit = () => {
                             </div>
                             <div>
                                 <CardTitle
-                                    class="text-lg font-bold text-slate-900"
-                                    >Security & Status</CardTitle
+                                    class="text-lg font-bold text-card-foreground"
                                 >
+                                    Security & Status
+                                </CardTitle>
                                 <CardDescription
                                     class="text-xs font-medium tracking-wider text-indigo-600/80 uppercase"
-                                    >Account Authentication</CardDescription
                                 >
+                                    Account Authentication
+                                </CardDescription>
                             </div>
                         </div>
                     </CardHeader>
@@ -205,12 +191,13 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="name"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Full Name</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Full Name
+                            </Label>
                             <div class="relative">
                                 <User
-                                    class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                    class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     v-model="form.name"
@@ -225,26 +212,21 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="status"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Initial Status</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Initial Status
+                            </Label>
                             <Select v-model="form.status">
                                 <SelectTrigger class="h-11 rounded-xl">
                                     <Shield
-                                        class="mr-2 h-4 w-4 text-slate-400"
+                                        class="mr-2 h-4 w-4 text-muted-foreground"
                                     />
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                                 <SelectContent class="rounded-xl">
-                                    <SelectItem value="active"
-                                        >Active</SelectItem
-                                    >
-                                    <SelectItem value="suspended"
-                                        >Suspended</SelectItem
-                                    >
-                                    <SelectItem value="pending_verification"
-                                        >Pending Verification</SelectItem
-                                    >
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="suspended">Suspended</SelectItem>
+                                    <SelectItem value="pending_verification">Pending Verification</SelectItem>
                                 </SelectContent>
                             </Select>
                             <InputError :message="form.errors.status" />
@@ -253,12 +235,13 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="email"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Email Address</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Email Address
+                            </Label>
                             <div class="relative">
                                 <Mail
-                                    class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                    class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     v-model="form.email"
@@ -273,12 +256,13 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="phone"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Phone Number</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Phone Number
+                            </Label>
                             <div class="relative">
                                 <Phone
-                                    class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                    class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     v-model="form.phone"
@@ -293,12 +277,13 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="password"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Temporary Password</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Temporary Password
+                            </Label>
                             <div class="relative">
                                 <Lock
-                                    class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                    class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     v-model="form.password"
@@ -313,12 +298,13 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="password_confirmation"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Confirm Password</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Confirm Password
+                            </Label>
                             <div class="relative">
                                 <CheckCircle2
-                                    class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                    class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     v-model="form.password_confirmation"
@@ -336,7 +322,7 @@ const submit = () => {
 
                 <!-- Section 2: Personal Profile Details -->
                 <Card
-                    class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm"
+                    class="overflow-hidden rounded-2xl border-border/60 shadow-sm"
                 >
                     <CardHeader
                         class="border-b border-emerald-100/50 bg-emerald-50/30 p-6"
@@ -349,31 +335,32 @@ const submit = () => {
                             </div>
                             <div>
                                 <CardTitle
-                                    class="text-lg font-bold text-slate-900"
-                                    >Personal Information</CardTitle
+                                    class="text-lg font-bold text-card-foreground"
                                 >
+                                    Personal Information
+                                </CardTitle>
                                 <CardDescription
                                     class="text-xs font-medium tracking-wider text-emerald-600/80 uppercase"
-                                    >Bio & Identity</CardDescription
                                 >
+                                    Bio & Identity
+                                </CardDescription>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent class="grid gap-6 p-6 md:grid-cols-2">
                         <div class="space-y-2">
                             <Label
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Gender</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Gender
+                            </Label>
                             <Select v-model="form.gender">
                                 <SelectTrigger class="h-11 rounded-xl">
                                     <SelectValue placeholder="Select gender" />
                                 </SelectTrigger>
                                 <SelectContent class="rounded-xl">
                                     <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female"
-                                        >Female</SelectItem
-                                    >
+                                    <SelectItem value="female">Female</SelectItem>
                                     <SelectItem value="other">Other</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -382,12 +369,13 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="date_of_birth"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Date of Birth</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Date of Birth
+                            </Label>
                             <div class="relative">
                                 <Calendar
-                                    class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                    class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     v-model="form.date_of_birth"
@@ -400,12 +388,13 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="nid_no"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Identity (NID/Passport)</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Identity (NID/Passport)
+                            </Label>
                             <div class="relative">
                                 <Contact
-                                    class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                    class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                 />
                                 <Input
                                     v-model="form.nid_no"
@@ -418,9 +407,10 @@ const submit = () => {
                         <div class="space-y-2 md:col-span-2">
                             <Label
                                 for="bio"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Professional Bio</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Professional Bio
+                            </Label>
                             <Textarea
                                 v-model="form.bio"
                                 rows="3"
@@ -432,9 +422,10 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="present_address"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Present Address</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Present Address
+                            </Label>
                             <Textarea
                                 v-model="form.present_address"
                                 rows="2"
@@ -445,9 +436,10 @@ const submit = () => {
                         <div class="space-y-2">
                             <Label
                                 for="permanent_address"
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Permanent Address</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Permanent Address
+                            </Label>
                             <Textarea
                                 v-model="form.permanent_address"
                                 rows="2"
@@ -459,7 +451,7 @@ const submit = () => {
 
                 <!-- Section 3: Tuition Preferences -->
                 <Card
-                    class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm"
+                    class="overflow-hidden rounded-2xl border-border/60 shadow-sm"
                 >
                     <CardHeader
                         class="border-b border-amber-100/50 bg-amber-50/30 p-6"
@@ -472,27 +464,28 @@ const submit = () => {
                             </div>
                             <div>
                                 <CardTitle
-                                    class="text-lg font-bold text-slate-900"
-                                    >Tuition Preferences</CardTitle
+                                    class="text-lg font-bold text-card-foreground"
                                 >
+                                    Tuition Preferences
+                                </CardTitle>
                                 <CardDescription
                                     class="text-xs font-medium tracking-wider text-amber-600/80 uppercase"
-                                    >Subjects, Locations &
-                                    Rates</CardDescription
                                 >
+                                    Subjects, Locations & Rates
+                                </CardDescription>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent class="grid gap-8 p-6">
-                        <!-- Multi Select Groups -->
                         <div class="grid gap-6 md:grid-cols-2">
                             <div class="space-y-3">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Preferred Methods</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Preferred Methods
+                                </Label>
                                 <div
-                                    class="grid grid-cols-2 gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4"
+                                    class="grid grid-cols-2 gap-3 rounded-2xl border border-border/60 bg-muted/30 p-4"
                                 >
                                     <div
                                         v-for="type in tuitionTypes"
@@ -516,17 +509,19 @@ const submit = () => {
                                         <label
                                             :for="'type-' + type.id"
                                             class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                            >{{ type.name }}</label
                                         >
+                                            {{ type.name }}
+                                        </label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="space-y-3">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Available Days</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Available Days
+                                </Label>
                                 <div class="flex flex-wrap gap-2">
                                     <Button
                                         v-for="day in dayOptions"
@@ -540,8 +535,8 @@ const submit = () => {
                                                 form.available_days.includes(
                                                     day.value,
                                                 )
-                                                    ? 'border-transparent bg-indigo-600 text-white shadow-md shadow-indigo-100/50'
-                                                    : 'bg-white text-slate-600 hover:bg-slate-50',
+                                                    ? 'border-transparent bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                                                    : 'bg-card text-card-foreground hover:bg-muted',
                                             )
                                         "
                                         @click="toggleDay(day.value)"
@@ -555,16 +550,17 @@ const submit = () => {
                         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             <div class="space-y-3">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Categories</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Categories
+                                </Label>
                                 <div
-                                    class="max-h-[160px] scrollbar-thin scrollbar-thumb-slate-200 space-y-2 overflow-y-auto pr-2"
+                                    class="max-h-[160px] scrollbar-thin scrollbar-thumb-border space-y-2 overflow-y-auto pr-2"
                                 >
                                     <div
                                         v-for="item in categories"
                                         :key="item.id"
-                                        class="flex items-center space-x-2 rounded-lg p-1.5 transition-colors hover:bg-slate-50"
+                                        class="flex items-center space-x-2 rounded-lg p-1.5 transition-colors hover:bg-muted"
                                     >
                                         <Checkbox
                                             :id="'cat-' + item.id"
@@ -583,24 +579,26 @@ const submit = () => {
                                         <label
                                             :for="'cat-' + item.id"
                                             class="text-xs font-medium"
-                                            >{{ item.name }}</label
                                         >
+                                            {{ item.name }}
+                                        </label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="space-y-3">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Classes</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Classes
+                                </Label>
                                 <div
-                                    class="max-h-[160px] scrollbar-thin scrollbar-thumb-slate-200 space-y-2 overflow-y-auto pr-2"
+                                    class="max-h-[160px] scrollbar-thin scrollbar-thumb-border space-y-2 overflow-y-auto pr-2"
                                 >
                                     <div
                                         v-for="item in schoolClasses"
                                         :key="item.id"
-                                        class="flex items-center space-x-2 rounded-lg p-1.5 transition-colors hover:bg-slate-50"
+                                        class="flex items-center space-x-2 rounded-lg p-1.5 transition-colors hover:bg-muted"
                                     >
                                         <Checkbox
                                             :id="'class-' + item.id"
@@ -619,24 +617,26 @@ const submit = () => {
                                         <label
                                             :for="'class-' + item.id"
                                             class="text-xs font-medium"
-                                            >{{ item.name }}</label
                                         >
+                                            {{ item.name }}
+                                        </label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="space-y-3">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Locations (Areas)</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Locations (Areas)
+                                </Label>
                                 <div
-                                    class="max-h-[160px] scrollbar-thin scrollbar-thumb-slate-200 space-y-2 overflow-y-auto pr-2"
+                                    class="max-h-[160px] scrollbar-thin scrollbar-thumb-border space-y-2 overflow-y-auto pr-2"
                                 >
                                     <div
                                         v-for="item in locations"
                                         :key="item.id"
-                                        class="flex items-center space-x-2 rounded-lg p-1.5 transition-colors hover:bg-slate-50"
+                                        class="flex items-center space-x-2 rounded-lg p-1.5 transition-colors hover:bg-muted"
                                     >
                                         <Checkbox
                                             :id="'loc-' + item.id"
@@ -655,20 +655,22 @@ const submit = () => {
                                         <label
                                             :for="'loc-' + item.id"
                                             class="text-xs font-medium"
-                                            >{{ item.name }}</label
                                         >
+                                            {{ item.name }}
+                                        </label>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="space-y-3 border-t border-slate-100 pt-6">
+                        <div class="space-y-3 border-t border-border/60 pt-6">
                             <Label
-                                class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                >Preferred Subjects</Label
+                                class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                             >
+                                Preferred Subjects
+                            </Label>
                             <div
-                                class="grid max-h-[200px] grid-cols-2 gap-x-6 gap-y-3 overflow-y-auto rounded-2xl border border-slate-100 bg-slate-50/30 p-4 md:grid-cols-3 lg:grid-cols-4"
+                                class="grid max-h-[200px] grid-cols-2 gap-x-6 gap-y-3 overflow-y-auto rounded-2xl border border-border/60 bg-muted/30 p-4 md:grid-cols-3 lg:grid-cols-4"
                             >
                                 <div
                                     v-for="item in subjects"
@@ -692,8 +694,9 @@ const submit = () => {
                                     <label
                                         :for="'sub-' + item.id"
                                         class="truncate text-xs font-medium"
-                                        >{{ item.name }}</label
                                     >
+                                        {{ item.name }}
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -701,12 +704,13 @@ const submit = () => {
                         <div class="grid gap-6 pt-4 md:grid-cols-3">
                             <div class="space-y-2">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Expected Salary (Min)</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Expected Salary (Min)
+                                </Label>
                                 <div class="relative">
                                     <DollarSign
-                                        class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                        class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                     />
                                     <Input
                                         v-model="form.expected_salary_min"
@@ -718,12 +722,13 @@ const submit = () => {
                             </div>
                             <div class="space-y-2">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Expected Salary (Max)</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Expected Salary (Max)
+                                </Label>
                                 <div class="relative">
                                     <DollarSign
-                                        class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                        class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                     />
                                     <Input
                                         v-model="form.expected_salary_max"
@@ -735,12 +740,13 @@ const submit = () => {
                             </div>
                             <div class="space-y-2">
                                 <Label
-                                    class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                    >Available Time</Label
+                                    class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                 >
+                                    Available Time
+                                </Label>
                                 <div class="relative">
                                     <Clock
-                                        class="absolute top-3 left-3.5 h-4 w-4 text-slate-400"
+                                        class="absolute top-3 left-3.5 h-4 w-4 text-muted-foreground"
                                     />
                                     <Input
                                         v-model="form.available_time"
@@ -755,7 +761,7 @@ const submit = () => {
 
                 <!-- Section 4: Education History -->
                 <Card
-                    class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm"
+                    class="overflow-hidden rounded-2xl border-border/60 shadow-sm"
                 >
                     <CardHeader
                         class="flex flex-row items-center justify-between border-b border-blue-100/50 bg-blue-50/30 p-6"
@@ -768,13 +774,15 @@ const submit = () => {
                             </div>
                             <div>
                                 <CardTitle
-                                    class="text-lg font-bold text-slate-900"
-                                    >Education History</CardTitle
+                                    class="text-lg font-bold text-card-foreground"
                                 >
+                                    Education History
+                                </CardTitle>
                                 <CardDescription
                                     class="text-xs font-medium tracking-wider text-blue-600/80 uppercase"
-                                    >Academic Qualifications</CardDescription
                                 >
+                                    Academic Qualifications
+                                </CardDescription>
                             </div>
                         </div>
                         <Button
@@ -787,7 +795,7 @@ const submit = () => {
                             <Plus class="mr-2 h-4 w-4" /> Add Record
                         </Button>
                     </CardHeader>
-                    <CardContent class="divide-y divide-slate-100 p-0">
+                    <CardContent class="divide-y divide-border/60 p-0">
                         <div
                             v-for="(edu, index) in form.educations"
                             :key="index"
@@ -810,9 +818,10 @@ const submit = () => {
                             <div class="grid gap-6 md:grid-cols-2">
                                 <div class="space-y-2">
                                     <Label
-                                        class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                        >Degree Title</Label
+                                        class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                     >
+                                        Degree Title
+                                    </Label>
                                     <Input
                                         v-model="edu.degree"
                                         placeholder="e.g. B.Sc in CSE"
@@ -822,9 +831,10 @@ const submit = () => {
                                 </div>
                                 <div class="space-y-2">
                                     <Label
-                                        class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                        >Institute / University</Label
+                                        class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                     >
+                                        Institute / University
+                                    </Label>
                                     <Input
                                         v-model="edu.institute"
                                         placeholder="University name"
@@ -834,9 +844,10 @@ const submit = () => {
                                 </div>
                                 <div class="space-y-2 lg:col-span-1">
                                     <Label
-                                        class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                        >Department / Group</Label
+                                        class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                     >
+                                        Department / Group
+                                    </Label>
                                     <Input
                                         v-model="edu.department"
                                         placeholder="Department"
@@ -846,9 +857,10 @@ const submit = () => {
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-2">
                                         <Label
-                                            class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                            >Graduation Year</Label
+                                            class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                         >
+                                            Graduation Year
+                                        </Label>
                                         <Input
                                             v-model="edu.graduation_year"
                                             type="number"
@@ -858,9 +870,10 @@ const submit = () => {
                                     </div>
                                     <div class="space-y-2">
                                         <Label
-                                            class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
-                                            >Result / CGPA</Label
+                                            class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
                                         >
+                                            Result / CGPA
+                                        </Label>
                                         <Input
                                             v-model="edu.result"
                                             placeholder="e.g. 3.80"
@@ -899,9 +912,10 @@ const submit = () => {
                                 />
                                 <label
                                     :for="'current-' + index"
-                                    class="text-xs font-bold tracking-tight text-slate-600 uppercase"
-                                    >Currently Studying Here</label
+                                    class="text-xs font-bold tracking-tight text-card-foreground uppercase"
                                 >
+                                    Currently Studying Here
+                                </label>
                             </div>
                         </div>
 
@@ -910,20 +924,21 @@ const submit = () => {
                             class="p-12 text-center"
                         >
                             <div
-                                class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-50"
+                                class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted"
                             >
-                                <GraduationCap class="h-6 w-6 text-slate-300" />
+                                <GraduationCap class="h-6 w-6 text-muted-foreground" />
                             </div>
-                            <p class="text-sm font-medium text-slate-400">
+                            <p class="text-sm font-medium text-muted-foreground">
                                 No education records added yet.
                             </p>
                             <Button
                                 type="button"
                                 @click="addEducation"
                                 variant="link"
-                                class="mt-2 font-bold text-indigo-600"
-                                >Add your first record</Button
+                                class="mt-2 font-bold text-primary"
                             >
+                                Add your first record
+                            </Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -934,19 +949,19 @@ const submit = () => {
                         type="button"
                         variant="ghost"
                         as-child
-                        class="h-11 rounded-xl px-8 font-bold text-slate-400"
+                        class="h-11 rounded-xl px-8 font-bold text-muted-foreground"
                     >
                         <Link href="/admin/tutors">Cancel</Link>
                     </Button>
                     <Button
                         type="submit"
-                        class="h-11 rounded-xl bg-indigo-600 px-12 font-bold shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] hover:bg-indigo-700 active:scale-95"
+                        class="h-11 rounded-xl bg-primary px-12 font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] hover:bg-primary/90 active:scale-95"
                         :disabled="form.processing"
                     >
                         <span
                             v-if="form.processing"
                             class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"
-                        ></span>
+                        />
                         <CheckCircle2 v-else class="mr-2 h-4 w-4" />
                         {{
                             form.processing
@@ -961,46 +976,38 @@ const submit = () => {
 </template>
 
 <style scoped>
-/* Scrollbar cleanup */
 .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: var(--border);
     border-radius: 20px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: #cbd5e1;
 }
 
-/* Entry Animation */
 form > * {
     animation: slideUp 0.5s ease-out forwards;
     opacity: 0;
 }
-form > *:nth-child(1) {
-    animation-delay: 0.1s;
-}
-form > *:nth-child(2) {
-    animation-delay: 0.2s;
-}
-form > *:nth-child(3) {
-    animation-delay: 0.3s;
-}
-form > *:nth-child(4) {
-    animation-delay: 0.4s;
-}
-form > *:nth-child(5) {
-    animation-delay: 0.5s;
-}
+
+form > *:nth-child(1) { animation-delay: 0.1s; }
+form > *:nth-child(2) { animation-delay: 0.2s; }
+form > *:nth-child(3) { animation-delay: 0.3s; }
+form > *:nth-child(4) { animation-delay: 0.4s; }
+form > *:nth-child(5) { animation-delay: 0.5s; }
 
 @keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
