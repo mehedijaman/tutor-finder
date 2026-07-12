@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Admin\Concerns\NormalizesSmtpCredentials;
 use App\Models\SmtpSetting;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -31,7 +32,7 @@ class SmtpSettingUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -61,7 +62,7 @@ class SmtpSettingUpdateRequest extends FormRequest
     /**
      * Configure after validation hooks.
      *
-     * @return array<int, \Closure(\Illuminate\Validation\Validator): void>
+     * @return array<int, \Closure(Validator): void>
      */
     public function after(): array
     {

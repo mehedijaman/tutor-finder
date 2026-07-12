@@ -4,9 +4,11 @@ namespace App\Listeners;
 
 use App\Enums\UserRole;
 use App\Events\TicketReplied;
+use App\Models\SupportTicket;
 use App\Models\User;
 use App\Notifications\TicketNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 
 class NotifyOfTicketReply implements ShouldQueue
 {
@@ -30,7 +32,7 @@ class NotifyOfTicketReply implements ShouldQueue
     /**
      * Notify the ticket owner of an admin reply.
      */
-    private function notifyTicketOwner(\App\Models\SupportTicket $ticket, User $admin): void
+    private function notifyTicketOwner(SupportTicket $ticket, User $admin): void
     {
         $rolePath = $ticket->user->role === UserRole::Tutor ? 'tutor' : 'guardian';
 
@@ -50,7 +52,7 @@ class NotifyOfTicketReply implements ShouldQueue
     /**
      * Notify admins of a user reply.
      */
-    private function notifyAdmins(\App\Models\SupportTicket $ticket, User $replier): void
+    private function notifyAdmins(SupportTicket $ticket, User $replier): void
     {
         $admins = $this->getAdminsToNotify($ticket);
 
@@ -72,9 +74,9 @@ class NotifyOfTicketReply implements ShouldQueue
     /**
      * Get admin users to notify about a reply.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, User>
+     * @return Collection<int, User>
      */
-    private function getAdminsToNotify(\App\Models\SupportTicket $ticket): \Illuminate\Database\Eloquent\Collection
+    private function getAdminsToNotify(SupportTicket $ticket): Collection
     {
         if ($ticket->assigned_to) {
             return User::query()

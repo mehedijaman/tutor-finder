@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Response;
 
@@ -51,7 +52,7 @@ class NotificationController extends Controller
     /**
      * Mark a single notification as read.
      */
-    public function markAsRead(Request $request, string $notificationId): \Illuminate\Http\RedirectResponse
+    public function markAsRead(Request $request, string $notificationId): RedirectResponse
     {
         $notification = $request->user()
             ?->notifications()
@@ -68,7 +69,7 @@ class NotificationController extends Controller
     /**
      * Mark all unread notifications as read.
      */
-    public function markAllAsRead(Request $request): \Illuminate\Http\RedirectResponse
+    public function markAllAsRead(Request $request): RedirectResponse
     {
         $request->user()?->unreadNotifications()->update(['read_at' => now()]);
 

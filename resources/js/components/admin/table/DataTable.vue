@@ -37,6 +37,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    maxHeight: {
+        type: String,
+        default: '500px',
+    },
 });
 
 const emit = defineEmits(['sort']);
@@ -103,83 +107,167 @@ function mobilePaginationLabel(): string {
     <div
         class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
-        <div class="overflow-x-auto">
-            <table
-                class="w-full text-left text-sm"
-                role="grid"
-                aria-label="Data table"
+        <div class="hidden sm:block">
+            <div
+                class="overflow-x-auto"
+                :class="{ 'overflow-y-auto': maxHeight }"
+                :style="maxHeight ? { maxHeight } : undefined"
             >
-                <thead
-                    class="border-b border-border bg-muted/50"
+                <table
+                    class="w-full text-left text-sm"
+                    role="grid"
+                    aria-label="Data table"
                 >
-                    <tr>
-                        <th
-                            v-if="showSerial"
-                            class="px-4 py-3.5 text-center text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
-                            style="width: 56px"
-                        >
-                            SL
-                        </th>
-                        <th
-                            v-for="column in columns"
-                            :key="column.key"
-                            class="px-4 py-3.5 text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
-                            :class="column.headerClass"
-                        >
-                            <Button
-                                v-if="column.sortable"
-                                variant="ghost"
-                                size="sm"
-                                class="-ml-3 h-auto p-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase hover:bg-transparent hover:text-foreground"
-                                :aria-label="`Sort by ${column.label}`"
-                                @click="toggleSort(column)"
-                            >
-                                {{ column.label }}
-                                <component
-                                    :is="sortIcon(column)"
-                                    class="ml-1.5 h-3.5 w-3.5"
-                                />
-                            </Button>
-                            <span v-else>{{ column.label }}</span>
-                        </th>
-                    </tr>
-                </thead>
-
-                <tbody class="divide-y divide-border/50">
-                    <template v-if="loading">
+                    <thead
+                        class="sticky top-0 z-10 border-b border-border bg-muted/50"
+                    >
                         <tr>
-                            <td
-                                :colspan="totalColumns"
-                                class="px-4 py-12 text-center"
-                            >
-                                <div
-                                    class="flex flex-col items-center gap-2 text-muted-foreground"
-                                >
-                                    <div
-                                        class="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary"
-                                    />
-                                    <span class="text-sm">Loading...</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>
-
-                    <template v-else-if="rows.length">
-                        <tr
-                            v-for="(row, index) in rows"
-                            :key="row[rowKey] ?? row.id"
-                            class="transition-colors hover:bg-muted/30"
-                        >
-                            <td
+                            <th
                                 v-if="showSerial"
-                                class="px-4 py-3.5 text-center text-xs font-medium whitespace-nowrap text-muted-foreground tabular-nums"
+                                class="px-4 py-3.5 text-center text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
+                                style="width: 56px"
                             >
-                                {{ serialNumber(index) }}
-                            </td>
-                            <td
+                                SL
+                            </th>
+                            <th
                                 v-for="column in columns"
                                 :key="column.key"
-                                class="px-4 py-3.5 align-middle text-sm text-card-foreground"
+                                class="px-4 py-3.5 text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
+                                :class="column.headerClass"
+                            >
+                                <Button
+                                    v-if="column.sortable"
+                                    variant="ghost"
+                                    size="sm"
+                                    class="-ml-3 h-auto p-0 text-xs font-semibold tracking-wide text-muted-foreground uppercase hover:bg-transparent hover:text-foreground"
+                                    :aria-label="`Sort by ${column.label}`"
+                                    @click="toggleSort(column)"
+                                >
+                                    {{ column.label }}
+                                    <component
+                                        :is="sortIcon(column)"
+                                        class="ml-1.5 h-3.5 w-3.5"
+                                    />
+                                </Button>
+                                <span v-else>{{ column.label }}</span>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-border/50">
+                        <template v-if="loading">
+                            <tr>
+                                <td
+                                    :colspan="totalColumns"
+                                    class="px-4 py-12 text-center"
+                                >
+                                    <div
+                                        class="flex flex-col items-center gap-2 text-muted-foreground"
+                                    >
+                                        <div
+                                            class="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary"
+                                        />
+                                        <span class="text-sm">Loading...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <template v-else-if="rows.length">
+                            <tr
+                                v-for="(row, index) in rows"
+                                :key="row[rowKey] ?? row.id"
+                                class="transition-colors hover:bg-muted/30"
+                            >
+                                <td
+                                    v-if="showSerial"
+                                    class="px-4 py-3.5 text-center text-xs font-medium whitespace-nowrap text-muted-foreground tabular-nums"
+                                >
+                                    {{ serialNumber(index) }}
+                                </td>
+                                <td
+                                    v-for="column in columns"
+                                    :key="column.key"
+                                    class="px-4 py-3.5 align-middle text-sm text-card-foreground"
+                                    :class="column.cellClass"
+                                >
+                                    <slot
+                                        :name="`cell-${column.key}`"
+                                        :row="row"
+                                        :value="row[column.key]"
+                                    >
+                                        {{ row[column.key] ?? '—' }}
+                                    </slot>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <template v-else>
+                            <tr>
+                                <td
+                                    :colspan="totalColumns"
+                                    class="px-4 py-16 text-center"
+                                >
+                                    <div
+                                        class="flex flex-col items-center gap-3 text-muted-foreground"
+                                    >
+                                        <div
+                                            class="flex h-12 w-12 items-center justify-center rounded-full bg-muted"
+                                        >
+                                            <Inbox
+                                                class="h-6 w-6 text-muted-foreground"
+                                            />
+                                        </div>
+                                        <p class="text-sm font-medium">
+                                            {{ emptyText }}
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div
+            class="sm:hidden"
+            :class="{ 'overflow-y-auto': maxHeight }"
+            :style="maxHeight ? { maxHeight } : undefined"
+        >
+            <template v-if="loading">
+                <div class="flex flex-col items-center gap-2 px-4 py-12 text-muted-foreground">
+                    <div
+                        class="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary"
+                    />
+                    <span class="text-sm">Loading...</span>
+                </div>
+            </template>
+
+            <template v-else-if="rows.length">
+                <div class="divide-y divide-border/50">
+                    <div
+                        v-for="(row, index) in rows"
+                        :key="row[rowKey] ?? row.id"
+                        class="space-y-2 px-4 py-4"
+                    >
+                        <div
+                            v-if="showSerial"
+                            class="mb-2 text-xs font-medium text-muted-foreground tabular-nums"
+                        >
+                            #{{ serialNumber(index) }}
+                        </div>
+
+                        <div
+                            v-for="column in columns"
+                            :key="column.key"
+                            class="flex items-start justify-between gap-2"
+                        >
+                            <span class="shrink-0 text-xs font-medium text-muted-foreground">
+                                {{ column.label }}
+                            </span>
+                            <div
+                                class="text-right text-sm text-card-foreground"
                                 :class="column.cellClass"
                             >
                                 <slot
@@ -189,35 +277,22 @@ function mobilePaginationLabel(): string {
                                 >
                                     {{ row[column.key] ?? '—' }}
                                 </slot>
-                            </td>
-                        </tr>
-                    </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
 
-                    <template v-else>
-                        <tr>
-                            <td
-                                :colspan="totalColumns"
-                                class="px-4 py-16 text-center"
-                            >
-                                <div
-                                    class="flex flex-col items-center gap-3 text-muted-foreground"
-                                >
-                                    <div
-                                        class="flex h-12 w-12 items-center justify-center rounded-full bg-muted"
-                                    >
-                                        <Inbox
-                                            class="h-6 w-6 text-muted-foreground"
-                                        />
-                                    </div>
-                                    <p class="text-sm font-medium">
-                                        {{ emptyText }}
-                                    </p>
-                                </div>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
+            <template v-else>
+                <div class="flex flex-col items-center gap-3 px-4 py-16 text-muted-foreground">
+                    <div
+                        class="flex h-12 w-12 items-center justify-center rounded-full bg-muted"
+                    >
+                        <Inbox class="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p class="text-sm font-medium">{{ emptyText }}</p>
+                </div>
+            </template>
         </div>
 
         <div

@@ -3,7 +3,10 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\UserRole;
+use App\Models\User;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class AssignTicketRequest extends FormRequest
 {
@@ -18,7 +21,7 @@ class AssignTicketRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -30,10 +33,10 @@ class AssignTicketRequest extends FormRequest
     /**
      * Additional validation after the primary rules pass.
      */
-    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    public function withValidator(Validator $validator): void
     {
-        $validator->after(function (\Illuminate\Validation\Validator $validator): void {
-            $assignee = \App\Models\User::find($this->input('assigned_to'));
+        $validator->after(function (Validator $validator): void {
+            $assignee = User::find($this->input('assigned_to'));
 
             if ($assignee && $assignee->role !== UserRole::Admin) {
                 $validator->errors()->add('assigned_to', 'Tickets can only be assigned to admin users.');

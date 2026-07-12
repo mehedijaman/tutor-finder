@@ -17,6 +17,7 @@ use App\Models\TuitionJobAssignment;
 use App\Models\TuitionType;
 use App\Models\User;
 use App\Support\SlugService;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -505,7 +506,7 @@ class BangladeshDemoJobsSeeder extends Seeder
     /**
      * Resolve published timestamp by lifecycle status.
      */
-    private function resolvePublishedAt(JobStatus $status, ?int $daysAgo): ?\Carbon\CarbonInterface
+    private function resolvePublishedAt(JobStatus $status, ?int $daysAgo): ?CarbonInterface
     {
         if ($status === JobStatus::Pending) {
             return null;
@@ -517,7 +518,7 @@ class BangladeshDemoJobsSeeder extends Seeder
     /**
      * Resolve expiry timestamp by lifecycle status.
      */
-    private function resolveExpiresAt(JobStatus $status, ?int $daysOffset): ?\Carbon\CarbonInterface
+    private function resolveExpiresAt(JobStatus $status, ?int $daysOffset): ?CarbonInterface
     {
         if ($status === JobStatus::Cancelled || $status === JobStatus::Closed) {
             return now()->subDays(abs($daysOffset ?? 5));

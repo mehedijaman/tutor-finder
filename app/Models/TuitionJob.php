@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\JobGender;
 use App\Enums\JobStatus;
+use Database\Factories\TuitionJobFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class TuitionJob extends Model
 {
-    /** @use HasFactory<\Database\Factories\TuitionJobFactory> */
+    /** @use HasFactory<TuitionJobFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
 
     /**

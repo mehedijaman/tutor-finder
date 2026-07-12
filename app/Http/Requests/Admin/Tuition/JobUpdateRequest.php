@@ -4,6 +4,11 @@ namespace App\Http\Requests\Admin\Tuition;
 
 use App\Enums\JobGender;
 use App\Enums\JobStatus;
+use App\Models\Area;
+use App\Models\City;
+use App\Models\SchoolClass;
+use App\Models\Subject;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -54,7 +59,7 @@ class JobUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -156,7 +161,7 @@ class JobUpdateRequest extends FormRequest
             $subjectIds = $this->normalizeSubjectIds($this->input('subject_ids'));
 
             if ($classId > 0 && $categoryId > 0) {
-                $classMatchesCategory = \App\Models\SchoolClass::query()
+                $classMatchesCategory = SchoolClass::query()
                     ->whereKey($classId)
                     ->where('category_id', $categoryId)
                     ->whereNull('deleted_at')
@@ -168,7 +173,7 @@ class JobUpdateRequest extends FormRequest
             }
 
             if ($cityId > 0 && $countryId > 0) {
-                $cityMatchesCountry = \App\Models\City::query()
+                $cityMatchesCountry = City::query()
                     ->whereKey($cityId)
                     ->where('country_id', $countryId)
                     ->whereNull('deleted_at')
@@ -180,7 +185,7 @@ class JobUpdateRequest extends FormRequest
             }
 
             if ($areaId > 0 && $cityId > 0) {
-                $areaMatchesCity = \App\Models\Area::query()
+                $areaMatchesCity = Area::query()
                     ->whereKey($areaId)
                     ->where('city_id', $cityId)
                     ->whereNull('deleted_at')
@@ -192,7 +197,7 @@ class JobUpdateRequest extends FormRequest
             }
 
             if ($classId > 0 && count($subjectIds) > 0) {
-                $matchedSubjectCount = \App\Models\Subject::query()
+                $matchedSubjectCount = Subject::query()
                     ->whereIn('id', $subjectIds)
                     ->where('class_id', $classId)
                     ->whereNull('deleted_at')

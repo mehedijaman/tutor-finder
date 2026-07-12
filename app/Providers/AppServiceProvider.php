@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Opcodes\LogViewer\Facades\LogViewer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -142,7 +143,7 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function configureLogViewerAuthorization(): void
     {
-        if (! class_exists(\Opcodes\LogViewer\Facades\LogViewer::class)) {
+        if (! class_exists(LogViewer::class)) {
             return;
         }
 

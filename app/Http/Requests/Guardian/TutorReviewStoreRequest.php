@@ -5,6 +5,7 @@ namespace App\Http\Requests\Guardian;
 use App\Models\TuitionJobAssignment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class TutorReviewStoreRequest extends FormRequest
 {
@@ -54,9 +55,9 @@ class TutorReviewStoreRequest extends FormRequest
     /**
      * Additional validation to ensure the guardian owns the job assignment.
      */
-    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    public function withValidator(Validator $validator): void
     {
-        $validator->after(function (\Illuminate\Validation\Validator $validator) {
+        $validator->after(function (Validator $validator) {
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }

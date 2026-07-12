@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\LedgerEntryType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\VerificationStatus;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -23,7 +25,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, HasPushSubscriptions, HasRoles, ImpersonateModel, InteractsWithMedia, LogsActivity, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     /**
@@ -262,8 +264,8 @@ class User extends Authenticatable implements HasMedia
             ->groupBy('type')
             ->pluck('total', 'type');
 
-        $credits = (float) ($entries[\App\Enums\LedgerEntryType::Credit->value] ?? 0);
-        $debits = (float) ($entries[\App\Enums\LedgerEntryType::Debit->value] ?? 0);
+        $credits = (float) ($entries[LedgerEntryType::Credit->value] ?? 0);
+        $debits = (float) ($entries[LedgerEntryType::Debit->value] ?? 0);
 
         return $credits - $debits;
     }

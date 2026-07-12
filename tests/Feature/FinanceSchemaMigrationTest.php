@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\SiteSetting;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -77,10 +78,10 @@ it('bootstraps platform system user and finance defaults in site settings', func
 });
 
 it('keeps legacy status mapping strict during invoice backfill', function () {
-    /** @var \Illuminate\Database\Migrations\Migration $migration */
+    /** @var Migration $migration */
     $migration = require base_path(FINANCE_CUTOVER_V3_MIGRATION);
 
-    $mapLegacyStatus = new \ReflectionMethod($migration, 'mapLegacyStatus');
+    $mapLegacyStatus = new ReflectionMethod($migration, 'mapLegacyStatus');
     $mapLegacyStatus->setAccessible(true);
 
     expect($mapLegacyStatus->invoke($migration, 'paid'))->toBe('paid');

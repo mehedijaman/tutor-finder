@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\VerificationRole;
 use App\Enums\VerificationStatus;
+use Database\Factories\VerificationRequestFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class VerificationRequest extends Model
 {
-    /** @use HasFactory<\Database\Factories\VerificationRequestFactory> */
+    /** @use HasFactory<VerificationRequestFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
 
     /**

@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketMessage;
 use App\Models\User;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -31,7 +32,7 @@ class TicketReplied implements ShouldBroadcast
      * If admin replied, broadcast to the ticket owner's private channel.
      * If user replied, broadcast to admin channel.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {

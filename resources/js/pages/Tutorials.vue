@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import PublicLayout from '@/layouts/PublicLayout.vue';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 type Tutorial = {
     id: number;

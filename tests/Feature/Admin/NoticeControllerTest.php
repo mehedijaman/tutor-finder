@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\NoticeAudience;
+use App\Enums\UserStatus;
 use App\Jobs\SendNoticeNotificationsJob;
 use App\Models\Notice;
 use App\Models\User;
@@ -171,9 +172,9 @@ it('validates title max length', function () {
 });
 
 it('sends notifications to active users when notice is created', function () {
-    $activeTutor = User::factory()->tutor()->create(['status' => \App\Enums\UserStatus::Active]);
-    $suspendedTutor = User::factory()->tutor()->create(['status' => \App\Enums\UserStatus::Suspended]);
-    $activeGuardian = User::factory()->guardian()->create(['status' => \App\Enums\UserStatus::Active]);
+    $activeTutor = User::factory()->tutor()->create(['status' => UserStatus::Active]);
+    $suspendedTutor = User::factory()->tutor()->create(['status' => UserStatus::Suspended]);
+    $activeGuardian = User::factory()->guardian()->create(['status' => UserStatus::Active]);
 
     $this->actingAs($this->admin)->post(route('admin.notices.store'), [
         'title' => 'Test Notice',
@@ -188,8 +189,8 @@ it('sends notifications to active users when notice is created', function () {
 });
 
 it('sends notifications to both tutors and guardians for both audience', function () {
-    $activeTutor = User::factory()->tutor()->create(['status' => \App\Enums\UserStatus::Active]);
-    $activeGuardian = User::factory()->guardian()->create(['status' => \App\Enums\UserStatus::Active]);
+    $activeTutor = User::factory()->tutor()->create(['status' => UserStatus::Active]);
+    $activeGuardian = User::factory()->guardian()->create(['status' => UserStatus::Active]);
 
     $this->actingAs($this->admin)->post(route('admin.notices.store'), [
         'title' => 'Both Audience Notice',

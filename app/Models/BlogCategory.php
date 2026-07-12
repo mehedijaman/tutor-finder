@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TaxonomyStatus;
+use Database\Factories\BlogCategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,7 +13,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class BlogCategory extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\BlogCategoryFactory> */
+    /** @use HasFactory<BlogCategoryFactory> */
     use HasFactory, InteractsWithMedia, SoftDeletes;
 
     /**

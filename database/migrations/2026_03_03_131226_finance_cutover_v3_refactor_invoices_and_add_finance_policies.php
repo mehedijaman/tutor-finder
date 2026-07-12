@@ -124,7 +124,7 @@ return new class extends Migration
             Schema::table('invoices', function (Blueprint $table): void {
                 $table->dropIndex(['status']);
             });
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Keep migration idempotent across engines/schema histories.
         }
 

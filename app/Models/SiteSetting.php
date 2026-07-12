@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\SiteSettingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +12,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class SiteSetting extends Model
 {
-    /** @use HasFactory<\Database\Factories\SiteSettingFactory> */
+    /** @use HasFactory<SiteSettingFactory> */
     use HasFactory, LogsActivity;
 
     public const PUBLIC_CACHE_KEY = 'site_settings.public';

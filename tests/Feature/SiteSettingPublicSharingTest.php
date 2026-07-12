@@ -4,6 +4,7 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use App\Support\SiteSettingsResolver;
 use Database\Seeders\AdminRolesAndPermissionsSeeder;
+use Illuminate\Support\Collection;
 use Inertia\Testing\AssertableInertia as Assert;
 
 it('shares a minimal site settings payload on public pages', function () {
@@ -34,7 +35,7 @@ it('shares a minimal site settings payload on public pages', function () {
             ->where('siteSettings.social_details.facebook', 'https://facebook.com/public-page')
             ->where('siteSettings.social_details.youtube', 'https://youtube.com/@public')
             ->where('siteSettings', function ($payload): bool {
-                $data = $payload instanceof \Illuminate\Support\Collection
+                $data = $payload instanceof Collection
                     ? $payload->all()
                     : (array) $payload;
 

@@ -6,6 +6,7 @@ use App\Enums\CancellationActor;
 use App\Enums\CancellationFault;
 use App\Enums\DurationType;
 use App\Enums\FeePaymentMode;
+use Database\Factories\TuitionJobAssignmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +23,7 @@ class TuitionJobAssignment extends Model
      * during initial assignment-first cutover, appointed_at and confirmed_at are written
      * to the same timestamp. A later split flow may diverge those lifecycle moments.
      */
-    /** @use HasFactory<\Database\Factories\TuitionJobAssignmentFactory> */
+    /** @use HasFactory<TuitionJobAssignmentFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
 
     /**

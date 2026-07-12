@@ -12,13 +12,14 @@ use App\Support\Auth\RoleRedirector;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Inertia\Response;
 
 class VerifyOtpController extends Controller
 {
     /**
      * Show the OTP verification page.
      */
-    public function create(Request $request): RedirectResponse|\Inertia\Response
+    public function create(Request $request): RedirectResponse|Response
     {
         $user = $request->user();
 

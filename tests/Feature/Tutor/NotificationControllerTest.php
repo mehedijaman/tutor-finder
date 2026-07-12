@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Invoice;
 use App\Models\User;
 use App\Notifications\PaymentNotification;
 
@@ -19,7 +20,7 @@ it('displays notifications index page for tutor', function (): void {
 
 it('filters unread notifications only', function (): void {
     $this->tutor->notify(new PaymentNotification(
-        \App\Models\Invoice::factory()->create(['payer_user_id' => $this->tutor->id]),
+        Invoice::factory()->create(['payer_user_id' => $this->tutor->id]),
         'invoice.created'
     ));
 
@@ -37,7 +38,7 @@ it('filters unread notifications only', function (): void {
 
 it('marks a single notification as read', function (): void {
     $this->tutor->notify(new PaymentNotification(
-        \App\Models\Invoice::factory()->create(['payer_user_id' => $this->tutor->id]),
+        Invoice::factory()->create(['payer_user_id' => $this->tutor->id]),
         'payment.success'
     ));
 
@@ -55,8 +56,8 @@ it('marks a single notification as read', function (): void {
 });
 
 it('marks all notifications as read', function (): void {
-    $invoice1 = \App\Models\Invoice::factory()->create(['payer_user_id' => $this->tutor->id]);
-    $invoice2 = \App\Models\Invoice::factory()->create(['payer_user_id' => $this->tutor->id]);
+    $invoice1 = Invoice::factory()->create(['payer_user_id' => $this->tutor->id]);
+    $invoice2 = Invoice::factory()->create(['payer_user_id' => $this->tutor->id]);
 
     $this->tutor->notify(new PaymentNotification($invoice1, 'payment.success'));
     $this->tutor->notify(new PaymentNotification($invoice2, 'invoice.created'));

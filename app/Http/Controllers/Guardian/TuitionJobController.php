@@ -7,8 +7,8 @@ use App\Enums\JobStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guardian\Tuition\JobStoreRequest;
 use App\Models\TuitionJob;
+use App\Models\TuitionJobApplication;
 use App\Services\Job\JobFormOptionService;
-use App\Support\SlugService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -197,7 +197,7 @@ class TuitionJobController extends Controller
             $job->subjects()->sync($validated['subject_ids'] ?? []);
 
             if ($validated['requested_tutor_id'] ?? null) {
-                \App\Models\TuitionJobApplication::query()->create([
+                TuitionJobApplication::query()->create([
                     'job_id' => $job->id,
                     'tutor_user_id' => $validated['requested_tutor_id'],
                     'status' => ApplicationStatus::Shortlisted,
@@ -238,7 +238,7 @@ class TuitionJobController extends Controller
                 'requested_at' => now(),
             ]);
 
-            \App\Models\TuitionJobApplication::query()->updateOrCreate([
+            TuitionJobApplication::query()->updateOrCreate([
                 'job_id' => $tuitionJob->id,
                 'tutor_user_id' => $tutorId,
             ], [

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TaxonomyStatus;
+use Database\Factories\BlogTagFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BlogTag extends Model
 {
-    /** @use HasFactory<\Database\Factories\BlogTagFactory> */
+    /** @use HasFactory<BlogTagFactory> */
     use HasFactory, SoftDeletes;
 
     /**

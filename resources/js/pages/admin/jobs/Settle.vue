@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
 import {
     ArrowLeft,
     CheckCircle2,
@@ -11,6 +10,8 @@ import {
     Briefcase,
     BadgeCheck,
 } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -20,10 +21,9 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 
 const props = defineProps({

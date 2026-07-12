@@ -13,6 +13,7 @@ use App\Models\TuitionJob;
 use App\Models\TuitionType;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DemoDataSeeder extends Seeder
 {
@@ -151,7 +152,7 @@ class DemoDataSeeder extends Seeder
 
             $job = TuitionJob::create([
                 'title' => $title,
-                'slug' => \Illuminate\Support\Str::slug($title).'-'.uniqid(),
+                'slug' => Str::slug($title).'-'.uniqid(),
                 'description' => 'Looking for a qualified tutor for '.$class->name.' student. '.
                     'Subjects: '.implode(', ', $subjectNamesForJob).'. '.
                     'Location: '.$area->name.', '.$city->name.'.',

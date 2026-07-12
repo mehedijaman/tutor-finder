@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Notice;
 use App\Models\User;
 
@@ -36,7 +37,7 @@ class NoticePolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -44,7 +45,7 @@ class NoticePolicy
      */
     public function update(User $user, Notice $notice): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -52,7 +53,7 @@ class NoticePolicy
      */
     public function delete(User $user, Notice $notice): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -60,7 +61,7 @@ class NoticePolicy
      */
     public function restore(User $user, Notice $notice): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -68,6 +69,6 @@ class NoticePolicy
      */
     public function forceDelete(User $user, Notice $notice): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 }

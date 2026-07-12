@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Testimonial;
 use App\Models\User;
 
@@ -12,7 +13,7 @@ class TestimonialPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -20,7 +21,7 @@ class TestimonialPolicy
      */
     public function view(User $user, Testimonial $testimonial): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -28,7 +29,7 @@ class TestimonialPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -36,7 +37,7 @@ class TestimonialPolicy
      */
     public function update(User $user, Testimonial $testimonial): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -44,7 +45,7 @@ class TestimonialPolicy
      */
     public function delete(User $user, Testimonial $testimonial): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -52,7 +53,7 @@ class TestimonialPolicy
      */
     public function restore(User $user, Testimonial $testimonial): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -60,6 +61,6 @@ class TestimonialPolicy
      */
     public function forceDelete(User $user, Testimonial $testimonial): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 }

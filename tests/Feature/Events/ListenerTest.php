@@ -13,6 +13,7 @@ use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
 use App\Models\User;
 use App\Notifications\JobLifecycleNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
 
 it('NotifyGuardianOfApplication sends notification on new application', function () {
@@ -216,8 +217,8 @@ it('NotifyTutorsOfHireOutcome notifies rejected tutors', function () {
 });
 
 it('all listeners implement ShouldQueue', function () {
-    expect(NotifyGuardianOfApplication::class)->toImplement(\Illuminate\Contracts\Queue\ShouldQueue::class);
-    expect(NotifyGuardianOfWithdrawal::class)->toImplement(\Illuminate\Contracts\Queue\ShouldQueue::class);
-    expect(NotifyTutorOfStatusChange::class)->toImplement(\Illuminate\Contracts\Queue\ShouldQueue::class);
-    expect(NotifyTutorsOfHireOutcome::class)->toImplement(\Illuminate\Contracts\Queue\ShouldQueue::class);
+    expect(NotifyGuardianOfApplication::class)->toImplement(ShouldQueue::class);
+    expect(NotifyGuardianOfWithdrawal::class)->toImplement(ShouldQueue::class);
+    expect(NotifyTutorOfStatusChange::class)->toImplement(ShouldQueue::class);
+    expect(NotifyTutorsOfHireOutcome::class)->toImplement(ShouldQueue::class);
 });

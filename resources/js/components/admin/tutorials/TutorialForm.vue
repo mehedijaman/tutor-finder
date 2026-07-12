@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, computed, onBeforeUnmount } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { Upload, X } from 'lucide-vue-next';
+import { ref, watch, computed, onBeforeUnmount } from 'vue';
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -14,7 +14,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import InputError from '@/components/InputError.vue';
+import { Textarea } from '@/components/ui/textarea';
 import { slugify } from '@/composables/useAutoSlug';
 
 type SelectOption = {

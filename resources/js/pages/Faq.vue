@@ -2,8 +2,8 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
-import { sanitizeHtml } from '@/lib/utils';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import { sanitizeHtml } from '@/lib/utils';
 
 type FaqItem = {
     id: number;

@@ -4,9 +4,11 @@ namespace App\Listeners;
 
 use App\Enums\UserRole;
 use App\Events\TicketCreated;
+use App\Models\SupportTicket;
 use App\Models\User;
 use App\Notifications\TicketNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 
 class NotifyAdminsOfNewTicket implements ShouldQueue
 {
@@ -40,9 +42,9 @@ class NotifyAdminsOfNewTicket implements ShouldQueue
     /**
      * Get admin users to notify about a new ticket.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, User>
+     * @return Collection<int, User>
      */
-    private function getAdminsToNotify(\App\Models\SupportTicket $ticket): \Illuminate\Database\Eloquent\Collection
+    private function getAdminsToNotify(SupportTicket $ticket): Collection
     {
         if ($ticket->assigned_to) {
             return User::query()

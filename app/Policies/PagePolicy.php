@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Page;
 use App\Models\User;
 
@@ -24,7 +25,7 @@ class PagePolicy
             return true;
         }
 
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -32,7 +33,7 @@ class PagePolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -40,7 +41,7 @@ class PagePolicy
      */
     public function update(User $user, Page $page): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -52,7 +53,7 @@ class PagePolicy
             return false;
         }
 
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -60,7 +61,7 @@ class PagePolicy
      */
     public function restore(User $user, Page $page): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -72,6 +73,6 @@ class PagePolicy
             return false;
         }
 
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 }

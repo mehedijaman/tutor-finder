@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ApplicationStatus;
+use Database\Factories\TuitionJobApplicationFactory;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class TuitionJobApplication extends Model
 {
-    /** @use HasFactory<\Database\Factories\TuitionJobApplicationFactory> */
+    /** @use HasFactory<TuitionJobApplicationFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
 
     /**

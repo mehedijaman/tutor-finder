@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TutorialAudience;
+use Database\Factories\TutorialFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Tutorial extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\TutorialFactory> */
+    /** @use HasFactory<TutorialFactory> */
     use HasFactory, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [

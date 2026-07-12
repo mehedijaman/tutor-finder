@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProfileStatus;
+use Database\Factories\TutorProfileFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TutorProfile extends Model
 {
-    /** @use HasFactory<\Database\Factories\TutorProfileFactory> */
+    /** @use HasFactory<TutorProfileFactory> */
     use HasFactory, SoftDeletes;
 
     /**

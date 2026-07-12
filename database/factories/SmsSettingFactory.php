@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\SmsSetting;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SmsSetting>
+ * @extends Factory<SmsSetting>
  */
 class SmsSettingFactory extends Factory
 {

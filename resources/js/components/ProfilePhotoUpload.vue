@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import { Camera, Trash2, Loader2 } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ref, computed } from 'vue';
 import {
     update,
     destroy,
 } from '@/actions/App/Http/Controllers/ProfilePhotoController';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import type { Auth } from '@/types';
 
 const page = usePage<Auth>();

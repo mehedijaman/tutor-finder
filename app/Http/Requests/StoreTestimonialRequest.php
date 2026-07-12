@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaxonomyStatus;
+use App\Models\Testimonial;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -13,7 +15,7 @@ class StoreTestimonialRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->can('create', \App\Models\Testimonial::class);
+        return $this->user() && $this->user()->can('create', Testimonial::class);
     }
 
     /**
@@ -35,7 +37,7 @@ class StoreTestimonialRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {

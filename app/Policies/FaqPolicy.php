@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\Faq;
 use App\Models\User;
 
@@ -24,7 +25,7 @@ class FaqPolicy
             return true;
         }
 
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -32,7 +33,7 @@ class FaqPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -40,7 +41,7 @@ class FaqPolicy
      */
     public function update(User $user, Faq $faq): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -48,7 +49,7 @@ class FaqPolicy
      */
     public function delete(User $user, Faq $faq): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -56,7 +57,7 @@ class FaqPolicy
      */
     public function restore(User $user, Faq $faq): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -64,6 +65,6 @@ class FaqPolicy
      */
     public function forceDelete(User $user, Faq $faq): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 }

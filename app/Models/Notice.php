@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\NoticeAudience;
 use App\Enums\UserRole;
+use Database\Factories\NoticeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Notice extends Model
 {
-    /** @use HasFactory<\Database\Factories\NoticeFactory> */
+    /** @use HasFactory<NoticeFactory> */
     use HasFactory;
 
     use SoftDeletes;

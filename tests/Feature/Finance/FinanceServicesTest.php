@@ -247,5 +247,5 @@ describe('InvoiceLifecycleService::issue', function (): void {
             'type' => InvoiceType::TutorVerificationFee,
             'amount' => 500.00,
         ]);
-    })->throws(\DomainException::class, 'Invoice payee account must be active');
+    })->throws(DomainException::class, 'Invoice payee account must be active');
 });

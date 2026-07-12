@@ -228,6 +228,7 @@ function handlePrint(): void {
             <div
                 class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm print:rounded-none print:shadow-none"
             >
+                <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 print:bg-gray-100">
                         <tr>
@@ -382,6 +383,7 @@ function handlePrint(): void {
                         </tr>
                     </tfoot>
                 </table>
+                </div>
             </div>
         </div>
     </AdminLayout>

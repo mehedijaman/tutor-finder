@@ -9,7 +9,6 @@ use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ManagedUserPasswordResetRequest;
 use App\Http\Requests\Admin\ManagedUserStoreRequest;
-use App\Http\Requests\Admin\ManagedUserUpdateRequest;
 use App\Http\Requests\Admin\UserStatusUpdateRequest;
 use App\Models\Area;
 use App\Models\Category;

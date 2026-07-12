@@ -2,8 +2,8 @@
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useSiteSettings } from '@/composables/useSiteSettings';
-import { sanitizeHtml } from '@/lib/utils';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import { sanitizeHtml } from '@/lib/utils';
 
 const props = defineProps<{
     page: {

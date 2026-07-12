@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\BlogTag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BlogTag>
+ * @extends Factory<BlogTag>
  */
 class BlogTagFactory extends Factory
 {

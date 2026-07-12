@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TaxonomyStatus;
+use Database\Factories\GuardianProfileFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GuardianProfile extends Model
 {
-    /** @use HasFactory<\Database\Factories\GuardianProfileFactory> */
+    /** @use HasFactory<GuardianProfileFactory> */
     use HasFactory, SoftDeletes;
 
     /**

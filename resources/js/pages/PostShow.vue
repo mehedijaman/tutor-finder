@@ -9,8 +9,8 @@ import {
     UserRound,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { sanitizeHtml } from '@/lib/utils';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import { sanitizeHtml } from '@/lib/utils';
 
 type BlogPostShow = {
     id: number;

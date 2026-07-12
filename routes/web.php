@@ -8,6 +8,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\Public\TutorController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\SiteController;
@@ -54,8 +55,8 @@ Route::middleware('auth')->group(function () {
         ->whereNumber('invoice')
         ->name('payment.sslcommerz.start');
 
-    Route::post('/profile/photo', [\App\Http\Controllers\ProfilePhotoController::class, 'update'])->name('profile.photo.update');
-    Route::delete('/profile/photo', [\App\Http\Controllers\ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
+    Route::post('/profile/photo', [ProfilePhotoController::class, 'update'])->name('profile.photo.update');
+    Route::delete('/profile/photo', [ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
 });
 
 Route::get('/payment/bkash/callback', [PaymentController::class, 'bkashCallback'])

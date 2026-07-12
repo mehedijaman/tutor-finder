@@ -8,17 +8,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\JobStatusUpdateRequest;
 use App\Http\Requests\Admin\Tuition\JobStoreRequest;
 use App\Http\Requests\Admin\Tuition\JobUpdateRequest;
+use App\Models\SiteSetting;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
+use App\Services\Job\HiringWorkflowService;
 use App\Services\Job\JobFormOptionService;
 use App\Services\Job\JobLifecycleService;
-use App\Support\SlugService;
 use DomainException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Response;
 
 class JobController extends Controller
@@ -463,7 +465,7 @@ class JobController extends Controller
             ->where('tutor_user_id', $job->requested_tutor_id)
             ->firstOrFail();
 
-        $siteSetting = \App\Models\SiteSetting::current();
+        $siteSetting = SiteSetting::current();
         $salaryAmount = (float) ($job->salary_amount ?? 0);
         $commissionRate = (float) ($siteSetting->platform_service_fee_rate ?? 0.60000);
         $commissionAmount = round($salaryAmount * $commissionRate, 2);
@@ -496,7 +498,7 @@ class JobController extends Controller
     public function confirmSettlement(
         TuitionJob $job,
         Request $request,
-        \App\Services\Job\HiringWorkflowService $hiringWorkflowService
+        HiringWorkflowService $hiringWorkflowService
     ): RedirectResponse {
         if ($job->requested_tutor_id === null) {
             return redirect()->back()->withErrors(['job' => 'This job does not have a direct request.']);
@@ -523,7 +525,7 @@ class JobController extends Controller
                     'salary_base_amount' => $request->input('salary_base_amount'),
                 ]
             );
-        } catch (\Illuminate\Validation\ValidationException $exception) {
+        } catch (ValidationException $exception) {
             return redirect()->back()->withErrors($exception->errors());
         } catch (\Exception $exception) {
             return redirect()->back()->withErrors(['job' => $exception->getMessage()]);

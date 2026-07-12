@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\TutorEducationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TutorEducation extends Model
 {
-    /** @use HasFactory<\Database\Factories\TutorEducationFactory> */
+    /** @use HasFactory<TutorEducationFactory> */
     use HasFactory, SoftDeletes;
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TaxonomyStatus;
+use Database\Factories\TuitionTypeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TuitionType extends Model
 {
-    /** @use HasFactory<\Database\Factories\TuitionTypeFactory> */
+    /** @use HasFactory<TuitionTypeFactory> */
     use HasFactory, SoftDeletes;
 
     /**

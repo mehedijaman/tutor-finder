@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\BlogPost;
 use App\Models\User;
 
@@ -24,7 +25,7 @@ class BlogPostPolicy
             return true;
         }
 
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -32,7 +33,7 @@ class BlogPostPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -40,7 +41,7 @@ class BlogPostPolicy
      */
     public function update(User $user, BlogPost $blogPost): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -48,7 +49,7 @@ class BlogPostPolicy
      */
     public function delete(User $user, BlogPost $blogPost): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -56,7 +57,7 @@ class BlogPostPolicy
      */
     public function restore(User $user, BlogPost $blogPost): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 
     /**
@@ -64,6 +65,6 @@ class BlogPostPolicy
      */
     public function forceDelete(User $user, BlogPost $blogPost): bool
     {
-        return $user->role === \App\Enums\UserRole::Admin;
+        return $user->role === UserRole::Admin;
     }
 }

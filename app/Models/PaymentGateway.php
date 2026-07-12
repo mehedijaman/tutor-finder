@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PaymentGatewayType;
 use App\Enums\TaxonomyStatus;
+use Database\Factories\PaymentGatewayFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +13,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class PaymentGateway extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentGatewayFactory> */
+    /** @use HasFactory<PaymentGatewayFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
 
     /**

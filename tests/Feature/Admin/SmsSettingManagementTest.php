@@ -190,7 +190,7 @@ it('returns gateway errors when sending test sms fails', function () {
     {
         public function send(string $phone, string $message): void
         {
-            throw new \RuntimeException('Failed to send SMS via configured gateway.');
+            throw new RuntimeException('Failed to send SMS via configured gateway.');
         }
     });
 

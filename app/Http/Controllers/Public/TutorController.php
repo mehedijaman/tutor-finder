@@ -9,6 +9,8 @@ use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\Category;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Models\TuitionJob;
@@ -270,9 +272,9 @@ class TutorController extends Controller
                 'classes' => $this->activeSchoolClasses(),
                 'subjects' => $this->activeSubjects(),
                 'locations' => $this->activeLocations(),
-                'countries' => \App\Models\Country::query()->where('status', \App\Enums\TaxonomyStatus::Active)->ordered()->get(['id', 'name'])->toArray(),
-                'cities' => \App\Models\City::query()->where('status', \App\Enums\TaxonomyStatus::Active)->ordered()->get(['id', 'name', 'country_id'])->toArray(),
-                'areas' => \App\Models\Area::query()->where('status', \App\Enums\TaxonomyStatus::Active)->ordered()->get(['id', 'name', 'city_id'])->toArray(),
+                'countries' => Country::query()->where('status', TaxonomyStatus::Active)->ordered()->get(['id', 'name'])->toArray(),
+                'cities' => City::query()->where('status', TaxonomyStatus::Active)->ordered()->get(['id', 'name', 'country_id'])->toArray(),
+                'areas' => Area::query()->where('status', TaxonomyStatus::Active)->ordered()->get(['id', 'name', 'city_id'])->toArray(),
                 'days' => $this->dayOptions(),
                 'genderOptions' => [
                     ['value' => 'any', 'label' => 'Any'],

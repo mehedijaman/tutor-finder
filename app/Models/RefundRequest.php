@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\RefundStatus;
+use Database\Factories\RefundRequestFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class RefundRequest extends Model
 {
-    /** @use HasFactory<\Database\Factories\RefundRequestFactory> */
+    /** @use HasFactory<RefundRequestFactory> */
     use HasFactory, LogsActivity, SoftDeletes;
 
     /**
