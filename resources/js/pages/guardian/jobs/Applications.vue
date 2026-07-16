@@ -377,7 +377,7 @@ function confirmLabel() {
                 <template #cell-expected_salary_amount="{ row }">
                     {{
                         row.expected_salary_amount
-                            ? `${row.salary_currency || 'BDT'} ${row.expected_salary_amount}`
+                            ? `${row.salary_currency || 'BDT'} ${Number(row.expected_salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 })}`
                             : '—'
                     }}
                 </template>

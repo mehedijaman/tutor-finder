@@ -151,7 +151,7 @@ function submit() {
                                     Change this value to adjust the commission.
                                     The original job salary was
                                     <strong
-                                        >{{ job.salary_amount }}
+                                        >{{ Number(job.salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 }) }}
                                         {{ job.salary_currency }}</strong
                                     >.
                                 </p>
@@ -197,7 +197,7 @@ function submit() {
                                         <span
                                             class="text-lg font-semibold text-blue-600"
                                             >+{{
-                                                commissionAmount.toLocaleString()
+                                                commissionAmount.toLocaleString('en-BD', { maximumFractionDigits: 0 })
                                             }}
                                             {{ job.salary_currency }}</span
                                         >
@@ -214,7 +214,7 @@ function submit() {
                                             class="text-2xl font-black text-slate-900"
                                         >
                                             {{
-                                                commissionAmount.toLocaleString()
+                                                commissionAmount.toLocaleString('en-BD', { maximumFractionDigits: 0 })
                                             }}
                                             {{ job.salary_currency }}
                                         </span>

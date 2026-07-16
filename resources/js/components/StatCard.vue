@@ -190,8 +190,8 @@ const colorStyles = computed(() => {
 
 function formatValue(val: number | string): string {
     if (typeof val === 'string') return val;
-    if (val >= 1000000) return (val / 1000000).toFixed(1) + 'M';
-    if (val >= 1000) return (val / 1000).toFixed(1) + 'K';
+    if (val >= 1000000) return parseFloat((val / 1000000).toFixed(1)) + 'M';
+    if (val >= 1000) return parseFloat((val / 1000).toFixed(1)) + 'K';
     return val.toLocaleString();
 }
 </script>

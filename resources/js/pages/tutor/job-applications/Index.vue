@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { CircleCheck, CircleX, Send, Star, UserRound } from 'lucide-vue-next';
+import {
+    CircleCheck,
+    CircleX,
+    Clock,
+    MapPin,
+    Send,
+    Star,
+    UserRound,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
-import DataTable from '@/components/admin/table/DataTable.vue';
-import RowActionsDropdown from '@/components/admin/table/RowActionsDropdown.vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import TutorLayout from '@/layouts/TutorLayout.vue';
 
 const props = defineProps({
@@ -62,61 +69,59 @@ const appliedCount = computed(() => {
     return 0;
 });
 
-const columns = [
-    { key: 'job_title', label: 'Job' },
-    { key: 'job_status', label: 'Job Status' },
-    { key: 'status', label: 'Application Status' },
-    { key: 'expected_salary_amount', label: 'Expected Salary' },
-    { key: 'created_at', label: 'Applied At' },
-    { key: 'cancel_reason', label: 'Cancel Reason' },
-    { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap' },
-];
+const rows = computed(() => props.items?.data ?? []);
+const links = computed(() => props.items?.links ?? []);
+const currentPage = computed(() => props.items?.current_page ?? 1);
+const lastPage = computed(() => props.items?.last_page ?? 1);
+const hasPagination = computed(() => links.value.length > 3);
+const previousLink = computed(() => links.value[0] ?? null);
+const nextLink = computed(() =>
+    links.value.length > 0 ? links.value[links.value.length - 1] : null,
+);
 
 const confirmOpen = ref(false);
 const pendingRow = ref<any>(null);
 
-function badgeVariant(status: string): string {
-    if (status === 'confirmed') {
-        return 'default';
-    }
+function statusBadgeClass(status: string): string {
+    const map: Record<string, string> = {
+        confirmed:
+            'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
+        shortlisted:
+            'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
+        appointed:
+            'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
+        applied:
+            'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-400',
+        cancelled:
+            'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400',
+    };
 
-    if (status === 'shortlisted' || status === 'appointed') {
-        return 'secondary';
-    }
-
-    if (status === 'applied') {
-        return 'outline';
-    }
-
-    if (status === 'cancelled') {
-        return 'destructive';
-    }
-
-    return 'outline';
+    return (
+        map[status] ??
+        'bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-400'
+    );
 }
 
-function actionItems(row: any): Array<Record<string, unknown>> {
-    return [
-        { key: 'view-job', label: 'View Job', show: !!row.job.slug },
-        {
-            key: 'withdraw',
-            label: 'Cancel Application',
-            destructive: true,
-            show: ['applied', 'shortlisted'].includes(row.status),
-        },
-    ];
+function jobStatusBadgeClass(status: string): string {
+    const map: Record<string, string> = {
+        live: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        pending: 'bg-amber-50 text-amber-700 border-amber-200',
+        confirmed:
+            'bg-indigo-50 text-indigo-700 border-indigo-200',
+        cancelled: 'bg-slate-50 text-slate-600 border-slate-200',
+        closed: 'bg-slate-50 text-slate-500 border-slate-200',
+    };
+
+    return map[status] ?? 'bg-slate-50 text-slate-600 border-slate-200';
 }
 
-function handleAction(action: string, row: any): void {
-    if (action === 'view-job') {
-        router.visit(`/jobs/${row.job.slug}`);
-        return;
-    }
+function handleViewJob(id: number): void {
+    router.visit(`/jobs/${id}`);
+}
 
-    if (action === 'withdraw') {
-        pendingRow.value = row;
-        confirmOpen.value = true;
-    }
+function handleWithdraw(row: any): void {
+    pendingRow.value = row;
+    confirmOpen.value = true;
 }
 
 function confirmWithdraw(): void {
@@ -156,6 +161,26 @@ function menuCount(key: string): number {
 
     return 0;
 }
+
+function formatDate(dateString: string): string {
+    if (!dateString) {
+        return '—';
+    }
+
+    return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+}
+
+function formatPaginationLabel(label: string): string {
+    return String(label ?? '')
+        .replaceAll('&laquo;', '«')
+        .replaceAll('&raquo;', '»')
+        .replace(/<[^>]*>/g, '')
+        .trim();
+}
 </script>
 
 <template>
@@ -163,12 +188,15 @@ function menuCount(key: string): number {
 
     <TutorLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
+            <!-- Page Header -->
             <div
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight sm:text-3xl">
+                        <h1
+                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        >
                             My Applications
                         </h1>
                         <p class="mt-1 text-sm text-muted-foreground">
@@ -185,6 +213,7 @@ function menuCount(key: string): number {
                 </div>
             </div>
 
+            <!-- Flash Message -->
             <div
                 v-if="$page.props.flash?.status"
                 class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
@@ -192,6 +221,7 @@ function menuCount(key: string): number {
                 {{ $page.props.flash.status }}
             </div>
 
+            <!-- Status Tabs -->
             <div
                 class="rounded-2xl border border-slate-200/80 bg-slate-50/60 px-4 shadow-sm"
             >
@@ -199,7 +229,7 @@ function menuCount(key: string): number {
                     class="flex flex-wrap items-center justify-between gap-3 border-b border-blue-200/80"
                 >
                     <div
-                        class="w-full [scrollbar-width:none] overflow-x-auto [-ms-overflow-style:none] md:w-auto"
+                        class="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] md:w-auto"
                     >
                         <div
                             class="flex min-w-max items-center gap-6 pr-2 [&::-webkit-scrollbar]:hidden"
@@ -234,55 +264,195 @@ function menuCount(key: string): number {
                 </div>
             </div>
 
-            <DataTable
-                :items="items"
-                :columns="columns"
-                empty-text="No job applications found."
-            >
-                <template #cell-job_title="{ row }">
-                    <Link
-                        v-if="row.job.slug"
-                        :href="`/jobs/${row.job.slug}`"
-                        class="font-medium text-blue-600 hover:underline"
+            <!-- Application Cards -->
+            <div v-if="rows.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div
+                    v-for="row in rows"
+                    :key="row.id"
+                    class="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                >
+                    <!-- Card Header -->
+                    <div class="border-b border-slate-100 p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0 flex-1">
+                                <Link
+                                    v-if="row.job?.id"
+                                    :href="`/jobs/${row.job.id}`"
+                                    class="line-clamp-2 text-base font-semibold text-slate-900 transition-colors hover:text-blue-600"
+                                >
+                                    {{ row.job.title }}
+                                </Link>
+                                <p
+                                    v-else
+                                    class="line-clamp-2 text-base font-semibold text-slate-900"
+                                >
+                                    {{ row.job.title }}
+                                </p>
+                                <div
+                                    class="mt-1.5 flex items-center gap-2 text-xs text-slate-500"
+                                >
+                                    <MapPin class="h-3.5 w-3.5 shrink-0" />
+                                    <span>{{
+                                        row.job.city_name || 'Unknown city'
+                                    }}</span>
+                                </div>
+                            </div>
+                            <Badge
+                                :class="
+                                    statusBadgeClass(row.status) +
+                                    ' shrink-0 rounded-lg border px-2.5 py-0.5 text-[11px] font-bold uppercase'
+                                "
+                            >
+                                {{ row.status }}
+                            </Badge>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="space-y-3 p-5">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">Job Status</span>
+                            <Badge
+                                variant="outline"
+                                :class="
+                                    jobStatusBadgeClass(row.job.status) +
+                                    ' rounded-md border px-2 py-0.5 text-[11px] font-semibold uppercase'
+                                "
+                            >
+                                {{ row.job.status }}
+                            </Badge>
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500"
+                                >Expected Salary</span
+                            >
+                            <span class="font-medium text-slate-700">
+                                {{
+                                    row.expected_salary_amount
+                                        ? `${row.salary_currency || 'BDT'} ${Number(row.expected_salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 })}`
+                                        : '—'
+                                }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">Applied</span>
+                            <span
+                                class="flex items-center gap-1.5 text-slate-600"
+                            >
+                                <Clock class="h-3.5 w-3.5 text-slate-400" />
+                                {{ formatDate(row.created_at) }}
+                            </span>
+                        </div>
+
+                        <div
+                            v-if="row.cancel_reason"
+                            class="rounded-lg bg-rose-50 p-3 text-xs text-rose-700"
+                        >
+                            <span class="font-semibold">Cancel reason:</span>
+                            {{ row.cancel_reason }}
+                        </div>
+                    </div>
+
+                    <!-- Card Footer -->
+                    <div
+                        class="flex items-center gap-2 border-t border-slate-100 px-5 py-3"
                     >
-                        {{ row.job.title }}
-                    </Link>
-                    <p v-else class="font-medium">{{ row.job.title }}</p>
-                    <p class="text-xs text-muted-foreground">
-                        {{ row.job.city_name || 'Unknown city' }}
-                    </p>
-                </template>
+                        <Button
+                            v-if="row.job?.id"
+                            variant="ghost"
+                            size="sm"
+                            class="h-8 flex-1 text-xs font-medium"
+                            @click="handleViewJob(row.job.id)"
+                        >
+                            View Job
+                        </Button>
+                        <Button
+                            v-if="
+                                ['applied', 'shortlisted'].includes(row.status)
+                            "
+                            variant="ghost"
+                            size="sm"
+                            class="h-8 flex-1 text-xs font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                            @click="handleWithdraw(row)"
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </div>
 
-                <template #cell-job_status="{ row }">
-                    <Badge variant="outline">{{ row.job.status }}</Badge>
-                </template>
+            <!-- Empty State -->
+            <div
+                v-else
+                class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-16 text-center"
+            >
+                <div
+                    class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100"
+                >
+                    <Send class="h-7 w-7 text-slate-400" />
+                </div>
+                <h3 class="mt-4 text-base font-semibold text-slate-700">
+                    No applications found
+                </h3>
+                <p class="mt-1.5 max-w-sm text-sm text-slate-500">
+                    You haven't applied to any jobs yet. Browse available
+                    tutoring opportunities to get started.
+                </p>
+                <Link
+                    href="/jobs"
+                    class="mt-5 inline-flex items-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                >
+                    Browse Jobs
+                </Link>
+            </div>
 
-                <template #cell-status="{ value }">
-                    <Badge :variant="badgeVariant(value)">{{ value }}</Badge>
-                </template>
+            <!-- Pagination -->
+            <div
+                v-if="hasPagination"
+                class="flex items-center justify-between"
+            >
+                <span
+                    v-if="items.from && items.to && items.total"
+                    class="text-xs text-slate-500"
+                >
+                    Showing {{ items.from }}–{{ items.to }} of
+                    {{ items.total }}
+                </span>
 
-                <template #cell-expected_salary_amount="{ row }">
-                    {{
-                        row.expected_salary_amount
-                            ? `${row.salary_currency || 'BDT'} ${row.expected_salary_amount}`
-                            : '—'
-                    }}
-                </template>
+                <div class="flex items-center gap-1.5 ml-auto">
+                    <template
+                        v-for="(link, index) in links"
+                        :key="`${index}-${link.label}`"
+                    >
+                        <Button
+                            v-if="!link.url"
+                            variant="outline"
+                            size="sm"
+                            disabled
+                            class="h-8 min-w-8 px-2.5 text-xs"
+                        >
+                            {{ formatPaginationLabel(link.label) }}
+                        </Button>
 
-                <template #cell-created_at="{ value }">{{
-                    value ? new Date(value).toLocaleString() : '—'
-                }}</template>
-                <template #cell-cancel_reason="{ value }">{{
-                    value || '—'
-                }}</template>
-
-                <template #cell-actions="{ row }">
-                    <RowActionsDropdown
-                        :actions="actionItems(row)"
-                        @select="(action) => handleAction(action, row)"
-                    />
-                </template>
-            </DataTable>
+                        <Link
+                            v-else
+                            :href="link.url"
+                            preserve-scroll
+                            class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2.5 text-xs font-medium transition-colors"
+                            :class="
+                                link.active
+                                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
+                                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                            "
+                            :aria-current="link.active ? 'page' : undefined"
+                        >
+                            {{ formatPaginationLabel(link.label) }}
+                        </Link>
+                    </template>
+                </div>
+            </div>
         </div>
     </TutorLayout>
 
