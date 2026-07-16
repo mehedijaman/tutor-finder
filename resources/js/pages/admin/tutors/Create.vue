@@ -187,7 +187,7 @@ const submit = () => {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent class="grid gap-6 p-6 md:grid-cols-2">
+                    <CardContent class="grid gap-6 p-6 sm:grid-cols-2">
                         <div class="space-y-2">
                             <Label
                                 for="name"
@@ -347,7 +347,7 @@ const submit = () => {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent class="grid gap-6 p-6 md:grid-cols-2">
+                    <CardContent class="grid gap-6 p-6 sm:grid-cols-2">
                         <div class="space-y-2">
                             <Label
                                 class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
@@ -404,7 +404,7 @@ const submit = () => {
                             </div>
                         </div>
 
-                        <div class="space-y-2 md:col-span-2">
+                        <div class="space-y-2 sm:col-span-2">
                             <Label
                                 for="bio"
                                 class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
@@ -477,7 +477,7 @@ const submit = () => {
                         </div>
                     </CardHeader>
                     <CardContent class="grid gap-8 p-6">
-                        <div class="grid gap-6 md:grid-cols-2">
+                        <div class="grid gap-6 sm:grid-cols-2">
                             <div class="space-y-3">
                                 <Label
                                     class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
@@ -547,7 +547,7 @@ const submit = () => {
                             </div>
                         </div>
 
-                        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                             <div class="space-y-3">
                                 <Label
                                     class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
@@ -670,7 +670,7 @@ const submit = () => {
                                 Preferred Subjects
                             </Label>
                             <div
-                                class="grid max-h-[200px] grid-cols-2 gap-x-6 gap-y-3 overflow-y-auto rounded-2xl border border-border/60 bg-muted/30 p-4 md:grid-cols-3 lg:grid-cols-4"
+                                class="grid max-h-[200px] grid-cols-2 gap-x-6 gap-y-3 overflow-y-auto rounded-2xl border border-border/60 bg-muted/30 p-4 sm:grid-cols-3 lg:grid-cols-4"
                             >
                                 <div
                                     v-for="item in subjects"
@@ -701,7 +701,7 @@ const submit = () => {
                             </div>
                         </div>
 
-                        <div class="grid gap-6 pt-4 md:grid-cols-3">
+                        <div class="grid gap-6 pt-4 sm:grid-cols-3">
                             <div class="space-y-2">
                                 <Label
                                     class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"
@@ -815,7 +815,7 @@ const submit = () => {
                                 </Button>
                             </div>
 
-                            <div class="grid gap-6 md:grid-cols-2">
+                            <div class="grid gap-6 sm:grid-cols-2">
                                 <div class="space-y-2">
                                     <Label
                                         class="ml-1 text-[10px] font-black tracking-widest text-muted-foreground uppercase"

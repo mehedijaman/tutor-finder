@@ -20,11 +20,11 @@ const breadcrumbs = [
     <Head title="Create Tutorial" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-4 sm:p-6">
+        <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
-                <h1 class="text-2xl font-semibold tracking-tight">
+                <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
                     Create Tutorial
                 </h1>
             </div>

@@ -266,10 +266,10 @@ function handleRowAction(actionKey, row) {
     <Head title="Subjects" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-4 sm:p-6">
+        <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold">
+                    <h1 class="text-2xl sm:text-3xl font-semibold">
                         {{ filters.trash ? 'Subject Recycle Bin' : 'Subjects' }}
                     </h1>
                     <p class="text-sm text-muted-foreground">

@@ -76,7 +76,7 @@ function getSanitizedAnswer(answer: string): string {
     </Head>
 
     <PublicLayout>
-        <section class="mx-auto max-w-7xl px-4 pb-8">
+        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
             <div
                 class="rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white shadow-sm md:p-10"
             >
@@ -93,7 +93,7 @@ function getSanitizedAnswer(answer: string): string {
             </div>
         </section>
 
-        <main class="mx-auto max-w-5xl px-4 pb-16">
+        <main class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-16">
             <div class="rounded-xl border bg-white p-4 shadow-sm">
                 <div class="mb-5 flex flex-wrap gap-2">
                     <Link

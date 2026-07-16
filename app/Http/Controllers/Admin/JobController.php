@@ -14,6 +14,7 @@ use App\Models\TuitionJobApplication;
 use App\Services\Job\HiringWorkflowService;
 use App\Services\Job\JobFormOptionService;
 use App\Services\Job\JobLifecycleService;
+use App\Support\SlugService;
 use DomainException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -30,6 +31,7 @@ class JobController extends Controller
     public function __construct(
         private readonly JobFormOptionService $formOptionService,
         private readonly JobLifecycleService $lifecycleService,
+        private readonly SlugService $slugService,
     ) {}
 
     /**
@@ -307,6 +309,7 @@ class JobController extends Controller
         DB::transaction(function () use ($validated, $title, $tuitionDays, $status, $adminId): void {
             $job = TuitionJob::query()->create([
                 'title' => $title,
+                'slug' => $this->slugService->unique(TuitionJob::class, $title),
                 'description' => (string) $validated['description'],
                 'tuition_type_id' => (int) $validated['tuition_type_id'],
                 'category_id' => (int) $validated['category_id'],

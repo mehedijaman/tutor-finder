@@ -255,7 +255,7 @@ onBeforeUnmount(() => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <SettingsLayout full-width>
-            <div class="space-y-6 p-4 sm:p-6">
+            <div class="space-y-6 p-4 sm:p-6 lg:p-8">
                 <!-- Page Header -->
                 <div
                     class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
@@ -268,7 +268,7 @@ onBeforeUnmount(() => {
                         </div>
                         <div>
                             <h1
-                                class="text-2xl font-semibold tracking-tight text-slate-900"
+                                class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900"
                             >
                                 Site Settings
                             </h1>
@@ -294,7 +294,7 @@ onBeforeUnmount(() => {
                             </p>
                         </div>
 
-                        <div class="grid gap-5 md:grid-cols-2">
+                        <div class="grid gap-5 sm:grid-cols-2">
                             <div class="space-y-2">
                                 <Label for="site_name">Site Name</Label>
                                 <Input
@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
                                 <InputError :message="form.errors.slogan" />
                             </div>
 
-                            <div class="space-y-2 md:col-span-2">
+                            <div class="space-y-2 sm:col-span-2">
                                 <Label for="description">Description</Label>
                                 <Textarea
                                     id="description"
@@ -362,7 +362,7 @@ onBeforeUnmount(() => {
                             </p>
                         </div>
 
-                        <div class="grid gap-6 md:grid-cols-2">
+                        <div class="grid gap-6 sm:grid-cols-2">
                             <!-- Logo -->
                             <div
                                 class="space-y-4 rounded-xl border border-slate-200/80 bg-slate-50/50 p-4"
@@ -501,7 +501,7 @@ onBeforeUnmount(() => {
                             </p>
                         </div>
 
-                        <div class="grid gap-6 md:grid-cols-2">
+                        <div class="grid gap-6 sm:grid-cols-2">
                             <!-- Phone Numbers -->
                             <div class="space-y-4">
                                 <div
@@ -656,7 +656,7 @@ onBeforeUnmount(() => {
                             started.
                         </div>
 
-                        <div class="grid gap-4 md:grid-cols-2">
+                        <div class="grid gap-4 sm:grid-cols-2">
                             <div
                                 v-for="(address, index) in addresses"
                                 :key="`address-${index}`"
@@ -770,7 +770,7 @@ onBeforeUnmount(() => {
                             get started.
                         </div>
 
-                        <div class="grid gap-4 md:grid-cols-2">
+                        <div class="grid gap-4 sm:grid-cols-2">
                             <div
                                 v-for="(social, index) in socialRows"
                                 :key="`social-${index}`"
@@ -845,7 +845,7 @@ onBeforeUnmount(() => {
                             </p>
                         </div>
 
-                        <div class="grid gap-5 md:grid-cols-3">
+                        <div class="grid gap-5 sm:grid-cols-3">
                             <div class="space-y-2">
                                 <Label for="trade_licence_no"
                                     >Trade Licence No</Label

@@ -68,7 +68,7 @@ function submit() {
                 </Link>
                 <div>
                     <h1
-                        class="text-2xl font-bold tracking-tight text-slate-900"
+                        class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
                     >
                         Finalize Settlement
                     </h1>
@@ -319,7 +319,7 @@ function submit() {
                     </div>
                 </CardContent>
                 <CardFooter
-                    class="flex items-center justify-between border-t bg-slate-50/50 px-8 py-6"
+                    class="flex flex-wrap items-center justify-between gap-4 border-t bg-slate-50/50 px-5 py-4 sm:px-8 sm:py-6"
                 >
                     <Button
                         variant="ghost"

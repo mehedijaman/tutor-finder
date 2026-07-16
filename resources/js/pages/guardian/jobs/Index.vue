@@ -172,7 +172,7 @@ function statusBadge(row: GuardianJobRow) {
     <Head title="My Jobs" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-8 p-6 lg:p-8">
+        <div class="space-y-8 p-4 sm:p-6 lg:p-8">
             <!-- Header Section -->
             <div class="flex flex-wrap items-center justify-between gap-6 pb-2">
                 <div class="space-y-1">
@@ -183,7 +183,7 @@ function statusBadge(row: GuardianJobRow) {
                             <Briefcase class="h-6 w-6" />
                         </div>
                         <h1
-                            class="text-3xl font-bold tracking-tight text-slate-900"
+                            class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
                         >
                             My Job Postings
                         </h1>
@@ -212,7 +212,7 @@ function statusBadge(row: GuardianJobRow) {
             <div
                 class="flex flex-wrap items-center gap-4 rounded-3xl border border-slate-200/80 bg-white/50 p-4 shadow-sm backdrop-blur-sm"
             >
-                <div class="relative min-w-[280px] flex-1">
+                <div class="relative min-w-0 flex-1">
                     <Search
                         class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400"
                     />
@@ -226,7 +226,7 @@ function statusBadge(row: GuardianJobRow) {
 
                 <Select v-if="!presetStatus" v-model="statusFilter">
                     <SelectTrigger
-                        class="h-11 w-[180px] rounded-2xl border-slate-200 bg-white/80"
+                        class="h-11 w-full rounded-2xl border-slate-200 bg-white/80 sm:w-[180px]"
                     >
                         <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>

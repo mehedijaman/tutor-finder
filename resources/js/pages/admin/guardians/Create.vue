@@ -143,7 +143,7 @@ const submit = () => {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent class="grid gap-6 p-6 md:grid-cols-2">
+                    <CardContent class="grid gap-6 p-6 sm:grid-cols-2">
                         <div class="space-y-2">
                             <Label
                                 for="name"
@@ -301,7 +301,7 @@ const submit = () => {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent class="grid gap-6 p-6 md:grid-cols-2">
+                    <CardContent class="grid gap-6 p-6 sm:grid-cols-2">
                         <div class="space-y-2">
                             <Label
                                 for="guardian_name"
@@ -340,7 +340,7 @@ const submit = () => {
                             <InputError :message="form.errors.occupation" />
                         </div>
 
-                        <div class="space-y-2 md:col-span-2">
+                        <div class="space-y-2 sm:col-span-2">
                             <Label
                                 for="phone_alt"
                                 class="ml-1 text-[10px] font-black tracking-widest text-slate-400 uppercase"
@@ -386,7 +386,7 @@ const submit = () => {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent class="grid gap-6 p-6 md:grid-cols-2">
+                    <CardContent class="grid gap-6 p-6 sm:grid-cols-2">
                         <div class="space-y-2">
                             <Label
                                 for="address"

@@ -51,14 +51,14 @@ function toggleAppearance(): void {
 
 <template>
     <header
-        class="sticky top-0 z-20 flex shrink-0 items-center gap-3 border-b border-slate-200/80 bg-white/95 px-4 py-3.5 backdrop-blur-lg transition-[width,height] ease-linear md:px-6 dark:border-slate-800/80 dark:bg-slate-950/95"
+        class="sticky top-0 z-20 flex shrink-0 items-center gap-2 border-b border-slate-200/80 bg-white/95 px-3 py-3 backdrop-blur-lg transition-[width,height] ease-linear sm:gap-3 sm:px-4 sm:py-3.5 md:px-6 dark:border-slate-800/80 dark:bg-slate-950/95"
     >
         <div class="flex min-w-0 flex-1 items-center gap-3">
             <SidebarTrigger
                 class="-ml-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
             />
 
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
                 <p
                     class="truncate text-sm font-semibold tracking-tight text-slate-900 dark:text-white"
                 >
@@ -67,14 +67,14 @@ function toggleAppearance(): void {
 
                 <div
                     v-if="breadcrumbs && breadcrumbs.length > 0"
-                    class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                    class="mt-0.5 overflow-hidden text-xs text-slate-500 dark:text-slate-400"
                 >
                     <Breadcrumbs :breadcrumbs="breadcrumbs" />
                 </div>
             </div>
         </div>
 
-        <div class="ml-auto flex items-center gap-1.5">
+        <div class="ml-auto flex items-center gap-1 sm:gap-1.5">
             <NotificationBell />
 
             <Button
@@ -106,10 +106,10 @@ function toggleAppearance(): void {
                     <Button
                         variant="ghost"
                         size="icon"
-                        class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary/50 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        class="relative size-9 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary/50 hover:bg-slate-100 sm:size-10 dark:hover:bg-slate-800"
                     >
                         <Avatar
-                            class="size-8 overflow-hidden rounded-full ring-2 ring-white dark:ring-slate-800"
+                            class="size-7 overflow-hidden rounded-full ring-2 ring-white sm:size-8 dark:ring-slate-800"
                         >
                             <AvatarImage
                                 v-if="user.photo_url"

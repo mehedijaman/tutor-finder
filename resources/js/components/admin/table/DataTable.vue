@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ArrowDown, ArrowUp, ArrowUpDown, Inbox } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { ArrowDown, ArrowUp, ArrowUpDown, Columns3, Inbox } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const props = defineProps({
     items: {
@@ -41,6 +49,16 @@ const props = defineProps({
         type: String,
         default: '500px',
     },
+    /** Column key to use as the primary/heading in mobile card view */
+    mobilePrimary: {
+        type: String,
+        default: '',
+    },
+    /** Column keys to hide on tablet (visible only on lg+) */
+    hideOnTablet: {
+        type: Array as () => string[],
+        default: () => [],
+    },
 });
 
 const emit = defineEmits(['sort']);
@@ -57,6 +75,15 @@ const hasPagination = computed(() => links.value.length > 3);
 const previousLink = computed(() => links.value[0] ?? null);
 const nextLink = computed(() =>
     links.value.length > 0 ? links.value[links.value.length - 1] : null,
+);
+
+// Column visibility state
+const hiddenColumns = ref<Set<string>>(new Set());
+const visibleColumns = computed(() =>
+    props.columns.filter((col) => !hiddenColumns.value.has(col.key)),
+);
+const tabletColumns = computed(() =>
+    visibleColumns.value.filter((col) => !props.hideOnTablet.includes(col.key)),
 );
 
 function serialNumber(index: number): number {
@@ -83,6 +110,14 @@ function sortIcon(column) {
     return props.sortDirection === 'desc' ? ArrowDown : ArrowUp;
 }
 
+function toggleColumnVisibility(key: string) {
+    if (hiddenColumns.value.has(key)) {
+        hiddenColumns.value.delete(key);
+    } else {
+        hiddenColumns.value.add(key);
+    }
+}
+
 function formatPaginationLabel(label) {
     return String(label ?? '')
         .replaceAll('&laquo;', '«')
@@ -100,6 +135,16 @@ function mobilePaginationLabel(): string {
     }
 
     return `Page ${currentPage.value} of ${lastPage.value}`;
+}
+
+function mobilePrimaryValue(row: any): string {
+    if (props.mobilePrimary && row[props.mobilePrimary]) {
+        return row[props.mobilePrimary];
+    }
+
+    const firstCol = props.columns[0];
+
+    return firstCol ? (row[firstCol.key] ?? '') : '';
 }
 </script>
 
@@ -130,10 +175,15 @@ function mobilePaginationLabel(): string {
                                 SL
                             </th>
                             <th
-                                v-for="column in columns"
+                                v-for="column in visibleColumns"
                                 :key="column.key"
                                 class="px-4 py-3.5 text-xs font-semibold tracking-wider whitespace-nowrap text-muted-foreground uppercase"
-                                :class="column.headerClass"
+                                :class="[
+                                    column.headerClass,
+                                    hideOnTablet.includes(column.key)
+                                        ? 'hidden lg:table-cell'
+                                        : '',
+                                ]"
                             >
                                 <Button
                                     v-if="column.sortable"
@@ -186,10 +236,15 @@ function mobilePaginationLabel(): string {
                                     {{ serialNumber(index) }}
                                 </td>
                                 <td
-                                    v-for="column in columns"
+                                    v-for="column in visibleColumns"
                                     :key="column.key"
                                     class="px-4 py-3.5 align-middle text-sm text-card-foreground"
-                                    :class="column.cellClass"
+                                    :class="[
+                                        column.cellClass,
+                                        hideOnTablet.includes(column.key)
+                                            ? 'hidden lg:table-cell'
+                                            : '',
+                                    ]"
                                 >
                                     <slot
                                         :name="`cell-${column.key}`"
@@ -230,6 +285,7 @@ function mobilePaginationLabel(): string {
             </div>
         </div>
 
+        <!-- Mobile card view -->
         <div
             class="sm:hidden"
             :class="{ 'overflow-y-auto': maxHeight }"
@@ -249,34 +305,64 @@ function mobilePaginationLabel(): string {
                     <div
                         v-for="(row, index) in rows"
                         :key="row[rowKey] ?? row.id"
-                        class="space-y-2 px-4 py-4"
+                        class="space-y-3 px-4 py-4"
                     >
-                        <div
-                            v-if="showSerial"
-                            class="mb-2 text-xs font-medium text-muted-foreground tabular-nums"
-                        >
-                            #{{ serialNumber(index) }}
-                        </div>
-
-                        <div
-                            v-for="column in columns"
-                            :key="column.key"
-                            class="flex items-start justify-between gap-2"
-                        >
-                            <span class="shrink-0 text-xs font-medium text-muted-foreground">
-                                {{ column.label }}
-                            </span>
-                            <div
-                                class="text-right text-sm text-card-foreground"
-                                :class="column.cellClass"
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0 flex-1">
+                                <p
+                                    class="truncate text-sm font-semibold text-card-foreground"
+                                >
+                                    <slot
+                                        :name="`cell-${mobilePrimaryValue(row) ? columns[0]?.key : ''}`"
+                                        :row="row"
+                                        :value="mobilePrimaryValue(row)"
+                                    >
+                                        {{ mobilePrimaryValue(row) || '—' }}
+                                    </slot>
+                                </p>
+                                <p
+                                    v-if="showSerial"
+                                    class="mt-0.5 text-xs text-muted-foreground tabular-nums"
+                                >
+                                    #{{ serialNumber(index) }}
+                                </p>
+                            </div>
+                            <slot
+                                name="cell-actions"
+                                :row="row"
                             >
                                 <slot
-                                    :name="`cell-${column.key}`"
+                                    :name="`cell-${columns[columns.length - 1]?.key}`"
                                     :row="row"
-                                    :value="row[column.key]"
+                                    :value="row[columns[columns.length - 1]?.key]"
+                                />
+                            </slot>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div
+                                v-for="(column, colIndex) in visibleColumns.slice(1)"
+                                :key="column.key"
+                                v-show="colIndex < 4"
+                                class="flex items-start justify-between gap-3"
+                            >
+                                <span class="shrink-0 text-xs font-medium text-muted-foreground">
+                                    {{ column.label }}
+                                </span>
+                                <div
+                                    class="min-w-0 text-right text-sm text-card-foreground"
+                                    :class="column.cellClass"
                                 >
-                                    {{ row[column.key] ?? '—' }}
-                                </slot>
+                                    <slot
+                                        :name="`cell-${column.key}`"
+                                        :row="row"
+                                        :value="row[column.key]"
+                                    >
+                                        <span class="truncate block max-w-[200px]">
+                                            {{ row[column.key] ?? '—' }}
+                                        </span>
+                                    </slot>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -295,6 +381,7 @@ function mobilePaginationLabel(): string {
             </template>
         </div>
 
+        <!-- Pagination -->
         <div
             v-if="hasPagination"
             class="border-t border-border px-4 py-3"
@@ -304,12 +391,43 @@ function mobilePaginationLabel(): string {
             <div
                 class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
-                <span
-                    v-if="items.from && items.to && items.total"
-                    class="text-center text-xs text-muted-foreground sm:text-left"
-                >
-                    Showing {{ items.from }}–{{ items.to }} of {{ items.total }}
-                </span>
+                <div class="flex items-center gap-3">
+                    <span
+                        v-if="items.from && items.to && items.total"
+                        class="text-center text-xs text-muted-foreground sm:text-left"
+                    >
+                        Showing {{ items.from }}–{{ items.to }} of {{ items.total }}
+                    </span>
+
+                    <!-- Column visibility toggle -->
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                class="h-8 gap-1.5 px-2.5 text-xs"
+                            >
+                                <Columns3 class="h-3.5 w-3.5" />
+                                <span class="hidden sm:inline">Columns</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" class="w-44">
+                            <DropdownMenuLabel class="text-xs">
+                                Toggle columns
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuCheckboxItem
+                                v-for="column in columns"
+                                :key="column.key"
+                                :checked="!hiddenColumns.has(column.key)"
+                                class="text-xs"
+                                @update:checked="toggleColumnVisibility(column.key)"
+                            >
+                                {{ column.label }}
+                            </DropdownMenuCheckboxItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
 
                 <div class="grid grid-cols-2 gap-2 sm:hidden">
                     <Button

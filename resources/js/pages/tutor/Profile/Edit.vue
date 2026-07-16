@@ -542,14 +542,14 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
     <Head title="Tutor Profile" />
 
     <TutorLayout :breadcrumbs="breadcrumbs">
-        <div class="grid gap-6 p-4 sm:p-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+        <div class="grid gap-6 p-4 sm:p-6 lg:p-8 xl:grid-cols-[320px_minmax(0,1fr)]">
             <aside
                 class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
             >
                 <div class="flex flex-col items-center text-center">
                     <ProfilePhotoUpload />
 
-                    <h2 class="mt-2 text-2xl font-semibold tracking-tight">
+                    <h2 class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">
                         {{ form.name || authUser?.name || 'Tutor' }}
                     </h2>
                     <p class="mt-1 text-sm text-muted-foreground">

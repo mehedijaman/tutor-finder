@@ -28,13 +28,13 @@ const breadcrumbs = [
     <Head title="Create Admin User" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-4 sm:p-6">
+        <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
                 class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
             >
                 <div class="space-y-1">
                     <h1
-                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                        class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900"
                     >
                         Create Admin User
                     </h1>
@@ -55,7 +55,7 @@ const breadcrumbs = [
                 class="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                 #default="{ errors, processing }"
             >
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
                         <Input id="name" name="name" type="text" required />
@@ -93,7 +93,7 @@ const breadcrumbs = [
                     </div>
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid gap-4 sm:grid-cols-2">
                     <div class="rounded-xl border border-slate-200/80 p-4">
                         <h2 class="mb-3 text-sm font-medium">Roles</h2>
                         <div class="space-y-2">

@@ -353,7 +353,7 @@ const tabs = [
                     >
                         <div class="space-y-1">
                             <h1
-                                class="text-2xl leading-tight font-bold tracking-tight text-slate-900"
+                                class="text-2xl leading-tight font-bold tracking-tight text-slate-900 sm:text-3xl"
                             >
                                 {{
                                     tabs.find((t) => t.id === activeTab)?.label

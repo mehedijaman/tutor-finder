@@ -146,9 +146,9 @@ function submit() {
 
 <template>
     <form class="space-y-6" @submit.prevent="submit">
-        <div class="grid gap-6 lg:grid-cols-12">
+        <div class="grid gap-6 sm:grid-cols-12">
             <section
-                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:col-span-8"
+                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:col-span-8"
             >
                 <h2 class="text-lg font-semibold">Page Content</h2>
 
@@ -194,7 +194,7 @@ function submit() {
                 </div>
             </section>
 
-            <aside class="space-y-4 lg:col-span-4">
+            <aside class="space-y-4 sm:col-span-4">
                 <section
                     class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                 >
@@ -205,7 +205,7 @@ function submit() {
                         <select
                             id="page-status"
                             v-model="form.status"
-                            class="h-10 rounded-md border px-3 text-sm"
+                            class="h-10 w-full rounded-md border px-3 text-sm"
                         >
                             <option
                                 v-for="option in statusOptions"

@@ -114,7 +114,7 @@ const submit = () => {
                 <select
                     id="tag-status"
                     v-model="form.status"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                 >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>

@@ -9,6 +9,7 @@ use App\Http\Requests\Guardian\Tuition\JobStoreRequest;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
 use App\Services\Job\JobFormOptionService;
+use App\Support\SlugService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ class TuitionJobController extends Controller
 {
     public function __construct(
         private readonly JobFormOptionService $formOptionService,
+        private readonly SlugService $slugService,
     ) {}
 
     /**
@@ -161,6 +163,7 @@ class TuitionJobController extends Controller
         DB::transaction(function () use ($validated, $title, $tuitionDays, $daysPerWeek, $user): void {
             $job = TuitionJob::query()->create([
                 'title' => $title,
+                'slug' => $this->slugService->unique(TuitionJob::class, $title),
                 'description' => (string) $validated['description'],
                 'tuition_type_id' => (int) $validated['tuition_type_id'],
                 'category_id' => (int) $validated['category_id'],

@@ -377,7 +377,7 @@ function closeResetPasswordDialog() {
 
                 <Select v-model="statusFilter">
                     <SelectTrigger
-                        class="h-11 min-w-[180px] rounded-xl border-border"
+                        class="h-11 w-full rounded-xl border-border sm:w-auto sm:min-w-[180px]"
                     >
                         <Filter class="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
                         <SelectValue placeholder="All Status" />
@@ -392,7 +392,7 @@ function closeResetPasswordDialog() {
 
                 <Select v-model="verificationFilter">
                     <SelectTrigger
-                        class="h-11 min-w-[180px] rounded-xl border-border"
+                        class="h-11 w-full rounded-xl border-border sm:w-auto sm:min-w-[180px]"
                     >
                         <Shield class="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
                         <SelectValue placeholder="Verification" />

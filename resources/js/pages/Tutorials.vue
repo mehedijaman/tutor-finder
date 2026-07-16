@@ -108,7 +108,7 @@ function getThumbnailUrl(tutorial: Tutorial): string | null {
 
     <PublicLayout>
         <!-- Hero -->
-        <section class="mx-auto max-w-7xl px-4 pb-8">
+        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
             <div
                 class="rounded-3xl bg-gradient-to-r from-blue-600 to-sky-500 p-8 text-white shadow-sm md:p-10"
             >
@@ -126,7 +126,7 @@ function getThumbnailUrl(tutorial: Tutorial): string | null {
         </section>
 
         <!-- Filters & Content -->
-        <main class="mx-auto max-w-7xl px-4 pb-16">
+        <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
             <!-- Filter Tabs -->
             <div class="mb-8 flex flex-wrap gap-2">
                 <button

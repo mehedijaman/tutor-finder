@@ -175,7 +175,7 @@ function submit(): void {
     <Head title="Contact" />
 
     <PublicLayout>
-        <section class="mx-auto max-w-7xl px-4 pt-4 pb-12 sm:pt-8">
+        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 pb-12 sm:pt-8">
             <div
                 class="relative overflow-hidden rounded-3xl bg-blue-600 px-6 py-12 text-center shadow-2xl shadow-blue-600/20 sm:px-12 sm:py-16"
             >
@@ -196,7 +196,7 @@ function submit(): void {
             </div>
         </section>
 
-        <main class="mx-auto max-w-7xl px-4 pb-16">
+        <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
             <div class="grid gap-6 lg:grid-cols-5 lg:items-start lg:gap-8">
                 <aside class="space-y-6 lg:sticky lg:top-24 lg:col-span-2">
                     <section

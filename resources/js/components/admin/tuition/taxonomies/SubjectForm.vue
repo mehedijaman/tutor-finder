@@ -87,16 +87,16 @@ function submit() {
 <template>
     <form class="space-y-6" @submit.prevent="submit">
         <section
-            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
         >
-            <h2 class="text-lg font-semibold">Subject Details</h2>
+            <h2 class="text-lg font-semibold sm:col-span-2">Subject Details</h2>
 
-            <div class="grid gap-2">
+            <div class="grid gap-2 sm:col-span-2">
                 <Label for="subject-class">Class</Label>
                 <select
                     id="subject-class"
                     v-model="form.class_id"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option
@@ -149,35 +149,33 @@ function submit() {
                 <InputError :message="form.errors.slug" />
             </div>
 
-            <div class="grid gap-2 sm:grid-cols-2">
-                <div class="grid gap-2">
-                    <Label for="subject-status">Status</Label>
-                    <select
-                        id="subject-status"
-                        v-model="form.status"
-                        class="h-10 rounded-md border px-3 text-sm"
+            <div class="grid gap-2">
+                <Label for="subject-status">Status</Label>
+                <select
+                    id="subject-status"
+                    v-model="form.status"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
+                >
+                    <option
+                        v-for="option in statusOptions"
+                        :key="option.value"
+                        :value="option.value"
                     >
-                        <option
-                            v-for="option in statusOptions"
-                            :key="option.value"
-                            :value="option.value"
-                        >
-                            {{ option.label }}
-                        </option>
-                    </select>
-                    <InputError :message="form.errors.status" />
-                </div>
+                        {{ option.label }}
+                    </option>
+                </select>
+                <InputError :message="form.errors.status" />
+            </div>
 
-                <div class="grid gap-2">
-                    <Label for="subject-sort-order">Sort Order</Label>
-                    <Input
-                        id="subject-sort-order"
-                        v-model.number="form.sort_order"
-                        type="number"
-                        min="0"
-                    />
-                    <InputError :message="form.errors.sort_order" />
-                </div>
+            <div class="grid gap-2">
+                <Label for="subject-sort-order">Sort Order</Label>
+                <Input
+                    id="subject-sort-order"
+                    v-model.number="form.sort_order"
+                    type="number"
+                    min="0"
+                />
+                <InputError :message="form.errors.sort_order" />
             </div>
         </section>
 

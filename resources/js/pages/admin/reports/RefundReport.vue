@@ -111,13 +111,13 @@ function handlePrint(): void {
 <template>
     <Head title="Refund Report" />
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-6 p-4 sm:p-6">
+        <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <!-- Header -->
             <div
                 class="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6 print:border-0 print:p-0 print:shadow-none"
             >
                 <div>
-                    <h1 class="text-2xl font-semibold tracking-tight">
+                    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
                         Refund Report
                     </h1>
                     <p class="mt-1 text-sm text-muted-foreground">

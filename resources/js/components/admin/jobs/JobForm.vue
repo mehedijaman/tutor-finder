@@ -261,9 +261,9 @@ function submit() {
         </section>
 
         <section
-            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:grid-cols-2"
         >
-            <h2 class="text-lg font-semibold lg:col-span-2">
+            <h2 class="text-lg font-semibold sm:col-span-2">
                 Taxonomies and Location
             </h2>
 
@@ -272,7 +272,7 @@ function submit() {
                 <select
                     id="job-tuition-type"
                     v-model="form.tuition_type_id"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option value="">Select tuition type</option>
@@ -292,7 +292,7 @@ function submit() {
                 <select
                     id="job-category"
                     v-model="form.category_id"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option value="">Select category</option>
@@ -312,7 +312,7 @@ function submit() {
                 <select
                     id="job-class"
                     v-model="form.class_id"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option value="">Select class</option>
@@ -332,7 +332,7 @@ function submit() {
                 <select
                     id="job-country"
                     v-model="form.country_id"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option value="">Select country</option>
@@ -352,7 +352,7 @@ function submit() {
                 <select
                     id="job-city"
                     v-model="form.city_id"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option value="">Select city</option>
@@ -372,7 +372,7 @@ function submit() {
                 <select
                     id="job-area"
                     v-model="form.area_id"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                 >
                     <option value="">Select area (optional)</option>
                     <option
@@ -386,7 +386,7 @@ function submit() {
                 <InputError :message="form.errors.area_id" />
             </div>
 
-            <div class="grid gap-2 lg:col-span-2">
+            <div class="grid gap-2 sm:col-span-2">
                 <Label for="job-location">Location (landmark)</Label>
                 <Input id="job-location" v-model="form.location" type="text" />
                 <InputError :message="form.errors.location" />
@@ -414,10 +414,10 @@ function submit() {
                 <InputError :message="form.errors.longitude" />
             </div>
 
-            <div class="grid gap-2 lg:col-span-2">
+            <div class="grid gap-2 sm:col-span-2">
                 <Label>Subjects (select at least one)</Label>
                 <div
-                    class="grid gap-2 rounded-md border p-3 md:grid-cols-2 lg:grid-cols-3"
+                    class="grid gap-2 rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-3"
                 >
                     <label
                         v-for="subject in filteredSubjects"
@@ -445,9 +445,9 @@ function submit() {
         </section>
 
         <section
-            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:grid-cols-2"
         >
-            <h2 class="text-lg font-semibold lg:col-span-2">
+            <h2 class="text-lg font-semibold sm:col-span-2">
                 Schedule and Preferences
             </h2>
 
@@ -456,7 +456,7 @@ function submit() {
                 <select
                     id="job-student-gender"
                     v-model="form.student_gender"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option
@@ -475,7 +475,7 @@ function submit() {
                 <select
                     id="job-tutor-gender"
                     v-model="form.tutor_gender"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 w-full rounded-md border px-3 text-sm"
                     required
                 >
                     <option
@@ -489,10 +489,10 @@ function submit() {
                 <InputError :message="form.errors.tutor_gender" />
             </div>
 
-            <div class="grid gap-2 lg:col-span-2">
+            <div class="grid gap-2 sm:col-span-2">
                 <Label>Tuition Days</Label>
                 <div
-                    class="grid gap-2 rounded-md border p-3 md:grid-cols-3 lg:grid-cols-4"
+                    class="grid gap-2 rounded-md border p-3 sm:grid-cols-3 lg:grid-cols-4"
                 >
                     <label
                         v-for="day in dayOptions"
@@ -556,9 +556,9 @@ function submit() {
         </section>
 
         <section
-            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:grid-cols-2"
         >
-            <h2 class="text-lg font-semibold lg:col-span-2">
+            <h2 class="text-lg font-semibold sm:col-span-2">
                 Salary and Publishing
             </h2>
 
@@ -584,7 +584,7 @@ function submit() {
                 <InputError :message="form.errors.salary_currency" />
             </div>
 
-            <label class="flex items-center gap-2 text-sm lg:col-span-2">
+            <label class="flex items-center gap-2 text-sm sm:col-span-2">
                 <input
                     v-model="form.salary_negotiable"
                     type="checkbox"
@@ -600,7 +600,7 @@ function submit() {
                     <select
                         id="job-guardian"
                         v-model="form.guardian_id"
-                        class="h-10 rounded-md border px-3 text-sm"
+                        class="h-10 w-full rounded-md border px-3 text-sm"
                         required
                     >
                         <option value="">Select guardian</option>
@@ -620,7 +620,7 @@ function submit() {
                     <select
                         id="job-status"
                         v-model="form.status"
-                        class="h-10 rounded-md border px-3 text-sm"
+                        class="h-10 w-full rounded-md border px-3 text-sm"
                         required
                     >
                         <option
@@ -634,7 +634,7 @@ function submit() {
                     <InputError :message="form.errors.status" />
                 </div>
 
-                <div class="grid gap-2 lg:col-span-2">
+                <div class="grid gap-2 sm:col-span-2">
                     <Label for="job-published-at"
                         >Published At (optional)</Label
                     >

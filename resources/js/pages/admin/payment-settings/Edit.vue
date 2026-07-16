@@ -61,12 +61,12 @@ function submit() {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <SettingsLayout full-width>
-            <div class="space-y-6 p-4 sm:p-6">
+            <div class="space-y-6 p-4 sm:p-6 lg:p-8">
                 <div
                     class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                 >
                     <h1
-                        class="text-2xl font-semibold tracking-tight text-slate-900"
+                        class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900"
                     >
                         Payment Settings
                     </h1>
@@ -105,7 +105,7 @@ function submit() {
                             </div>
                         </div>
 
-                        <div class="grid gap-4 md:grid-cols-2">
+                        <div class="grid gap-4 sm:grid-cols-2">
                             <div class="grid gap-2">
                                 <Label for="bkash_app_key">App Key</Label>
                                 <Input
@@ -201,7 +201,7 @@ function submit() {
                             </div>
                         </div>
 
-                        <div class="grid gap-4 md:grid-cols-2">
+                        <div class="grid gap-4 sm:grid-cols-2">
                             <div class="grid gap-2">
                                 <Label for="ssl_store_id">Store ID</Label>
                                 <Input
@@ -238,7 +238,7 @@ function submit() {
                                 />
                             </div>
 
-                            <div class="grid gap-2 md:max-w-xs">
+                            <div class="grid gap-2 sm:max-w-xs">
                                 <Label>Mode</Label>
                                 <Select v-model="form.sslcommerz.mode">
                                     <SelectTrigger>

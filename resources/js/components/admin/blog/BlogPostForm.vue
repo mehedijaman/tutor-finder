@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
 <template>
     <form class="space-y-6" @submit.prevent="submitWithIntent('primary')">
         <div class="grid grid-cols-12 gap-6">
-            <div class="col-span-12 space-y-6 lg:col-span-8">
+            <div class="col-span-12 space-y-6 sm:col-span-8">
                 <Card class="gap-0 py-0 shadow-sm">
                     <CardHeader class="border-b px-5 py-4">
                         <CardTitle class="text-lg">Post Details</CardTitle>
@@ -501,14 +501,14 @@ onBeforeUnmount(() => {
                 </div>
             </div>
 
-            <div class="col-span-12 space-y-4 lg:col-span-4">
+            <div class="col-span-12 space-y-4 sm:col-span-4">
                 <MetaBoxCard title="Publication">
                     <div class="grid gap-2">
                         <Label for="post-status">Status</Label>
                         <select
                             id="post-status"
                             v-model="form.status"
-                            class="h-10 rounded-md border px-3 text-sm"
+                            class="h-10 w-full rounded-md border px-3 text-sm"
                         >
                             <option value="draft">Draft</option>
                             <option value="published">Published</option>

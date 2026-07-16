@@ -218,7 +218,7 @@ const formatDate = (date: string | null): string => {
 
                         <select
                             v-model="selectedCategory"
-                            class="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 transition outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                            class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 transition outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                         >
                             <option value="">All categories</option>
                             <option
@@ -232,7 +232,7 @@ const formatDate = (date: string | null): string => {
 
                         <select
                             v-model="selectedTag"
-                            class="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 transition outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                            class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 transition outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                         >
                             <option value="">All tags</option>
                             <option
@@ -289,7 +289,7 @@ const formatDate = (date: string | null): string => {
                             </p>
 
                             <h2
-                                class="mt-3 text-2xl font-semibold tracking-tight text-slate-900"
+                                class="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900"
                             >
                                 <Link
                                     :href="`/blog/${featuredPost.slug}`"

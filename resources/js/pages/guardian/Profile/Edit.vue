@@ -274,7 +274,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                 <div class="flex flex-col items-center text-center">
                     <ProfilePhotoUpload />
 
-                    <h2 class="mt-2 text-2xl font-semibold tracking-tight">
+                    <h2 class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">
                         {{ form.name || authUser?.name || 'Guardian' }}
                     </h2>
                     <p class="mt-1 text-sm text-muted-foreground">
