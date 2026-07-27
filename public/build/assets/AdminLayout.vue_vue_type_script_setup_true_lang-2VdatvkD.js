@@ -1,0 +1,1 @@
+import{_ as a}from"./AppLayout.vue_vue_type_script_setup_true_lang-Dcyre1vx.js";import{d as s,o as t,q as o,w as m,Q as c}from"./app-gh1PbzKe.js";const _=s({__name:"AdminLayout",props:{breadcrumbs:{type:Array,default:()=>[]}},setup(r){return(e,n)=>(t(),o(a,{breadcrumbs:r.breadcrumbs},{default:m(()=>[c(e.$slots,"default")]),_:3},8,["breadcrumbs"]))}});export{_};
