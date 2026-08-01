@@ -15,6 +15,7 @@
 ## 🌟 Key Features
 
 ### 👨‍👩‍👧 Guardian & Student Portal
+
 - **3-Step Job Posting Wizard**: Step-by-step tuition requirement posting with dynamic Subject, Class, Curriculum selection, schedule setup, tutor gender preference, and live summary card.
 - **Direct Tutor Requests**: Browse verified tutor profiles and send targeted tuition requests.
 - **Applicant Management & CV View**: View applicant lists, inspect tutor education & qualifications, and open/download single-click generated PDF CVs.
@@ -22,6 +23,7 @@
 - **Expanded Profile Settings**: Emergency contacts, student relationships, preferred contact schedules, city, and area location details.
 
 ### 👩‍🏫 Tutor Portal
+
 - **Advanced Job Search & Board**: Filter active tuition jobs by Job ID, Date Range, Location/City, Tutor Gender, Curriculum, and Subjects.
 - **Gender Preference Validation**: Enforced matching criteria ensuring application eligibility based on guardian preferences.
 - **Instant Job Applications**: 1-click application submission with live status tracking (`applied`, `shortlisted`, `hired`, `cancelled`).
@@ -29,6 +31,7 @@
 - **Location Intelligence**: Nearby job counts and regional tuition opportunity statistics mapped to tutor city.
 
 ### 🛡️ Admin Management Dashboard
+
 - **12-Month Financial Analytics**: Interactive Revenue vs Refund trend charts, monthly income breakdown, and financial ledger reports.
 - **Tutor Shortlisting & Hiring Settlement**: Full administrative control to shortlist candidates, confirm hiring, settle platform fees, or process refund requests.
 - **Internal Admin Notes**: Dedicated private note tracking for Guardian and Tutor profiles.
@@ -39,18 +42,18 @@
 
 ## 🏗️ Technology Stack
 
-| Layer | Technology |
-| :--- | :--- |
-| **Backend Framework** | Laravel 12.x (PHP 8.4) |
-| **Frontend Bridge** | Inertia.js v2 |
-| **Frontend Framework** | Vue 3 (Composition API `<script setup lang="ts">`) |
-| **Styling & UI** | Tailwind CSS v4, Reka UI, Lucide Icons |
-| **Type Safety & Routes** | TypeScript, `@laravel/vite-plugin-wayfinder` |
-| **Authentication** | Laravel Fortify (Headless Auth) |
-| **Payments & Gateway** | SSLCommerz, bKash Integration |
-| **Notifications** | Web Push (VAPID / FCM) & Local SMS Gateways |
-| **PDF Generation** | Spatie Laravel PDF (Browsershot / Chrome) |
-| **Testing & Quality** | Pest 4 PHP, Laravel Pint (Code Formatter), Prettier |
+| Layer                    | Technology                                          |
+| :----------------------- | :-------------------------------------------------- |
+| **Backend Framework**    | Laravel 12.x (PHP 8.4)                              |
+| **Frontend Bridge**      | Inertia.js v2                                       |
+| **Frontend Framework**   | Vue 3 (Composition API `<script setup lang="ts">`)  |
+| **Styling & UI**         | Tailwind CSS v4, Reka UI, Lucide Icons              |
+| **Type Safety & Routes** | TypeScript, `@laravel/vite-plugin-wayfinder`        |
+| **Authentication**       | Laravel Fortify (Headless Auth)                     |
+| **Payments & Gateway**   | SSLCommerz, bKash Integration                       |
+| **Notifications**        | Web Push (VAPID / FCM) & Local SMS Gateways         |
+| **PDF Generation**       | Spatie Laravel PDF (Browsershot / Chrome)           |
+| **Testing & Quality**    | Pest 4 PHP, Laravel Pint (Code Formatter), Prettier |
 
 ---
 
@@ -59,6 +62,7 @@
 ### Prerequisites
 
 Ensure your system meets the following requirements:
+
 - **PHP**: `^8.4` (with `pdo`, `mbstring`, `openssl`, `bcmath` extensions)
 - **Node.js**: `^20.19` or `>=22.12`
 - **Composer**: `^2.x`
@@ -69,43 +73,48 @@ Ensure your system meets the following requirements:
 ### Installation Setup
 
 1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/mehedijaman/tutor-finder.git
-   cd tutor-finder
-   ```
+
+    ```bash
+    git clone https://github.com/mehedijaman/tutor-finder.git
+    cd tutor-finder
+    ```
 
 2. **Install PHP Dependencies**
-   ```bash
-   composer install
-   ```
+
+    ```bash
+    composer install
+    ```
 
 3. **Install JavaScript Dependencies**
-   ```bash
-   npm install
-   ```
+
+    ```bash
+    npm install
+    ```
 
 4. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
 5. **Database Migration & Seeding**
    Configure your database parameters in `.env`, then run:
-   ```bash
-   php artisan migrate --seed
-   ```
+
+    ```bash
+    php artisan migrate --seed
+    ```
 
 6. **Build Frontend Assets & Run Development Server**
-   ```bash
-   # Run full development stack (Laravel server + Vite dev server)
-   composer run dev
-   
-   # Or run manually in separate terminals:
-   php artisan serve
-   npm run dev
-   ```
-   Access the app in your browser at `http://127.0.0.1:8000`.
+    ```bash
+    # Run full development stack (Laravel server + Vite dev server)
+    composer run dev
+
+    # Or run manually in separate terminals:
+    php artisan serve
+    npm run dev
+    ```
+    Access the app in your browser at `http://127.0.0.1:8000`.
 
 ---
 
@@ -181,5 +190,6 @@ This project is open-source software licensed under the [MIT License](LICENSE).
 ## 📬 Contact & Support
 
 For platform inquiries, bug reports, or feature requests:
-- **Email**: [support@tutorfinder.com](mailto:support@tutorfinder.com)
+
+- **Email**: [mail4mjaman@gmail.com](mailto:mail4mjaman@gmail.com)
 - **Repository**: [github.com/mehedijaman/tutor-finder](https://github.com/mehedijaman/tutor-finder)

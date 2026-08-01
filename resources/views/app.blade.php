@@ -5,6 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        <!-- Developer & Agency Information -->
+        <meta name="keywords" content="Mehedi Jaman, gTechService, web developer, www.gtechservice.net, mail4gtechservice@gmail.com, mail4mjaman@gmail.com, 01841090747">
+        <meta name="author" content="Mehedi Jaman">
+        <meta name="developer" content="Mehedi Jaman">
+        <meta name="company" content="gTechService">
+        <meta name="website" content="www.gtechservice.net">
+        <meta name="email" content="mail4gtechservice@gmail.com">
+        <meta name="email" content="mail4mjaman@gmail.com">
+        <meta name="phone" content="01841090747">
+
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
             (function() {
