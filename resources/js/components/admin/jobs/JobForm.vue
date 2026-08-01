@@ -140,7 +140,7 @@ const filteredSubjects = computed(() => {
 
 const subjectError = computed(() => {
     if (form.errors.subject_ids) return form.errors.subject_ids;
-    // @ts-ignore
+    // @ts-expect-error - Indexed form error object key
     return form.errors['subject_ids.0'] ?? '';
 });
 

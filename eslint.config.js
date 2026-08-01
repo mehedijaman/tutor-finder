@@ -1,6 +1,6 @@
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
 import prettier from 'eslint-config-prettier/flat';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import vue from 'eslint-plugin-vue';
 
 export default defineConfigWithVueTs(
@@ -22,6 +22,7 @@ export default defineConfigWithVueTs(
         rules: {
             'vue/multi-word-component-names': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-vars': 'off',
             '@typescript-eslint/consistent-type-imports': [
                 'error',
                 {
