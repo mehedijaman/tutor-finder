@@ -1,325 +1,185 @@
-# 📚 Tutor Finder
+# 🎓 Tutor Finder — Smart Tutoring Marketplace Platform
 
-### The Smart Marketplace Connecting Tutors and Families
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Inertia.js](https://img.shields.io/badge/Inertia.js-v2.x-9553E9?style=for-the-badge&logo=inertia&logoColor=white)](https://inertiajs.com)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white)](https://vuejs.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.x-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![Pest](https://img.shields.io/badge/Pest_Testing-4.x-10B981?style=for-the-badge&logo=pest&logoColor=white)](https://pestphp.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
-Tutor Finder is a modern tutoring marketplace platform that connects **guardians and students** with qualified **tutors** through a streamlined, technology-driven experience.
-
-Built using **Laravel + Inertia.js + Vue 3 + Tailwind CSS**, Tutor Finder combines scalable backend infrastructure with a clean, high-performance frontend architecture.
-
----
-
-# 🌍 Vision
-
-To become the **trusted digital infrastructure for private education**, enabling families to find quality tutors quickly while empowering tutors with sustainable income opportunities.
+> **Tutor Finder** is an enterprise-grade, full-stack tutoring marketplace connecting **Guardians & Students** with verified **Tutors**. Built on **Laravel 12, Inertia v2, Vue 3, and Tailwind CSS v4**, the platform provides seamless job posting, advanced tutor discovery, interactive applicant management, automated verification workflows, and integrated payment gateways.
 
 ---
 
-# 🎯 Problem
+## 🌟 Key Features
 
-The tutoring industry is highly fragmented:
+### 👨‍👩‍👧 Guardian & Student Portal
+- **3-Step Job Posting Wizard**: Step-by-step tuition requirement posting with dynamic Subject, Class, Curriculum selection, schedule setup, tutor gender preference, and live summary card.
+- **Direct Tutor Requests**: Browse verified tutor profiles and send targeted tuition requests.
+- **Applicant Management & CV View**: View applicant lists, inspect tutor education & qualifications, and open/download single-click generated PDF CVs.
+- **Tuition Management & Re-open Flow**: Track live, pending, assigned, or closed jobs, with the ability to re-open cancelled listings.
+- **Expanded Profile Settings**: Emergency contacts, student relationships, preferred contact schedules, city, and area location details.
 
-* Families struggle to find trusted tutors
-* Tutors rely on referrals or scattered platforms
-* No centralized tutoring job marketplace
-* Communication and scheduling inefficiencies
-* Limited verification and trust mechanisms
+### 👩‍🏫 Tutor Portal
+- **Advanced Job Search & Board**: Filter active tuition jobs by Job ID, Date Range, Location/City, Tutor Gender, Curriculum, and Subjects.
+- **Gender Preference Validation**: Enforced matching criteria ensuring application eligibility based on guardian preferences.
+- **Instant Job Applications**: 1-click application submission with live status tracking (`applied`, `shortlisted`, `hired`, `cancelled`).
+- **Identity & Fee Verification**: BDT 200 verification fee payment workflow, verified profile badges, and document preview.
+- **Location Intelligence**: Nearby job counts and regional tuition opportunity statistics mapped to tutor city.
 
----
-
-# 💡 Solution
-
-Tutor Finder provides:
-
-✅ A centralized tutoring Job Board
-✅ Verified tutor profiles
-✅ Role-based onboarding (Tutor / Guardian)
-✅ Clean and intuitive user experience
-✅ Scalable infrastructure for expansion
-
----
-
-# 🧩 Product Overview
-
-## 👨‍👩‍👧 For Guardians / Students
-
-* Create account
-* Post tutoring jobs
-* Browse tutor profiles
-* Direct communication
-* Track learning progress
-
-## 👩‍🏫 For Tutors
-
-* Create professional profile
-* Browse Job Board
-* Apply for tutoring requests
-* Manage availability
-* Build reputation
-
-## 🌐 Platform Pages
-
-* Landing Page
-* Job Board
-* Contact
-* FAQ (Tabbed Switch: Tutor / Guardian)
-* Privacy Policy
-* Terms of Service
-* Authentication & Dashboard
+### 🛡️ Admin Management Dashboard
+- **12-Month Financial Analytics**: Interactive Revenue vs Refund trend charts, monthly income breakdown, and financial ledger reports.
+- **Tutor Shortlisting & Hiring Settlement**: Full administrative control to shortlist candidates, confirm hiring, settle platform fees, or process refund requests.
+- **Internal Admin Notes**: Dedicated private note tracking for Guardian and Tutor profiles.
+- **Dynamic Taxonomy Management**: Manage subjects, classes, categories, and locations with inline quick-create API (`/taxonomies/quick-create`).
+- **Support Ticket & CMS Management**: Full ticket resolution system, dynamic notice board, and page management (Privacy Policy, Terms of Service, Refund Policy).
 
 ---
 
-# 🚀 Market Opportunity
+## 🏗️ Technology Stack
 
-The global tutoring market exceeds **$100B+ annually** and continues to grow due to:
-
-* Academic competition
-* Remote learning adoption
-* Standardized testing demand
-* Skill-based education growth
-* Gig economy expansion
-
-Tutor Finder is positioned as:
-
-> “The LinkedIn + Indeed for Private Tutors”
-
----
-
-# 💰 Monetization Strategy
-
-Planned revenue streams:
-
-1. **Commission per session**
-2. **Subscription tiers (premium tutors)**
-3. **Featured job listings**
-4. **Lead access fees**
-5. **Verification & background checks**
-6. **Enterprise/school partnerships**
+| Layer | Technology |
+| :--- | :--- |
+| **Backend Framework** | Laravel 12.x (PHP 8.4) |
+| **Frontend Bridge** | Inertia.js v2 |
+| **Frontend Framework** | Vue 3 (Composition API `<script setup lang="ts">`) |
+| **Styling & UI** | Tailwind CSS v4, Reka UI, Lucide Icons |
+| **Type Safety & Routes** | TypeScript, `@laravel/vite-plugin-wayfinder` |
+| **Authentication** | Laravel Fortify (Headless Auth) |
+| **Payments & Gateway** | SSLCommerz, bKash Integration |
+| **Notifications** | Web Push (VAPID / FCM) & Local SMS Gateways |
+| **PDF Generation** | Spatie Laravel PDF (Browsershot / Chrome) |
+| **Testing & Quality** | Pest 4 PHP, Laravel Pint (Code Formatter), Prettier |
 
 ---
 
-# 🏗 Technology Stack
+## 🚀 Getting Started
 
-| Layer    | Technology                           |
-| -------- | ------------------------------------ |
-| Backend  | Laravel                              |
-| Frontend | Vue 3 (Composition API + TypeScript) |
-| Bridge   | Inertia.js                           |
-| Styling  | Tailwind CSS                         |
-| Database | MySQL / PostgreSQL                   |
-| Auth     | Laravel Authentication               |
+### Prerequisites
 
-### Why This Stack?
-
-* Production-ready and scalable
-* Secure authentication
-* SPA-like performance without full SPA complexity
-* Clean component-driven architecture
-* Easy API expansion
+Ensure your system meets the following requirements:
+- **PHP**: `^8.4` (with `pdo`, `mbstring`, `openssl`, `bcmath` extensions)
+- **Node.js**: `^20.19` or `>=22.12`
+- **Composer**: `^2.x`
+- **Database**: MySQL `^8.0` / PostgreSQL `^15` / SQLite
 
 ---
 
-# 📂 Project Structure
+### Installation Setup
 
-```
-resources/
-└── js/
-    └── Pages/
-        ├── Welcome.vue
-        ├── Contact.vue
-        ├── Faq.vue
-        ├── PrivacyPolicy.vue
-        ├── TermsOfService.vue
-        └── Dashboard.vue
-```
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/mehedijaman/tutor-finder.git
+   cd tutor-finder
+   ```
+
+2. **Install PHP Dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install JavaScript Dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment Configuration**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Database Migration & Seeding**
+   Configure your database parameters in `.env`, then run:
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. **Build Frontend Assets & Run Development Server**
+   ```bash
+   # Run full development stack (Laravel server + Vite dev server)
+   composer run dev
+   
+   # Or run manually in separate terminals:
+   php artisan serve
+   npm run dev
+   ```
+   Access the app in your browser at `http://127.0.0.1:8000`.
 
 ---
 
-# 🛠 Installation
+## 🧪 Testing & Code Quality
 
-## 1️⃣ Clone Repository
+Tutor Finder maintains high code quality enforced through automated tests, static analysis, and strict linting.
 
 ```bash
-git clone https://github.com/your-username/tutor-finder.git
-cd tutor-finder
-```
+# Run all automated tests (Pest 4)
+php artisan test --compact
 
-## 2️⃣ Install Dependencies
+# Run a specific test suite or file
+php artisan test tests/Feature/Tutor/TutorJobApplicationTest.php
 
-```bash
-composer install
-npm install
-```
+# PHP Code Formatting (Laravel Pint)
+composer lint
 
-## 3️⃣ Setup Environment
+# JavaScript/TypeScript Formatting & Linting
+npm run lint:check
+npm run format:check
 
-```bash
-cp .env.example .env
-php artisan key:generate
-```
+# Vue TypeScript Type Checking
+npm run types:check
 
-Configure your database inside `.env`.
-
----
-
-## 4️⃣ Run Migrations
-
-```bash
-php artisan migrate
+# Complete CI Verification Suite
+composer ci:check
 ```
 
 ---
 
-## 5️⃣ Start Development
-
-```bash
-php artisan serve
-npm run dev
-```
-
-App runs at:
+## 📂 Project Architecture
 
 ```
-http://127.0.0.1:8000
+tutor-finder/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/          # Admin, Guardian, Tutor, and Public Controllers
+│   │   └── Requests/             # Form Validation Requests
+│   ├── Models/                   # Eloquent Models & Casts (User, TuitionJob, Profiles)
+│   └── Services/                 # Domain Services (ApplicationService, VerificationService)
+├── database/
+│   ├── migrations/               # Database Schema Migrations
+│   └── seeders/                  # System Seeders & Taxonomy Data
+├── resources/
+│   ├── js/
+│   │   ├── components/           # Reusable Vue & Reka UI Components
+│   │   ├── composables/          # Vue Composition API Utilities
+│   │   ├── layouts/              # AppLayout, TutorLayout, PublicLayout
+│   │   ├── pages/                # Inertia Vue Pages (Admin, Guardian, Tutor, Public)
+│   │   └── types/                # TypeScript Interfaces & API Types
+│   └── views/                    # Root Blade Entrypoint (app.blade.php)
+├── routes/                       # Web, Admin, Guardian, Tutor & Console Routes
+└── tests/                        # Pest Feature & Unit Test Suite
 ```
 
 ---
 
-# 📬 Contact Form Setup
+## 🛡️ Security & Compliance
 
-The contact page posts to:
-
-```
-POST /contact
-```
-
-Example Laravel route:
-
-```php
-Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
-```
-
-Validate inputs server-side and optionally send email or store messages.
+- **Role-Based Access Control**: Strict middleware guards (`ensure.role:admin`, `ensure.role:tutor`, `ensure.role:guardian`).
+- **CSRF & XSS Protection**: Built-in CSRF tokens and sanitized HTML input processing.
+- **Headless Authentication**: Powered by Laravel Fortify with 2FA, OTP verification, and rate limiting.
+- **Strict Data Scoping**: Explicit Eloquent query scoping preventing cross-account resource leaks.
 
 ---
 
-# 🔐 Security Considerations
+## 📜 License
 
-* Server-side validation required
-* CSRF protection enabled
-* Role-based access control recommended
-* Use policies for Job applications
-* Rate-limit public forms
+This project is open-source software licensed under the [MIT License](LICENSE).
 
 ---
 
-# 📈 Product Roadmap
+## 📬 Contact & Support
 
-## Phase 1 (Current)
-
-* Marketplace MVP
-* Tutor & Guardian onboarding
-* Job Board
-* Legal pages
-* FAQ & Contact
-
-## Phase 2
-
-* Messaging system
-* Reviews & ratings
-* Payment integration (Stripe)
-* Calendar booking
-* Tutor verification badges
-
-## Phase 3
-
-* Mobile app
-* AI-powered tutor matching
-* Subscription plans
-* Multi-region expansion
-
----
-
-# 🧠 Competitive Advantage
-
-* Role-based user experience
-* Modern UI/UX
-* Lightweight scalable stack
-* Flexible monetization
-* Expandable architecture
-* Designed for city-by-city growth
-
----
-
-# 🌐 Scalability Strategy
-
-Tutor Finder is built to:
-
-* Expand by region
-* Support multi-language
-* Integrate payments & escrow
-* Add vertical categories (music, coding, languages, exams)
-* Transition to API-first architecture
-
-Infrastructure supports:
-
-* Horizontal scaling
-* Microservice migration (future)
-* Third-party integrations
-
----
-
-# 👥 Target Users
-
-* K–12 families
-* Exam prep students
-* University students
-* Freelance tutors
-* Education professionals
-* Academic institutions
-
----
-
-# 📊 Investment Highlights
-
-* Large, growing market
-* Clear monetization model
-* Low infrastructure overhead
-* High scalability potential
-* Strong UX foundation
-* Education sector resilience
-
----
-
-# 📄 Legal
-
-* Privacy-first architecture
-* Terms of Service included
-* GDPR-ready structure (expandable)
-* Data protection best practices
-
----
-
-# 🧪 Testing & Future Improvements
-
-Planned improvements:
-
-* Unit & feature tests
-* CI/CD pipeline
-* Admin dashboard
-* Real-time notifications
-* Performance optimization
-* Analytics dashboard
-
----
-
-# 📜 License
-
-MIT License.
-
----
-
-# 📬 Contact
-
-For partnership or investment inquiries:
-
-📧 [founders@yourdomain.com](mailto:founders@yourdomain.com)
+For platform inquiries, bug reports, or feature requests:
+- **Email**: [support@tutorfinder.com](mailto:support@tutorfinder.com)
+- **Repository**: [github.com/mehedijaman/tutor-finder](https://github.com/mehedijaman/tutor-finder)
