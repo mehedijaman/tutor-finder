@@ -4,15 +4,18 @@ namespace App\Http\Controllers\Guardian;
 
 use App\Enums\ApplicationStatus;
 use App\Enums\JobStatus;
+use App\Enums\UserRole;
 use App\Events\ApplicationStatusUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guardian\JobApplicationConfirmRequest;
 use App\Http\Requests\Guardian\JobApplicationStatusUpdateRequest;
 use App\Models\TuitionJob;
 use App\Models\TuitionJobApplication;
+use App\Models\User;
 use App\Services\Job\ApplicationService;
 use App\Services\Job\HiringWorkflowService;
 use DomainException;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -32,7 +35,7 @@ class JobApplicationController extends Controller
             $status = '';
         }
 
-        $tuitionJob->loadMissing('assignment.tutor');
+        $tuitionJob->loadMissing(['assignment.tutor', 'subjects:id,name']);
         $selectedTutorUserId = $tuitionJob->assignment?->tutor_user_id;
         $isExpired = $tuitionJob->status === JobStatus::Live && $tuitionJob->isExpired();
         $canManageApplications = $tuitionJob->status === JobStatus::Live
@@ -60,6 +63,7 @@ class JobApplicationController extends Controller
                     'name' => $application->tutor?->name,
                     'email' => $application->tutor?->email,
                     'phone' => $application->tutor?->phone,
+                    'download_cv_url' => $application->tutor?->id ? route('guardian.tutors.download-cv', $application->tutor->id) : null,
                 ],
             ]);
 
@@ -69,6 +73,7 @@ class JobApplicationController extends Controller
                 'title' => $tuitionJob->title,
                 'slug' => $tuitionJob->slug,
                 'status' => $tuitionJob->status,
+                'subjects' => $tuitionJob->subjects->pluck('name')->values()->all(),
                 'is_expired' => $isExpired,
                 'has_assignment' => $tuitionJob->assignment !== null,
                 'can_manage_applications' => $canManageApplications,
@@ -156,5 +161,31 @@ class JobApplicationController extends Controller
         );
 
         return back()->with('status', 'Tutor hire confirmed successfully.');
+    }
+
+    /**
+     * Download tutor CV as PDF for guardian.
+     */
+    public function downloadCv(Request $request, User $user): Responsable
+    {
+        if ($user->role !== UserRole::Tutor) {
+            abort(404);
+        }
+
+        $user->load([
+            'tutorProfile',
+            'tutorEducations' => fn ($query) => $query->orderBy('sort_order')->orderByDesc('is_current'),
+        ]);
+
+        return pdf()
+            ->driver('dompdf')
+            ->view('pdf.tutor-cv', [
+                'user' => $user,
+                'profile' => $user->tutorProfile,
+                'educations' => $user->tutorEducations,
+            ])
+            ->format('a4')
+            ->name("tutor-cv-{$user->getKey()}.pdf")
+            ->download();
     }
 }

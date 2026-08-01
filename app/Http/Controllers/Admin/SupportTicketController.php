@@ -111,10 +111,10 @@ class SupportTicketController extends Controller
     public function show(SupportTicket $supportTicket): Response
     {
         $supportTicket->load([
-            'user:id,name,email,role,avatar',
+            'user:id,name,email,role',
             'assignedAdmin:id,name',
             'closedByAdmin:id,name',
-            'messages' => fn ($q) => $q->with(['user:id,name,role,avatar', 'media'])->orderBy('created_at'),
+            'messages' => fn ($q) => $q->with(['user:id,name,role', 'media'])->orderBy('created_at'),
         ]);
 
         return inertia('admin/support-tickets/Show', [

@@ -269,12 +269,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->middleware('permission:job-update')
                 ->name('update');
 
+            Route::get('/{job}', [AdminJobController::class, 'show'])
+                ->middleware('permission:job-view')
+                ->name('show');
+
             Route::patch('/{job}/approve', [AdminJobController::class, 'approve'])
                 ->middleware('permission:job-approve')
                 ->name('approve');
             Route::patch('/{job}/status', [AdminJobController::class, 'status'])
                 ->middleware('permission:job-update')
                 ->name('status');
+            Route::patch('/{job}/reopen', [AdminJobController::class, 'reopen'])
+                ->middleware('permission:job-update')
+                ->name('reopen');
 
             Route::get('/{job}/settle', [AdminJobController::class, 'settle'])
                 ->middleware('permission:job-update')
@@ -714,6 +721,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/tutors/{user}', [TutorManagementController::class, 'show'])
             ->middleware('permission:tutor-view')
             ->name('tutors.show');
+        Route::get('/tutors/{user}/download-cv', [TutorManagementController::class, 'downloadCv'])
+            ->middleware('permission:tutor-view')
+            ->name('tutors.download-cv');
+        Route::patch('/tutors/{user}/notes', [TutorManagementController::class, 'updateAdminNotes'])
+            ->middleware('permission:tutor-update')
+            ->name('tutors.notes');
         Route::get('/tutors/{user}/edit', [TutorManagementController::class, 'edit'])
             ->middleware('permission:tutor-update')
             ->name('tutors.edit');
@@ -756,6 +769,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/guardians/{user}', [GuardianManagementController::class, 'show'])
             ->middleware('permission:guardian-view')
             ->name('guardians.show');
+        Route::patch('/guardians/{user}/notes', [GuardianManagementController::class, 'updateAdminNotes'])
+            ->middleware('permission:guardian-update')
+            ->name('guardians.notes');
         Route::get('/guardians/{user}/edit', [GuardianManagementController::class, 'edit'])
             ->middleware('permission:guardian-update')
             ->name('guardians.edit');

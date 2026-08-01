@@ -20,14 +20,14 @@ Route::prefix('tutor')
         Route::redirect('/', '/tutor/dashboard')->name('home');
         Route::get('/dashboard', TutorDashboardController::class)->name('dashboard');
         Route::get('/jobs', [JobController::class, 'tutorIndex'])->name('jobs.index');
-        Route::get('/jobs/{id}', [JobController::class, 'tutorShow'])->whereNumber('id')->name('jobs.show');
+        Route::get('/jobs/{id}', [JobController::class, 'tutorShow'])->name('jobs.show');
         Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('job-applications.index');
         Route::redirect('/job-applications/applied', '/tutor/job-applications')->name('job-applications.applied');
         Route::get('/job-applications/shortlisted', [JobApplicationController::class, 'shortlisted'])->name('job-applications.shortlisted');
         Route::get('/job-applications/appointed', [JobApplicationController::class, 'appointed'])->name('job-applications.appointed');
         Route::get('/job-applications/confirmed', [JobApplicationController::class, 'confirmed'])->name('job-applications.confirmed');
         Route::get('/job-applications/cancelled', [JobApplicationController::class, 'cancelled'])->name('job-applications.cancelled');
-        Route::post('/jobs/{tuitionJob}/apply', [JobApplicationController::class, 'store'])->whereNumber('tuitionJob')->name('jobs.apply');
+        Route::post('/jobs/{tuitionJob}/apply', [JobApplicationController::class, 'store'])->name('jobs.apply');
         Route::patch('/job-applications/{tuitionJobApplication}/withdraw', [JobApplicationController::class, 'withdraw'])
             ->name('job-applications.withdraw');
         Route::get('/profile/download-cv', [TutorProfileController::class, 'downloadCv'])->name('profile.download-cv');

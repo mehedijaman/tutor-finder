@@ -20,10 +20,16 @@ class GuardianProfile extends Model
     protected $fillable = [
         'user_id',
         'phone_alt',
+        'emergency_contact',
         'guardian_name',
+        'relationship_to_student',
         'address',
+        'city',
+        'area',
         'occupation',
         'notes',
+        'admin_notes',
+        'preferred_contact_time',
         'status',
     ];
 

@@ -160,7 +160,7 @@ it('returns recent jobs in activity section', function (): void {
         ->assertInertia(fn ($page) => $page
             ->has('recentActivity.recentJobs', 3)
             ->has('recentActivity.recentJobs.0', fn ($job) => $job
-                ->hasAll(['id', 'title', 'status', 'statusLabel', 'guardian', 'createdAt'])));
+                ->hasAll(['id', 'title', 'status', 'statusLabel', 'guardian', 'applicationsCount', 'createdAt'])));
 });
 
 it('returns recent tickets in activity section', function (): void {

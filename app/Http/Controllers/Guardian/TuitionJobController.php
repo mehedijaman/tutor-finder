@@ -272,6 +272,27 @@ class TuitionJobController extends Controller
     }
 
     /**
+     * Re-open a cancelled or closed job back to live status for guardian.
+     */
+    public function reopen(Request $request, TuitionJob $tuitionJob): RedirectResponse
+    {
+        if ($tuitionJob->guardian_id !== $request->user()?->getAuthIdentifier()) {
+            abort(403);
+        }
+
+        if ($tuitionJob->status !== JobStatus::Cancelled && $tuitionJob->status !== JobStatus::Closed) {
+            return back()->withErrors(['job' => 'Only cancelled or closed jobs can be re-opened.']);
+        }
+
+        $tuitionJob->update([
+            'status' => JobStatus::Live,
+            'expires_at' => now()->addDays(30),
+        ]);
+
+        return back()->with('status', 'Tuition job has been re-opened to Live status.');
+    }
+
+    /**
      * Normalize query or preset status.
      */
     private function normalizeStatus(string $status): string

@@ -346,6 +346,25 @@ function formatPaginationLabel(label: string): string {
                             </span>
                         </div>
 
+                        <!-- Subject & CV Download -->
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                            <div class="min-w-0 flex-1">
+                                <span class="font-semibold text-slate-400 uppercase tracking-wider block text-[10px]">Subject</span>
+                                <span class="font-bold text-slate-800">
+                                    {{ row.job?.subject_names?.length ? row.job.subject_names.join(', ') : 'All Subjects' }}
+                                </span>
+                            </div>
+                            <a
+                                v-if="row.download_cv_url"
+                                :href="row.download_cv_url"
+                                target="_blank"
+                                class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 hover:underline bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100 shadow-2xs"
+                            >
+                                <span>CV View</span>
+                                <span>↓</span>
+                            </a>
+                        </div>
+
                         <div
                             v-if="row.cancel_reason"
                             class="rounded-lg bg-rose-50 p-3 text-xs text-rose-700"

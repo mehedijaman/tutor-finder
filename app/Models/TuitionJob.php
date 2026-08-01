@@ -365,4 +365,16 @@ class TuitionJob extends Model
     {
         return JobGender::cases();
     }
+
+    /**
+     * Retrieve the model for a bound value (supports both ID and slug).
+     */
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        if (is_numeric($value)) {
+            return $this->where('id', (int) $value)->first();
+        }
+
+        return $this->where('slug', $value)->first();
+    }
 }

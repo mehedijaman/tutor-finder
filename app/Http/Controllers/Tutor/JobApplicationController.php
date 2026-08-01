@@ -34,6 +34,7 @@ class JobApplicationController extends Controller
                     ->withTrashed()
                     ->select(['id', 'title', 'slug', 'status', 'published_at', 'expires_at', 'city_id']),
                 'tuitionJob.city:id,name',
+                'tuitionJob.subjects:id,name',
             ])
             ->where('tutor_user_id', $user?->getAuthIdentifier())
             ->when($effectiveStatus !== '', fn ($builder) => $builder->where('status', $effectiveStatus))
@@ -47,12 +48,14 @@ class JobApplicationController extends Controller
                 'salary_currency' => $application->salary_currency,
                 'created_at' => $application->created_at?->toDateTimeString(),
                 'cancel_reason' => $application->cancel_reason,
+                'download_cv_url' => route('tutor.profile.download-cv'),
                 'job' => [
                     'id' => $application->tuitionJob?->id,
                     'title' => $application->tuitionJob?->title ?? '[Deleted Job]',
                     'slug' => $application->tuitionJob?->slug,
                     'status' => $application->tuitionJob?->status ?? 'deleted',
                     'city_name' => $application->tuitionJob?->city?->name,
+                    'subject_names' => $application->tuitionJob?->subjects?->pluck('name')->values()->all() ?? [],
                 ],
             ]);
 

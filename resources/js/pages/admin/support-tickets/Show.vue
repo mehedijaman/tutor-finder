@@ -158,10 +158,10 @@ function resetConfirmState(): void {
                 {{ $page.props.flash.status }}
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-3">
-                <div class="space-y-6 lg:col-span-2">
+            <div class="grid min-w-0 gap-6 lg:grid-cols-3">
+                <div class="min-w-0 space-y-6 lg:col-span-2">
                     <div
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                     >
                         <h2 class="mb-4 text-lg font-semibold text-slate-900">
                             Conversation

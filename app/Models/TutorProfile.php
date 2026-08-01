@@ -35,6 +35,7 @@ class TutorProfile extends Model
         'expected_salary_max',
         'available_days',
         'available_time',
+        'admin_notes',
         'status',
     ];
 

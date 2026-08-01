@@ -63,10 +63,15 @@ function resetFormToOriginal(): void {
     form.name = originalProfile.name ?? '';
     form.phone = originalProfile.phone ?? '';
     form.phone_alt = originalProfile.phone_alt ?? '';
+    form.emergency_contact = originalProfile.emergency_contact ?? '';
     form.guardian_name = originalProfile.guardian_name ?? '';
+    form.relationship_to_student = originalProfile.relationship_to_student ?? '';
     form.address = originalProfile.address ?? '';
+    form.city = originalProfile.city ?? '';
+    form.area = originalProfile.area ?? '';
     form.occupation = originalProfile.occupation ?? '';
     form.notes = originalProfile.notes ?? '';
+    form.preferred_contact_time = originalProfile.preferred_contact_time ?? '';
     form.status = originalProfile.status ?? 'active';
 }
 const tabs = [
@@ -94,10 +99,15 @@ const form = useForm({
     name: props.profile.name ?? '',
     phone: props.profile.phone ?? '',
     phone_alt: props.profile.phone_alt ?? '',
+    emergency_contact: props.profile.emergency_contact ?? '',
     guardian_name: props.profile.guardian_name ?? '',
+    relationship_to_student: props.profile.relationship_to_student ?? '',
     address: props.profile.address ?? '',
+    city: props.profile.city ?? '',
+    area: props.profile.area ?? '',
     occupation: props.profile.occupation ?? '',
     notes: props.profile.notes ?? '',
+    preferred_contact_time: props.profile.preferred_contact_time ?? '',
     status: props.profile.status ?? 'active',
 });
 
@@ -105,10 +115,15 @@ const profileCompletionFields = [
     'name',
     'phone',
     'phone_alt',
+    'emergency_contact',
     'guardian_name',
+    'relationship_to_student',
     'address',
+    'city',
+    'area',
     'occupation',
     'notes',
+    'preferred_contact_time',
 ];
 
 const profileCompletion = computed(() => {
@@ -429,6 +444,14 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             {{ form.guardian_name || '—' }}
                         </p>
                         <p>
+                            <span class="font-medium">Relationship:</span>
+                            {{ form.relationship_to_student || '—' }}
+                        </p>
+                        <p>
+                            <span class="font-medium">Emergency Contact:</span>
+                            {{ form.emergency_contact || '—' }}
+                        </p>
+                        <p>
                             <span class="font-medium">Occupation:</span>
                             {{ form.occupation || '—' }}
                         </p>
@@ -445,6 +468,18 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                         <p>
                             <span class="font-medium">Alternative Phone:</span>
                             {{ form.phone_alt || '—' }}
+                        </p>
+                        <p>
+                            <span class="font-medium">Preferred Contact Time:</span>
+                            {{ form.preferred_contact_time || '—' }}
+                        </p>
+                        <p>
+                            <span class="font-medium">City:</span>
+                            {{ form.city || '—' }}
+                        </p>
+                        <p>
+                            <span class="font-medium">Area:</span>
+                            {{ form.area || '—' }}
                         </p>
                         <p class="md:col-span-2">
                             <span class="font-medium">Address:</span>
@@ -499,6 +534,28 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                         </div>
 
                         <div class="grid gap-2">
+                            <Label for="relationship_to_student">Relationship to Student</Label>
+                            <Input
+                                id="relationship_to_student"
+                                v-model="form.relationship_to_student"
+                                type="text"
+                                placeholder="e.g. Parent, Sibling, Relative"
+                            />
+                            <InputError :message="form.errors.relationship_to_student" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="emergency_contact">Emergency Contact</Label>
+                            <Input
+                                id="emergency_contact"
+                                v-model="form.emergency_contact"
+                                type="text"
+                                placeholder="01XXXXXXXXX"
+                            />
+                            <InputError :message="form.errors.emergency_contact" />
+                        </div>
+
+                        <div class="grid gap-2">
                             <Label>Status</Label>
                             <Select v-model="form.status">
                                 <SelectTrigger>
@@ -540,6 +597,39 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                 placeholder="Optional"
                             />
                             <InputError :message="form.errors.phone_alt" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="preferred_contact_time">Preferred Contact Time</Label>
+                            <Input
+                                id="preferred_contact_time"
+                                v-model="form.preferred_contact_time"
+                                type="text"
+                                placeholder="e.g. Evening (5PM - 8PM)"
+                            />
+                            <InputError :message="form.errors.preferred_contact_time" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="city">City</Label>
+                            <Input
+                                id="city"
+                                v-model="form.city"
+                                type="text"
+                                placeholder="e.g. Dhaka"
+                            />
+                            <InputError :message="form.errors.city" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="area">Area</Label>
+                            <Input
+                                id="area"
+                                v-model="form.area"
+                                type="text"
+                                placeholder="e.g. Dhanmondi"
+                            />
+                            <InputError :message="form.errors.area" />
                         </div>
 
                         <div class="grid gap-2 md:col-span-2">

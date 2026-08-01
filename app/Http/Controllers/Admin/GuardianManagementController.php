@@ -187,7 +187,13 @@ class GuardianManagementController extends Controller
                 'occupation' => $user->guardianProfile?->occupation,
                 'address' => $user->guardianProfile?->address,
                 'phone_alt' => $user->guardianProfile?->phone_alt,
+                'emergency_contact' => $user->guardianProfile?->emergency_contact,
+                'relationship_to_student' => $user->guardianProfile?->relationship_to_student,
+                'preferred_contact_time' => $user->guardianProfile?->preferred_contact_time,
+                'city' => $user->guardianProfile?->city,
+                'area' => $user->guardianProfile?->area,
                 'notes' => $user->guardianProfile?->notes,
+                'admin_notes' => $user->guardianProfile?->admin_notes,
             ],
             'verification' => $verificationRequest ? [
                 'id' => $verificationRequest->id,
@@ -367,5 +373,25 @@ class GuardianManagementController extends Controller
         ]);
 
         return redirect()->back()->with('status', 'Guardian password reset successfully.');
+    }
+
+    /**
+     * Update internal admin notes for guardian profile.
+     */
+    public function updateAdminNotes(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'admin_notes' => ['nullable', 'string'],
+        ]);
+
+        $profile = $user->guardianProfile()->firstOrCreate([
+            'user_id' => $user->getKey(),
+        ]);
+
+        $profile->update([
+            'admin_notes' => $validated['admin_notes'] ?? null,
+        ]);
+
+        return back()->with('status', 'Admin internal notes updated successfully.');
     }
 }

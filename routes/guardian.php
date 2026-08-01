@@ -30,6 +30,10 @@ Route::prefix('guardian')
         Route::post('/jobs/{tuitionJob}/request-tutor', [TuitionJobController::class, 'requestTutor'])->name('jobs.request-tutor');
         Route::get('/jobs/{tuitionJob}/applications', [JobApplicationController::class, 'index'])
             ->name('jobs.applications.index');
+        Route::patch('/jobs/{tuitionJob}/reopen', [TuitionJobController::class, 'reopen'])
+            ->name('jobs.reopen');
+        Route::get('/tutors/{user}/download-cv', [JobApplicationController::class, 'downloadCv'])
+            ->name('tutors.download-cv');
         Route::patch('/jobs/{tuitionJob}/applications/{tuitionJobApplication}/status', [JobApplicationController::class, 'updateStatus'])
             ->name('jobs.applications.status');
         Route::patch('/jobs/{tuitionJob}/applications/{tuitionJobApplication}/confirm', [JobApplicationController::class, 'confirm'])

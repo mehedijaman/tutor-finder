@@ -20,6 +20,7 @@ use App\Models\TutorEducation;
 use App\Models\TutorProfile;
 use App\Models\User;
 use App\Models\VerificationRequest;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -199,6 +200,32 @@ class TutorManagementController extends Controller
     }
 
     /**
+     * Download tutor CV as PDF.
+     */
+    public function downloadCv(User $user): Responsable
+    {
+        if ($user->role !== UserRole::Tutor) {
+            abort(404);
+        }
+
+        $user->load([
+            'tutorProfile',
+            'tutorEducations' => fn ($query) => $query->orderBy('sort_order')->orderByDesc('is_current'),
+        ]);
+
+        return pdf()
+            ->driver('dompdf')
+            ->view('pdf.tutor-cv', [
+                'user' => $user,
+                'profile' => $user->tutorProfile,
+                'educations' => $user->tutorEducations,
+            ])
+            ->format('a4')
+            ->name("tutor-cv-{$user->getKey()}.pdf")
+            ->download();
+    }
+
+    /**
      * Display a tutor profile.
      */
     public function show(User $user): Response
@@ -240,6 +267,7 @@ class TutorManagementController extends Controller
                 'expected_salary_max' => $profile?->expected_salary_max,
                 'available_days' => $profile?->available_days ?? [],
                 'available_time' => $profile?->available_time,
+                'admin_notes' => $profile?->admin_notes,
                 'profile_status' => $profile?->status ?? ProfileStatus::Active,
                 'educations' => $educations->map(fn (TutorEducation $education): array => [
                     'id' => $education->id,
@@ -601,7 +629,29 @@ class TutorManagementController extends Controller
 
         $user->forceDelete();
 
-        return redirect()->back()->with('status', 'Tutor permanently deleted.');
+        return redirect()
+            ->route('admin.tutors.index')
+            ->with('status', 'Tutor permanently deleted.');
+    }
+
+    /**
+     * Update internal admin notes for tutor profile.
+     */
+    public function updateAdminNotes(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'admin_notes' => ['nullable', 'string'],
+        ]);
+
+        $profile = $user->tutorProfile()->firstOrCreate([
+            'user_id' => $user->getKey(),
+        ]);
+
+        $profile->update([
+            'admin_notes' => $validated['admin_notes'] ?? null,
+        ]);
+
+        return back()->with('status', 'Admin internal notes updated successfully.');
     }
 
     /**

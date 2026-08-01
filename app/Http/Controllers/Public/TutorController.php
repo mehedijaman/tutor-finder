@@ -71,6 +71,9 @@ class TutorController extends Controller
             $locationId = 0;
         }
 
+        $search = trim($request->string('q')->toString());
+        $institute = trim($request->string('institute')->toString());
+
         $query = User::query()
             ->where('role', UserRole::Tutor)
             ->where('status', UserStatus::Active)
@@ -80,6 +83,28 @@ class TutorController extends Controller
             }])
             ->withCount('tutorReviews')
             ->withAvg('tutorReviews', 'rating');
+
+        if ($search !== '') {
+            $query->where(function (Builder $q) use ($search): void {
+                if (is_numeric($search)) {
+                    $q->where('id', (int) $search);
+                }
+                $q->orWhere('name', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%')
+                    ->orWhere('phone', 'like', '%'.$search.'%')
+                    ->orWhereHas('tutorEducations', function (Builder $edu) use ($search): void {
+                        $edu->where('institute', 'like', '%'.$search.'%')
+                            ->orWhere('department', 'like', '%'.$search.'%')
+                            ->orWhere('degree', 'like', '%'.$search.'%');
+                    });
+            });
+        }
+
+        if ($institute !== '') {
+            $query->whereHas('tutorEducations', function (Builder $edu) use ($institute): void {
+                $edu->where('institute', 'like', '%'.$institute.'%');
+            });
+        }
 
         if ($gender !== '') {
             $query->whereHas('tutorProfile', function (Builder $q) use ($gender): void {
@@ -162,6 +187,8 @@ class TutorController extends Controller
             'tutors' => $tutors,
             'total' => $tutors->total(),
             'filters' => [
+                'q' => $search === '' ? null : $search,
+                'institute' => $institute === '' ? null : $institute,
                 'area' => $area === '' ? null : $area,
                 'gender' => $gender === '' ? null : $gender,
                 'min_budget' => $minBudget === null ? null : (string) $minBudget,

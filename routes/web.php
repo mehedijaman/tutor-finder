@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\QuickTaxonomyController;
 use App\Http\Controllers\Auth\RoleDashboardRedirectController;
 use App\Http\Controllers\Auth\VerifyOtpController;
 use App\Http\Controllers\BlogController;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'index'])->name('home');
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs');
-Route::get('/jobs/{id}', [JobController::class, 'show'])->whereNumber('id')->name('jobs.show');
+Route::get('/jobs/{id}', [JobController::class, 'show'])->name('jobs.show');
 Route::get('/tutors', [TutorController::class, 'index'])->name('tutors');
 Route::get('/tutors/{id}', [TutorController::class, 'show'])->name('tutors.show');
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
@@ -57,6 +58,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/profile/photo', [ProfilePhotoController::class, 'update'])->name('profile.photo.update');
     Route::delete('/profile/photo', [ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
+    Route::post('/taxonomies/quick-create', [QuickTaxonomyController::class, 'store'])->name('taxonomies.quick-create');
 });
 
 Route::get('/payment/bkash/callback', [PaymentController::class, 'bkashCallback'])

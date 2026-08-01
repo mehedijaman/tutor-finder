@@ -241,6 +241,7 @@ function actionItemsForRow(row: any) {
     }
 
     const actions = [
+        { key: 'view', label: 'View Details' },
         { key: 'applications', label: 'Manage Applications' },
         { key: 'edit', label: 'Edit Job Details' },
         { key: 'delete', label: 'Delete', destructive: true },
@@ -278,6 +279,12 @@ function actionItemsForRow(row: any) {
 }
 
 function handleRowAction(actionKey: string, row: any) {
+    if (actionKey === 'view') {
+        router.visit(`/admin/jobs/${row.id}`);
+
+        return;
+    }
+
     if (actionKey === 'settle') {
         router.visit(`/admin/jobs/${row.id}/settle`);
 
@@ -804,11 +811,11 @@ function statusBadge(row: any) {
                     </template>
 
                     <template #cell-applications_count="{ row }">
-                        <Link
-                            :href="`/admin/jobs/${row.id}/applications`"
-                            class="group/link flex flex-col gap-0.5"
-                        >
-                            <div class="flex items-center gap-2">
+                        <div class="flex flex-col gap-1">
+                            <Link
+                                :href="`/admin/jobs/${row.id}/applications`"
+                                class="group/link flex items-center gap-1.5"
+                            >
                                 <span
                                     class="text-sm font-black text-blue-600 group-hover/link:underline"
                                     >{{ row.applications_count ?? 0 }}</span
@@ -819,12 +826,12 @@ function statusBadge(row: any) {
                                 >
                                     {{ row.open_applications_count ?? 0 }} open
                                 </Badge>
-                            </div>
+                            </Link>
                             <span
                                 class="text-[10px] font-bold tracking-tight text-slate-400 uppercase"
-                                >Total Applicants</span
+                                >{{ row.view_count ?? 0 }} views</span
                             >
-                        </Link>
+                        </div>
                     </template>
 
                     <template #cell-hiring_outcome="{ row }">

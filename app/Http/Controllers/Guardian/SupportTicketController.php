@@ -98,7 +98,7 @@ class SupportTicketController extends Controller
         $this->authorize('view', $supportTicket);
 
         $supportTicket->load([
-            'messages' => fn ($q) => $q->with(['user:id,name,role,avatar', 'media'])->orderBy('created_at'),
+            'messages' => fn ($q) => $q->with(['user:id,name,role', 'media'])->orderBy('created_at'),
         ]);
 
         return inertia('guardian/support-tickets/Show', [

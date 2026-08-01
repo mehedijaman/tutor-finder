@@ -66,6 +66,9 @@ class JobController extends Controller
             $sort = 'newest';
         }
 
+        $postedFrom = trim($request->string('posted_from')->toString());
+        $postedTo = trim($request->string('posted_to')->toString());
+
         $jobsQuery = $this->publicJobsQuery()
             ->with([
                 'category:id,name,slug',
@@ -78,13 +81,18 @@ class JobController extends Controller
             ])
             ->when($query !== '', function (Builder $builder) use ($query): void {
                 $builder->where(function (Builder $nested) use ($query): void {
+                    if (is_numeric($query)) {
+                        $nested->where('id', (int) $query);
+                    }
                     $nested
-                        ->where('title', 'like', "%{$query}%")
+                        ->orWhere('title', 'like', "%{$query}%")
                         ->orWhere('description', 'like', "%{$query}%")
                         ->orWhere('location', 'like', "%{$query}%")
                         ->orWhereHas('city', fn (Builder $cityQuery) => $cityQuery->where('name', 'like', "%{$query}%"));
                 });
             })
+            ->when($postedFrom !== '', fn (Builder $builder) => $builder->whereDate('created_at', '>=', $postedFrom))
+            ->when($postedTo !== '', fn (Builder $builder) => $builder->whereDate('created_at', '<=', $postedTo))
             ->when($categorySlug !== '', function (Builder $builder) use ($categorySlug): void {
                 $builder->whereHas('category', fn (Builder $categoryQuery) => $categoryQuery->where('slug', $categorySlug));
             })
@@ -108,6 +116,7 @@ class JobController extends Controller
             ->through(fn (TuitionJob $job): array => [
                 'id' => $job->id,
                 'title' => $job->title,
+                'slug' => $job->slug,
                 'description' => Str::limit((string) $job->description, 180),
                 'salary_amount' => $job->salary_amount,
                 'salary_currency' => $job->salary_currency,
@@ -132,6 +141,8 @@ class JobController extends Controller
             'total' => $jobs->total(),
             'filters' => [
                 'q' => $query,
+                'posted_from' => $postedFrom === '' ? null : $postedFrom,
+                'posted_to' => $postedTo === '' ? null : $postedTo,
                 'category' => $categorySlug,
                 'tuition_type' => $tuitionTypeSlug,
                 'subject_id' => $subjectId > 0 ? $subjectId : null,
@@ -171,7 +182,7 @@ class JobController extends Controller
     /**
      * Display a single public job by slug.
      */
-    public function show(Request $request, int $id): Response
+    public function show(Request $request, string $id): Response
     {
         return inertia('JobShow', $this->buildJobShowPayload($request, $id));
     }
@@ -179,7 +190,7 @@ class JobController extends Controller
     /**
      * Display a single job by slug in tutor dashboard context.
      */
-    public function tutorShow(Request $request, int $id): Response
+    public function tutorShow(Request $request, string $id): Response
     {
         return inertia('JobShow', $this->buildJobShowPayload($request, $id));
     }
@@ -189,7 +200,7 @@ class JobController extends Controller
      *
      * @return array<string, mixed>
      */
-    private function buildJobShowPayload(Request $request, int $id): array
+    private function buildJobShowPayload(Request $request, string $id): array
     {
         $job = $this->publicJobsQuery()
             ->with([
@@ -202,7 +213,13 @@ class JobController extends Controller
                 'area:id,name',
                 'assignment:id,job_id,tutor_user_id',
             ])
-            ->whereKey($id)
+            ->where(function (Builder $q) use ($id): void {
+                if (is_numeric($id)) {
+                    $q->where('id', (int) $id);
+                } else {
+                    $q->where('slug', $id);
+                }
+            })
             ->firstOrFail();
 
         $user = $request->user();
@@ -226,6 +243,7 @@ class JobController extends Controller
             'job' => [
                 'id' => $job->id,
                 'title' => $job->title,
+                'slug' => $job->slug,
                 'description' => $job->description,
                 'salary_amount' => $job->salary_amount,
                 'salary_currency' => $job->salary_currency,

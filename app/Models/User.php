@@ -335,4 +335,12 @@ class User extends Authenticatable implements HasMedia
 
         return 'https://www.gravatar.com/avatar/'.$emailHash.'?s=200&d=mp';
     }
+
+    /**
+     * Get avatar URL (alias for photo_url).
+     */
+    public function getAvatarAttribute(): string
+    {
+        return $this->photo_url;
+    }
 }

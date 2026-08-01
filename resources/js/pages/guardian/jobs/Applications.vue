@@ -348,25 +348,27 @@ function confirmLabel() {
                 empty-text="No applications received yet."
             >
                 <template #cell-tutor_name="{ row }">
-                    <div class="space-y-1">
+                    <div class="space-y-1.5">
                         <div class="flex items-center gap-2">
-                            <p class="font-medium">{{ row.tutor.name }}</p>
-                            <Badge v-if="row.is_selected" variant="default"
-                                >Selected</Badge
-                            >
+                            <p class="font-bold text-slate-900">{{ row.tutor.name }}</p>
+                            <Badge v-if="row.is_selected" variant="default" class="bg-emerald-600">Selected</Badge>
                         </div>
-                        <p
-                            v-if="row.tutor.email"
-                            class="text-xs text-muted-foreground"
-                        >
-                            {{ row.tutor.email }}
-                        </p>
-                        <p
-                            v-if="row.tutor.phone"
-                            class="text-xs text-muted-foreground"
-                        >
-                            {{ row.tutor.phone }}
-                        </p>
+                        <div v-if="job.subjects?.length" class="flex flex-wrap items-center gap-1 text-xs">
+                            <span class="font-semibold text-slate-400">Subject:</span>
+                            <span class="font-semibold text-slate-700">{{ job.subjects.join(', ') }}</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 text-xs">
+                            <span v-if="row.tutor.phone" class="text-slate-500">{{ row.tutor.phone }}</span>
+                            <a
+                                v-if="row.tutor.download_cv_url"
+                                :href="row.tutor.download_cv_url"
+                                target="_blank"
+                                class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                            >
+                                <span>CV View</span>
+                                <span>↓</span>
+                            </a>
+                        </div>
                     </div>
                 </template>
 

@@ -217,7 +217,7 @@ const attentionItems = computed<AttentionItem[]>(() => {
         items.push({
             label: 'Pending Jobs',
             count: props.stats.jobs.pending,
-            href: '/admin/jobs/pending',
+            href: '/admin/jobs?status=pending',
             color: 'text-amber-700 dark:text-amber-400',
             bgColor: 'bg-amber-50 dark:bg-amber-950/40',
             icon: Clock,
@@ -227,7 +227,7 @@ const attentionItems = computed<AttentionItem[]>(() => {
         items.push({
             label: 'Open Tickets',
             count: props.stats.tickets.open,
-            href: '/admin/tickets',
+            href: '/admin/support-tickets?status=open',
             color: 'text-rose-700 dark:text-rose-400',
             bgColor: 'bg-rose-50 dark:bg-rose-950/40',
             icon: TicketCheck,
@@ -237,7 +237,7 @@ const attentionItems = computed<AttentionItem[]>(() => {
         items.push({
             label: 'Pending Verifications',
             count: props.stats.verifications.pending,
-            href: '/admin/verifications/pending',
+            href: '/admin/profile-verification/pending',
             color: 'text-blue-700 dark:text-blue-400',
             bgColor: 'bg-blue-50 dark:bg-blue-950/40',
             icon: FileCheck,
@@ -247,7 +247,7 @@ const attentionItems = computed<AttentionItem[]>(() => {
         items.push({
             label: 'Unpaid Invoices',
             count: props.stats.finance.unpaidInvoices,
-            href: '/admin/finance/invoices',
+            href: '/admin/finance/invoices?status=unpaid',
             color: 'text-orange-700 dark:text-orange-400',
             bgColor: 'bg-orange-50 dark:bg-orange-950/40',
             icon: CreditCard,
@@ -257,7 +257,7 @@ const attentionItems = computed<AttentionItem[]>(() => {
         items.push({
             label: 'Pending Refunds',
             count: props.stats.finance.pendingRefunds,
-            href: '/admin/finance/refund-requests',
+            href: '/admin/finance/refund-requests?status=pending',
             color: 'text-purple-700 dark:text-purple-400',
             bgColor: 'bg-purple-50 dark:bg-purple-950/40',
             icon: Banknote,

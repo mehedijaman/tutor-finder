@@ -95,6 +95,10 @@ class JobController extends Controller
                     $subQuery
                         ->where('title', 'like', "%{$search}%")
                         ->orWhereHas('guardian', fn (Builder $guardianQuery): Builder => $guardianQuery->where('name', 'like', "%{$search}%"));
+
+                    if (is_numeric($search)) {
+                        $subQuery->orWhere('id', (int) $search);
+                    }
                 });
             })
             ->when($effectiveStatus !== '' && ! $filterExpired, fn (Builder $builder): Builder => $builder->where('status', $effectiveStatus))
@@ -134,6 +138,7 @@ class JobController extends Controller
                 'requested_tutor_id' => $job->requested_tutor_id,
                 'requested_tutor_name' => $job->requestedTutor?->name,
                 'requested_at' => $job->requested_at?->toDateTimeString(),
+                'view_count' => $job->view_count ?? 0,
             ]);
 
         return inertia('admin/jobs/Index', [
@@ -219,6 +224,7 @@ class JobController extends Controller
 
         $job->loadMissing([
             'guardian:id,name',
+            'subjects:id,name',
             'assignment:id,job_id,tutor_user_id,appointed_at,confirmed_at',
             'assignment.tutor:id,name',
         ]);
@@ -244,6 +250,7 @@ class JobController extends Controller
                     'name' => $application->tutor?->name,
                     'email' => $application->tutor?->email,
                     'phone' => $application->tutor?->phone,
+                    'download_cv_url' => $application->tutor?->id ? route('admin.tutors.download-cv', $application->tutor->id) : null,
                 ],
             ]);
 
@@ -253,6 +260,7 @@ class JobController extends Controller
                 'title' => $job->title,
                 'status' => $job->status,
                 'guardian_name' => $job->guardian?->name,
+                'subjects' => $job->subjects->pluck('name')->values()->all(),
                 'is_expired' => $job->status === JobStatus::Live && $job->isExpired(),
                 'has_assignment' => $job->assignment !== null,
                 'selected_tutor_user_id' => $job->assignment?->tutor_user_id,
@@ -270,6 +278,79 @@ class JobController extends Controller
                 ['value' => ApplicationStatus::Appointed, 'label' => 'Appointed'],
                 ['value' => ApplicationStatus::Confirmed, 'label' => 'Confirmed'],
                 ['value' => ApplicationStatus::Cancelled, 'label' => 'Cancelled'],
+            ],
+        ]);
+    }
+
+    /**
+     * Display full detail for a specific job.
+     */
+    public function show(TuitionJob $job): Response
+    {
+        $job->loadMissing([
+            'guardian:id,name,email,phone',
+            'tuitionType:id,name',
+            'category:id,name',
+            'schoolClass:id,name',
+            'country:id,name',
+            'city:id,name',
+            'area:id,name',
+            'subjects:id,name',
+            'assignment:id,job_id,tutor_user_id,appointed_at,confirmed_at',
+            'assignment.tutor:id,name,email,phone',
+            'createdBy:id,name',
+            'confirmedBy:id,name',
+        ]);
+
+        $job->loadCount('applications');
+
+        return inertia('admin/jobs/Show', [
+            'job' => [
+                'id' => $job->id,
+                'title' => $job->title,
+                'description' => $job->description,
+                'status' => $job->status,
+                'is_expired' => $job->status === JobStatus::Live && $job->isExpired(),
+                'view_count' => $job->view_count ?? 0,
+                'applications_count' => $job->applications_count ?? 0,
+                'tuition_type' => $job->tuitionType?->name,
+                'category' => $job->category?->name,
+                'class' => $job->schoolClass?->name,
+                'subjects' => $job->subjects->pluck('name')->values()->all(),
+                'country' => $job->country?->name,
+                'city' => $job->city?->name,
+                'area' => $job->area?->name,
+                'location' => $job->location,
+                'student_gender' => $job->student_gender,
+                'tutor_gender' => $job->tutor_gender,
+                'no_of_students' => $job->no_of_students,
+                'tuition_days' => $job->tuition_days,
+                'days_per_week' => $job->days_per_week,
+                'tuition_time' => $job->tuition_time,
+                'tuition_duration' => $job->tuition_duration,
+                'salary_amount' => $job->salary_amount,
+                'salary_currency' => $job->salary_currency,
+                'salary_negotiable' => $job->salary_negotiable,
+                'cancellation_reason' => $job->cancellation_reason,
+                'guardian_id' => $job->guardian_id,
+                'guardian_name' => $job->guardian?->name,
+                'guardian_email' => $job->guardian?->email,
+                'guardian_phone' => $job->guardian?->phone,
+                'has_assignment' => $job->assignment !== null,
+                'selected_tutor_id' => $job->assignment?->tutor_user_id,
+                'selected_tutor_name' => $job->assignment?->tutor?->name,
+                'selected_tutor_email' => $job->assignment?->tutor?->email,
+                'selected_tutor_phone' => $job->assignment?->tutor?->phone,
+                'assignment_appointed_at' => $job->assignment?->appointed_at?->toDateTimeString(),
+                'assignment_confirmed_at' => $job->assignment?->confirmed_at?->toDateTimeString(),
+                'created_by_name' => $job->createdBy?->name,
+                'confirmed_by_name' => $job->confirmedBy?->name,
+                'published_at' => $job->published_at?->toDateTimeString(),
+                'expires_at' => $job->expires_at?->toDateTimeString(),
+                'confirmed_at' => $job->confirmed_at?->toDateTimeString(),
+                'requested_tutor_id' => $job->requested_tutor_id,
+                'created_at' => $job->created_at?->toDateTimeString(),
+                'updated_at' => $job->updated_at?->toDateTimeString(),
             ],
         ]);
     }
@@ -713,5 +794,22 @@ class JobController extends Controller
             ['value' => JobStatus::Pending, 'label' => 'Pending'],
             ['value' => JobStatus::Live, 'label' => 'Live'],
         ];
+    }
+
+    /**
+     * Re-open a cancelled or closed job back to live status.
+     */
+    public function reopen(TuitionJob $job): RedirectResponse
+    {
+        if ($job->status !== JobStatus::Cancelled && $job->status !== JobStatus::Closed) {
+            return back()->withErrors(['job' => 'Only cancelled or closed jobs can be re-opened.']);
+        }
+
+        $job->update([
+            'status' => JobStatus::Live,
+            'expires_at' => now()->addDays(30),
+        ]);
+
+        return back()->with('status', 'Tuition job has been re-opened to Live status.');
     }
 }

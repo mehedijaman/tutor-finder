@@ -181,6 +181,13 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->pluck('total', 'month');
 
+        $refunds = RefundRequest::query()
+            ->where('status', RefundStatus::Approved)
+            ->where('created_at', '>=', $months->first())
+            ->selectRaw("{$dateFormatCreated}, SUM(amount) as total")
+            ->groupBy('month')
+            ->pluck('total', 'month');
+
         $monthKeys = $months->map(fn (Carbon $m): string => $m->format('Y-m'));
 
         return [
@@ -189,6 +196,7 @@ class DashboardController extends Controller
             'newGuardians' => $monthKeys->map(fn (string $key): int => (int) $userRegistrations->where('month', $key)->where('role', UserRole::Guardian)->sum('total'))->values()->all(),
             'newJobs' => $monthKeys->map(fn (string $key): int => (int) ($jobsCreated[$key] ?? 0))->values()->all(),
             'revenue' => $monthKeys->map(fn (string $key): float => (float) ($revenue[$key] ?? 0))->values()->all(),
+            'refunds' => $monthKeys->map(fn (string $key): float => (float) ($refunds[$key] ?? 0))->values()->all(),
         ];
     }
 
@@ -200,10 +208,28 @@ class DashboardController extends Controller
     private function gatherRecentActivity(): array
     {
         $recentJobs = TuitionJob::query()
-            ->with('guardian:id,name')
+            ->with(['guardian:id,name', 'applications' => fn ($q) => $q->selectRaw('job_id, count(*) as count')->groupBy('job_id')])
             ->latest()
             ->limit(5)
             ->get(['id', 'title', 'status', 'guardian_id', 'created_at']);
+
+        $recentTutors = User::query()
+            ->where('role', UserRole::Tutor)
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'name', 'email', 'phone', 'verification_status', 'created_at']);
+
+        $recentGuardians = User::query()
+            ->where('role', UserRole::Guardian)
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'name', 'email', 'phone', 'verification_status', 'created_at']);
+
+        $recentApplications = TuitionJobApplication::query()
+            ->with(['tutor:id,name', 'tuitionJob:id,title'])
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'job_id', 'tutor_user_id', 'status', 'created_at']);
 
         $recentTickets = SupportTicket::query()
             ->with('user:id,name')
@@ -225,7 +251,32 @@ class DashboardController extends Controller
                 'status' => $job->status->value,
                 'statusLabel' => $job->status->label(),
                 'guardian' => $job->guardian?->name ?? 'N/A',
+                'applicationsCount' => $job->applications->first()?->count ?? 0,
                 'createdAt' => $job->created_at?->diffForHumans(),
+            ])->all(),
+            'recentTutors' => $recentTutors->map(fn ($tutor): array => [
+                'id' => $tutor->id,
+                'name' => $tutor->name,
+                'email' => $tutor->email,
+                'phone' => $tutor->phone,
+                'verificationStatus' => $tutor->verification_status?->value ?? 'unverified',
+                'createdAt' => $tutor->created_at?->diffForHumans(),
+            ])->all(),
+            'recentGuardians' => $recentGuardians->map(fn ($g): array => [
+                'id' => $g->id,
+                'name' => $g->name,
+                'email' => $g->email,
+                'phone' => $g->phone,
+                'verificationStatus' => $g->verification_status?->value ?? 'unverified',
+                'createdAt' => $g->created_at?->diffForHumans(),
+            ])->all(),
+            'recentApplications' => $recentApplications->map(fn ($app): array => [
+                'id' => $app->id,
+                'jobId' => $app->job_id,
+                'jobTitle' => $app->tuitionJob?->title ?? 'N/A',
+                'tutorName' => $app->tutor?->name ?? 'N/A',
+                'status' => $app->status,
+                'createdAt' => $app->created_at?->diffForHumans(),
             ])->all(),
             'recentTickets' => $recentTickets->map(fn ($ticket): array => [
                 'id' => $ticket->id,

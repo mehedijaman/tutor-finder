@@ -40,6 +40,19 @@ class ApplicationService
                 ]);
             }
 
+            $tutorProfile = $tutor->tutorProfile;
+            $tutorGender = strtolower(trim((string) ($tutorProfile?->gender ?? '')));
+            $requiredGender = strtolower(trim((string) ($lockedJob->tutor_gender->value ?? $lockedJob->tutor_gender ?? 'any')));
+
+            if ($requiredGender !== 'any' && $requiredGender !== '') {
+                if ($tutorGender !== '' && $tutorGender !== $requiredGender) {
+                    $genderLabel = ucfirst($requiredGender);
+                    throw ValidationException::withMessages([
+                        'job' => "This tuition job requires a {$genderLabel} tutor.",
+                    ]);
+                }
+            }
+
             $application = TuitionJobApplication::query()
                 ->where('job_id', $lockedJob->id)
                 ->where('tutor_user_id', $tutor->getAuthIdentifier())
