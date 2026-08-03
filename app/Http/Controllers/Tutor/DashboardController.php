@@ -51,11 +51,16 @@ class DashboardController extends Controller
             ->count();
 
         $tutorProfile = $user?->tutorProfile;
-        $tutorCityId = $tutorProfile?->city_id;
+        $preferredLocations = is_array($tutorProfile?->preferred_locations) ? array_filter($tutorProfile->preferred_locations) : [];
 
         $nearbyJobsCount = TuitionJob::query()
             ->active()
-            ->when($tutorCityId, fn ($q) => $q->where('city_id', $tutorCityId))
+            ->when(! empty($preferredLocations), function ($q) use ($preferredLocations): void {
+                $q->where(function ($sub) use ($preferredLocations): void {
+                    $sub->whereIn('area_id', $preferredLocations)
+                        ->orWhereIn('city_id', $preferredLocations);
+                });
+            })
             ->count();
 
         return inertia('tutor/Dashboard', [
