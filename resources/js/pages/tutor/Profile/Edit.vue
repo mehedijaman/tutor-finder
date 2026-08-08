@@ -157,6 +157,22 @@ const isEditingActiveTab = computed(() => editingTab.value === activeTab.value);
 
 const originalProfile = { ...props.profile };
 
+function mapEducations(list: any = []): any[] {
+    if (!Array.isArray(list)) {
+        return [];
+    }
+    return list.map((education: any, index: number) => ({
+        id: education?.id ?? null,
+        degree: education?.degree ?? '',
+        institute: education?.institute ?? '',
+        department: education?.department ?? '',
+        graduation_year: education?.graduation_year ?? '',
+        result: education?.result ?? '',
+        is_current: Boolean(education?.is_current),
+        sort_order: education?.sort_order ?? index,
+    }));
+}
+
 function resetFormToOriginal(): void {
     form.name = originalProfile.name ?? '';
     form.phone = originalProfile.phone ?? '';
@@ -194,18 +210,7 @@ function resetFormToOriginal(): void {
         : [];
     form.available_time = originalProfile.available_time ?? '';
     form.status = originalProfile.status ?? 'active';
-    form.educations = Array.isArray(originalProfile.educations)
-        ? originalProfile.educations.map((education, index) => ({
-              id: education.id ?? null,
-              degree: education.degree ?? '',
-              institute: education.institute ?? '',
-              department: education.department ?? '',
-              graduation_year: education.graduation_year ?? '',
-              result: education.result ?? '',
-              is_current: Boolean(education.is_current),
-              sort_order: education.sort_order ?? index,
-          }))
-        : [];
+    form.educations = mapEducations(originalProfile.educations);
 }
 
 const form = useForm({
@@ -241,18 +246,7 @@ const form = useForm({
         : [],
     available_time: props.profile.available_time ?? '',
     status: props.profile.status ?? 'active',
-    educations: Array.isArray(props.profile.educations)
-        ? props.profile.educations.map((education, index) => ({
-              id: education.id ?? null,
-              degree: education.degree ?? '',
-              institute: education.institute ?? '',
-              department: education.department ?? '',
-              graduation_year: education.graduation_year ?? '',
-              result: education.result ?? '',
-              is_current: Boolean(education.is_current),
-              sort_order: education.sort_order ?? index,
-          }))
-        : [];
+    educations: mapEducations(props.profile.educations),
 });
 
 const profileCompletionFields = [
@@ -1144,9 +1138,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                         class="font-bold text-slate-900 dark:text-slate-100"
                                     >
                                         {{ form.expected_salary_min || '0' }} -
-                                        {{
-                                            form.expected_salary_max || '0'
-                                        }}
+                                        {{ form.expected_salary_max || '0' }}
                                         BDT
                                     </span>
                                 </div>
@@ -1793,9 +1785,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                 </Badge>
                             </div>
                             <p class="text-xs text-blue-950 dark:text-blue-300">
-                                Invoice #{{
-                                    verificationInvoice.invoice_no
-                                }}
+                                Invoice #{{ verificationInvoice.invoice_no }}
                                 has been issued. Pay now to complete your
                                 verification process.
                             </p>
