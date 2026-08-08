@@ -303,20 +303,24 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div
-            class="grid gap-5 p-4 text-slate-900 sm:p-5 lg:p-6 xl:grid-cols-[300px_minmax(0,1fr)]"
+            class="grid gap-5 p-4 text-slate-900 sm:p-5 lg:p-6 xl:grid-cols-[300px_minmax(0,1fr)] dark:text-slate-100"
         >
             <!-- Sidebar Profile Card -->
             <aside class="space-y-4">
-                <Card class="overflow-hidden border-slate-200/80 shadow-2xs">
+                <Card
+                    class="overflow-hidden border-slate-200/80 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900"
+                >
                     <CardContent class="space-y-4 p-5 text-center">
                         <div class="flex flex-col items-center">
                             <ProfilePhotoUpload />
                             <h2
-                                class="mt-3 text-lg font-bold tracking-tight text-slate-900"
+                                class="mt-3 text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100"
                             >
                                 {{ form.name || authUser?.name || 'Guardian' }}
                             </h2>
-                            <p class="text-xs font-medium text-slate-500">
+                            <p
+                                class="text-xs font-medium text-slate-500 dark:text-slate-400"
+                            >
                                 Guardian ID: #{{ authUser?.id ?? '—' }}
                             </p>
 
@@ -329,7 +333,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                 </Badge>
                                 <Badge
                                     variant="outline"
-                                    class="border-slate-300 px-2 py-0.5 text-[11px] capitalize"
+                                    class="border-slate-300 px-2 py-0.5 text-[11px] capitalize dark:border-slate-700 dark:text-slate-300"
                                 >
                                     {{ form.status || 'Active' }}
                                 </Badge>
@@ -338,43 +342,44 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
 
                         <!-- Progress Meter -->
                         <div
-                            class="w-full space-y-1.5 border-t border-slate-100 pt-2"
+                            class="w-full space-y-1.5 border-t border-slate-100 pt-2 dark:border-slate-800"
                         >
                             <div
                                 class="flex items-center justify-between text-xs font-semibold"
                             >
-                                <span class="text-slate-500"
+                                <span class="text-slate-500 dark:text-slate-400"
                                     >Profile Completion</span
                                 >
-                                <span class="font-bold text-blue-700"
+                                <span
+                                    class="font-bold text-blue-700 dark:text-blue-400"
                                     >{{ profileCompletion }}%</span
                                 >
                             </div>
                             <div
-                                class="h-2 w-full overflow-hidden rounded-full bg-slate-100"
+                                class="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
                             >
                                 <div
-                                    class="h-full rounded-full bg-blue-600 transition-all duration-300"
+                                    class="h-full rounded-full bg-blue-600 transition-all duration-300 dark:bg-blue-500"
                                     :style="{ width: `${profileCompletion}%` }"
                                 ></div>
                             </div>
                         </div>
 
-                        <Separator />
+                        <Separator class="dark:bg-slate-800" />
 
                         <!-- Contact Summary -->
                         <div class="space-y-2.5 text-left text-xs">
                             <div class="flex items-start gap-2.5">
                                 <Mail
-                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400"
+                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
                                 />
                                 <div class="min-w-0">
                                     <span
-                                        class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                        class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                         >Email</span
                                     >
                                     <span
-                                        class="block truncate font-medium text-slate-900"
+                                        class="block truncate font-medium text-slate-900 dark:text-slate-200"
                                         >{{ authUser?.email || '—' }}</span
                                     >
                                 </div>
@@ -382,29 +387,32 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
 
                             <div class="flex items-start gap-2.5">
                                 <Phone
-                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400"
+                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
                                 />
                                 <div>
                                     <span
-                                        class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                        class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                         >Primary Phone</span
                                     >
-                                    <span class="font-medium text-slate-900">{{
-                                        form.phone || '—'
-                                    }}</span>
+                                    <span
+                                        class="font-medium text-slate-900 dark:text-slate-200"
+                                        >{{ form.phone || '—' }}</span
+                                    >
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-2.5">
                                 <MapPin
-                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400"
+                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
                                 />
                                 <div>
                                     <span
-                                        class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                        class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                         >City & Area</span
                                     >
-                                    <span class="font-medium text-slate-900">
+                                    <span
+                                        class="font-medium text-slate-900 dark:text-slate-200"
+                                    >
                                         {{
                                             form.city || form.area
                                                 ? `${form.city || ''} ${form.area ? ' (' + form.area + ')' : ''}`
@@ -423,9 +431,11 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                 <!-- Flash Status Alert -->
                 <div
                     v-if="flashStatus"
-                    class="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3.5 py-2.5 text-xs font-medium text-emerald-900 shadow-2xs"
+                    class="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3.5 py-2.5 text-xs font-medium text-emerald-900 shadow-2xs dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-200"
                 >
-                    <CheckCircle2 class="h-4 w-4 shrink-0 text-emerald-600" />
+                    <CheckCircle2
+                        class="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+                    />
                     <div>{{ flashStatus }}</div>
                 </div>
 
@@ -438,8 +448,8 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                         class="flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all"
                         :class="[
                             activeTab === tab.key
-                                ? 'border-blue-600 bg-blue-600 text-white shadow-2xs'
-                                : 'border-slate-200/80 bg-white text-slate-700 hover:border-slate-300',
+                                ? 'border-blue-600 bg-blue-600 text-white shadow-2xs dark:bg-blue-600'
+                                : 'border-slate-200/80 bg-white text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700',
                         ]"
                         @click="switchTab(tab.key)"
                     >
@@ -448,7 +458,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             :class="[
                                 activeTab === tab.key
                                     ? 'bg-white/20 text-white'
-                                    : 'bg-slate-100 text-slate-500',
+                                    : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
                             ]"
                         >
                             <component :is="tab.icon" class="h-4 w-4" />
@@ -464,7 +474,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                 :class="[
                                     activeTab === tab.key
                                         ? 'text-blue-100'
-                                        : 'text-slate-400',
+                                        : 'text-slate-400 dark:text-slate-500',
                                 ]"
                             >
                                 {{ tab.sublabel }}
@@ -476,19 +486,19 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                 <!-- View Mode Display Card -->
                 <Card
                     v-if="activeTab !== 'verification' && !isEditingActiveTab"
-                    class="border-slate-200/80 shadow-2xs"
+                    class="border-slate-200/80 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900"
                 >
                     <CardHeader
-                        class="flex flex-row items-center justify-between border-b border-slate-100 px-4 py-3"
+                        class="flex flex-row items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800"
                     >
                         <CardTitle
-                            class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase"
+                            class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                         >
                             <component
                                 :is="
                                     tabs.find((t) => t.key === activeTab)?.icon
                                 "
-                                class="h-4 w-4 text-blue-600"
+                                class="h-4 w-4 text-blue-600 dark:text-blue-400"
                             />
                             <span>{{
                                 tabs.find((t) => t.key === activeTab)?.label
@@ -498,7 +508,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             type="button"
                             variant="outline"
                             size="sm"
-                            class="h-8 gap-1 text-xs"
+                            class="h-8 gap-1 text-xs dark:border-slate-700 dark:text-slate-300"
                             @click="openEditMode"
                         >
                             <PenSquare class="h-3.5 w-3.5" />
@@ -513,38 +523,40 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             class="grid gap-3 text-xs sm:grid-cols-2 lg:grid-cols-3"
                         >
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Full Name</span
                                 >
-                                <span class="block font-bold text-slate-900">{{
-                                    form.name || '—'
-                                }}</span>
+                                <span
+                                    class="block font-bold text-slate-900 dark:text-slate-100"
+                                    >{{ form.name || '—' }}</span
+                                >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Guardian / Primary Contact</span
                                 >
-                                <span class="block font-bold text-slate-900">{{
-                                    form.guardian_name || '—'
-                                }}</span>
+                                <span
+                                    class="block font-bold text-slate-900 dark:text-slate-100"
+                                    >{{ form.guardian_name || '—' }}</span
+                                >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Relationship to Student</span
                                 >
                                 <span
-                                    class="block font-semibold text-slate-900"
+                                    class="block font-semibold text-slate-900 dark:text-slate-100"
                                     >{{
                                         form.relationship_to_student || '—'
                                     }}</span
@@ -552,28 +564,28 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Occupation / Profession</span
                                 >
                                 <span
-                                    class="block font-semibold text-slate-900"
+                                    class="block font-semibold text-slate-900 dark:text-slate-100"
                                     >{{ form.occupation || '—' }}</span
                                 >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Account Status</span
                                 >
                                 <Badge
                                     variant="outline"
-                                    class="text-[11px] capitalize"
+                                    class="text-[11px] capitalize dark:border-slate-700 dark:text-slate-300"
                                 >
                                     {{ form.status || 'Active' }}
                                 </Badge>
@@ -586,76 +598,79 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             class="grid gap-3 text-xs sm:grid-cols-2 lg:grid-cols-3"
                         >
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Primary Phone</span
                                 >
-                                <span class="block font-bold text-slate-900">{{
-                                    form.phone || '—'
-                                }}</span>
+                                <span
+                                    class="block font-bold text-slate-900 dark:text-slate-100"
+                                    >{{ form.phone || '—' }}</span
+                                >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Alternative Phone</span
                                 >
-                                <span class="block font-bold text-slate-900">{{
-                                    form.phone_alt || '—'
-                                }}</span>
+                                <span
+                                    class="block font-bold text-slate-900 dark:text-slate-100"
+                                    >{{ form.phone_alt || '—' }}</span
+                                >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Emergency Contact</span
                                 >
-                                <span class="block font-bold text-slate-900">{{
-                                    form.emergency_contact || '—'
-                                }}</span>
+                                <span
+                                    class="block font-bold text-slate-900 dark:text-slate-100"
+                                    >{{ form.emergency_contact || '—' }}</span
+                                >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >City</span
                                 >
                                 <span
-                                    class="block font-semibold text-slate-900"
+                                    class="block font-semibold text-slate-900 dark:text-slate-100"
                                     >{{ form.city || '—' }}</span
                                 >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Area / Locality</span
                                 >
                                 <span
-                                    class="block font-semibold text-slate-900"
+                                    class="block font-semibold text-slate-900 dark:text-slate-100"
                                     >{{ form.area || '—' }}</span
                                 >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Preferred Contact Time</span
                                 >
                                 <span
-                                    class="block font-semibold text-slate-900"
+                                    class="block font-semibold text-slate-900 dark:text-slate-100"
                                     >{{
                                         form.preferred_contact_time ||
                                         'Flexible'
@@ -664,27 +679,27 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 sm:col-span-2 lg:col-span-3"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 sm:col-span-2 lg:col-span-3 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Full Address</span
                                 >
                                 <span
-                                    class="block font-medium text-slate-900"
+                                    class="block font-medium text-slate-900 dark:text-slate-100"
                                     >{{ form.address || '—' }}</span
                                 >
                             </div>
 
                             <div
-                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 sm:col-span-2 lg:col-span-3"
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 sm:col-span-2 lg:col-span-3 dark:border-slate-800 dark:bg-slate-900/50"
                             >
                                 <span
-                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
                                     >Additional Notes / Instructions</span
                                 >
                                 <p
-                                    class="leading-relaxed font-normal text-slate-800"
+                                    class="leading-relaxed font-normal text-slate-800 dark:text-slate-200"
                                 >
                                     {{
                                         form.notes ||
@@ -705,11 +720,13 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                     <!-- Personal Info Form -->
                     <Card
                         v-if="activeTab === 'personal'"
-                        class="border-slate-200/80 shadow-2xs"
+                        class="border-slate-200/80 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900"
                     >
-                        <CardHeader class="border-b border-slate-100 px-4 py-3">
+                        <CardHeader
+                            class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                        >
                             <CardTitle
-                                class="text-xs font-bold tracking-wider text-slate-700 uppercase"
+                                class="text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                                 >Edit Personal Information</CardTitle
                             >
                         </CardHeader>
@@ -792,11 +809,13 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                     <!-- Contact & Location Form -->
                     <Card
                         v-if="activeTab === 'contact'"
-                        class="border-slate-200/80 shadow-2xs"
+                        class="border-slate-200/80 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900"
                     >
-                        <CardHeader class="border-b border-slate-100 px-4 py-3">
+                        <CardHeader
+                            class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                        >
                             <CardTitle
-                                class="text-xs font-bold tracking-wider text-slate-700 uppercase"
+                                class="text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                                 >Edit Contact & Address</CardTitle
                             >
                         </CardHeader>
@@ -948,7 +967,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                             type="button"
                             variant="outline"
                             size="sm"
-                            class="text-xs"
+                            class="text-xs dark:border-slate-700 dark:text-slate-300"
                             @click="closeEditMode"
                         >
                             Cancel
@@ -967,25 +986,33 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                 <!-- Verification Status Tab -->
                 <Card
                     v-if="activeTab === 'verification'"
-                    class="border-slate-200/80 shadow-2xs"
+                    class="border-slate-200/80 bg-white shadow-2xs dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <CardHeader class="border-b border-slate-100 px-4 py-3">
+                    <CardHeader
+                        class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                    >
                         <CardTitle
-                            class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase"
+                            class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                         >
-                            <ShieldCheck class="h-4 w-4 text-blue-600" />
+                            <ShieldCheck
+                                class="h-4 w-4 text-blue-600 dark:text-blue-400"
+                            />
                             <span>Guardian Verification Status</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent class="space-y-4 p-4 text-xs">
                         <div
-                            class="flex flex-col justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 sm:flex-row sm:items-center"
+                            class="flex flex-col justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 sm:flex-row sm:items-center dark:border-slate-800 dark:bg-slate-900/60"
                         >
                             <div class="space-y-1">
-                                <h4 class="text-sm font-bold text-slate-900">
+                                <h4
+                                    class="text-sm font-bold text-slate-900 dark:text-slate-100"
+                                >
                                     Verification Status: {{ statusLabel }}
                                 </h4>
-                                <p class="text-xs text-slate-500">
+                                <p
+                                    class="text-xs text-slate-500 dark:text-slate-400"
+                                >
                                     Verified guardians build trust with tutors
                                     and enjoy expedited tuition posting and
                                     matching.
@@ -1005,24 +1032,26 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                         <!-- Verification Invoice Payment Card -->
                         <div
                             v-if="canPayInvoice && verificationInvoice"
-                            class="space-y-3 rounded-xl border border-blue-200 bg-blue-50/50 p-4"
+                            class="space-y-3 rounded-xl border border-blue-200 bg-blue-50/50 p-4 dark:border-blue-900/50 dark:bg-blue-950/30"
                         >
                             <div class="flex items-center justify-between">
                                 <h4
-                                    class="flex items-center gap-1.5 text-sm font-bold text-blue-900"
+                                    class="flex items-center gap-1.5 text-sm font-bold text-blue-900 dark:text-blue-200"
                                 >
-                                    <Receipt class="h-4 w-4 text-blue-600" />
+                                    <Receipt
+                                        class="h-4 w-4 text-blue-600 dark:text-blue-400"
+                                    />
                                     <span>Verification Fee Invoice</span>
                                 </h4>
                                 <Badge
                                     variant="outline"
-                                    class="border-blue-300 bg-white text-blue-800"
+                                    class="border-blue-300 bg-white text-blue-800 dark:border-blue-700 dark:bg-slate-900 dark:text-blue-200"
                                 >
                                     {{ verificationInvoice.amount }}
                                     {{ verificationInvoice.currency }}
                                 </Badge>
                             </div>
-                            <p class="text-xs text-blue-950">
+                            <p class="text-xs text-blue-950 dark:text-blue-300">
                                 Invoice #{{
                                     verificationInvoice.invoice_no
                                 }}
@@ -1058,21 +1087,27 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
             :open="requestDialogOpen"
             @update:open="requestDialogOpen = $event"
         >
-            <DialogContent class="sm:max-w-md">
+            <DialogContent
+                class="sm:max-w-md dark:border-slate-800 dark:bg-slate-900"
+            >
                 <DialogHeader>
                     <DialogTitle
-                        class="flex items-center gap-1.5 text-base text-blue-800"
+                        class="flex items-center gap-1.5 text-base text-blue-800 dark:text-blue-400"
                     >
-                        <ShieldCheck class="h-4 w-4 text-blue-600" />
+                        <ShieldCheck
+                            class="h-4 w-4 text-blue-600 dark:text-blue-400"
+                        />
                         <span>Request Profile Verification</span>
                     </DialogTitle>
-                    <DialogDescription class="text-xs">
+                    <DialogDescription
+                        class="text-xs text-slate-500 dark:text-slate-400"
+                    >
                         Submitting a verification request will submit your
                         guardian details to admins for review.
                     </DialogDescription>
                 </DialogHeader>
 
-                <p class="py-2 text-xs text-slate-600">
+                <p class="py-2 text-xs text-slate-600 dark:text-slate-300">
                     Once submitted, our team will review your information and
                     process your verification status.
                 </p>
@@ -1082,7 +1117,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                         type="button"
                         variant="outline"
                         size="sm"
-                        class="text-xs"
+                        class="text-xs dark:border-slate-700 dark:text-slate-300"
                         @click="requestDialogOpen = false"
                         >Cancel</Button
                     >
