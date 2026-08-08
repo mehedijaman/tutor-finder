@@ -453,17 +453,19 @@ function submitMarkPaid() {
     <Head :title="`Verification #${verification.id}`" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="space-y-4 p-4 text-slate-900 sm:p-5 lg:p-6">
+        <div
+            class="space-y-4 p-4 text-slate-900 sm:p-5 lg:p-6 dark:text-slate-100"
+        >
             <!-- Compact Header & Action Bar -->
             <div
-                class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs"
+                class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900"
             >
                 <div
                     class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <div class="flex items-center gap-3">
                         <Avatar
-                            class="h-11 w-11 shrink-0 border border-emerald-500/20 bg-emerald-50 text-emerald-800"
+                            class="h-11 w-11 shrink-0 border border-emerald-500/20 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
                         >
                             <AvatarFallback class="text-sm font-bold">
                                 {{ userInitials }}
@@ -473,7 +475,7 @@ function submitMarkPaid() {
                         <div class="space-y-0.5">
                             <div class="flex flex-wrap items-center gap-2">
                                 <h1
-                                    class="text-lg font-bold tracking-tight text-slate-900 sm:text-xl"
+                                    class="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-slate-100"
                                 >
                                     Verification Request #{{ verification.id }}
                                 </h1>
@@ -489,19 +491,19 @@ function submitMarkPaid() {
                                 </Badge>
                                 <Badge
                                     variant="outline"
-                                    class="border-slate-300 bg-slate-50 px-2 py-0 text-[11px] font-medium text-slate-700 capitalize"
+                                    class="border-slate-300 bg-slate-50 px-2 py-0 text-[11px] font-medium text-slate-700 capitalize dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
                                 >
                                     {{ verification.role }}
                                 </Badge>
                             </div>
 
                             <p
-                                class="flex flex-wrap items-center gap-x-2 text-xs text-slate-500"
+                                class="flex flex-wrap items-center gap-x-2 text-xs text-slate-500 dark:text-slate-400"
                             >
                                 <span
                                     >Submitted:
                                     <strong
-                                        class="font-medium text-slate-700"
+                                        class="font-medium text-slate-700 dark:text-slate-300"
                                         >{{
                                             formatDateTime(
                                                 verification.submitted_at,
@@ -512,7 +514,8 @@ function submitMarkPaid() {
                                 <span>•</span>
                                 <span
                                     >Fee:
-                                    <strong class="font-bold text-slate-900"
+                                    <strong
+                                        class="font-bold text-slate-900 dark:text-slate-100"
                                         >{{ verification.fee_amount }}
                                         {{ verification.currency }}</strong
                                     ></span
@@ -523,13 +526,13 @@ function submitMarkPaid() {
 
                     <!-- Compact Action Buttons Toolbar -->
                     <div
-                        class="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 sm:border-t-0 sm:pt-0"
+                        class="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 sm:border-t-0 sm:pt-0 dark:border-slate-800"
                     >
                         <Button
                             type="button"
                             variant="outline"
                             size="sm"
-                            class="h-8 gap-1 text-xs shadow-none"
+                            class="h-8 gap-1 text-xs shadow-none dark:border-slate-700 dark:text-slate-300"
                             @click="router.visit('/admin/verifications')"
                         >
                             <ArrowLeft class="h-3.5 w-3.5" />
@@ -806,14 +809,18 @@ function submitMarkPaid() {
                     </Card>
 
                     <!-- Profile Snapshot Details Card -->
-                    <Card class="border-slate-200/80 shadow-2xs">
-                        <CardHeader class="border-b border-slate-100 px-4 py-3">
+                    <Card
+                        class="border-slate-200/80 shadow-2xs dark:border-slate-800"
+                    >
+                        <CardHeader
+                            class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                        >
                             <CardTitle
-                                class="flex items-center justify-between text-xs font-bold tracking-wider text-slate-600 uppercase"
+                                class="flex items-center justify-between text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-slate-400"
                             >
                                 <span class="flex items-center gap-1.5">
                                     <UserIcon
-                                        class="h-4 w-4 text-emerald-600"
+                                        class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
                                     />
                                     <span>Profile Snapshot Details</span>
                                 </span>
@@ -843,10 +850,10 @@ function submitMarkPaid() {
                                                     value,
                                                 ).isArray
                                             "
-                                            class="space-y-1.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 sm:col-span-2 lg:col-span-3"
+                                            class="space-y-1.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 sm:col-span-2 lg:col-span-3 dark:border-slate-800 dark:bg-slate-800/60"
                                         >
                                             <span
-                                                class="block text-[11px] font-bold tracking-wider text-slate-600 uppercase"
+                                                class="block text-[11px] font-bold tracking-wider text-slate-600 uppercase dark:text-slate-400"
                                             >
                                                 {{ formatLabel(String(key)) }}
                                             </span>
@@ -860,7 +867,7 @@ function submitMarkPaid() {
                                                     ) in value as any[]"
                                                     :key="idx"
                                                     variant="secondary"
-                                                    class="border border-slate-200 bg-white px-2 py-0.5 text-xs font-semibold text-slate-800 shadow-2xs"
+                                                    class="border border-slate-200 bg-white px-2 py-0.5 text-xs font-semibold text-slate-800 shadow-2xs dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                                                 >
                                                     {{ item }}
                                                 </Badge>
@@ -875,7 +882,7 @@ function submitMarkPaid() {
                                         <!-- Render Standard Key-Value Fields -->
                                         <div
                                             v-else
-                                            class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                                            class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 dark:border-slate-800 dark:bg-slate-800/50"
                                         >
                                             <span
                                                 class="block text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
@@ -883,7 +890,7 @@ function submitMarkPaid() {
                                                 {{ formatLabel(String(key)) }}
                                             </span>
                                             <span
-                                                class="block font-semibold break-words text-slate-900"
+                                                class="block font-semibold break-words text-slate-900 dark:text-slate-100"
                                             >
                                                 {{
                                                     formatSnapshotValue(
@@ -905,13 +912,13 @@ function submitMarkPaid() {
                                             educationSnapshot as EducationSnapshotItem[]
                                         ).length
                                     "
-                                    class="space-y-3 border-t border-slate-100 pt-3"
+                                    class="space-y-3 border-t border-slate-100 pt-3 dark:border-slate-800"
                                 >
                                     <h4
-                                        class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase"
+                                        class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                                     >
                                         <GraduationCap
-                                            class="h-4 w-4 text-emerald-600"
+                                            class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
                                         />
                                         <span>Education Background</span>
                                     </h4>
@@ -920,14 +927,14 @@ function submitMarkPaid() {
                                         <div
                                             v-for="edu in educationSnapshot as EducationSnapshotItem[]"
                                             :key="edu.id"
-                                            class="space-y-1.5 rounded-lg border border-slate-200 bg-white p-3 text-xs shadow-2xs"
+                                            class="space-y-1.5 rounded-lg border border-slate-200 bg-white p-3 text-xs shadow-2xs dark:border-slate-800 dark:bg-slate-900"
                                         >
                                             <div
                                                 class="flex items-start justify-between gap-2"
                                             >
                                                 <div>
                                                     <h5
-                                                        class="font-bold text-slate-900"
+                                                        class="font-bold text-slate-900 dark:text-slate-100"
                                                     >
                                                         {{
                                                             edu.degree ||
@@ -935,7 +942,7 @@ function submitMarkPaid() {
                                                         }}
                                                     </h5>
                                                     <p
-                                                        class="text-[11px] font-semibold text-emerald-700"
+                                                        class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400"
                                                     >
                                                         {{ edu.institute }}
                                                     </p>
@@ -943,14 +950,14 @@ function submitMarkPaid() {
                                                 <Badge
                                                     v-if="edu.result"
                                                     variant="outline"
-                                                    class="border-emerald-200 bg-emerald-50 px-1.5 py-0 text-[10px] font-bold text-emerald-800"
+                                                    class="border-emerald-200 bg-emerald-50 px-1.5 py-0 text-[10px] font-bold text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
                                                 >
                                                     Result: {{ edu.result }}
                                                 </Badge>
                                             </div>
 
                                             <div
-                                                class="grid grid-cols-2 gap-2 border-t border-slate-100 pt-1 text-[11px] text-slate-600"
+                                                class="grid grid-cols-2 gap-2 border-t border-slate-100 pt-1 text-[11px] text-slate-600 dark:border-slate-800 dark:text-slate-400"
                                             >
                                                 <div>
                                                     <span
@@ -958,7 +965,7 @@ function submitMarkPaid() {
                                                         >Department</span
                                                     >
                                                     <span
-                                                        class="font-medium text-slate-800"
+                                                        class="font-medium text-slate-800 dark:text-slate-200"
                                                         >{{
                                                             edu.department ||
                                                             '—'
@@ -971,7 +978,7 @@ function submitMarkPaid() {
                                                         >Passing Year</span
                                                     >
                                                     <span
-                                                        class="font-medium text-slate-800"
+                                                        class="font-medium text-slate-800 dark:text-slate-200"
                                                         >{{
                                                             edu.graduation_year ||
                                                             '—'
@@ -990,19 +997,25 @@ function submitMarkPaid() {
                 <!-- Right Sidebar Column (4 cols) -->
                 <div class="space-y-4 lg:col-span-4">
                     <!-- User Account Summary -->
-                    <Card class="border-slate-200/80 shadow-2xs">
-                        <CardHeader class="border-b border-slate-100 px-4 py-3">
+                    <Card
+                        class="border-slate-200/80 shadow-2xs dark:border-slate-800"
+                    >
+                        <CardHeader
+                            class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                        >
                             <CardTitle
-                                class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-600 uppercase"
+                                class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-slate-400"
                             >
-                                <UserIcon class="h-4 w-4 text-emerald-600" />
+                                <UserIcon
+                                    class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+                                />
                                 <span>User Account</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent class="space-y-3 p-4 text-xs">
                             <div class="flex items-center gap-3">
                                 <Avatar
-                                    class="h-10 w-10 shrink-0 border bg-emerald-50 text-emerald-800"
+                                    class="h-10 w-10 shrink-0 border border-emerald-500/20 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
                                 >
                                     <AvatarFallback class="text-xs font-bold">
                                         {{ userInitials }}
@@ -1010,7 +1023,7 @@ function submitMarkPaid() {
                                 </Avatar>
                                 <div class="min-w-0">
                                     <h4
-                                        class="truncate font-bold text-slate-900"
+                                        class="truncate font-bold text-slate-900 dark:text-slate-100"
                                     >
                                         {{ verification.user?.name || '—' }}
                                     </h4>
@@ -1027,13 +1040,13 @@ function submitMarkPaid() {
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="flex items-center gap-1 text-slate-500"
+                                        class="flex items-center gap-1 text-slate-500 dark:text-slate-400"
                                     >
                                         <Mail class="h-3 w-3 text-slate-400" />
                                         Email
                                     </span>
                                     <span
-                                        class="max-w-[160px] truncate font-semibold text-slate-900"
+                                        class="max-w-[160px] truncate font-semibold text-slate-900 dark:text-slate-100"
                                         :title="verification.user?.email"
                                     >
                                         {{ verification.user?.email || '—' }}
@@ -1042,19 +1055,21 @@ function submitMarkPaid() {
 
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="flex items-center gap-1 text-slate-500"
+                                        class="flex items-center gap-1 text-slate-500 dark:text-slate-400"
                                     >
                                         <Phone class="h-3 w-3 text-slate-400" />
                                         Phone
                                     </span>
-                                    <span class="font-semibold text-slate-900">
+                                    <span
+                                        class="font-semibold text-slate-900 dark:text-slate-100"
+                                    >
                                         {{ verification.user?.phone || '—' }}
                                     </span>
                                 </div>
 
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="flex items-center gap-1 text-slate-500"
+                                        class="flex items-center gap-1 text-slate-500 dark:text-slate-400"
                                     >
                                         <ShieldCheck
                                             class="h-3 w-3 text-slate-400"
@@ -1080,14 +1095,16 @@ function submitMarkPaid() {
 
                                 <div class="flex items-center justify-between">
                                     <span
-                                        class="flex items-center gap-1 text-slate-500"
+                                        class="flex items-center gap-1 text-slate-500 dark:text-slate-400"
                                     >
                                         <Calendar
                                             class="h-3 w-3 text-slate-400"
                                         />
                                         Verified At
                                     </span>
-                                    <span class="font-medium text-slate-800">
+                                    <span
+                                        class="font-medium text-slate-800 dark:text-slate-200"
+                                    >
                                         {{
                                             formatDateOnly(
                                                 verification.user?.verified_at,
@@ -1106,7 +1123,7 @@ function submitMarkPaid() {
                             >
                                 <Link
                                     :href="`/admin/tutors/${verification.user.id}`"
-                                    class="inline-flex w-full items-center justify-center gap-1 rounded-md border border-slate-200 bg-slate-50 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                                    class="inline-flex w-full items-center justify-center gap-1 rounded-md border border-slate-200 bg-slate-50 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100"
                                 >
                                     <span>Manage Tutor Profile</span>
                                     <ExternalLink class="h-3 w-3" />
@@ -1116,13 +1133,19 @@ function submitMarkPaid() {
                     </Card>
 
                     <!-- Invoice & Payment Details -->
-                    <Card class="border-slate-200/80 shadow-2xs">
-                        <CardHeader class="border-b border-slate-100 px-4 py-3">
+                    <Card
+                        class="border-slate-200/80 shadow-2xs dark:border-slate-800"
+                    >
+                        <CardHeader
+                            class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                        >
                             <CardTitle
-                                class="flex items-center justify-between text-xs font-bold tracking-wider text-slate-600 uppercase"
+                                class="flex items-center justify-between text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-slate-400"
                             >
                                 <span class="flex items-center gap-1.5">
-                                    <Receipt class="h-4 w-4 text-emerald-600" />
+                                    <Receipt
+                                        class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+                                    />
                                     <span>Fee Invoice</span>
                                 </span>
                                 <Badge
@@ -1302,7 +1325,7 @@ function submitMarkPaid() {
             <DialogContent class="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle
-                        class="flex items-center gap-1.5 text-base text-rose-700"
+                        class="flex items-center gap-1.5 text-base text-rose-700 dark:text-rose-400"
                     >
                         <XCircle class="h-4 w-4" />
                         <span>Reject or Cancel Request</span>
@@ -1314,7 +1337,8 @@ function submitMarkPaid() {
 
                 <div class="grid gap-3 py-2 text-xs">
                     <div class="grid gap-1.5">
-                        <Label class="text-xs font-semibold text-slate-700"
+                        <Label
+                            class="text-xs font-semibold text-slate-700 dark:text-slate-300"
                             >Decision Outcome</Label
                         >
                         <Select v-model="rejectForm.decision_status">
@@ -1335,7 +1359,7 @@ function submitMarkPaid() {
                     <div class="grid gap-1.5">
                         <Label
                             for="reason"
-                            class="text-xs font-semibold text-slate-700"
+                            class="text-xs font-semibold text-slate-700 dark:text-slate-300"
                             >Reason / Explanation</Label
                         >
                         <Textarea
@@ -1377,9 +1401,11 @@ function submitMarkPaid() {
             <DialogContent class="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle
-                        class="flex items-center gap-1.5 text-base text-emerald-800"
+                        class="flex items-center gap-1.5 text-base text-emerald-800 dark:text-emerald-300"
                     >
-                        <Receipt class="h-4 w-4 text-emerald-600" />
+                        <Receipt
+                            class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+                        />
                         <span>Generate Fee Invoice</span>
                     </DialogTitle>
                     <DialogDescription class="text-xs">
@@ -1392,7 +1418,7 @@ function submitMarkPaid() {
                         <div class="grid gap-1.5">
                             <Label
                                 for="amount"
-                                class="text-xs font-semibold text-slate-700"
+                                class="text-xs font-semibold text-slate-700 dark:text-slate-300"
                                 >Fee Amount</Label
                             >
                             <Input
@@ -1495,9 +1521,11 @@ function submitMarkPaid() {
             <DialogContent class="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle
-                        class="flex items-center gap-1.5 text-base text-blue-800"
+                        class="flex items-center gap-1.5 text-base text-blue-800 dark:text-blue-300"
                     >
-                        <CreditCard class="h-4 w-4 text-blue-600" />
+                        <CreditCard
+                            class="h-4 w-4 text-blue-600 dark:text-blue-400"
+                        />
                         <span>Manual Payment Confirmation</span>
                     </DialogTitle>
                     <DialogDescription class="text-xs">
@@ -1508,7 +1536,8 @@ function submitMarkPaid() {
                 <div class="grid gap-3 py-2 text-xs">
                     <div class="grid grid-cols-2 gap-3">
                         <div class="grid gap-1.5">
-                            <Label class="text-xs font-semibold text-slate-700"
+                            <Label
+                                class="text-xs font-semibold text-slate-700 dark:text-slate-300"
                                 >Payment Gateway</Label
                             >
                             <Select v-model="markPaidForm.payment_gateway">

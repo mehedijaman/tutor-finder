@@ -198,16 +198,20 @@ const submit = (): void => {
             <!-- Main Content -->
             <div class="space-y-6 lg:col-span-8">
                 <div
-                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
                     <div class="space-y-4">
                         <div>
-                            <Label for="title">Title</Label>
+                            <Label
+                                for="title"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Title</Label
+                            >
                             <Input
                                 id="title"
                                 v-model="form.title"
                                 type="text"
-                                class="mt-1"
+                                class="mt-1 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 placeholder="Enter tutorial title"
                             />
                             <InputError
@@ -217,12 +221,16 @@ const submit = (): void => {
                         </div>
 
                         <div>
-                            <Label for="slug">Slug</Label>
+                            <Label
+                                for="slug"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Slug</Label
+                            >
                             <Input
                                 id="slug"
                                 v-model="form.slug"
                                 type="text"
-                                class="mt-1"
+                                class="mt-1 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 placeholder="auto-generated-from-title"
                             />
                             <InputError
@@ -232,15 +240,21 @@ const submit = (): void => {
                         </div>
 
                         <div>
-                            <Label for="video_url">Video URL</Label>
+                            <Label
+                                for="video_url"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Video URL</Label
+                            >
                             <Input
                                 id="video_url"
                                 v-model="form.video_url"
                                 type="url"
-                                class="mt-1"
+                                class="mt-1 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 placeholder="https://www.youtube.com/watch?v=..."
                             />
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p
+                                class="mt-1 text-xs text-slate-500 dark:text-slate-400"
+                            >
                                 Supports YouTube, Vimeo, or any embeddable video
                                 URL.
                             </p>
@@ -252,7 +266,7 @@ const submit = (): void => {
                             <!-- Video Preview -->
                             <div
                                 v-if="videoPreviewUrl"
-                                class="mt-3 overflow-hidden rounded-lg border border-slate-200"
+                                class="mt-3 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800"
                             >
                                 <div class="aspect-video w-full bg-black">
                                     <iframe
@@ -273,13 +287,15 @@ const submit = (): void => {
                         </div>
 
                         <div>
-                            <Label for="description"
+                            <Label
+                                for="description"
+                                class="text-slate-800 dark:text-slate-200"
                                 >Description (optional)</Label
                             >
                             <Textarea
                                 id="description"
                                 v-model="form.description"
-                                class="mt-1"
+                                class="mt-1 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 rows="3"
                                 placeholder="Brief description of this tutorial..."
                             />
@@ -296,21 +312,32 @@ const submit = (): void => {
             <div class="space-y-6 lg:col-span-4">
                 <!-- Publishing -->
                 <div
-                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h3 class="mb-4 text-sm font-semibold text-slate-900">
+                    <h3
+                        class="mb-4 text-sm font-semibold text-slate-900 dark:text-slate-100"
+                    >
                         Publishing
                     </h3>
                     <div class="space-y-4">
                         <div>
-                            <Label for="audience">Audience</Label>
+                            <Label
+                                for="audience"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Audience</Label
+                            >
                             <Select v-model="form.audience">
-                                <SelectTrigger id="audience" class="mt-1">
+                                <SelectTrigger
+                                    id="audience"
+                                    class="mt-1 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                >
                                     <SelectValue
                                         placeholder="Select audience"
                                     />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent
+                                    class="dark:border-slate-800 dark:bg-slate-900"
+                                >
                                     <SelectItem
                                         v-for="option in audienceOptions"
                                         :key="option.value"
@@ -327,7 +354,11 @@ const submit = (): void => {
                         </div>
 
                         <div class="flex items-center justify-between">
-                            <Label for="is_active">Active</Label>
+                            <Label
+                                for="is_active"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Active</Label
+                            >
                             <Switch
                                 id="is_active"
                                 :model-value="form.is_active"
@@ -341,15 +372,17 @@ const submit = (): void => {
 
                 <!-- Thumbnail -->
                 <div
-                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+                    class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h3 class="mb-4 text-sm font-semibold text-slate-900">
+                    <h3
+                        class="mb-4 text-sm font-semibold text-slate-900 dark:text-slate-100"
+                    >
                         Thumbnail
                     </h3>
                     <div class="space-y-3">
                         <div
                             v-if="imagePreviewUrl"
-                            class="relative overflow-hidden rounded-lg border border-slate-200"
+                            class="relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700"
                         >
                             <img
                                 :src="imagePreviewUrl"
@@ -367,9 +400,11 @@ const submit = (): void => {
 
                         <div
                             v-if="form.remove_thumbnail && isEdit"
-                            class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2"
+                            class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-900/60 dark:bg-amber-950/40"
                         >
-                            <p class="text-xs text-amber-700">
+                            <p
+                                class="text-xs text-amber-700 dark:text-amber-300"
+                            >
                                 Thumbnail will be removed on save.
                             </p>
                         </div>
@@ -379,23 +414,29 @@ const submit = (): void => {
                             class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-6 text-center transition-colors"
                             :class="
                                 isDragging
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/50'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40'
+                                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/50'
                             "
                             @click="triggerFileInput"
                             @drop.prevent="onDrop"
                             @dragover.prevent="onDragOver"
                             @dragleave.prevent="onDragLeave"
                         >
-                            <Upload class="mb-2 h-8 w-8 text-slate-400" />
-                            <p class="text-sm font-medium text-slate-600">
+                            <Upload
+                                class="mb-2 h-8 w-8 text-slate-400 dark:text-slate-500"
+                            />
+                            <p
+                                class="text-sm font-medium text-slate-600 dark:text-slate-300"
+                            >
                                 {{
                                     isDragging
                                         ? 'Drop image here'
                                         : 'Click or drag & drop'
                                 }}
                             </p>
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p
+                                class="mt-1 text-xs text-slate-500 dark:text-slate-400"
+                            >
                                 Recommended: 640×360px (16:9). Max 2MB.
                             </p>
                             <input
@@ -425,6 +466,7 @@ const submit = (): void => {
                     <Button
                         type="button"
                         variant="outline"
+                        class="dark:border-slate-700 dark:text-slate-300"
                         as="a"
                         :href="cancelHref"
                     >

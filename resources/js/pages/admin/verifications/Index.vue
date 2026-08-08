@@ -420,9 +420,11 @@ function submitMarkPaid() {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
+                >
                     Verification Requests
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -433,7 +435,7 @@ function submitMarkPaid() {
 
             <div
                 v-if="flashStatus"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ flashStatus }}
             </div>
@@ -443,7 +445,7 @@ function submitMarkPaid() {
                     $page.props.errors?.verification ||
                     $page.props.errors?.invoice
                 "
-                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
             >
                 {{
                     $page.props.errors.verification ||
@@ -452,25 +454,36 @@ function submitMarkPaid() {
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="grid gap-2 md:col-span-2">
-                    <Label for="verification-search">Search</Label>
+                    <Label
+                        for="verification-search"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Search</Label
+                    >
                     <Input
                         id="verification-search"
                         v-model="search"
                         type="text"
                         placeholder="Search by user name, email, or phone"
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Status</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Status</Label
+                    >
                     <Select v-model="statusFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All status" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All status</SelectItem>
                             <SelectItem
                                 v-for="status in statusOptionsList"
@@ -483,12 +496,18 @@ function submitMarkPaid() {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Role</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Role</Label
+                    >
                     <Select v-model="roleFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All roles" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All roles</SelectItem>
                             <SelectItem
                                 v-for="role in roleOptionsList"
@@ -508,7 +527,11 @@ function submitMarkPaid() {
             >
                 <template #cell-user_name="{ row }">
                     <div class="space-y-0.5">
-                        <p class="font-medium">{{ row.user_name || '—' }}</p>
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ row.user_name || '—' }}
+                        </p>
                         <p class="text-xs text-muted-foreground">
                             {{ row.user_email || '—' }}
                         </p>
@@ -516,9 +539,11 @@ function submitMarkPaid() {
                 </template>
 
                 <template #cell-role="{ value }">
-                    <Badge variant="outline" class="uppercase">{{
-                        value
-                    }}</Badge>
+                    <Badge
+                        variant="outline"
+                        class="uppercase dark:border-slate-700 dark:text-slate-300"
+                        >{{ value }}</Badge
+                    >
                 </template>
 
                 <template #cell-status="{ value }">
@@ -528,16 +553,22 @@ function submitMarkPaid() {
                 </template>
 
                 <template #cell-submitted_at="{ value }">
-                    {{ value ? new Date(value).toLocaleString() : '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleString() : '—' }}
+                    </span>
                 </template>
 
                 <template #cell-fee_amount="{ row }">
-                    {{ row.fee_amount }} {{ row.currency }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ row.fee_amount }} {{ row.currency }}
+                    </span>
                 </template>
 
                 <template #cell-invoice_status="{ row }">
                     <div class="space-y-0.5">
-                        <p>{{ row.invoice_status || '—' }}</p>
+                        <p class="text-slate-900 dark:text-slate-100">
+                            {{ row.invoice_status || '—' }}
+                        </p>
                         <p class="text-xs text-muted-foreground">
                             {{ row.invoice_no || '' }}
                         </p>
@@ -583,22 +614,31 @@ function submitMarkPaid() {
             :open="rejectDialogOpen"
             @update:open="rejectDialogOpen = $event"
         >
-            <DialogContent>
+            <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                 <DialogHeader>
-                    <DialogTitle>Reject / Cancel Request</DialogTitle>
+                    <DialogTitle class="text-slate-900 dark:text-slate-100"
+                        >Reject / Cancel Request</DialogTitle
+                    >
                     <DialogDescription
+                        class="text-slate-500 dark:text-slate-400"
                         >Provide a reason for this decision.</DialogDescription
                     >
                 </DialogHeader>
 
                 <div class="grid gap-4 py-2">
                     <div class="grid gap-2">
-                        <Label>Decision</Label>
+                        <Label class="text-slate-800 dark:text-slate-200"
+                            >Decision</Label
+                        >
                         <Select v-model="rejectForm.decision_status">
-                            <SelectTrigger>
+                            <SelectTrigger
+                                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            >
                                 <SelectValue placeholder="Select decision" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent
+                                class="dark:border-slate-800 dark:bg-slate-900"
+                            >
                                 <SelectItem value="rejected">Reject</SelectItem>
                                 <SelectItem value="cancelled"
                                     >Cancel</SelectItem
@@ -608,12 +648,16 @@ function submitMarkPaid() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="reject_reason">Reason</Label>
+                        <Label
+                            for="reject_reason"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Reason</Label
+                        >
                         <textarea
                             id="reject_reason"
                             v-model="rejectForm.reason"
                             rows="4"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
                             placeholder="Write decision reason"
                         ></textarea>
                     </div>
@@ -623,6 +667,7 @@ function submitMarkPaid() {
                     <Button
                         type="button"
                         variant="outline"
+                        class="dark:border-slate-700 dark:text-slate-300"
                         @click="rejectDialogOpen = false"
                         >Cancel</Button
                     >
@@ -640,10 +685,13 @@ function submitMarkPaid() {
             :open="invoiceDialogOpen"
             @update:open="invoiceDialogOpen = $event"
         >
-            <DialogContent>
+            <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                 <DialogHeader>
-                    <DialogTitle>Generate Invoice</DialogTitle>
+                    <DialogTitle class="text-slate-900 dark:text-slate-100"
+                        >Generate Invoice</DialogTitle
+                    >
                     <DialogDescription
+                        class="text-slate-500 dark:text-slate-400"
                         >Set invoice amount and expiry
                         information.</DialogDescription
                     >
@@ -651,50 +699,74 @@ function submitMarkPaid() {
 
                 <div class="grid gap-4 py-2">
                     <div class="grid gap-2">
-                        <Label for="amount">Amount</Label>
+                        <Label
+                            for="amount"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Amount</Label
+                        >
                         <Input
                             id="amount"
                             v-model="invoiceForm.amount"
                             type="number"
                             min="1"
                             step="0.01"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="currency">Currency</Label>
+                        <Label
+                            for="currency"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Currency</Label
+                        >
                         <Input
                             id="currency"
                             v-model="invoiceForm.currency"
                             type="text"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="due_at">Due At</Label>
+                        <Label
+                            for="due_at"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Due At</Label
+                        >
                         <Input
                             id="due_at"
                             v-model="invoiceForm.due_at"
                             type="datetime-local"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="expires_at">Expires At</Label>
+                        <Label
+                            for="expires_at"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Expires At</Label
+                        >
                         <Input
                             id="expires_at"
                             v-model="invoiceForm.expires_at"
                             type="datetime-local"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="invoice_notes">Notes</Label>
+                        <Label
+                            for="invoice_notes"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Notes</Label
+                        >
                         <textarea
                             id="invoice_notes"
                             v-model="invoiceForm.notes"
                             rows="3"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
                         ></textarea>
                     </div>
                 </div>
@@ -703,6 +775,7 @@ function submitMarkPaid() {
                     <Button
                         type="button"
                         variant="outline"
+                        class="dark:border-slate-700 dark:text-slate-300"
                         @click="invoiceDialogOpen = false"
                         >Cancel</Button
                     >
@@ -717,10 +790,13 @@ function submitMarkPaid() {
             :open="markPaidDialogOpen"
             @update:open="markPaidDialogOpen = $event"
         >
-            <DialogContent>
+            <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                 <DialogHeader>
-                    <DialogTitle>Manual Mark Paid</DialogTitle>
+                    <DialogTitle class="text-slate-900 dark:text-slate-100"
+                        >Manual Mark Paid</DialogTitle
+                    >
                     <DialogDescription
+                        class="text-slate-500 dark:text-slate-400"
                         >Use manual override to confirm invoice
                         payment.</DialogDescription
                     >
@@ -728,12 +804,18 @@ function submitMarkPaid() {
 
                 <div class="grid gap-4 py-2">
                     <div class="grid gap-2">
-                        <Label>Gateway</Label>
+                        <Label class="text-slate-800 dark:text-slate-200"
+                            >Gateway</Label
+                        >
                         <Select v-model="markPaidForm.payment_gateway">
-                            <SelectTrigger>
+                            <SelectTrigger
+                                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            >
                                 <SelectValue placeholder="Select gateway" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent
+                                class="dark:border-slate-800 dark:bg-slate-900"
+                            >
                                 <SelectItem value="manual">manual</SelectItem>
                                 <SelectItem value="bkash">bkash</SelectItem>
                                 <SelectItem value="sslcommerz"
@@ -744,39 +826,58 @@ function submitMarkPaid() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="payment_method">Payment Method</Label>
+                        <Label
+                            for="payment_method"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Payment Method</Label
+                        >
                         <Input
                             id="payment_method"
                             v-model="markPaidForm.payment_method"
                             type="text"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="payment_reference">Payment Reference</Label>
+                        <Label
+                            for="payment_reference"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Payment Reference</Label
+                        >
                         <Input
                             id="payment_reference"
                             v-model="markPaidForm.payment_reference"
                             type="text"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="paid_at">Paid At</Label>
+                        <Label
+                            for="paid_at"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Paid At</Label
+                        >
                         <Input
                             id="paid_at"
                             v-model="markPaidForm.paid_at"
                             type="datetime-local"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="mark_paid_notes">Notes</Label>
+                        <Label
+                            for="mark_paid_notes"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Notes</Label
+                        >
                         <textarea
                             id="mark_paid_notes"
                             v-model="markPaidForm.notes"
                             rows="3"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
                         ></textarea>
                     </div>
                 </div>
@@ -785,6 +886,7 @@ function submitMarkPaid() {
                     <Button
                         type="button"
                         variant="outline"
+                        class="dark:border-slate-700 dark:text-slate-300"
                         @click="markPaidDialogOpen = false"
                         >Cancel</Button
                     >

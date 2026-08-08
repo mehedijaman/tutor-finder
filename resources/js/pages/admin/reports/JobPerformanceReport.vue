@@ -97,11 +97,11 @@ function handlePrint(): void {
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <!-- Header -->
             <div
-                class="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6 print:border-0 print:p-0 print:shadow-none"
+                class="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6 dark:border-slate-800 dark:bg-slate-900 print:border-0 print:p-0 print:shadow-none"
             >
                 <div>
                     <h1
-                        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                     >
                         Job Performance Report
                     </h1>
@@ -111,13 +111,19 @@ function handlePrint(): void {
                     </p>
                 </div>
                 <div class="flex gap-2 print:hidden">
-                    <Button variant="outline" size="sm" @click="handlePrint">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        class="dark:border-slate-700 dark:text-slate-300"
+                        @click="handlePrint"
+                    >
                         <Printer class="mr-2 h-4 w-4" />
                         Print
                     </Button>
                     <Button
                         variant="outline"
                         size="sm"
+                        class="dark:border-slate-700 dark:text-slate-300"
                         as="a"
                         :href="exportHref"
                     >
@@ -129,13 +135,17 @@ function handlePrint(): void {
 
             <!-- Filters -->
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2 print:hidden"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2 dark:border-slate-800 dark:bg-slate-900 print:hidden"
             >
                 <Select v-model="yearFilter">
-                    <SelectTrigger>
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="Select Year" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem
                             v-for="y in availableYears"
                             :key="y"
@@ -146,10 +156,14 @@ function handlePrint(): void {
                     </SelectContent>
                 </Select>
                 <Select v-model="monthFilter">
-                    <SelectTrigger>
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All Months" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All Months</SelectItem>
                         <SelectItem
                             v-for="m in months"
@@ -175,52 +189,62 @@ function handlePrint(): void {
             <!-- Summary Cards -->
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm print:rounded-none print:border print:shadow-none"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 print:rounded-none print:border print:shadow-none"
                 >
                     <p class="text-sm font-medium text-muted-foreground">
                         Total Jobs
                     </p>
-                    <p class="mt-1 text-2xl font-bold">
+                    <p
+                        class="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100"
+                    >
                         {{ summary.totalJobs }}
                     </p>
                 </div>
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm print:rounded-none print:border print:shadow-none"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 print:rounded-none print:border print:shadow-none"
                 >
                     <p class="text-sm font-medium text-muted-foreground">
                         Total Applications
                     </p>
-                    <p class="mt-1 text-2xl font-bold text-blue-600">
+                    <p
+                        class="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400"
+                    >
                         {{ summary.totalApplications }}
                     </p>
                 </div>
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm print:rounded-none print:border print:shadow-none"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 print:rounded-none print:border print:shadow-none"
                 >
                     <p class="text-sm font-medium text-muted-foreground">
                         Avg Apps/Job
                     </p>
-                    <p class="mt-1 text-2xl font-bold text-purple-600">
+                    <p
+                        class="mt-1 text-2xl font-bold text-purple-600 dark:text-purple-400"
+                    >
                         {{ summary.avgApplicationsPerJob }}
                     </p>
                 </div>
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm print:rounded-none print:border print:shadow-none"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 print:rounded-none print:border print:shadow-none"
                 >
                     <p class="text-sm font-medium text-muted-foreground">
                         Conversion Rate
                     </p>
-                    <p class="mt-1 text-2xl font-bold text-emerald-600">
+                    <p
+                        class="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400"
+                    >
                         {{ summary.overallConversionRate }}%
                     </p>
                 </div>
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm print:rounded-none print:border print:shadow-none"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 print:rounded-none print:border print:shadow-none"
                 >
                     <p class="text-sm font-medium text-muted-foreground">
                         Most Active Month
                     </p>
-                    <p class="mt-1 text-2xl font-bold text-amber-600">
+                    <p
+                        class="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400"
+                    >
                         {{ summary.mostActiveMonth }}
                     </p>
                 </div>
@@ -228,102 +252,116 @@ function handlePrint(): void {
 
             <!-- Data Table -->
             <div
-                class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm print:rounded-none print:shadow-none"
+                class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 print:rounded-none print:shadow-none"
             >
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 print:bg-gray-100">
+                        <thead
+                            class="bg-slate-50 dark:bg-slate-800 print:bg-gray-100"
+                        >
                             <tr>
                                 <th
-                                    class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Month
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Jobs
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Applications
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Avg/Job
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Shortlisted
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Appointed
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Confirmed
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Cancelled
                                 </th>
                                 <th
-                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                 >
                                     Conversion
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody
+                            class="divide-y divide-slate-100 dark:divide-slate-800"
+                        >
                             <tr
                                 v-for="row in reportData"
                                 :key="row.month"
-                                class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 print:hover:bg-transparent"
+                                class="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/50 print:hover:bg-transparent"
                             >
                                 <td
-                                    class="px-5 py-4 font-medium text-slate-700"
+                                    class="px-5 py-4 font-medium text-slate-700 dark:text-slate-300"
                                 >
                                     {{ row.label }}
                                 </td>
-                                <td class="px-5 py-4 text-right font-semibold">
+                                <td
+                                    class="px-5 py-4 text-right font-semibold text-slate-900 dark:text-slate-100"
+                                >
                                     {{ row.totalJobs }}
                                 </td>
                                 <td
-                                    class="px-5 py-4 text-right font-medium text-blue-600"
+                                    class="px-5 py-4 text-right font-medium text-blue-600 dark:text-blue-400"
                                 >
                                     {{ row.totalApplications }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-600">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-600 dark:text-slate-400"
+                                >
                                     {{ row.avgApplicationsPerJob }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-600">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-600 dark:text-slate-400"
+                                >
                                     {{ row.shortlisted }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-600">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-600 dark:text-slate-400"
+                                >
                                     {{ row.appointed }}
                                 </td>
                                 <td
-                                    class="px-5 py-4 text-right font-medium text-emerald-600"
+                                    class="px-5 py-4 text-right font-medium text-emerald-600 dark:text-emerald-400"
                                 >
                                     {{ row.confirmed }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-red-500">
+                                <td
+                                    class="px-5 py-4 text-right text-red-500 dark:text-red-400"
+                                >
                                     {{ row.cancelledApplications }}
                                 </td>
                                 <td
-                                    class="px-5 py-4 text-right font-semibold text-indigo-600"
+                                    class="px-5 py-4 text-right font-semibold text-indigo-600 dark:text-indigo-400"
                                 >
                                     {{ row.conversionRate }}%
                                 </td>
                             </tr>
-                            <tr v-if="reportData.length === 0" class="border-t">
+                            <tr v-if="reportData.length === 0">
                                 <td
                                     colspan="9"
                                     class="px-5 py-8 text-center text-muted-foreground"
@@ -334,22 +372,32 @@ function handlePrint(): void {
                             </tr>
                         </tbody>
                         <tfoot
-                            class="border-t-2 border-slate-300 bg-slate-50 font-semibold print:bg-gray-100"
+                            class="border-t-2 border-slate-300 bg-slate-50 font-semibold dark:border-slate-700 dark:bg-slate-800 print:bg-gray-100"
                         >
                             <tr>
-                                <td class="px-5 py-4 text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-slate-900 dark:text-slate-100"
+                                >
                                     Grand Total
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{ summary.totalJobs }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{ summary.totalApplications }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{ summary.avgApplicationsPerJob }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{
                                         reportData.reduce(
                                             (s, r) => s + r.shortlisted,
@@ -357,7 +405,9 @@ function handlePrint(): void {
                                         )
                                     }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{
                                         reportData.reduce(
                                             (s, r) => s + r.appointed,
@@ -365,7 +415,9 @@ function handlePrint(): void {
                                         )
                                     }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{
                                         reportData.reduce(
                                             (s, r) => s + r.confirmed,
@@ -373,7 +425,9 @@ function handlePrint(): void {
                                         )
                                     }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{
                                         reportData.reduce(
                                             (s, r) =>
@@ -382,7 +436,9 @@ function handlePrint(): void {
                                         )
                                     }}
                                 </td>
-                                <td class="px-5 py-4 text-right text-slate-900">
+                                <td
+                                    class="px-5 py-4 text-right text-slate-900 dark:text-slate-100"
+                                >
                                     {{ summary.overallConversionRate }}%
                                 </td>
                             </tr>

@@ -155,38 +155,115 @@ const form = useForm<{
     sort_order: 0,
 });
 
-const avatarPreviewUrl = ref<string | null>(null);
-const temporaryAvatarUrl = ref<string | null>(null);
-const fileInputRef = ref<HTMLInputElement | null>(null);
-const isAvatarDragging = ref(false);
 const hoveredRating = ref(0);
 
+function ratingLabel(rating: number): string {
+    const labels: Record<number, string> = {
+        1: 'Poor',
+        2: 'Fair',
+        3: 'Good',
+        4: 'Very Good',
+        5: 'Excellent',
+    };
+    return labels[rating] ?? '';
+}
+
+function setRating(rating: number): void {
+    form.rating = rating;
+}
+
+const fileInputRef = ref<HTMLInputElement | null>(null);
+const avatarPreviewUrl = ref<string | null>(null);
+const temporaryAvatarObjectUrl = ref<string | null>(null);
+const isAvatarDragging = ref(false);
+
 function clearTemporaryAvatarUrl(): void {
-    if (temporaryAvatarUrl.value) {
-        URL.revokeObjectURL(temporaryAvatarUrl.value);
-        temporaryAvatarUrl.value = null;
+    if (temporaryAvatarObjectUrl.value) {
+        URL.revokeObjectURL(temporaryAvatarObjectUrl.value);
+        temporaryAvatarObjectUrl.value = null;
+    }
+}
+
+function updateAvatarPreview(
+    file: File | null,
+    existingUrl: string | null,
+): void {
+    clearTemporaryAvatarUrl();
+
+    if (file) {
+        temporaryAvatarObjectUrl.value = URL.createObjectURL(file);
+        avatarPreviewUrl.value = temporaryAvatarObjectUrl.value;
+
+        return;
+    }
+
+    avatarPreviewUrl.value = existingUrl || null;
+}
+
+function triggerAvatarInput(): void {
+    fileInputRef.value?.click();
+}
+
+function handleSelectedAvatarFile(file: File | undefined): void {
+    if (!file) {
+        return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+        return;
+    }
+
+    form.avatar = file;
+    form.remove_avatar = false;
+    updateAvatarPreview(file, form.avatar_url || null);
+}
+
+function onAvatarChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    handleSelectedAvatarFile(file);
+}
+
+function onAvatarDrop(event: DragEvent): void {
+    isAvatarDragging.value = false;
+    const file = event.dataTransfer?.files?.[0];
+    handleSelectedAvatarFile(file);
+}
+
+function onAvatarDragOver(): void {
+    isAvatarDragging.value = true;
+}
+
+function onAvatarDragLeave(): void {
+    isAvatarDragging.value = false;
+}
+
+function removeAvatar(): void {
+    form.avatar = null;
+    form.remove_avatar = true;
+    updateAvatarPreview(null, null);
+
+    if (fileInputRef.value) {
+        fileInputRef.value.value = '';
     }
 }
 
 function openCreateDialog(): void {
     editingItem.value = null;
-    clearTemporaryAvatarUrl();
     form.reset();
     form.clearErrors();
+    form.avatar_url = '';
     form.avatar = null;
     form.remove_avatar = false;
     form.rating = 5;
     form.status = 'active';
     form.sort_order = 0;
-    hoveredRating.value = 0;
-    isAvatarDragging.value = false;
-    avatarPreviewUrl.value = null;
+    updateAvatarPreview(null, null);
     dialogOpen.value = true;
 }
 
 function openEditDialog(item: TestimonialItem): void {
     editingItem.value = item;
-    clearTemporaryAvatarUrl();
     form.clearErrors();
     form.user_id = item.user_id;
     form.name = item.name;
@@ -198,159 +275,72 @@ function openEditDialog(item: TestimonialItem): void {
     form.rating = item.rating;
     form.status = item.status;
     form.sort_order = item.sort_order;
-    hoveredRating.value = 0;
-    isAvatarDragging.value = false;
-    avatarPreviewUrl.value = item.avatar_url ?? null;
+    updateAvatarPreview(null, item.avatar_url);
     dialogOpen.value = true;
 }
 
 function closeFormDialog(): void {
     dialogOpen.value = false;
     editingItem.value = null;
-    clearTemporaryAvatarUrl();
     form.reset();
     form.clearErrors();
-    form.avatar = null;
-    form.remove_avatar = false;
-    hoveredRating.value = 0;
-    isAvatarDragging.value = false;
-    avatarPreviewUrl.value = null;
-}
-
-function setAvatarFile(file: File | null): void {
-    clearTemporaryAvatarUrl();
-    form.avatar = file;
-    form.remove_avatar = false;
-
-    if (file) {
-        temporaryAvatarUrl.value = URL.createObjectURL(file);
-        avatarPreviewUrl.value = temporaryAvatarUrl.value;
-
-        return;
-    }
-
-    avatarPreviewUrl.value = editingItem.value?.avatar_url ?? null;
-}
-
-function onAvatarChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const file = target.files?.[0] ?? null;
-    setAvatarFile(file);
-}
-
-function onAvatarDrop(event: DragEvent): void {
-    isAvatarDragging.value = false;
-    const file = event.dataTransfer?.files?.[0] ?? null;
-
-    if (file && file.type.startsWith('image/')) {
-        setAvatarFile(file);
-    }
-}
-
-function onAvatarDragOver(): void {
-    isAvatarDragging.value = true;
-}
-
-function onAvatarDragLeave(): void {
-    isAvatarDragging.value = false;
-}
-
-function triggerAvatarInput(): void {
-    fileInputRef.value?.click();
-}
-
-function removeAvatar(): void {
-    clearTemporaryAvatarUrl();
-    form.avatar = null;
-    form.remove_avatar = true;
-    avatarPreviewUrl.value = null;
-
-    if (fileInputRef.value) {
-        fileInputRef.value.value = '';
-    }
-}
-
-function setRating(rating: number): void {
-    form.rating = rating;
-}
-
-function ratingLabel(rating: number): string {
-    const labels: Record<number, string> = {
-        1: 'Poor',
-        2: 'Fair',
-        3: 'Good',
-        4: 'Very Good',
-        5: 'Excellent',
-    };
-
-    return labels[rating] ?? '';
+    updateAvatarPreview(null, null);
 }
 
 function submitForm(): void {
-    if (editingItem.value) {
-        form.put(`${baseUrl}/${editingItem.value.id}`, {
+    const isEdit = Boolean(editingItem.value);
+
+    form.transform((data) => ({
+        ...data,
+        _method: isEdit ? 'PUT' : 'POST',
+    })).post(
+        isEdit
+            ? `/admin/testimonials/${editingItem.value?.id}`
+            : '/admin/testimonials',
+        {
             preserveScroll: true,
-            forceFormData: true,
-            onSuccess: () => closeFormDialog(),
-        });
-
-        return;
-    }
-
-    form.post(baseUrl, {
-        preserveScroll: true,
-        forceFormData: true,
-        onSuccess: () => closeFormDialog(),
-    });
+            onSuccess: () => {
+                closeFormDialog();
+            },
+        },
+    );
 }
 
 const confirmOpen = ref(false);
-const confirmTitle = ref('Confirm Action');
+const confirmTitle = ref('');
 const confirmDescription = ref('');
 const confirmLabel = ref('Confirm');
 const confirmDestructive = ref(false);
-const pendingAction = ref<PendingAction | null>(null);
-const pendingRow = ref<TestimonialItem | null>(null);
-
-function resetConfirmState(): void {
-    pendingAction.value = null;
-    pendingRow.value = null;
-}
+const pendingActionState = ref<{
+    action: PendingAction;
+    row: TestimonialItem | null;
+} | null>(null);
 
 function openConfirm(
     action: PendingAction,
     row: TestimonialItem | null = null,
 ): void {
-    pendingAction.value = action;
-    pendingRow.value = row;
-    confirmDestructive.value = false;
+    pendingActionState.value = { action, row };
 
     if (action === 'delete') {
-        confirmTitle.value = 'Delete Testimonial';
-        confirmDescription.value =
-            'This will move the testimonial to recycle bin.';
-        confirmLabel.value = 'Delete';
+        confirmTitle.value = 'Move to Recycle Bin';
+        confirmDescription.value = `Are you sure you want to move "${row?.name}" to the recycle bin?`;
+        confirmLabel.value = 'Move to Recycle Bin';
         confirmDestructive.value = true;
-    }
-
-    if (action === 'restore') {
+    } else if (action === 'restore') {
         confirmTitle.value = 'Restore Testimonial';
-        confirmDescription.value =
-            'This will restore the testimonial from recycle bin.';
+        confirmDescription.value = `Are you sure you want to restore "${row?.name}"?`;
         confirmLabel.value = 'Restore';
-    }
-
-    if (action === 'force-delete') {
+        confirmDestructive.value = false;
+    } else if (action === 'force-delete') {
         confirmTitle.value = 'Permanently Delete Testimonial';
-        confirmDescription.value = 'This action cannot be undone.';
+        confirmDescription.value = `Are you sure you want to permanently delete "${row?.name}"? This action cannot be undone.`;
         confirmLabel.value = 'Permanently Delete';
         confirmDestructive.value = true;
-    }
-
-    if (action === 'empty-recycle-bin') {
+    } else if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
         confirmDescription.value =
-            'This will permanently remove all trashed testimonials.';
+            'Are you sure you want to permanently delete all testimonials in the recycle bin? This action cannot be undone.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
@@ -358,25 +348,45 @@ function openConfirm(
     confirmOpen.value = true;
 }
 
+function resetConfirmState(): void {
+    pendingActionState.value = null;
+    confirmTitle.value = '';
+    confirmDescription.value = '';
+    confirmLabel.value = 'Confirm';
+    confirmDestructive.value = false;
+}
+
 function runConfirmedAction(): void {
-    if (!pendingAction.value) {
+    if (!pendingActionState.value) {
         return;
     }
 
-    if (pendingAction.value === 'delete' && pendingRow.value) {
-        router.delete(`${baseUrl}/${pendingRow.value.id}`);
-    }
+    const { action, row } = pendingActionState.value;
 
-    if (pendingAction.value === 'restore' && pendingRow.value) {
-        router.post(`${baseUrl}/${pendingRow.value.id}/restore`);
-    }
-
-    if (pendingAction.value === 'force-delete' && pendingRow.value) {
-        router.delete(`${baseUrl}/${pendingRow.value.id}/force`);
-    }
-
-    if (pendingAction.value === 'empty-recycle-bin') {
-        router.delete(`${baseUrl}/recycle-bin/empty`);
+    if (action === 'delete' && row) {
+        router.delete(`/admin/testimonials/${row.id}`, {
+            preserveScroll: true,
+            onFinish: () => resetConfirmState(),
+        });
+    } else if (action === 'restore' && row) {
+        router.patch(
+            `/admin/testimonials/${row.id}/restore`,
+            {},
+            {
+                preserveScroll: true,
+                onFinish: () => resetConfirmState(),
+            },
+        );
+    } else if (action === 'force-delete' && row) {
+        router.delete(`/admin/testimonials/${row.id}/force-delete`, {
+            preserveScroll: true,
+            onFinish: () => resetConfirmState(),
+        });
+    } else if (action === 'empty-recycle-bin') {
+        router.delete('/admin/testimonials/empty-trash', {
+            preserveScroll: true,
+            onFinish: () => resetConfirmState(),
+        });
     }
 
     confirmOpen.value = false;
@@ -429,7 +439,9 @@ function handleRowAction(action: string, row: TestimonialItem): void {
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold sm:text-3xl">
+                    <h1
+                        class="text-2xl font-semibold text-slate-900 sm:text-3xl dark:text-slate-100"
+                    >
                         {{
                             filters.trash
                                 ? 'Testimonial Recycle Bin'
@@ -445,7 +457,7 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                 <div class="flex items-center gap-2">
                     <Link
                         :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
-                        class="rounded-md border px-4 py-2 text-sm"
+                        class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
@@ -470,12 +482,14 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                 </div>
             </div>
 
-            <div class="rounded-xl border bg-white p-4">
+            <div
+                class="rounded-xl border border-slate-200/80 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            >
                 <Input
                     v-model="search"
                     type="text"
                     placeholder="Search by name, role, or content"
-                    class="max-w-lg"
+                    class="max-w-lg dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
             </div>
 
@@ -484,15 +498,33 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                 :columns="columns"
                 empty-text="No testimonials found."
             >
+                <template #cell-name="{ value }">
+                    <span
+                        class="font-medium text-slate-900 dark:text-slate-100"
+                        >{{ value }}</span
+                    >
+                </template>
+
+                <template #cell-role="{ value }">
+                    <span class="text-slate-700 dark:text-slate-300">{{
+                        value || '—'
+                    }}</span>
+                </template>
+
                 <template #cell-content="{ value }">
-                    <p class="line-clamp-2 text-sm text-slate-600">
+                    <p
+                        class="line-clamp-2 text-sm text-slate-600 dark:text-slate-300"
+                    >
                         {{ value }}
                     </p>
                 </template>
 
                 <template #cell-rating="{ value }">
                     <div class="flex items-center gap-1">
-                        <span class="font-medium">{{ value }}/5</span>
+                        <span
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                            >{{ value }}/5</span
+                        >
                     </div>
                 </template>
 
@@ -505,7 +537,9 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                 </template>
 
                 <template #cell-updated_at="{ value }">
-                    {{ value ? new Date(value).toLocaleString() : '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleString() : '—' }}
+                    </span>
                 </template>
 
                 <template #cell-actions="{ row }">
@@ -523,9 +557,11 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                 (value) => (value ? (dialogOpen = true) : closeFormDialog())
             "
         >
-            <DialogContent class="sm:max-w-2xl">
+            <DialogContent
+                class="sm:max-w-2xl dark:border-slate-800 dark:bg-slate-900"
+            >
                 <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle class="text-slate-900 dark:text-slate-100">
                         {{
                             editingItem ? 'Edit Testimonial' : 'Add Testimonial'
                         }}
@@ -535,32 +571,44 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                 <form class="space-y-4" @submit.prevent="submitForm">
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div class="grid gap-2">
-                            <Label for="testimonial-name">Name</Label>
+                            <Label
+                                for="testimonial-name"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Name</Label
+                            >
                             <Input
                                 id="testimonial-name"
                                 v-model="form.name"
                                 type="text"
                                 required
+                                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                             <InputError :message="form.errors.name" />
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="testimonial-role">Role</Label>
+                            <Label
+                                for="testimonial-role"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Role</Label
+                            >
                             <Input
                                 id="testimonial-role"
                                 v-model="form.role"
                                 type="text"
+                                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             />
                             <InputError :message="form.errors.role" />
                         </div>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label>Avatar (Upload)</Label>
+                        <Label class="text-slate-800 dark:text-slate-200"
+                            >Avatar (Upload)</Label
+                        >
                         <div
                             v-if="avatarPreviewUrl"
-                            class="relative w-fit overflow-hidden rounded-lg border border-slate-200"
+                            class="relative w-fit overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700"
                         >
                             <img
                                 :src="avatarPreviewUrl"
@@ -577,7 +625,7 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                         </div>
                         <div
                             v-if="form.remove_avatar"
-                            class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700"
+                            class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
                         >
                             Avatar will be removed on save.
                         </div>
@@ -585,23 +633,29 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                             class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-6 text-center transition-colors"
                             :class="
                                 isAvatarDragging
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/50'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40'
+                                    : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/50'
                             "
                             @click="triggerAvatarInput"
                             @drop.prevent="onAvatarDrop"
                             @dragover.prevent="onAvatarDragOver"
                             @dragleave.prevent="onAvatarDragLeave"
                         >
-                            <Upload class="mb-2 h-8 w-8 text-slate-400" />
-                            <p class="text-sm font-medium text-slate-600">
+                            <Upload
+                                class="mb-2 h-8 w-8 text-slate-400 dark:text-slate-500"
+                            />
+                            <p
+                                class="text-sm font-medium text-slate-600 dark:text-slate-300"
+                            >
                                 {{
                                     isAvatarDragging
                                         ? 'Drop avatar image here'
                                         : 'Click or drag & drop avatar'
                                 }}
                             </p>
-                            <p class="mt-1 text-xs text-slate-500">
+                            <p
+                                class="mt-1 text-xs text-slate-500 dark:text-slate-400"
+                            >
                                 PNG, JPG up to 2MB.
                             </p>
                             <input
@@ -617,7 +671,9 @@ function handleRowAction(action: string, row: TestimonialItem): void {
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div class="grid gap-2">
-                            <Label>Rating</Label>
+                            <Label class="text-slate-800 dark:text-slate-200"
+                                >Rating</Label
+                            >
                             <div class="flex items-center gap-1">
                                 <button
                                     v-for="star in 5"
@@ -634,7 +690,7 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                                             star <=
                                             (hoveredRating || form.rating)
                                                 ? 'fill-amber-400 text-amber-400'
-                                                : 'fill-slate-200 text-slate-300',
+                                                : 'fill-slate-200 text-slate-300 dark:fill-slate-700 dark:text-slate-600',
                                         ]"
                                     />
                                 </button>
@@ -650,9 +706,13 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="testimonial-status">Status</Label>
+                            <Label
+                                for="testimonial-status"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Status</Label
+                            >
                             <div
-                                class="flex items-center gap-3 rounded-md border border-slate-200 px-3 py-2"
+                                class="flex items-center gap-3 rounded-md border border-slate-200 bg-white px-3 py-2 text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             >
                                 <Switch
                                     id="testimonial-status"
@@ -677,11 +737,16 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="testimonial-content">Content</Label>
+                        <Label
+                            for="testimonial-content"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Content</Label
+                        >
                         <Textarea
                             id="testimonial-content"
                             v-model="form.content"
                             rows="5"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.content" />
                     </div>
@@ -690,6 +755,7 @@ function handleRowAction(action: string, row: TestimonialItem): void {
                         <Button
                             type="button"
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             :disabled="form.processing"
                             @click="closeFormDialog"
                         >

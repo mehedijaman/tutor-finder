@@ -48,39 +48,43 @@ function updateStatus() {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="space-y-1">
                     <h1
-                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                     >
                         Contact Message #{{ message.id }}
                     </h1>
-                    <p class="text-sm text-slate-600">
+                    <p class="text-sm text-slate-600 dark:text-slate-400">
                         Review message metadata and update resolution status.
                     </p>
                 </div>
                 <Link
                     href="/admin/contact-messages"
-                    class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >Back</Link
                 >
             </div>
 
             <div
                 v-if="$page.props.flash?.status"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ $page.props.flash.status }}
             </div>
 
             <section
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 text-sm shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 text-sm shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <p class="text-muted-foreground">Name</p>
-                        <p class="font-medium">{{ message.name }}</p>
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ message.name }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-muted-foreground">Status</p>
@@ -96,19 +100,33 @@ function updateStatus() {
                     </div>
                     <div>
                         <p class="text-muted-foreground">Email</p>
-                        <p class="font-medium">{{ message.email || '—' }}</p>
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ message.email || '—' }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-muted-foreground">Phone</p>
-                        <p class="font-medium">{{ message.phone || '—' }}</p>
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ message.phone || '—' }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-muted-foreground">Subject</p>
-                        <p class="font-medium">{{ message.subject || '—' }}</p>
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ message.subject || '—' }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-muted-foreground">Received</p>
-                        <p class="font-medium">
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
                             {{
                                 message.created_at
                                     ? new Date(
@@ -121,18 +139,24 @@ function updateStatus() {
                     <div class="md:col-span-2">
                         <p class="text-muted-foreground">Message</p>
                         <div
-                            class="mt-1 rounded-md bg-slate-50 p-3 whitespace-pre-wrap text-slate-800"
+                            class="mt-1 rounded-md border border-slate-100 bg-slate-50 p-3 whitespace-pre-wrap text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                         >
                             {{ message.message }}
                         </div>
                     </div>
                     <div>
                         <p class="text-muted-foreground">IP</p>
-                        <p class="font-medium">{{ message.ip || '—' }}</p>
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ message.ip || '—' }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-muted-foreground">User Agent</p>
-                        <p class="font-medium break-all">
+                        <p
+                            class="font-medium break-all text-slate-900 dark:text-slate-100"
+                        >
                             {{ message.user_agent || '—' }}
                         </p>
                     </div>
@@ -154,13 +178,13 @@ function updateStatus() {
             v-model:open="confirmOpen"
             :title="
                 message.status === 'closed'
-                    ? 'Reopen message'
-                    : 'Mark as closed'
+                    ? 'Reopen Message'
+                    : 'Mark as Closed'
             "
             :description="
                 message.status === 'closed'
-                    ? 'This message will be marked as open.'
-                    : 'This message will be marked as closed.'
+                    ? 'This will reopen the message.'
+                    : 'This will mark the message as closed.'
             "
             :confirm-label="
                 message.status === 'closed' ? 'Reopen' : 'Mark Closed'

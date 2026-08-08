@@ -57,28 +57,35 @@ const columns = [
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <h1
-                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                 >
                     Ledger
                 </h1>
-                <p class="text-sm text-slate-600">
+                <p class="text-sm text-slate-600 dark:text-slate-400">
                     Double-entry postings for payments and refunds.
                 </p>
             </div>
 
-            <div class="grid gap-3 md:grid-cols-2">
+            <div
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2 dark:border-slate-800 dark:bg-slate-900"
+            >
                 <Input
                     v-model="q"
                     placeholder="Search journal/reference/owner..."
+                    class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
                 <Select v-model="referenceType">
-                    <SelectTrigger>
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All references" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All references</SelectItem>
                         <SelectItem
                             v-for="option in referenceTypeOptions"
@@ -96,15 +103,13 @@ const columns = [
                 :columns="columns"
                 empty-text="No ledger entries found."
             >
-                <template #cell-amount="{ row }"
-                    >{{ row.currency }} {{ row.amount }}</template
-                >
-                <template #cell-owner="{ row }">{{
-                    row.owner.name || '—'
-                }}</template>
-                <template #cell-counterparty="{ row }">{{
-                    row.counterparty.name || '—'
-                }}</template>
+                <template #cell-journal_uuid="{ value }">
+                    <span
+                        class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                        >{{ value }}</span
+                    >
+                </template>
+
                 <template #cell-type="{ value }">
                     <Badge
                         :variant="value === 'credit' ? 'default' : 'secondary'"
@@ -112,9 +117,46 @@ const columns = [
                         {{ value }}
                     </Badge>
                 </template>
+
+                <template #cell-amount="{ row }">
+                    <span
+                        class="font-medium text-slate-800 dark:text-slate-200"
+                    >
+                        {{ row.currency }} {{ row.amount }}
+                    </span>
+                </template>
+
+                <template #cell-owner="{ row }">
+                    <span
+                        class="font-medium text-slate-800 dark:text-slate-200"
+                    >
+                        {{ row.owner.name || '—' }}
+                    </span>
+                </template>
+
+                <template #cell-counterparty="{ row }">
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ row.counterparty.name || '—' }}
+                    </span>
+                </template>
+
+                <template #cell-reference_type="{ value }">
+                    <span class="text-slate-700 dark:text-slate-300">{{
+                        value
+                    }}</span>
+                </template>
+
+                <template #cell-reference_id="{ value }">
+                    <span
+                        class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                        >{{ value }}</span
+                    >
+                </template>
+
                 <template #cell-is_reversal="{ row }">
                     <Badge
                         :variant="row.is_reversal ? 'destructive' : 'outline'"
+                        class="dark:border-slate-700 dark:text-slate-300"
                     >
                         {{ row.is_reversal ? 'Yes' : 'No' }}
                     </Badge>

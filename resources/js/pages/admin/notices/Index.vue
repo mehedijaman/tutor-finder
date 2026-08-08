@@ -275,12 +275,12 @@ function getStatusBadge(row) {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
                         <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             {{
                                 filters.trash ? 'Notice Recycle Bin' : 'Notices'
@@ -300,7 +300,7 @@ function getStatusBadge(row) {
                                     ? '/admin/notices'
                                     : '/admin/notices?trash=1'
                             "
-                            class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                            class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
                             {{
                                 filters.trash ? 'Back to Active' : 'Recycle Bin'
@@ -329,31 +329,42 @@ function getStatusBadge(row) {
 
             <div
                 v-if="$page.props.flash?.status"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ $page.props.flash.status }}
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="grid gap-2 md:col-span-1">
-                    <Label for="notice-search">Search</Label>
+                    <Label
+                        for="notice-search"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Search</Label
+                    >
                     <Input
                         id="notice-search"
                         v-model="search"
                         type="text"
                         placeholder="Search by title"
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Audience</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Audience</Label
+                    >
                     <Select v-model="audienceFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All audiences" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All audiences</SelectItem>
                             <SelectItem
                                 v-for="option in audienceOptions"
@@ -367,12 +378,18 @@ function getStatusBadge(row) {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Status</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Status</Label
+                    >
                     <Select v-model="statusFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All statuses</SelectItem>
                             <SelectItem value="active">Active</SelectItem>
                             <SelectItem value="inactive">Inactive</SelectItem>
@@ -389,12 +406,18 @@ function getStatusBadge(row) {
             >
                 <template #cell-title="{ row }">
                     <div class="max-w-xl">
-                        <p class="line-clamp-2 font-medium">{{ row.title }}</p>
+                        <p
+                            class="line-clamp-2 font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ row.title }}
+                        </p>
                     </div>
                 </template>
 
                 <template #cell-audience="{ row }">
-                    {{ formatAudience(row.audience) }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ formatAudience(row.audience) }}
+                    </span>
                 </template>
 
                 <template #cell-status="{ row }">
@@ -404,11 +427,15 @@ function getStatusBadge(row) {
                 </template>
 
                 <template #cell-published_at="{ value }">
-                    {{ formatDate(value) }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ formatDate(value) }}
+                    </span>
                 </template>
 
                 <template #cell-expires_at="{ value }">
-                    {{ formatDate(value) }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ formatDate(value) }}
+                    </span>
                 </template>
 
                 <template #cell-actions="{ row }">

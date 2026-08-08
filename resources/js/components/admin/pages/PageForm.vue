@@ -148,23 +148,36 @@ function submit() {
     <form class="space-y-6" @submit.prevent="submit">
         <div class="grid gap-6 sm:grid-cols-12">
             <section
-                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:col-span-8 sm:p-6"
+                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:col-span-8 sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h2 class="text-lg font-semibold">Page Content</h2>
+                <h2
+                    class="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                >
+                    Page Content
+                </h2>
 
                 <div class="grid gap-2">
-                    <Label for="page-title">Title</Label>
+                    <Label
+                        for="page-title"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Title</Label
+                    >
                     <Input
                         id="page-title"
                         v-model="form.title"
                         type="text"
                         required
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                     <InputError :message="form.errors.title" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="page-slug">Slug</Label>
+                    <Label
+                        for="page-slug"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Slug</Label
+                    >
                     <Input
                         id="page-slug"
                         v-model="form.slug"
@@ -172,7 +185,10 @@ function submit() {
                         required
                         :disabled="slugDisabled"
                         :class="{
-                            'cursor-not-allowed bg-slate-100': slugDisabled,
+                            'cursor-not-allowed bg-slate-100 dark:bg-slate-800/60 dark:text-slate-400':
+                                slugDisabled,
+                            'dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100':
+                                !slugDisabled,
                         }"
                     />
                     <p
@@ -185,7 +201,9 @@ function submit() {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Content</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Content</Label
+                    >
                     <TiptapEditor
                         v-model="form.content"
                         placeholder="Write the page content with rich formatting"
@@ -196,16 +214,24 @@ function submit() {
 
             <aside class="space-y-4 sm:col-span-4">
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h2 class="text-lg font-semibold">Settings</h2>
+                    <h2
+                        class="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                    >
+                        Settings
+                    </h2>
 
                     <div class="grid gap-2">
-                        <Label for="page-status">Status</Label>
+                        <Label
+                            for="page-status"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Status</Label
+                        >
                         <select
                             id="page-status"
                             v-model="form.status"
-                            class="h-10 w-full rounded-md border px-3 text-sm"
+                            class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         >
                             <option
                                 v-for="option in statusOptions"
@@ -220,14 +246,18 @@ function submit() {
                 </section>
 
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h2 class="text-lg font-semibold">Featured Image</h2>
+                    <h2
+                        class="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                    >
+                        Featured Image
+                    </h2>
 
                     <div class="grid gap-3">
                         <div
                             v-if="imagePreviewUrl"
-                            class="overflow-hidden rounded-lg border border-slate-200"
+                            class="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700"
                         >
                             <img
                                 :src="imagePreviewUrl"
@@ -237,7 +267,7 @@ function submit() {
                         </div>
                         <div
                             v-else
-                            class="flex h-32 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500"
+                            class="flex h-32 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
                         >
                             No featured image selected.
                         </div>
@@ -246,6 +276,7 @@ function submit() {
                             id="page-featured-image"
                             type="file"
                             accept="image/*"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             @change="onImageChange"
                         />
                         <InputError :message="form.errors.featured_image" />
@@ -255,7 +286,7 @@ function submit() {
                                 imagePreviewUrl && !form.remove_featured_image
                             "
                             type="button"
-                            class="text-sm font-medium text-red-600 hover:text-red-800"
+                            class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                             @click="removeImage"
                         >
                             Remove image
@@ -263,7 +294,7 @@ function submit() {
 
                         <div
                             v-if="form.remove_featured_image"
-                            class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700"
+                            class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
                         >
                             Image will be removed on save.
                         </div>
@@ -271,43 +302,54 @@ function submit() {
                 </section>
 
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h2 class="text-lg font-semibold">SEO</h2>
+                    <h2
+                        class="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                    >
+                        SEO
+                    </h2>
 
                     <div class="grid gap-2">
-                        <Label for="page-meta-title">Meta Title</Label>
+                        <Label
+                            for="page-meta-title"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Meta Title</Label
+                        >
                         <Input
                             id="page-meta-title"
                             v-model="form.meta_title"
                             type="text"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.meta_title" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="page-meta-description"
+                        <Label
+                            for="page-meta-description"
+                            class="text-slate-800 dark:text-slate-200"
                             >Meta Description</Label
                         >
                         <textarea
                             id="page-meta-description"
                             v-model="form.meta_description"
                             rows="3"
-                            class="rounded-md border px-3 py-2 text-sm"
+                            class="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.meta_description" />
                     </div>
                 </section>
 
                 <section
-                    class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                    class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
                     <Button type="submit" :disabled="form.processing">
                         {{ submitLabel }}
                     </Button>
                     <Link
                         :href="cancelHref"
-                        class="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                         Cancel
                     </Link>

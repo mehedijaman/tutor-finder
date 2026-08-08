@@ -86,12 +86,12 @@ function badgeVariant(status) {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             Applications for {{ job.title }}
                         </h1>
@@ -102,7 +102,7 @@ function badgeVariant(status) {
 
                     <Link
                         href="/admin/jobs"
-                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                         Back to Jobs
                     </Link>
@@ -110,7 +110,7 @@ function badgeVariant(status) {
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div>
                     <p class="text-xs text-muted-foreground">Job Status</p>
@@ -131,7 +131,9 @@ function badgeVariant(status) {
 
                 <div>
                     <p class="text-xs text-muted-foreground">Hiring Outcome</p>
-                    <p class="text-sm font-medium">
+                    <p
+                        class="text-sm font-medium text-slate-900 dark:text-slate-100"
+                    >
                         {{
                             job.has_assignment
                                 ? job.selected_tutor_name || 'Selected tutor'
@@ -156,10 +158,14 @@ function badgeVariant(status) {
                         Filter by Status
                     </p>
                     <Select v-model="statusFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All statuses</SelectItem>
                             <SelectItem
                                 v-for="option in statusOptions"
@@ -181,7 +187,9 @@ function badgeVariant(status) {
                 <template #cell-tutor_name="{ row }">
                     <div class="space-y-1.5">
                         <div class="flex items-center gap-2">
-                            <p class="font-bold text-slate-900">
+                            <p
+                                class="font-bold text-slate-900 dark:text-slate-100"
+                            >
                                 {{ row.tutor.name }}
                             </p>
                             <Badge
@@ -195,24 +203,26 @@ function badgeVariant(status) {
                             v-if="job.subjects?.length"
                             class="flex flex-wrap items-center gap-1 text-xs"
                         >
-                            <span class="font-semibold text-slate-400"
+                            <span
+                                class="font-semibold text-slate-400 dark:text-slate-500"
                                 >Subject:</span
                             >
-                            <span class="font-semibold text-slate-700">{{
-                                job.subjects.join(', ')
-                            }}</span>
+                            <span
+                                class="font-semibold text-slate-700 dark:text-slate-300"
+                                >{{ job.subjects.join(', ') }}</span
+                            >
                         </div>
                         <div class="flex flex-wrap items-center gap-3 text-xs">
                             <span
                                 v-if="row.tutor.email"
-                                class="text-slate-500"
+                                class="text-slate-500 dark:text-slate-400"
                                 >{{ row.tutor.email }}</span
                             >
                             <a
                                 v-if="row.tutor.download_cv_url"
                                 :href="row.tutor.download_cv_url"
                                 target="_blank"
-                                class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                                class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                             >
                                 <span>CV View</span>
                                 <span>↓</span>
@@ -226,27 +236,35 @@ function badgeVariant(status) {
                 </template>
 
                 <template #cell-expected_salary_amount="{ row }">
-                    {{
-                        row.expected_salary_amount
-                            ? `${row.salary_currency || 'BDT'} ${Number(row.expected_salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 })}`
-                            : '—'
-                    }}
+                    <span
+                        class="font-medium text-slate-700 dark:text-slate-300"
+                    >
+                        {{
+                            row.expected_salary_amount
+                                ? `${row.salary_currency || 'BDT'} ${Number(row.expected_salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 })}`
+                                : '—'
+                        }}
+                    </span>
                 </template>
 
                 <template #cell-cover_letter="{ value }">
                     <p
-                        class="line-clamp-2 max-w-xs text-sm text-muted-foreground"
+                        class="line-clamp-2 max-w-xs text-sm text-slate-600 dark:text-slate-300"
                     >
                         {{ value || '—' }}
                     </p>
                 </template>
 
-                <template #cell-cancel_reason="{ value }">{{
-                    value || '—'
-                }}</template>
+                <template #cell-cancel_reason="{ value }">
+                    <span class="text-slate-600 dark:text-slate-400">
+                        {{ value || '—' }}
+                    </span>
+                </template>
 
                 <template #cell-created_at="{ value }">
-                    {{ value ? new Date(value).toLocaleString() : '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleString() : '—' }}
+                    </span>
                 </template>
             </DataTable>
         </div>

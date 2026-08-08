@@ -96,9 +96,11 @@ function markPaid(row) {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
+                >
                     Refund Requests
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -108,27 +110,35 @@ function markPaid(row) {
 
             <div
                 v-if="$page.props.flash?.status"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ $page.props.flash.status }}
             </div>
 
             <div
                 v-if="$page.props.errors?.refund"
-                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
             >
                 {{ $page.props.errors.refund }}
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2 dark:border-slate-800 dark:bg-slate-900"
             >
-                <Input v-model="q" placeholder="Search reason/job/tutor..." />
+                <Input
+                    v-model="q"
+                    placeholder="Search reason/job/tutor..."
+                    class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
                 <Select v-model="statusFilter">
-                    <SelectTrigger>
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All statuses</SelectItem>
                         <SelectItem
                             v-for="option in statusOptions"
@@ -146,14 +156,27 @@ function markPaid(row) {
                 :columns="columns"
                 empty-text="No refund requests found."
             >
+                <template #cell-id="{ value }">
+                    <span
+                        class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                        >{{ value }}</span
+                    >
+                </template>
                 <template #cell-job="{ row }">
-                    {{ row.job.title || '—' }}
+                    <span
+                        class="font-medium text-slate-900 dark:text-slate-100"
+                        >{{ row.job.title || '—' }}</span
+                    >
                 </template>
                 <template #cell-requester="{ row }">
-                    {{ row.requester.name || '—' }}
+                    <span class="text-slate-800 dark:text-slate-200">{{
+                        row.requester.name || '—'
+                    }}</span>
                 </template>
                 <template #cell-amount="{ row }">
-                    {{ row.currency }} {{ row.amount }}
+                    <span class="font-medium text-slate-800 dark:text-slate-200"
+                        >{{ row.currency }} {{ row.amount }}</span
+                    >
                 </template>
                 <template #cell-status="{ value }">
                     <Badge
@@ -168,12 +191,18 @@ function markPaid(row) {
                         {{ value }}
                     </Badge>
                 </template>
+                <template #cell-requested_at="{ value }">
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleString() : '—' }}
+                    </span>
+                </template>
                 <template #cell-actions="{ row }">
                     <div class="flex gap-2">
                         <Button
                             v-if="row.status === 'pending'"
                             size="sm"
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             @click="approve(row)"
                         >
                             Approve

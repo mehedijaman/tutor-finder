@@ -57,9 +57,11 @@ const columns = [
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
+                >
                     Payment Attempts
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -68,14 +70,22 @@ const columns = [
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
-                <Input v-model="q" placeholder="Search txn/invoice/payer..." />
+                <Input
+                    v-model="q"
+                    placeholder="Search txn/invoice/payer..."
+                    class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
                 <Select v-model="statusFilter">
-                    <SelectTrigger>
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All statuses</SelectItem>
                         <SelectItem
                             v-for="option in statusOptions"
@@ -87,10 +97,14 @@ const columns = [
                     </SelectContent>
                 </Select>
                 <Select v-model="gatewayFilter">
-                    <SelectTrigger>
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All gateways" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All gateways</SelectItem>
                         <SelectItem
                             v-for="option in gatewayOptions"
@@ -108,7 +122,34 @@ const columns = [
                 :columns="columns"
                 empty-text="No payment attempts found."
             >
-                <template #cell-amount="{ row }">{{ row.amount }}</template>
+                <template #cell-id="{ value }">
+                    <span
+                        class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                        >{{ value }}</span
+                    >
+                </template>
+
+                <template #cell-gateway="{ value }">
+                    <span
+                        class="font-medium text-slate-800 capitalize dark:text-slate-200"
+                        >{{ value }}</span
+                    >
+                </template>
+
+                <template #cell-provider_txn_id="{ value }">
+                    <span
+                        class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                        >{{ value || '—' }}</span
+                    >
+                </template>
+
+                <template #cell-amount="{ row }">
+                    <span
+                        class="font-medium text-slate-800 dark:text-slate-200"
+                        >{{ row.amount }}</span
+                    >
+                </template>
+
                 <template #cell-status="{ value }">
                     <Badge
                         :variant="
@@ -122,9 +163,12 @@ const columns = [
                         {{ value }}
                     </Badge>
                 </template>
+
                 <template #cell-invoice="{ row }">
                     <div>
-                        <p class="font-medium">
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
                             {{ row.invoice.invoice_no || '—' }}
                         </p>
                         <p class="text-xs text-muted-foreground">

@@ -117,34 +117,39 @@ function resetConfirmState(): void {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
                             <h1
-                                class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                                class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                             >
                                 {{ ticket.subject }}
                             </h1>
                         </div>
                         <div
-                            class="flex flex-wrap items-center gap-2 text-sm text-slate-500"
+                            class="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400"
                         >
-                            <span class="font-mono text-xs">
+                            <span
+                                class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                            >
                                 {{ ticket.ticket_number }}
                             </span>
                             <span>&middot;</span>
                             <TicketStatusBadge :status="ticket.status" />
                             <TicketPriorityBadge :priority="ticket.priority" />
-                            <Badge variant="outline">
+                            <Badge
+                                variant="outline"
+                                class="dark:border-slate-700 dark:text-slate-300"
+                            >
                                 {{ formatCategory(ticket.category) }}
                             </Badge>
                         </div>
                     </div>
                     <Link
                         href="/admin/support-tickets"
-                        class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                         Back
                     </Link>
@@ -153,7 +158,7 @@ function resetConfirmState(): void {
 
             <div
                 v-if="$page.props.flash?.status"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ $page.props.flash.status }}
             </div>
@@ -161,9 +166,11 @@ function resetConfirmState(): void {
             <div class="grid min-w-0 gap-6 lg:grid-cols-3">
                 <div class="min-w-0 space-y-6 lg:col-span-2">
                     <div
-                        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                     >
-                        <h2 class="mb-4 text-lg font-semibold text-slate-900">
+                        <h2
+                            class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100"
+                        >
                             Conversation
                         </h2>
                         <TicketThread
@@ -173,9 +180,11 @@ function resetConfirmState(): void {
                     </div>
 
                     <div
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                     >
-                        <h2 class="mb-4 text-lg font-semibold text-slate-900">
+                        <h2
+                            class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100"
+                        >
                             Reply
                         </h2>
                         <TicketReplyForm
@@ -187,39 +196,51 @@ function resetConfirmState(): void {
 
                 <div class="space-y-6">
                     <div
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                     >
-                        <h3 class="mb-4 text-sm font-semibold text-slate-900">
+                        <h3
+                            class="mb-4 text-sm font-semibold text-slate-900 dark:text-slate-100"
+                        >
                             Ticket Details
                         </h3>
                         <div class="space-y-3 text-sm">
                             <div>
                                 <p class="text-muted-foreground">Created By</p>
-                                <p class="font-medium">
+                                <p
+                                    class="font-medium text-slate-900 dark:text-slate-100"
+                                >
                                     {{ ticket.user?.name ?? 'Unknown' }}
                                 </p>
                             </div>
                             <div>
                                 <p class="text-muted-foreground">Role</p>
-                                <p class="font-medium capitalize">
+                                <p
+                                    class="font-medium text-slate-900 capitalize dark:text-slate-100"
+                                >
                                     {{ ticket.user?.role ?? '—' }}
                                 </p>
                             </div>
                             <div>
                                 <p class="text-muted-foreground">Created At</p>
-                                <p class="font-medium">
+                                <p
+                                    class="font-medium text-slate-900 dark:text-slate-100"
+                                >
                                     {{ formatDate(ticket.created_at) }}
                                 </p>
                             </div>
                             <div v-if="ticket.closed_at">
                                 <p class="text-muted-foreground">Closed At</p>
-                                <p class="font-medium">
+                                <p
+                                    class="font-medium text-slate-900 dark:text-slate-100"
+                                >
                                     {{ formatDate(ticket.closed_at) }}
                                 </p>
                             </div>
                             <div>
                                 <p class="text-muted-foreground">Messages</p>
-                                <p class="font-medium">
+                                <p
+                                    class="font-medium text-slate-900 dark:text-slate-100"
+                                >
                                     {{ ticket.messages?.length ?? 0 }}
                                 </p>
                             </div>
@@ -227,22 +248,31 @@ function resetConfirmState(): void {
                     </div>
 
                     <div
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                     >
-                        <h3 class="mb-4 text-sm font-semibold text-slate-900">
+                        <h3
+                            class="mb-4 text-sm font-semibold text-slate-900 dark:text-slate-100"
+                        >
                             Manage Ticket
                         </h3>
 
                         <div class="space-y-4">
                             <div class="space-y-2">
-                                <Label>Status</Label>
+                                <Label
+                                    class="text-slate-800 dark:text-slate-200"
+                                    >Status</Label
+                                >
                                 <Select v-model="selectedStatus">
-                                    <SelectTrigger>
+                                    <SelectTrigger
+                                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                    >
                                         <SelectValue
                                             placeholder="Select status"
                                         />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent
+                                        class="dark:border-slate-800 dark:bg-slate-900"
+                                    >
                                         <SelectItem
                                             v-for="opt in statusOptions"
                                             :key="opt.value"
@@ -255,7 +285,7 @@ function resetConfirmState(): void {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    class="w-full"
+                                    class="w-full dark:border-slate-700 dark:text-slate-300"
                                     :disabled="selectedStatus === ticket.status"
                                     @click="updateStatus"
                                 >
@@ -263,17 +293,24 @@ function resetConfirmState(): void {
                                 </Button>
                             </div>
 
-                            <Separator />
+                            <Separator class="dark:bg-slate-800" />
 
                             <div class="space-y-2">
-                                <Label>Assign To</Label>
+                                <Label
+                                    class="text-slate-800 dark:text-slate-200"
+                                    >Assign To</Label
+                                >
                                 <Select v-model="selectedAdmin">
-                                    <SelectTrigger>
+                                    <SelectTrigger
+                                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                                    >
                                         <SelectValue
                                             placeholder="Select admin"
                                         />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent
+                                        class="dark:border-slate-800 dark:bg-slate-900"
+                                    >
                                         <SelectItem
                                             v-for="admin in adminUsers"
                                             :key="admin.id"
@@ -286,7 +323,7 @@ function resetConfirmState(): void {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    class="w-full"
+                                    class="w-full dark:border-slate-700 dark:text-slate-300"
                                     :disabled="
                                         !selectedAdmin ||
                                         Number(selectedAdmin) ===

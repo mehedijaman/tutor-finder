@@ -153,12 +153,12 @@ function formatCategory(category: string): string {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
                         <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             Support Tickets
                         </h1>
@@ -174,31 +174,42 @@ function formatCategory(category: string): string {
 
             <div
                 v-if="$page.props.flash?.status"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ $page.props.flash.status }}
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-2 lg:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="grid gap-2">
-                    <Label for="ticket-search">Search</Label>
+                    <Label
+                        for="ticket-search"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Search</Label
+                    >
                     <Input
                         id="ticket-search"
                         v-model="search"
                         type="text"
                         placeholder="Search by ticket #, subject, or user"
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Status</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Status</Label
+                    >
                     <Select v-model="statusFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All status" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All Status</SelectItem>
                             <SelectItem
                                 v-for="opt in statusOptions"
@@ -212,12 +223,18 @@ function formatCategory(category: string): string {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Priority</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Priority</Label
+                    >
                     <Select v-model="priorityFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All priorities" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">
                                 All Priorities
                             </SelectItem>
@@ -233,12 +250,18 @@ function formatCategory(category: string): string {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Category</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Category</Label
+                    >
                     <Select v-model="categoryFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All categories" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">
                                 All Categories
                             </SelectItem>
@@ -254,12 +277,18 @@ function formatCategory(category: string): string {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Assigned To</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Assigned To</Label
+                    >
                     <Select v-model="assignedFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All admins" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All Admins</SelectItem>
                             <SelectItem value="unassigned">
                                 Unassigned
@@ -285,24 +314,33 @@ function formatCategory(category: string): string {
                 @sort="handleSort"
             >
                 <template #cell-ticket_number="{ value }">
-                    <span class="font-mono text-xs">{{ value }}</span>
+                    <span
+                        class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                        >{{ value }}</span
+                    >
                 </template>
 
                 <template #cell-subject="{ row }">
                     <Link
                         :href="`${baseUrl}/${row.id}`"
-                        class="font-medium text-blue-600 hover:underline"
+                        class="font-medium text-blue-600 hover:underline dark:text-blue-400"
                     >
                         {{ row.subject }}
                     </Link>
                 </template>
 
                 <template #cell-user_name="{ value }">
-                    {{ value ?? '—' }}
+                    <span
+                        class="font-medium text-slate-900 dark:text-slate-100"
+                        >{{ value ?? '—' }}</span
+                    >
                 </template>
 
                 <template #cell-category="{ value }">
-                    <Badge variant="outline">
+                    <Badge
+                        variant="outline"
+                        class="dark:border-slate-700 dark:text-slate-300"
+                    >
                         {{ formatCategory(value) }}
                     </Badge>
                 </template>
@@ -316,18 +354,31 @@ function formatCategory(category: string): string {
                 </template>
 
                 <template #cell-assigned_admin_name="{ value }">
-                    <span :class="value ? '' : 'text-slate-400'">
+                    <span
+                        :class="
+                            value
+                                ? 'text-slate-800 dark:text-slate-200'
+                                : 'text-slate-400 dark:text-slate-500'
+                        "
+                    >
                         {{ value ?? 'Unassigned' }}
                     </span>
                 </template>
 
                 <template #cell-created_at="{ value }">
-                    {{ value ? new Date(value).toLocaleDateString() : '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleDateString() : '—' }}
+                    </span>
                 </template>
 
                 <template #cell-actions="{ row }">
                     <Link :href="`${baseUrl}/${row.id}`">
-                        <Button variant="outline" size="sm">View</Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            class="dark:border-slate-700 dark:text-slate-300"
+                            >View</Button
+                        >
                     </Link>
                 </template>
             </DataTable>

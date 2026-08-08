@@ -189,43 +189,56 @@ function actionLabel(row: VerificationRow): string {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <h1
-                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                 >
                     {{ title }}
                 </h1>
-                <p class="text-sm text-slate-600">{{ description }}</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                    {{ description }}
+                </p>
             </div>
 
             <div
                 v-if="flashStatus"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ flashStatus }}
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="grid gap-2 md:col-span-2">
-                    <Label for="verification-search">Search</Label>
+                    <Label
+                        for="verification-search"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Search</Label
+                    >
                     <Input
                         id="verification-search"
                         v-model="search"
                         type="text"
                         placeholder="Search by user name, email, or phone"
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label>Role</Label>
+                    <Label class="text-slate-800 dark:text-slate-200"
+                        >Role</Label
+                    >
                     <Select v-model="roleFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All roles" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-800 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All roles</SelectItem>
                             <SelectItem
                                 v-for="role in roleOptionsList"
@@ -245,7 +258,11 @@ function actionLabel(row: VerificationRow): string {
             >
                 <template #cell-name="{ row }">
                     <div class="space-y-0.5">
-                        <p class="font-medium">{{ row.name || '—' }}</p>
+                        <p
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ row.name || '—' }}
+                        </p>
                         <p class="text-xs text-muted-foreground">
                             {{ row.email || '—' }}
                         </p>
@@ -256,9 +273,11 @@ function actionLabel(row: VerificationRow): string {
                 </template>
 
                 <template #cell-role="{ value }">
-                    <Badge variant="outline" class="uppercase">{{
-                        value
-                    }}</Badge>
+                    <Badge
+                        variant="outline"
+                        class="uppercase dark:border-slate-700 dark:text-slate-300"
+                        >{{ value }}</Badge
+                    >
                 </template>
 
                 <template #cell-verification_status="{ value }">
@@ -268,20 +287,26 @@ function actionLabel(row: VerificationRow): string {
                 </template>
 
                 <template #cell-request_status="{ row }">
-                    {{ row.request_status || 'No Request' }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ row.request_status || 'No Request' }}
+                    </span>
                 </template>
 
                 <template #cell-submitted_at="{ row }">
-                    {{
-                        row.submitted_at
-                            ? new Date(row.submitted_at).toLocaleString()
-                            : '—'
-                    }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{
+                            row.submitted_at
+                                ? new Date(row.submitted_at).toLocaleString()
+                                : '—'
+                        }}
+                    </span>
                 </template>
 
                 <template #cell-invoice_status="{ row }">
                     <div class="space-y-0.5">
-                        <p>{{ row.invoice_status || '—' }}</p>
+                        <p class="text-slate-900 dark:text-slate-100">
+                            {{ row.invoice_status || '—' }}
+                        </p>
                         <p class="text-xs text-muted-foreground">
                             {{ row.invoice_no || '' }}
                         </p>
@@ -289,7 +314,12 @@ function actionLabel(row: VerificationRow): string {
                 </template>
 
                 <template #cell-actions="{ row }">
-                    <Button as-child variant="outline" size="sm">
+                    <Button
+                        as-child
+                        variant="outline"
+                        size="sm"
+                        class="dark:border-slate-700 dark:text-slate-300"
+                    >
                         <Link :href="manageUrl(row)">
                             {{ actionLabel(row) }}
                         </Link>
