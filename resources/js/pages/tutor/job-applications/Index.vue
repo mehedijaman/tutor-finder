@@ -104,14 +104,20 @@ function statusBadgeClass(status: string): string {
 
 function jobStatusBadgeClass(status: string): string {
     const map: Record<string, string> = {
-        live: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        pending: 'bg-amber-50 text-amber-700 border-amber-200',
-        confirmed: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        cancelled: 'bg-slate-50 text-slate-600 border-slate-200',
-        closed: 'bg-slate-50 text-slate-500 border-slate-200',
+        live: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/50',
+        pending:
+            'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/50',
+        confirmed:
+            'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-900/50',
+        cancelled:
+            'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
+        closed: 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
     };
 
-    return map[status] ?? 'bg-slate-50 text-slate-600 border-slate-200';
+    return (
+        map[status] ??
+        'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700'
+    );
 }
 
 function handleViewJob(id: number): void {
@@ -189,12 +195,12 @@ function formatPaginationLabel(label: string): string {
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <!-- Page Header -->
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             My Applications
                         </h1>
@@ -206,7 +212,7 @@ function formatPaginationLabel(label: string): string {
 
                     <Link
                         href="/jobs"
-                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >Browse Jobs</Link
                     >
                 </div>
@@ -214,18 +220,18 @@ function formatPaginationLabel(label: string): string {
 
             <!-- Flash Message -->
             <div
-                v-if="$page.props.flash?.status"
-                class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                v-if="($page.props.flash as any)?.status"
+                class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
-                {{ $page.props.flash.status }}
+                {{ ($page.props.flash as any).status }}
             </div>
 
             <!-- Status Tabs -->
             <div
-                class="rounded-2xl border border-slate-200/80 bg-slate-50/60 px-4 shadow-sm"
+                class="rounded-2xl border border-slate-200/80 bg-slate-50/60 px-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60"
             >
                 <div
-                    class="flex flex-wrap items-center justify-between gap-3 border-b border-blue-200/80"
+                    class="flex flex-wrap items-center justify-between gap-3 border-b border-blue-200/80 dark:border-slate-800"
                 >
                     <div
                         class="w-full [scrollbar-width:none] overflow-x-auto [-ms-overflow-style:none] md:w-auto"
@@ -242,8 +248,8 @@ function formatPaginationLabel(label: string): string {
                                     (menu.key === 'all' &&
                                         presetStatus === '') ||
                                     presetStatus === menu.key
-                                        ? 'border-blue-500 text-blue-500'
-                                        : 'border-transparent text-slate-500 hover:text-slate-700'
+                                        ? 'border-blue-500 text-blue-500 dark:text-blue-400'
+                                        : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
                                 "
                             >
                                 <component :is="menu.icon" class="h-4 w-4" />
@@ -256,7 +262,7 @@ function formatPaginationLabel(label: string): string {
                     </div>
 
                     <p
-                        class="hidden pb-3 text-sm font-medium text-slate-600 md:block"
+                        class="hidden pb-3 text-sm font-medium text-slate-600 md:block dark:text-slate-400"
                     >
                         Applied {{ formatCount(appliedCount) }}
                     </p>
@@ -271,27 +277,29 @@ function formatPaginationLabel(label: string): string {
                 <div
                     v-for="row in rows"
                     :key="row.id"
-                    class="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                    class="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
                 >
                     <!-- Card Header -->
-                    <div class="border-b border-slate-100 p-5">
+                    <div
+                        class="border-b border-slate-100 p-5 dark:border-slate-800"
+                    >
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0 flex-1">
                                 <Link
                                     v-if="row.job?.id"
                                     :href="`/jobs/${row.job.id}`"
-                                    class="line-clamp-2 text-base font-semibold text-slate-900 transition-colors hover:text-blue-600"
+                                    class="line-clamp-2 text-base font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-slate-100 dark:hover:text-blue-400"
                                 >
                                     {{ row.job.title }}
                                 </Link>
                                 <p
                                     v-else
-                                    class="line-clamp-2 text-base font-semibold text-slate-900"
+                                    class="line-clamp-2 text-base font-semibold text-slate-900 dark:text-slate-100"
                                 >
                                     {{ row.job.title }}
                                 </p>
                                 <div
-                                    class="mt-1.5 flex items-center gap-2 text-xs text-slate-500"
+                                    class="mt-1.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400"
                                 >
                                     <MapPin class="h-3.5 w-3.5 shrink-0" />
                                     <span>{{
@@ -313,7 +321,9 @@ function formatPaginationLabel(label: string): string {
                     <!-- Card Body -->
                     <div class="space-y-3 p-5">
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-slate-500">Job Status</span>
+                            <span class="text-slate-500 dark:text-slate-400"
+                                >Job Status</span
+                            >
                             <Badge
                                 variant="outline"
                                 :class="
@@ -326,8 +336,12 @@ function formatPaginationLabel(label: string): string {
                         </div>
 
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-slate-500">Expected Salary</span>
-                            <span class="font-medium text-slate-700">
+                            <span class="text-slate-500 dark:text-slate-400"
+                                >Expected Salary</span
+                            >
+                            <span
+                                class="font-medium text-slate-700 dark:text-slate-300"
+                            >
                                 {{
                                     row.expected_salary_amount
                                         ? `${row.salary_currency || 'BDT'} ${Number(row.expected_salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 })}`
@@ -337,25 +351,31 @@ function formatPaginationLabel(label: string): string {
                         </div>
 
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-slate-500">Applied</span>
-                            <span
-                                class="flex items-center gap-1.5 text-slate-600"
+                            <span class="text-slate-500 dark:text-slate-400"
+                                >Applied</span
                             >
-                                <Clock class="h-3.5 w-3.5 text-slate-400" />
+                            <span
+                                class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400"
+                            >
+                                <Clock
+                                    class="h-3.5 w-3.5 text-slate-400 dark:text-slate-500"
+                                />
                                 {{ formatDate(row.created_at) }}
                             </span>
                         </div>
 
                         <!-- Subject & CV Download -->
                         <div
-                            class="flex items-center justify-between border-t border-slate-100 pt-2 text-xs"
+                            class="flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-slate-800"
                         >
                             <div class="min-w-0 flex-1">
                                 <span
-                                    class="block text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                                    class="block text-[10px] font-semibold tracking-wider text-slate-400 uppercase dark:text-slate-500"
                                     >Subject</span
                                 >
-                                <span class="font-bold text-slate-800">
+                                <span
+                                    class="font-bold text-slate-800 dark:text-slate-200"
+                                >
                                     {{
                                         row.job?.subject_names?.length
                                             ? row.job.subject_names.join(', ')
@@ -367,7 +387,7 @@ function formatPaginationLabel(label: string): string {
                                 v-if="row.download_cv_url"
                                 :href="row.download_cv_url"
                                 target="_blank"
-                                class="inline-flex items-center gap-1 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 font-bold text-blue-600 shadow-2xs hover:text-blue-700 hover:underline"
+                                class="inline-flex items-center gap-1 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 font-bold text-blue-600 shadow-2xs hover:text-blue-700 hover:underline dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:text-blue-200"
                             >
                                 <span>CV View</span>
                                 <span>↓</span>
@@ -376,7 +396,7 @@ function formatPaginationLabel(label: string): string {
 
                         <div
                             v-if="row.cancel_reason"
-                            class="rounded-lg bg-rose-50 p-3 text-xs text-rose-700"
+                            class="rounded-lg bg-rose-50 p-3 text-xs text-rose-700 dark:bg-rose-950/40 dark:text-rose-300"
                         >
                             <span class="font-semibold">Cancel reason:</span>
                             {{ row.cancel_reason }}
@@ -385,13 +405,13 @@ function formatPaginationLabel(label: string): string {
 
                     <!-- Card Footer -->
                     <div
-                        class="flex items-center gap-2 border-t border-slate-100 px-5 py-3"
+                        class="flex items-center gap-2 border-t border-slate-100 px-5 py-3 dark:border-slate-800"
                     >
                         <Button
                             v-if="row.job?.id"
                             variant="ghost"
                             size="sm"
-                            class="h-8 flex-1 text-xs font-medium"
+                            class="h-8 flex-1 text-xs font-medium dark:text-slate-300 dark:hover:bg-slate-800"
                             @click="handleViewJob(row.job.id)"
                         >
                             View Job
@@ -402,7 +422,7 @@ function formatPaginationLabel(label: string): string {
                             "
                             variant="ghost"
                             size="sm"
-                            class="h-8 flex-1 text-xs font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                            class="h-8 flex-1 text-xs font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
                             @click="handleWithdraw(row)"
                         >
                             Cancel
@@ -414,17 +434,21 @@ function formatPaginationLabel(label: string): string {
             <!-- Empty State -->
             <div
                 v-else
-                class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-16 text-center"
+                class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-16 text-center dark:border-slate-800 dark:bg-slate-900/50"
             >
                 <div
-                    class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100"
+                    class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800"
                 >
-                    <Send class="h-7 w-7 text-slate-400" />
+                    <Send class="h-7 w-7 text-slate-400 dark:text-slate-500" />
                 </div>
-                <h3 class="mt-4 text-base font-semibold text-slate-700">
+                <h3
+                    class="mt-4 text-base font-semibold text-slate-700 dark:text-slate-200"
+                >
                     No applications found
                 </h3>
-                <p class="mt-1.5 max-w-sm text-sm text-slate-500">
+                <p
+                    class="mt-1.5 max-w-sm text-sm text-slate-500 dark:text-slate-400"
+                >
                     You haven't applied to any jobs yet. Browse available
                     tutoring opportunities to get started.
                 </p>
@@ -440,7 +464,7 @@ function formatPaginationLabel(label: string): string {
             <div v-if="hasPagination" class="flex items-center justify-between">
                 <span
                     v-if="items.from && items.to && items.total"
-                    class="text-xs text-slate-500"
+                    class="text-xs text-slate-500 dark:text-slate-400"
                 >
                     Showing {{ items.from }}–{{ items.to }} of
                     {{ items.total }}
@@ -456,7 +480,7 @@ function formatPaginationLabel(label: string): string {
                             variant="outline"
                             size="sm"
                             disabled
-                            class="h-8 min-w-8 px-2.5 text-xs"
+                            class="h-8 min-w-8 px-2.5 text-xs dark:border-slate-800 dark:text-slate-500"
                         >
                             {{ formatPaginationLabel(link.label) }}
                         </Button>
@@ -468,8 +492,8 @@ function formatPaginationLabel(label: string): string {
                             class="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border px-2.5 text-xs font-medium transition-colors"
                             :class="
                                 link.active
-                                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
-                                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                    ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm dark:bg-blue-950/40 dark:text-blue-300'
+                                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
                             "
                             :aria-current="link.active ? 'page' : undefined"
                         >

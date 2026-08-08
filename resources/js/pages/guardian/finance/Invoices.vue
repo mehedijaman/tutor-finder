@@ -68,9 +68,11 @@ function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
+                >
                     Payments & Escrow
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -80,27 +82,31 @@ function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
 
             <div
                 v-if="flashStatus"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ flashStatus }}
             </div>
 
             <div
-                v-if="$page.props.errors?.payment"
-                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                v-if="($page.props.errors as any)?.payment"
+                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
             >
-                {{ $page.props.errors.payment }}
+                {{ ($page.props.errors as any).payment }}
             </div>
 
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="max-w-xs">
                     <Select v-model="statusFilter">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-700 dark:bg-slate-900"
+                        >
                             <SelectItem value="all">All statuses</SelectItem>
                             <SelectItem
                                 v-for="option in statusOptionsList"
@@ -169,6 +175,7 @@ function pay(invoiceId: number | string, gateway: 'bkash' | 'sslcommerz') {
                         <Button
                             size="sm"
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-200"
                             :disabled="row.status !== 'unpaid'"
                             @click="pay(row.id, 'sslcommerz')"
                         >

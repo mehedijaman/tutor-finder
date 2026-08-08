@@ -148,55 +148,48 @@ function actionItems(row: ApplicationRow) {
         },
         {
             key: 'cancel',
-            label: 'Cancel Application',
-            destructive: true,
+            label: 'Cancel',
             show:
                 canManageApplications.value &&
                 ['applied', 'shortlisted'].includes(row.status),
+            destructive: true,
         },
     ];
 }
 
-function handleAction(
-    action: 'confirm' | 'shortlist' | 'cancel',
-    row: ApplicationRow,
-) {
-    pendingAction.value = action;
-    pendingRow.value = row;
-    confirmOpen.value = true;
+function onAction(action: string, row: ApplicationRow) {
+    if (action === 'confirm') {
+        pendingAction.value = 'confirm';
+        pendingRow.value = row;
+        confirmOpen.value = true;
+    }
+
+    if (action === 'shortlist') {
+        pendingAction.value = 'shortlist';
+        pendingRow.value = row;
+        confirmOpen.value = true;
+    }
+
+    if (action === 'cancel') {
+        pendingAction.value = 'cancel';
+        pendingRow.value = row;
+        confirmOpen.value = true;
+    }
 }
 
-function confirmStatusUpdate() {
+function runPendingAction() {
     if (!pendingAction.value || !pendingRow.value) {
         return;
     }
 
-    const isConfirmAction = pendingAction.value === 'confirm';
+    if (pendingAction.value === 'confirm') {
+        const expectedVal = pendingRow.value.expected_salary_amount;
+        const parsedVal = expectedVal ? Number(expectedVal) : 0;
+        const escrowAmount =
+            Number.isFinite(parsedVal) && parsedVal > 0 ? parsedVal : 0;
+        const escrowRequired = escrowAmount > 0;
 
-    if (isConfirmAction) {
-        const escrowRequired = window.confirm(
-            'Require month-1 escrow for this hire? Press OK for Yes, Cancel for No.',
-        );
-        let escrowAmount = null;
-
-        if (escrowRequired) {
-            const entered = window.prompt(
-                'Enter month-1 escrow amount',
-                String(pendingRow.value.expected_salary_amount ?? ''),
-            );
-
-            if (entered === null || entered.trim() === '') {
-                return;
-            }
-
-            escrowAmount = Number(entered);
-
-            if (!Number.isFinite(escrowAmount) || escrowAmount <= 0) {
-                return;
-            }
-        }
-
-        router.patch(
+        router.post(
             `${baseUrl}/${pendingRow.value.id}/confirm`,
             {
                 month1_escrow_required: escrowRequired,
@@ -268,12 +261,12 @@ function confirmLabel() {
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             Applications for {{ job.title }}
                         </h1>
@@ -282,20 +275,20 @@ function confirmLabel() {
                         </p>
                         <p
                             v-if="job.has_assignment"
-                            class="mt-1 text-xs font-medium text-emerald-700"
+                            class="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-400"
                         >
                             Hire finalized with
                             {{ job.selected_tutor_name || 'selected tutor' }}.
                         </p>
                         <p
                             v-else-if="job.is_expired"
-                            class="mt-1 text-xs font-medium text-amber-700"
+                            class="mt-1 text-xs font-medium text-amber-700 dark:text-amber-400"
                         >
                             This job is expired. Application actions are locked.
                         </p>
                         <p
                             v-else-if="job.status === 'confirmed'"
-                            class="mt-1 text-xs font-medium text-emerald-700"
+                            class="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-400"
                         >
                             This job has already been confirmed.
                         </p>
@@ -303,7 +296,7 @@ function confirmLabel() {
 
                     <Link
                         href="/guardian/jobs"
-                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >Back to Jobs</Link
                     >
                 </div>
@@ -311,19 +304,23 @@ function confirmLabel() {
 
             <div
                 v-if="flashStatus"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ flashStatus }}
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
                 <Select v-model="statusFilter">
-                    <SelectTrigger>
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent
+                        class="dark:border-slate-700 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All statuses</SelectItem>
                         <SelectItem
                             v-for="option in statusOptionsList"
@@ -337,7 +334,7 @@ function confirmLabel() {
 
                 <div
                     v-if="job.has_assignment && job.assignment_confirmed_at"
-                    class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800"
+                    class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
                 >
                     Confirmed at:
                     {{ new Date(job.assignment_confirmed_at).toLocaleString() }}
@@ -350,79 +347,72 @@ function confirmLabel() {
                 empty-text="No applications received yet."
             >
                 <template #cell-tutor_name="{ row }">
-                    <div class="space-y-1.5">
-                        <div class="flex items-center gap-2">
-                            <p class="font-bold text-slate-900">
-                                {{ row.tutor.name }}
-                            </p>
-                            <Badge
-                                v-if="row.is_selected"
-                                variant="default"
-                                class="bg-emerald-600"
-                                >Selected</Badge
-                            >
+                    <div class="space-y-0.5">
+                        <div
+                            class="font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            {{ row.tutor?.name || '—' }}
+                        </div>
+                        <div class="text-xs text-muted-foreground">
+                            {{ row.tutor?.email || '' }}
                         </div>
                         <div
-                            v-if="job.subjects?.length"
-                            class="flex flex-wrap items-center gap-1 text-xs"
+                            v-if="row.tutor?.phone"
+                            class="text-xs text-muted-foreground"
                         >
-                            <span class="font-semibold text-slate-400"
-                                >Subject:</span
-                            >
-                            <span class="font-semibold text-slate-700">{{
-                                job.subjects.join(', ')
-                            }}</span>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-3 text-xs">
-                            <span
-                                v-if="row.tutor.phone"
-                                class="text-slate-500"
-                                >{{ row.tutor.phone }}</span
-                            >
-                            <a
-                                v-if="row.tutor.download_cv_url"
-                                :href="row.tutor.download_cv_url"
-                                target="_blank"
-                                class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 hover:underline"
-                            >
-                                <span>CV View</span>
-                                <span>↓</span>
-                            </a>
+                            {{ row.tutor.phone }}
                         </div>
                     </div>
                 </template>
 
-                <template #cell-status="{ value }">
-                    <Badge :variant="badgeVariant(value)">{{ value }}</Badge>
+                <template #cell-status="{ value, row }">
+                    <div class="space-y-1">
+                        <Badge :variant="badgeVariant(value)">
+                            {{ value }}
+                        </Badge>
+                        <div
+                            v-if="row.is_selected"
+                            class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400"
+                        >
+                            Selected Tutor
+                        </div>
+                    </div>
                 </template>
 
                 <template #cell-expected_salary_amount="{ row }">
-                    {{
-                        row.expected_salary_amount
-                            ? `${row.salary_currency || 'BDT'} ${Number(row.expected_salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 })}`
-                            : '—'
-                    }}
+                    <span v-if="row.expected_salary_amount">
+                        {{ row.salary_currency || 'BDT' }}
+                        {{ row.expected_salary_amount }}
+                    </span>
+                    <span v-else class="text-muted-foreground">—</span>
                 </template>
 
                 <template #cell-cover_letter="{ value }">
                     <p
-                        class="line-clamp-2 max-w-xs text-sm text-muted-foreground"
+                        class="max-w-xs truncate text-xs text-slate-600 dark:text-slate-400"
                     >
                         {{ value || '—' }}
                     </p>
                 </template>
 
-                <template #cell-created_at="{ value }">{{
-                    value ? new Date(value).toLocaleString() : '—'
-                }}</template>
-                <template #cell-cancel_reason="{ value }">{{
-                    value || '—'
-                }}</template>
+                <template #cell-created_at="{ value }">
+                    {{ value ? new Date(value).toLocaleDateString() : '—' }}
+                </template>
+
+                <template #cell-cancel_reason="{ value }">
+                    <span
+                        v-if="value"
+                        class="max-w-xs truncate text-xs text-rose-600 dark:text-rose-400"
+                    >
+                        {{ value }}
+                    </span>
+                    <span v-else class="text-muted-foreground">—</span>
+                </template>
 
                 <template #cell-actions="{ row }">
                     <RowActionsDropdown
-                        :actions="actionItems(row)"
-                        @select="(action) => handleAction(action, row)"
+                        :items="actionItems(row)"
+                        @action="(action) => onAction(action, row)"
                     />
                 </template>
             </DataTable>
@@ -435,7 +425,7 @@ function confirmLabel() {
         :description="confirmDescription()"
         :confirm-label="confirmLabel()"
         :destructive="pendingAction === 'cancel'"
-        @confirm="confirmStatusUpdate"
+        @confirm="runPendingAction"
         @cancel="resetConfirm"
     />
 </template>

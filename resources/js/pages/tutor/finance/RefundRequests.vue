@@ -74,9 +74,11 @@ function submitRefund() {
     <TutorLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
+                >
                     Refund Requests
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -85,31 +87,39 @@ function submitRefund() {
             </div>
 
             <div
-                v-if="$page.props.flash?.status"
-                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                v-if="($page.props.flash as any)?.status"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
-                {{ $page.props.flash.status }}
+                {{ ($page.props.flash as any).status }}
             </div>
 
             <div
-                v-if="$page.props.errors?.refund"
-                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                v-if="($page.props.errors as any)?.refund"
+                class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
             >
-                {{ $page.props.errors.refund }}
+                {{ ($page.props.errors as any).refund }}
             </div>
 
             <section
-                class="space-y-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                class="space-y-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
             >
-                <h2 class="text-base font-semibold">Create Refund Request</h2>
+                <h2
+                    class="text-base font-semibold text-slate-900 dark:text-slate-100"
+                >
+                    Create Refund Request
+                </h2>
                 <div class="grid gap-3 md:grid-cols-2">
                     <Select v-model="form.assignment_id">
-                        <SelectTrigger>
+                        <SelectTrigger
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        >
                             <SelectValue placeholder="Select assignment" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                            class="dark:border-slate-700 dark:bg-slate-900"
+                        >
                             <SelectItem
-                                v-for="assignment in eligibleAssignments"
+                                v-for="assignment in eligibleAssignments as any[]"
                                 :key="assignment.id"
                                 :value="String(assignment.id)"
                             >
@@ -124,12 +134,13 @@ function submitRefund() {
                         :model-value="form.assignment_id"
                         placeholder="Assignment ID"
                         readonly
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                 </div>
                 <textarea
                     v-model="form.reason_text"
                     rows="4"
-                    class="w-full rounded-lg border border-slate-300 bg-background px-3 py-2 text-sm"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
                     placeholder="Explain why you are requesting a refund..."
                 />
                 <Button
@@ -143,19 +154,23 @@ function submitRefund() {
 
             <section class="space-y-3">
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
                     <div class="max-w-xs">
                         <Select v-model="statusFilter">
-                            <SelectTrigger>
+                            <SelectTrigger
+                                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            >
                                 <SelectValue placeholder="All statuses" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent
+                                class="dark:border-slate-700 dark:bg-slate-900"
+                            >
                                 <SelectItem value="all"
                                     >All statuses</SelectItem
                                 >
                                 <SelectItem
-                                    v-for="option in statusOptions"
+                                    v-for="option in statusOptions as string[]"
                                     :key="option"
                                     :value="option"
                                 >

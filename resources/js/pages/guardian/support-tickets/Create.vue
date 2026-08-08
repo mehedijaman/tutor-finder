@@ -69,12 +69,12 @@ function submit(): void {
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
                         <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             Create Support Ticket
                         </h1>
@@ -85,7 +85,7 @@ function submit(): void {
                     </div>
                     <Link
                         href="/guardian/support-tickets"
-                        class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                         Back
                     </Link>
@@ -94,28 +94,39 @@ function submit(): void {
 
             <form
                 @submit.prevent="submit"
-                class="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="space-y-2">
-                    <Label for="subject">Subject</Label>
+                    <Label
+                        for="subject"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Subject</Label
+                    >
                     <Input
                         id="subject"
                         v-model="form.subject"
                         type="text"
                         placeholder="Brief description of your issue"
                         :aria-invalid="!!form.errors.subject"
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                     <InputError :message="form.errors.subject" />
                 </div>
 
                 <div class="grid gap-6 sm:grid-cols-2">
                     <div class="space-y-2">
-                        <Label>Category</Label>
+                        <Label class="text-slate-800 dark:text-slate-200"
+                            >Category</Label
+                        >
                         <Select v-model="form.category">
-                            <SelectTrigger>
+                            <SelectTrigger
+                                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            >
                                 <SelectValue placeholder="Select category" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent
+                                class="dark:border-slate-700 dark:bg-slate-900"
+                            >
                                 <SelectItem
                                     v-for="cat in categoryOptions"
                                     :key="cat.value"
@@ -129,12 +140,18 @@ function submit(): void {
                     </div>
 
                     <div class="space-y-2">
-                        <Label>Priority</Label>
+                        <Label class="text-slate-800 dark:text-slate-200"
+                            >Priority</Label
+                        >
                         <Select v-model="form.priority">
-                            <SelectTrigger>
+                            <SelectTrigger
+                                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                            >
                                 <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent
+                                class="dark:border-slate-700 dark:bg-slate-900"
+                            >
                                 <SelectItem
                                     v-for="pri in priorityOptions"
                                     :key="pri.value"
@@ -149,23 +166,28 @@ function submit(): void {
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="message">Message</Label>
+                    <Label
+                        for="message"
+                        class="text-slate-800 dark:text-slate-200"
+                        >Message</Label
+                    >
                     <Textarea
                         id="message"
                         v-model="form.message"
-                        placeholder="Describe your issue in detail..."
-                        rows="6"
+                        placeholder="Detailed explanation of your issue..."
+                        rows="5"
                         :aria-invalid="!!form.errors.message"
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                     <InputError :message="form.errors.message" />
                 </div>
 
                 <div class="space-y-2">
-                    <Label>
+                    <Label class="text-slate-800 dark:text-slate-200">
                         Attachments
-                        <span class="text-xs text-slate-500">
-                            (optional, max 3 images)
-                        </span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400"
+                            >(optional, max 3 images)</span
+                        >
                     </Label>
 
                     <div
@@ -175,7 +197,7 @@ function submit(): void {
                         <div
                             v-for="(preview, index) in previews"
                             :key="index"
-                            class="group relative overflow-hidden rounded-lg border border-slate-200"
+                            class="group relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700"
                         >
                             <img
                                 :src="preview"
@@ -187,9 +209,9 @@ function submit(): void {
                                 class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition group-hover:opacity-100"
                                 @click="removeAttachment(index)"
                             >
-                                <span class="text-xs font-medium text-white">
-                                    Remove
-                                </span>
+                                <span class="text-xs font-medium text-white"
+                                    >Remove</span
+                                >
                             </button>
                         </div>
                     </div>
@@ -199,7 +221,7 @@ function submit(): void {
                         type="file"
                         accept="image/jpeg,image/png,image/gif"
                         multiple
-                        class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-slate-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-100"
+                        class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-slate-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-100 dark:text-slate-400 dark:file:bg-slate-800 dark:file:text-slate-200 dark:hover:file:bg-slate-700"
                         @change="handleFileSelect"
                     />
                     <InputError
@@ -209,16 +231,18 @@ function submit(): void {
                             ]
                         "
                     />
-                    <InputError
-                        :message="
-                            (form.errors as Record<string, string>)[
-                                'attachments.0'
-                            ]
-                        "
-                    />
                 </div>
 
-                <div class="flex justify-end">
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <Link href="/guardian/support-tickets">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
+                        >
+                            Cancel
+                        </Button>
+                    </Link>
                     <Button type="submit" :disabled="form.processing">
                         <span v-if="form.processing">Submitting...</span>
                         <span v-else>Submit Ticket</span>

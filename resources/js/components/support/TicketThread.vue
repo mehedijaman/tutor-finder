@@ -38,7 +38,7 @@ function formatDate(dateString: string): string {
                         :alt="message.user?.name ?? 'User'"
                     />
                     <AvatarFallback
-                        class="bg-slate-100 text-xs font-medium text-slate-600"
+                        class="bg-slate-100 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                     >
                         {{ getInitials(message.user?.name ?? 'U') }}
                     </AvatarFallback>
@@ -56,16 +56,20 @@ function formatDate(dateString: string): string {
                             'justify-end': message.user_id === currentUserId,
                         }"
                     >
-                        <span class="text-sm font-semibold text-slate-900">
+                        <span
+                            class="text-sm font-semibold text-slate-900 dark:text-slate-100"
+                        >
                             {{ message.user?.name ?? 'Unknown' }}
                         </span>
                         <span
                             v-if="message.is_admin_reply"
-                            class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700"
+                            class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300"
                         >
                             Staff
                         </span>
-                        <span class="text-xs text-slate-500">
+                        <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                        >
                             {{ formatDate(message.created_at) }}
                         </span>
                     </div>
@@ -74,8 +78,8 @@ function formatDate(dateString: string): string {
                         class="rounded-xl px-4 py-3 text-sm leading-relaxed"
                         :class="
                             message.user_id === currentUserId
-                                ? 'bg-blue-50 text-slate-800'
-                                : 'bg-slate-50 text-slate-700'
+                                ? 'bg-blue-50 text-slate-800 dark:bg-blue-950/40 dark:text-slate-200'
+                                : 'bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-200'
                         "
                     >
                         <p class="whitespace-pre-wrap">{{ message.body }}</p>
@@ -96,7 +100,7 @@ function formatDate(dateString: string): string {
                             :key="attachment.id"
                             :href="attachment.url"
                             target="_blank"
-                            class="group relative overflow-hidden rounded-lg border border-slate-200 transition hover:border-slate-300"
+                            class="group relative overflow-hidden rounded-lg border border-slate-200 transition hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600"
                         >
                             <img
                                 :src="attachment.url"
@@ -108,12 +112,15 @@ function formatDate(dateString: string): string {
                 </div>
             </div>
 
-            <Separator v-if="index < messages.length - 1" class="mt-6" />
+            <Separator
+                v-if="index < messages.length - 1"
+                class="mt-6 dark:bg-slate-800"
+            />
         </div>
 
         <div
             v-if="messages.length === 0"
-            class="py-8 text-center text-sm text-slate-500"
+            class="py-8 text-center text-sm text-slate-500 dark:text-slate-400"
         >
             No messages yet.
         </div>

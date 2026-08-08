@@ -70,9 +70,11 @@ function onModalChange(open: boolean): void {
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
+                >
                     Tutorials
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -88,11 +90,11 @@ function onModalChange(open: boolean): void {
                 <div
                     v-for="tutorial in tutorials"
                     :key="tutorial.id"
-                    class="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md"
+                    class="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
                     @click="openVideo(tutorial)"
                 >
                     <div
-                        class="relative aspect-video w-full overflow-hidden bg-slate-100"
+                        class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800"
                     >
                         <img
                             v-if="getThumbnailUrl(tutorial)"
@@ -102,11 +104,11 @@ function onModalChange(open: boolean): void {
                         />
                         <div
                             v-else
-                            class="flex h-full w-full items-center justify-center bg-slate-200"
+                            class="flex h-full w-full items-center justify-center bg-slate-200 dark:bg-slate-800"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                class="h-12 w-12 text-slate-400"
+                                class="h-12 w-12 text-slate-400 dark:text-slate-500"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -129,11 +131,11 @@ function onModalChange(open: boolean): void {
                             class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/20"
                         >
                             <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-slate-800/90"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    class="ml-0.5 h-5 w-5 text-blue-600"
+                                    class="ml-0.5 h-5 w-5 text-blue-600 dark:text-blue-400"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
                                 >
@@ -149,7 +151,7 @@ function onModalChange(open: boolean): void {
 
                     <div class="p-4">
                         <h3
-                            class="line-clamp-2 text-sm font-semibold text-slate-900"
+                            class="line-clamp-2 text-sm font-semibold text-slate-900 dark:text-slate-100"
                         >
                             {{ tutorial.title }}
                         </h3>
@@ -166,11 +168,11 @@ function onModalChange(open: boolean): void {
 
             <div
                 v-else
-                class="rounded-2xl border border-slate-200 bg-white py-16 text-center"
+                class="rounded-2xl border border-slate-200 bg-white py-16 text-center dark:border-slate-800 dark:bg-slate-900"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="mx-auto h-12 w-12 text-slate-300"
+                    class="mx-auto h-12 w-12 text-slate-300 dark:text-slate-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -182,7 +184,7 @@ function onModalChange(open: boolean): void {
                         d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                     />
                 </svg>
-                <p class="mt-4 text-sm text-slate-500">
+                <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">
                     No tutorials available yet.
                 </p>
             </div>
@@ -190,11 +192,15 @@ function onModalChange(open: boolean): void {
 
         <Dialog :open="modalOpen" @update:open="onModalChange">
             <DialogContent
-                class="max-w-4xl gap-0 overflow-hidden p-0"
+                class="max-w-4xl gap-0 overflow-hidden p-0 dark:border-slate-800 dark:bg-slate-900"
                 :show-close-button="true"
             >
-                <div class="border-b border-slate-200 px-6 py-4">
-                    <DialogTitle class="text-lg font-semibold">
+                <div
+                    class="border-b border-slate-200 px-6 py-4 dark:border-slate-800"
+                >
+                    <DialogTitle
+                        class="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                    >
                         {{ activeVideo?.title }}
                     </DialogTitle>
                 </div>

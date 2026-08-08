@@ -76,6 +76,7 @@ watch(
                 placeholder="Type your reply here..."
                 rows="4"
                 :aria-invalid="!!form.errors.message"
+                class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
             <InputError :message="form.errors.message" />
         </div>
@@ -83,7 +84,7 @@ watch(
         <div class="space-y-2">
             <Label>
                 Attach Images
-                <span class="text-xs text-slate-500"
+                <span class="text-xs text-slate-500 dark:text-slate-400"
                     >(optional, max {{ maxAttachments ?? 3 }} images)</span
                 >
             </Label>
@@ -92,7 +93,7 @@ watch(
                 <div
                     v-for="(preview, index) in previews"
                     :key="index"
-                    class="group relative overflow-hidden rounded-lg border border-slate-200"
+                    class="group relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700"
                 >
                     <img
                         :src="preview"
@@ -116,7 +117,7 @@ watch(
                 type="file"
                 accept="image/jpeg,image/png,image/gif"
                 multiple
-                class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-slate-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-100"
+                class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-slate-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-100 dark:text-slate-400 dark:file:bg-slate-800 dark:file:text-slate-200 dark:hover:file:bg-slate-700"
                 @change="handleFileSelect"
             />
             <InputError

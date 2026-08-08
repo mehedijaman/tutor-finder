@@ -27,9 +27,11 @@ const { siteName, primaryEmail } = useSiteSettings();
     <TutorLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                <h1
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
+                >
                     Terms of Service
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
@@ -45,10 +47,10 @@ const { siteName, primaryEmail } = useSiteSettings();
             <!-- Dynamic content from Page model -->
             <div
                 v-if="page"
-                class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-10"
+                class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-10 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div
-                    class="prose prose-slate prose-h2:mt-8 prose-h2:mb-3 prose-h3:mt-6 prose-h3:mb-2 max-w-none"
+                    class="prose prose-slate dark:prose-invert prose-h2:mt-8 prose-h2:mb-3 prose-h3:mt-6 prose-h3:mb-2 max-w-none"
                     v-html="page.content"
                 />
             </div>
@@ -56,10 +58,10 @@ const { siteName, primaryEmail } = useSiteSettings();
             <!-- Fallback hardcoded content -->
             <div
                 v-else
-                class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-10"
+                class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-10 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div
-                    class="prose prose-slate prose-h2:mt-8 prose-h2:mb-3 prose-h3:mt-6 prose-h3:mb-2 max-w-none"
+                    class="prose prose-slate dark:prose-invert prose-h2:mt-8 prose-h2:mb-3 prose-h3:mt-6 prose-h3:mb-2 max-w-none"
                 >
                     <h2>1. Agreement to these terms</h2>
                     <p>
@@ -148,54 +150,35 @@ const { siteName, primaryEmail } = useSiteSettings();
                         You may be able to post content or send messages. You
                         retain ownership of your content, but grant us a license
                         to host, display, and process it to provide the
-                        Services. You are responsible for your content.
+                        Services.
                     </p>
 
-                    <h2>7. Safety and verification</h2>
+                    <h2>7. Termination</h2>
                     <p>
-                        We may offer verification tools, but we do not guarantee
-                        that any user is who they claim to be. Use caution and
-                        good judgment when interacting with others.
+                        We may suspend or terminate your account if you violate
+                        these Terms or if required for safety or security. You
+                        may stop using the Services at any time.
                     </p>
 
-                    <h2>8. Termination</h2>
+                    <h2>8. Disclaimers and limitation of liability</h2>
                     <p>
-                        You may stop using the Services at any time. We may
-                        suspend or terminate access if you violate these Terms
-                        or if necessary to protect the platform or users.
+                        The Services are provided "as is" without warranty of
+                        any kind. We do not guarantee specific outcomes from
+                        tutoring. To the maximum extent permitted by law, we are
+                        not liable for indirect, incidental, or consequential
+                        damages.
                     </p>
 
-                    <h2>9. Disclaimers</h2>
+                    <h2>9. Contact</h2>
                     <p>
-                        The Services are provided "as is" and "as available." We
-                        do not guarantee uninterrupted or error-free operation.
-                        We are not responsible for outcomes of tutoring sessions
-                        or user conduct.
-                    </p>
-
-                    <h2>10. Limitation of liability</h2>
-                    <p>
-                        To the maximum extent permitted by law,
-                        {{ siteName }} will not be liable for indirect,
-                        incidental, special, consequential, or punitive damages,
-                        or any loss of data, profits, or reputation arising from
-                        your use of the Services.
-                    </p>
-
-                    <h2>11. Changes to these terms</h2>
-                    <p>
-                        We may update these Terms from time to time. Continued
-                        use after changes become effective means you accept the
-                        updated Terms.
-                    </p>
-
-                    <h2>12. Contact</h2>
-                    <p>
-                        Questions about these Terms? Contact us at
-                        <strong>{{
-                            primaryEmail || 'support@yourdomain.com'
-                        }}</strong>
-                        or via the contact page.
+                        Questions about these Terms? Contact us at:
+                        <a
+                            v-if="primaryEmail"
+                            :href="`mailto:${primaryEmail}`"
+                            class="underline"
+                            >{{ primaryEmail }}</a
+                        >
+                        <span v-else>support@tutorfinder.com</span>.
                     </p>
                 </div>
             </div>

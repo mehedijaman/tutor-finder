@@ -156,8 +156,7 @@ function submitEdit(): void {
     if (!editingReview.value) {
         return;
     }
-
-    editForm.put(`/guardian/reviews/${editingReview.value.id}`, {
+    editForm.patch(`/guardian/reviews/${editingReview.value.id}`, {
         preserveScroll: true,
         onSuccess: () => {
             editingReview.value = null;
@@ -167,7 +166,7 @@ function submitEdit(): void {
     });
 }
 
-// --- Delete Review ---
+// --- Single Soft Delete ---
 const deleteDialogOpen = ref(false);
 const reviewToDelete = ref<Review | null>(null);
 const isDeleting = ref(false);
@@ -181,7 +180,6 @@ function handleDelete(): void {
     if (!reviewToDelete.value) {
         return;
     }
-
     isDeleting.value = true;
     router.delete(`/guardian/reviews/${reviewToDelete.value.id}`, {
         preserveScroll: true,
@@ -193,10 +191,10 @@ function handleDelete(): void {
     });
 }
 
-// --- Restore Review ---
-const isRestoring = ref(false);
+// --- Restore Single ---
 const restoreDialogOpen = ref(false);
 const reviewToRestore = ref<Review | null>(null);
+const isRestoring = ref(false);
 
 function confirmRestore(review: Review): void {
     reviewToRestore.value = review;
@@ -207,7 +205,6 @@ function handleRestore(): void {
     if (!reviewToRestore.value) {
         return;
     }
-
     isRestoring.value = true;
     router.patch(
         `/guardian/reviews/${reviewToRestore.value.id}/restore`,
@@ -223,7 +220,7 @@ function handleRestore(): void {
     );
 }
 
-// --- Permanent Delete ---
+// --- Force Delete Single ---
 const forceDeleteDialogOpen = ref(false);
 const reviewToForceDelete = ref<Review | null>(null);
 const isForceDeleting = ref(false);
@@ -237,7 +234,6 @@ function handleForceDelete(): void {
     if (!reviewToForceDelete.value) {
         return;
     }
-
     isForceDeleting.value = true;
     router.delete(
         `/guardian/reviews/${reviewToForceDelete.value.id}/force-delete`,
@@ -342,12 +338,12 @@ function formatPaginationLabel(label: string): string {
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <!-- Page Header -->
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1
-                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             My Reviews
                         </h1>
@@ -363,6 +359,7 @@ function formatPaginationLabel(label: string): string {
                             variant="outline"
                             size="sm"
                             :disabled="trashedCount === 0"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             as-child
                         >
                             <Link
@@ -377,6 +374,7 @@ function formatPaginationLabel(label: string): string {
                             v-if="props.showTrashed"
                             variant="outline"
                             size="sm"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             as-child
                         >
                             <Link href="/guardian/reviews" preserve-scroll>
@@ -387,6 +385,7 @@ function formatPaginationLabel(label: string): string {
                             v-if="props.showTrashed && reviews.total > 0"
                             variant="outline"
                             size="sm"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             @click="restoreAllDialogOpen = true"
                         >
                             <RotateCcw class="mr-2 h-4 w-4" />
@@ -419,7 +418,7 @@ function formatPaginationLabel(label: string): string {
             <!-- Flash Message -->
             <div
                 v-if="successMessage"
-                class="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                class="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 <CheckCircle class="h-4.5 w-4.5 flex-shrink-0" />
                 {{ successMessage }}
@@ -432,12 +431,14 @@ function formatPaginationLabel(label: string): string {
                     !showNewForm &&
                     !props.showTrashed
                 "
-                class="rounded-2xl border border-amber-200/80 bg-amber-50 p-5 shadow-sm"
+                class="rounded-2xl border border-amber-200/80 bg-amber-50 p-5 shadow-sm dark:border-amber-900/60 dark:bg-amber-950/40"
             >
                 <div class="flex items-start gap-3">
                     <Star class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
                     <div>
-                        <p class="text-sm font-medium text-amber-800">
+                        <p
+                            class="text-sm font-medium text-amber-800 dark:text-amber-300"
+                        >
                             You have
                             {{ reviewableAssignments.length }}
                             confirmed
@@ -448,7 +449,9 @@ function formatPaginationLabel(label: string): string {
                             }}
                             awaiting review
                         </p>
-                        <p class="mt-1 text-xs text-amber-600">
+                        <p
+                            class="mt-1 text-xs text-amber-600 dark:text-amber-400"
+                        >
                             Share your experience to help other guardians find
                             great tutors.
                         </p>
@@ -459,13 +462,17 @@ function formatPaginationLabel(label: string): string {
             <!-- New Review Form -->
             <div
                 v-if="showNewForm && !props.showTrashed"
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="mb-5 flex items-center justify-between">
-                    <h2 class="text-lg font-semibold">Write a Review</h2>
+                    <h2
+                        class="text-lg font-semibold text-slate-900 dark:text-slate-100"
+                    >
+                        Write a Review
+                    </h2>
                     <button
                         type="button"
-                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                         @click="showNewForm = false"
                     >
                         <X class="h-5 w-5" />
@@ -476,7 +483,7 @@ function formatPaginationLabel(label: string): string {
                     <!-- Assignment Selector -->
                     <div>
                         <Label
-                            class="mb-2 block text-sm font-medium text-slate-700"
+                            class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
                         >
                             Select Assignment to Review
                         </Label>
@@ -489,8 +496,8 @@ function formatPaginationLabel(label: string): string {
                                     'rounded-lg border px-4 py-3 text-left text-sm transition-all',
                                     selectedAssignment ===
                                     assignment.assignment_id
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500'
-                                        : 'border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50',
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500 dark:bg-blue-950/40 dark:text-blue-300'
+                                        : 'border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800',
                                 ]"
                                 @click="
                                     selectAssignment(assignment.assignment_id)
@@ -499,14 +506,16 @@ function formatPaginationLabel(label: string): string {
                                 <p class="font-medium">
                                     {{ assignment.tutor_name }}
                                 </p>
-                                <p class="mt-0.5 text-xs text-slate-500">
+                                <p
+                                    class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                                >
                                     {{ assignment.job_title }}
                                 </p>
                             </button>
                         </div>
                         <p
                             v-if="newForm.errors.job_assignment_id"
-                            class="mt-1 text-sm text-red-600"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400"
                         >
                             {{ newForm.errors.job_assignment_id }}
                         </p>
@@ -515,7 +524,7 @@ function formatPaginationLabel(label: string): string {
                     <!-- Star Rating -->
                     <div>
                         <Label
-                            class="mb-2 block text-sm font-medium text-slate-700"
+                            class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
                         >
                             Your Rating
                         </Label>
@@ -536,21 +545,21 @@ function formatPaginationLabel(label: string): string {
                                             star <=
                                             (hoveredStar || newForm.rating)
                                                 ? 'fill-amber-400 text-amber-400'
-                                                : 'fill-slate-200 text-slate-300',
+                                                : 'fill-slate-200 text-slate-300 dark:fill-slate-700 dark:text-slate-600',
                                         ]"
                                     />
                                 </button>
                             </div>
                             <span
                                 v-if="newForm.rating > 0"
-                                class="text-sm font-medium text-amber-600"
+                                class="text-sm font-medium text-amber-600 dark:text-amber-400"
                             >
                                 {{ ratingLabel(newForm.rating) }}
                             </span>
                         </div>
                         <p
                             v-if="newForm.errors.rating"
-                            class="mt-1 text-sm text-red-600"
+                            class="mt-1 text-sm text-red-600 dark:text-red-400"
                         >
                             {{ newForm.errors.rating }}
                         </p>
@@ -560,26 +569,30 @@ function formatPaginationLabel(label: string): string {
                     <div>
                         <Label
                             for="new-review-comment"
-                            class="mb-2 block text-sm font-medium text-slate-700"
+                            class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
                         >
                             Your Review
-                            <span class="text-slate-400">(optional)</span>
+                            <span class="text-slate-400 dark:text-slate-500"
+                                >(optional)</span
+                            >
                         </Label>
                         <Textarea
                             id="new-review-comment"
                             v-model="newForm.comment"
                             placeholder="Share your experience with this tutor..."
                             :rows="4"
-                            class="resize-none"
+                            class="resize-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <div class="mt-1 flex items-center justify-between">
                             <p
                                 v-if="newForm.errors.comment"
-                                class="text-sm text-red-600"
+                                class="text-sm text-red-600 dark:text-red-400"
                             >
                                 {{ newForm.errors.comment }}
                             </p>
-                            <span class="ml-auto text-xs text-slate-400">
+                            <span
+                                class="ml-auto text-xs text-slate-400 dark:text-slate-500"
+                            >
                                 {{ (newForm.comment ?? '').length }} / 2000
                             </span>
                         </div>
@@ -589,6 +602,7 @@ function formatPaginationLabel(label: string): string {
                     <div class="flex items-center gap-3">
                         <Button
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             :disabled="newForm.processing"
                             @click="showNewForm = false"
                         >
@@ -615,10 +629,14 @@ function formatPaginationLabel(label: string): string {
 
             <!-- Reviews List -->
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white shadow-sm"
+                class="rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
             >
-                <div class="border-b border-slate-200/80 px-5 py-4 sm:px-6">
-                    <h2 class="text-base font-semibold">
+                <div
+                    class="border-b border-slate-200/80 px-5 py-4 sm:px-6 dark:border-slate-800"
+                >
+                    <h2
+                        class="text-base font-semibold text-slate-900 dark:text-slate-100"
+                    >
                         {{ props.showTrashed ? 'Recycle Bin' : 'Your Reviews' }}
                         <span
                             v-if="reviews.total > 0"
@@ -631,7 +649,7 @@ function formatPaginationLabel(label: string): string {
 
                 <div
                     v-if="reviews.data.length > 0"
-                    class="divide-y divide-slate-100"
+                    class="divide-y divide-slate-100 dark:divide-slate-800"
                 >
                     <div
                         v-for="review in reviews.data"
@@ -647,14 +665,14 @@ function formatPaginationLabel(label: string): string {
                         >
                             <div class="flex items-center justify-between">
                                 <h3
-                                    class="text-sm font-semibold text-slate-900"
+                                    class="text-sm font-semibold text-slate-900 dark:text-slate-100"
                                 >
                                     Edit Review for
                                     {{ review.tutor.name }}
                                 </h3>
                                 <button
                                     type="button"
-                                    class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                                    class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                                     @click="cancelEdit"
                                 >
                                     <X class="h-4 w-4" />
@@ -664,7 +682,7 @@ function formatPaginationLabel(label: string): string {
                             <!-- Edit Star Rating -->
                             <div>
                                 <Label
-                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                    class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
                                 >
                                     Rating
                                 </Label>
@@ -686,21 +704,21 @@ function formatPaginationLabel(label: string): string {
                                                     (editHoveredStar ||
                                                         editForm.rating)
                                                         ? 'fill-amber-400 text-amber-400'
-                                                        : 'fill-slate-200 text-slate-300',
+                                                        : 'fill-slate-200 text-slate-300 dark:fill-slate-700 dark:text-slate-600',
                                                 ]"
                                             />
                                         </button>
                                     </div>
                                     <span
                                         v-if="editForm.rating > 0"
-                                        class="text-sm font-medium text-amber-600"
+                                        class="text-sm font-medium text-amber-600 dark:text-amber-400"
                                     >
                                         {{ ratingLabel(editForm.rating) }}
                                     </span>
                                 </div>
                                 <p
                                     v-if="editForm.errors.rating"
-                                    class="mt-1 text-sm text-red-600"
+                                    class="mt-1 text-sm text-red-600 dark:text-red-400"
                                 >
                                     {{ editForm.errors.rating }}
                                 </p>
@@ -710,10 +728,11 @@ function formatPaginationLabel(label: string): string {
                             <div>
                                 <Label
                                     :for="`edit-comment-${review.id}`"
-                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                    class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
                                 >
                                     Comment
-                                    <span class="text-slate-400"
+                                    <span
+                                        class="text-slate-400 dark:text-slate-500"
                                         >(optional)</span
                                     >
                                 </Label>
@@ -722,19 +741,19 @@ function formatPaginationLabel(label: string): string {
                                     v-model="editForm.comment"
                                     placeholder="Update your review..."
                                     :rows="3"
-                                    class="resize-none"
+                                    class="resize-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 />
                                 <div
                                     class="mt-1 flex items-center justify-between"
                                 >
                                     <p
                                         v-if="editForm.errors.comment"
-                                        class="text-sm text-red-600"
+                                        class="text-sm text-red-600 dark:text-red-400"
                                     >
                                         {{ editForm.errors.comment }}
                                     </p>
                                     <span
-                                        class="ml-auto text-xs text-slate-400"
+                                        class="ml-auto text-xs text-slate-400 dark:text-slate-500"
                                     >
                                         {{ (editForm.comment ?? '').length }}
                                         / 2000
@@ -747,6 +766,7 @@ function formatPaginationLabel(label: string): string {
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    class="dark:border-slate-700 dark:text-slate-300"
                                     :disabled="editForm.processing"
                                     @click="cancelEdit"
                                 >
@@ -785,7 +805,7 @@ function formatPaginationLabel(label: string): string {
                                 </div>
                                 <div
                                     v-else
-                                    class="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600"
+                                    class="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600 dark:bg-blue-950/40 dark:text-blue-300"
                                 >
                                     {{ getInitial(review.tutor.name) }}
                                 </div>
@@ -796,11 +816,13 @@ function formatPaginationLabel(label: string): string {
                                 <div class="flex flex-wrap items-center gap-2">
                                     <Link
                                         :href="`/tutors/${review.tutor_user_id}`"
-                                        class="text-sm font-semibold text-slate-900 hover:text-blue-600 hover:underline"
+                                        class="text-sm font-semibold text-slate-900 hover:text-blue-600 hover:underline dark:text-slate-100 dark:hover:text-blue-400"
                                     >
                                         {{ review.tutor.name }}
                                     </Link>
-                                    <span class="text-xs text-slate-400">
+                                    <span
+                                        class="text-xs text-slate-400 dark:text-slate-500"
+                                    >
                                         {{ timeAgo(review.created_at) }}
                                     </span>
                                 </div>
@@ -811,7 +833,7 @@ function formatPaginationLabel(label: string): string {
                                 >
                                     <Badge
                                         variant="outline"
-                                        class="text-xs font-normal"
+                                        class="text-xs font-normal dark:border-slate-700 dark:text-slate-300"
                                     >
                                         {{ review.job_assignment.job.title }}
                                     </Badge>
@@ -825,7 +847,7 @@ function formatPaginationLabel(label: string): string {
 
                                 <p
                                     v-if="review.comment"
-                                    class="mt-2 text-sm leading-relaxed text-slate-600"
+                                    class="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
                                 >
                                     {{ review.comment }}
                                 </p>
@@ -837,6 +859,7 @@ function formatPaginationLabel(label: string): string {
                                     <Button
                                         variant="outline"
                                         size="sm"
+                                        class="dark:border-slate-700 dark:text-slate-300"
                                         @click="confirmRestore(review)"
                                     >
                                         <RotateCcw class="mr-1.5 h-3.5 w-3.5" />
@@ -854,14 +877,14 @@ function formatPaginationLabel(label: string): string {
                                 <template v-else>
                                     <Link
                                         :href="`/tutors/${review.tutor_user_id}`"
-                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                                         title="View tutor profile"
                                     >
                                         <ExternalLink class="h-4 w-4" />
                                     </Link>
                                     <button
                                         type="button"
-                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-600"
+                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-blue-600 dark:hover:bg-slate-800 dark:hover:text-blue-400"
                                         title="Edit review"
                                         @click="startEdit(review)"
                                     >
@@ -869,7 +892,7 @@ function formatPaginationLabel(label: string): string {
                                     </button>
                                     <button
                                         type="button"
-                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                                        class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
                                         title="Delete review"
                                         @click="confirmDelete(review)"
                                     >
@@ -887,21 +910,23 @@ function formatPaginationLabel(label: string): string {
                     class="flex flex-col items-center py-16 text-center"
                 >
                     <div
-                        class="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100"
+                        class="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800"
                     >
                         <component
                             :is="props.showTrashed ? Trash2 : MessageSquare"
-                            class="h-7 w-7 text-slate-400"
+                            class="h-7 w-7 text-slate-400 dark:text-slate-500"
                         />
                     </div>
-                    <p class="mt-4 text-sm font-medium text-slate-600">
+                    <p
+                        class="mt-4 text-sm font-medium text-slate-600 dark:text-slate-300"
+                    >
                         {{
                             props.showTrashed
                                 ? 'Recycle bin is empty'
                                 : 'No reviews yet'
                         }}
                     </p>
-                    <p class="mt-1 text-xs text-slate-400">
+                    <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">
                         {{
                             props.showTrashed
                                 ? 'Deleted reviews will appear here.'
@@ -910,7 +935,7 @@ function formatPaginationLabel(label: string): string {
                     </p>
                     <Button
                         v-if="props.showTrashed"
-                        class="mt-4"
+                        class="mt-4 dark:border-slate-700 dark:text-slate-300"
                         variant="outline"
                         as-child
                     >
@@ -933,7 +958,7 @@ function formatPaginationLabel(label: string): string {
                 <!-- Pagination -->
                 <div
                     v-if="reviews.last_page > 1"
-                    class="flex items-center justify-center gap-1 border-t border-slate-200/80 px-5 py-4"
+                    class="flex items-center justify-center gap-1 border-t border-slate-200/80 px-5 py-4 dark:border-slate-800"
                 >
                     <template v-for="link in reviews.links" :key="link.label">
                         <Link
@@ -943,15 +968,15 @@ function formatPaginationLabel(label: string): string {
                             :class="[
                                 'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                                 link.active
-                                    ? 'bg-slate-900 text-white'
-                                    : 'text-slate-600 hover:bg-slate-100',
+                                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
                             ]"
                         >
                             {{ formatPaginationLabel(link.label) }}
                         </Link>
                         <span
                             v-else
-                            class="rounded-lg px-3 py-1.5 text-sm text-slate-300"
+                            class="rounded-lg px-3 py-1.5 text-sm text-slate-300 dark:text-slate-600"
                         >
                             {{ formatPaginationLabel(link.label) }}
                         </span>
@@ -961,10 +986,14 @@ function formatPaginationLabel(label: string): string {
 
             <!-- Delete Confirmation Dialog -->
             <Dialog v-model:open="deleteDialogOpen">
-                <DialogContent>
+                <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                     <DialogHeader class="space-y-2">
-                        <DialogTitle>Delete Review</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle class="text-slate-900 dark:text-slate-100"
+                            >Delete Review</DialogTitle
+                        >
+                        <DialogDescription
+                            class="text-slate-500 dark:text-slate-400"
+                        >
                             Are you sure you want to delete this review? This
                             action cannot be undone.
                         </DialogDescription>
@@ -972,6 +1001,7 @@ function formatPaginationLabel(label: string): string {
                     <DialogFooter class="gap-2">
                         <Button
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             :disabled="isDeleting"
                             @click="deleteDialogOpen = false"
                         >
@@ -990,10 +1020,14 @@ function formatPaginationLabel(label: string): string {
 
             <!-- Restore Confirmation Dialog -->
             <Dialog v-model:open="restoreDialogOpen">
-                <DialogContent>
+                <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                     <DialogHeader class="space-y-2">
-                        <DialogTitle>Restore Review</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle class="text-slate-900 dark:text-slate-100"
+                            >Restore Review</DialogTitle
+                        >
+                        <DialogDescription
+                            class="text-slate-500 dark:text-slate-400"
+                        >
                             Are you sure you want to restore this review? It
                             will be visible again on tutor profiles.
                         </DialogDescription>
@@ -1001,6 +1035,7 @@ function formatPaginationLabel(label: string): string {
                     <DialogFooter class="gap-2">
                         <Button
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             :disabled="isRestoring"
                             @click="restoreDialogOpen = false"
                         >
@@ -1015,12 +1050,16 @@ function formatPaginationLabel(label: string): string {
                 </DialogContent>
             </Dialog>
 
-            <!-- Permanent Delete Confirmation Dialog -->
+            <!-- Force Delete Confirmation Dialog -->
             <Dialog v-model:open="forceDeleteDialogOpen">
-                <DialogContent>
+                <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                     <DialogHeader class="space-y-2">
-                        <DialogTitle>Permanently Delete Review</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle class="text-slate-900 dark:text-slate-100"
+                            >Permanently Delete Review</DialogTitle
+                        >
+                        <DialogDescription
+                            class="text-slate-500 dark:text-slate-400"
+                        >
                             Are you sure you want to permanently delete this
                             review? This action cannot be undone.
                         </DialogDescription>
@@ -1028,6 +1067,7 @@ function formatPaginationLabel(label: string): string {
                     <DialogFooter class="gap-2">
                         <Button
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             :disabled="isForceDeleting"
                             @click="forceDeleteDialogOpen = false"
                         >
@@ -1048,20 +1088,24 @@ function formatPaginationLabel(label: string): string {
                 </DialogContent>
             </Dialog>
 
-            <!-- Restore All Confirmation Dialog -->
+            <!-- Restore All Dialog -->
             <Dialog v-model:open="restoreAllDialogOpen">
-                <DialogContent>
+                <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                     <DialogHeader class="space-y-2">
-                        <DialogTitle>Restore All Reviews</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to restore all
-                            {{ reviews.total }} deleted review(s)? They will be
-                            visible again on tutor profiles.
+                        <DialogTitle class="text-slate-900 dark:text-slate-100"
+                            >Restore All Reviews</DialogTitle
+                        >
+                        <DialogDescription
+                            class="text-slate-500 dark:text-slate-400"
+                        >
+                            Are you sure you want to restore all reviews from
+                            the recycle bin?
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter class="gap-2">
                         <Button
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             :disabled="isRestoringAll"
                             @click="restoreAllDialogOpen = false"
                         >
@@ -1079,20 +1123,25 @@ function formatPaginationLabel(label: string): string {
                 </DialogContent>
             </Dialog>
 
-            <!-- Empty Recycle Bin Confirmation Dialog -->
+            <!-- Empty Trash Dialog -->
             <Dialog v-model:open="emptyTrashDialogOpen">
-                <DialogContent>
+                <DialogContent class="dark:border-slate-800 dark:bg-slate-900">
                     <DialogHeader class="space-y-2">
-                        <DialogTitle>Empty Recycle Bin</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle class="text-slate-900 dark:text-slate-100"
+                            >Empty Recycle Bin</DialogTitle
+                        >
+                        <DialogDescription
+                            class="text-slate-500 dark:text-slate-400"
+                        >
                             Are you sure you want to permanently delete all
-                            {{ reviews.total }} review(s) in the recycle bin?
-                            This action cannot be undone.
+                            reviews in the recycle bin? This action cannot be
+                            undone.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter class="gap-2">
                         <Button
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             :disabled="isEmptyingTrash"
                             @click="emptyTrashDialogOpen = false"
                         >
@@ -1105,7 +1154,7 @@ function formatPaginationLabel(label: string): string {
                         >
                             {{
                                 isEmptyingTrash
-                                    ? 'Deleting...'
+                                    ? 'Emptying...'
                                     : 'Empty Recycle Bin'
                             }}
                         </Button>
