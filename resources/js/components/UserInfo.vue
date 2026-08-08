@@ -22,7 +22,7 @@ const { getInitials } = useInitials();
     <Avatar
         class="h-8 w-8 overflow-hidden rounded-xl ring-1 ring-sidebar-border/70"
     >
-        <AvatarImage :src="user.photo_url" :alt="user.name" />
+        <AvatarImage :src="user.avatar || user.photo_url" :alt="user.name" />
         <AvatarFallback
             class="rounded-xl bg-sidebar-accent text-black dark:text-white"
         >

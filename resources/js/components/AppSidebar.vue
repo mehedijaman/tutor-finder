@@ -50,6 +50,7 @@ type AuthUser = {
     id: number;
     name?: string;
     avatar?: string;
+    photo_url?: string;
     created_at?: string;
     verification_status?: string;
 };
@@ -591,8 +592,8 @@ const mainNavItems = computed<NavItem[]>(() => {
                         class="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-sidebar-border/70 bg-sidebar-accent text-xl font-semibold text-sidebar-accent-foreground"
                     >
                         <img
-                            v-if="authUser?.avatar"
-                            :src="String(authUser.avatar)"
+                            v-if="authUser?.avatar || authUser?.photo_url"
+                            :src="String(authUser.avatar || authUser.photo_url)"
                             :alt="authUser.name || 'User avatar'"
                             class="h-full w-full object-cover"
                         />
