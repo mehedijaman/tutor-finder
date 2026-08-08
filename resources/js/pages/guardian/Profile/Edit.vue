@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import {
-    CheckCircle,
+    Building2,
+    Calendar,
+    CheckCircle2,
+    Clock,
+    CreditCard,
+    ExternalLink,
+    FileText,
     Mail,
     MapPin,
+    PenSquare,
     Phone,
+    Receipt,
     Shield,
+    ShieldAlert,
+    ShieldCheck,
     User as UserIcon,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -15,6 +25,21 @@ import ProfilePhotoUpload from '@/components/ProfilePhotoUpload.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -24,6 +49,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { getInitials } from '@/composables/useInitials';
 import GuardianLayout from '@/layouts/GuardianLayout.vue';
 
@@ -65,7 +92,8 @@ function resetFormToOriginal(): void {
     form.phone_alt = originalProfile.phone_alt ?? '';
     form.emergency_contact = originalProfile.emergency_contact ?? '';
     form.guardian_name = originalProfile.guardian_name ?? '';
-    form.relationship_to_student = originalProfile.relationship_to_student ?? '';
+    form.relationship_to_student =
+        originalProfile.relationship_to_student ?? '';
     form.address = originalProfile.address ?? '';
     form.city = originalProfile.city ?? '';
     form.area = originalProfile.area ?? '';
@@ -74,24 +102,25 @@ function resetFormToOriginal(): void {
     form.preferred_contact_time = originalProfile.preferred_contact_time ?? '';
     form.status = originalProfile.status ?? 'active';
 }
+
 const tabs = [
     {
         key: 'personal',
-        label: 'Personal',
-        sublabel: 'Information',
+        label: 'Personal Info',
+        sublabel: 'Name & Student relationship',
         icon: UserIcon,
     },
     {
         key: 'contact',
-        label: 'Contact',
-        sublabel: 'Information',
+        label: 'Contact & Location',
+        sublabel: 'Phone, Address & City',
         icon: Phone,
     },
     {
         key: 'verification',
-        label: 'Verification',
-        sublabel: 'Status',
-        icon: Shield,
+        label: 'Verification Status',
+        sublabel: 'Badge & account status',
+        icon: ShieldCheck,
     },
 ];
 
@@ -128,13 +157,11 @@ const profileCompletionFields = [
 
 const profileCompletion = computed(() => {
     let filled = 0;
-
     for (const field of profileCompletionFields) {
         if ((form as any)[field]) {
             filled++;
         }
     }
-
     return Math.round((filled / profileCompletionFields.length) * 100);
 });
 
@@ -142,19 +169,15 @@ function hasValue(value: unknown): boolean {
     if (Array.isArray(value)) {
         return value.length > 0;
     }
-
     if (typeof value === 'string') {
         return value.trim() !== '';
     }
-
     if (typeof value === 'number') {
         return true;
     }
-
     if (typeof value === 'boolean') {
         return value;
     }
-
     return value !== null && value !== undefined;
 }
 
@@ -163,8 +186,7 @@ const activeTabActionLabel = computed(() => {
         const hasContactInfo = [form.phone_alt, form.address, form.notes].some(
             (value) => hasValue(value),
         );
-
-        return hasContactInfo ? 'Edit' : 'Add';
+        return hasContactInfo ? 'Edit Contact Info' : 'Add Contact Info';
     }
 
     const hasPersonalInfo = [
@@ -175,7 +197,7 @@ const activeTabActionLabel = computed(() => {
         form.status,
     ].some((value) => hasValue(value));
 
-    return hasPersonalInfo ? 'Edit' : 'Add';
+    return hasPersonalInfo ? 'Edit Personal Info' : 'Add Personal Info';
 });
 
 function switchTab(tabKey: string) {
@@ -224,11 +246,9 @@ const statusVariant = computed(() => {
     if (normalizedStatus.value === 'verified') {
         return 'default';
     }
-
     if (['rejected', 'cancelled'].includes(normalizedStatus.value)) {
         return 'destructive';
     }
-
     return 'secondary';
 });
 
@@ -282,551 +302,800 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
     <Head title="Guardian Profile" />
 
     <GuardianLayout :breadcrumbs="breadcrumbs">
-        <div class="grid gap-6 p-4 sm:p-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-            <aside
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
-            >
-                <div class="flex flex-col items-center text-center">
-                    <ProfilePhotoUpload />
+        <div
+            class="grid gap-5 p-4 text-slate-900 sm:p-5 lg:p-6 xl:grid-cols-[300px_minmax(0,1fr)]"
+        >
+            <!-- Sidebar Profile Card -->
+            <aside class="space-y-4">
+                <Card class="overflow-hidden border-slate-200/80 shadow-2xs">
+                    <CardContent class="space-y-4 p-5 text-center">
+                        <div class="flex flex-col items-center">
+                            <ProfilePhotoUpload />
+                            <h2
+                                class="mt-3 text-lg font-bold tracking-tight text-slate-900"
+                            >
+                                {{ form.name || authUser?.name || 'Guardian' }}
+                            </h2>
+                            <p class="text-xs font-medium text-slate-500">
+                                Guardian ID: #{{ authUser?.id ?? '—' }}
+                            </p>
 
-                    <h2 class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">
-                        {{ form.name || authUser?.name || 'Guardian' }}
-                    </h2>
-                    <p class="mt-1 text-sm text-muted-foreground">
-                        Guardian Id : {{ authUser?.id ?? '—' }}
-                    </p>
+                            <div class="mt-2 inline-flex items-center gap-1.5">
+                                <Badge
+                                    :variant="statusVariant"
+                                    class="px-2 py-0.5 text-[11px] font-semibold capitalize"
+                                >
+                                    {{ statusLabel }}
+                                </Badge>
+                                <Badge
+                                    variant="outline"
+                                    class="border-slate-300 px-2 py-0.5 text-[11px] capitalize"
+                                >
+                                    {{ form.status || 'Active' }}
+                                </Badge>
+                            </div>
+                        </div>
 
-                    <div class="mt-4 w-full">
-                        <div class="h-2.5 w-full rounded-full bg-slate-200">
+                        <!-- Progress Meter -->
+                        <div
+                            class="w-full space-y-1.5 border-t border-slate-100 pt-2"
+                        >
                             <div
-                                class="h-2.5 rounded-full bg-emerald-500 transition-all"
-                                :style="{ width: `${profileCompletion}%` }"
-                            ></div>
+                                class="flex items-center justify-between text-xs font-semibold"
+                            >
+                                <span class="text-slate-500"
+                                    >Profile Completion</span
+                                >
+                                <span class="font-bold text-blue-700"
+                                    >{{ profileCompletion }}%</span
+                                >
+                            </div>
+                            <div
+                                class="h-2 w-full overflow-hidden rounded-full bg-slate-100"
+                            >
+                                <div
+                                    class="h-full rounded-full bg-blue-600 transition-all duration-300"
+                                    :style="{ width: `${profileCompletion}%` }"
+                                ></div>
+                            </div>
                         </div>
-                        <p class="mt-2 text-sm font-medium text-emerald-600">
-                            {{ profileCompletion }}% Complete
-                        </p>
-                    </div>
-                </div>
 
-                <div class="mt-6 space-y-4 text-sm">
-                    <div class="flex items-start gap-3">
-                        <Mail class="mt-0.5 h-4 w-4 text-blue-500" />
-                        <div>
-                            <p class="font-medium">Email</p>
-                            <p class="text-muted-foreground">
-                                {{ authUser?.email || '—' }}
-                            </p>
-                        </div>
-                    </div>
+                        <Separator />
 
-                    <div class="flex items-start gap-3">
-                        <Phone class="mt-0.5 h-4 w-4 text-blue-500" />
-                        <div>
-                            <p class="font-medium">Phone Number</p>
-                            <p class="text-muted-foreground">
-                                {{ form.phone || '—' }}
-                            </p>
-                        </div>
-                    </div>
+                        <!-- Contact Summary -->
+                        <div class="space-y-2.5 text-left text-xs">
+                            <div class="flex items-start gap-2.5">
+                                <Mail
+                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400"
+                                />
+                                <div class="min-w-0">
+                                    <span
+                                        class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                        >Email</span
+                                    >
+                                    <span
+                                        class="block truncate font-medium text-slate-900"
+                                        >{{ authUser?.email || '—' }}</span
+                                    >
+                                </div>
+                            </div>
 
-                    <div class="flex items-start gap-3">
-                        <MapPin class="mt-0.5 h-4 w-4 text-blue-500" />
-                        <div>
-                            <p class="font-medium">Address</p>
-                            <p class="text-muted-foreground">
-                                {{ form.address || '—' }}
-                            </p>
-                        </div>
-                    </div>
+                            <div class="flex items-start gap-2.5">
+                                <Phone
+                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400"
+                                />
+                                <div>
+                                    <span
+                                        class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                        >Primary Phone</span
+                                    >
+                                    <span class="font-medium text-slate-900">{{
+                                        form.phone || '—'
+                                    }}</span>
+                                </div>
+                            </div>
 
-                    <div class="flex items-start gap-3">
-                        <Shield class="mt-0.5 h-4 w-4 text-blue-500" />
-                        <div>
-                            <p class="font-medium">Verification</p>
-                            <Badge :variant="statusVariant">{{
-                                statusLabel
-                            }}</Badge>
+                            <div class="flex items-start gap-2.5">
+                                <MapPin
+                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400"
+                                />
+                                <div>
+                                    <span
+                                        class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                        >City & Area</span
+                                    >
+                                    <span class="font-medium text-slate-900">
+                                        {{
+                                            form.city || form.area
+                                                ? `${form.city || ''} ${form.area ? ' (' + form.area + ')' : ''}`
+                                                : '—'
+                                        }}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             </aside>
 
-            <div class="space-y-6">
+            <!-- Main Content Section -->
+            <div class="space-y-4">
+                <!-- Flash Status Alert -->
                 <div
                     v-if="flashStatus"
-                    class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                    class="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3.5 py-2.5 text-xs font-medium text-emerald-900 shadow-2xs"
                 >
-                    {{ flashStatus }}
+                    <CheckCircle2 class="h-4 w-4 shrink-0 text-emerald-600" />
+                    <div>{{ flashStatus }}</div>
                 </div>
 
-                <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <!-- Navigation Tabs Bar -->
+                <div class="grid grid-cols-3 gap-2">
                     <button
                         v-for="tab in tabs"
                         :key="tab.key"
                         type="button"
-                        class="relative rounded-2xl border px-4 py-3 text-left transition-all"
-                        :class="
+                        class="flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all"
+                        :class="[
                             activeTab === tab.key
-                                ? 'border-blue-500 bg-linear-to-r from-blue-500 to-sky-500 text-white shadow-sm'
-                                : 'border-slate-200/80 bg-white hover:border-slate-300'
-                        "
+                                ? 'border-blue-600 bg-blue-600 text-white shadow-2xs'
+                                : 'border-slate-200/80 bg-white text-slate-700 hover:border-slate-300',
+                        ]"
                         @click="switchTab(tab.key)"
                     >
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-sm font-semibold">
-                                    {{ tab.label }}
-                                </p>
-                                <p
-                                    class="mt-0.5 text-xs"
-                                    :class="
-                                        activeTab === tab.key
-                                            ? 'text-blue-100'
-                                            : 'text-muted-foreground'
-                                    "
-                                >
-                                    {{ tab.sublabel }}
-                                </p>
-                            </div>
-                            <div
-                                class="rounded-full p-2"
-                                :class="
-                                    activeTab === tab.key
-                                        ? 'bg-white/15 text-white'
-                                        : 'bg-slate-100 text-muted-foreground'
-                                "
-                            >
-                                <component :is="tab.icon" class="h-4 w-4" />
-                            </div>
+                        <div
+                            class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
+                            :class="[
+                                activeTab === tab.key
+                                    ? 'bg-white/20 text-white'
+                                    : 'bg-slate-100 text-slate-500',
+                            ]"
+                        >
+                            <component :is="tab.icon" class="h-4 w-4" />
                         </div>
-                        <CheckCircle
-                            v-if="activeTab === tab.key"
-                            class="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-white text-blue-500"
-                        />
+                        <div class="min-w-0">
+                            <h4
+                                class="truncate text-xs leading-tight font-bold"
+                            >
+                                {{ tab.label }}
+                            </h4>
+                            <p
+                                class="truncate text-[10px]"
+                                :class="[
+                                    activeTab === tab.key
+                                        ? 'text-blue-100'
+                                        : 'text-slate-400',
+                                ]"
+                            >
+                                {{ tab.sublabel }}
+                            </p>
+                        </div>
                     </button>
                 </div>
 
-                <div
+                <!-- View Mode Display Card -->
+                <Card
                     v-if="activeTab !== 'verification' && !isEditingActiveTab"
-                    class="space-y-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
+                    class="border-slate-200/80 shadow-2xs"
                 >
-                    <div class="flex items-center justify-between gap-3">
-                        <h2 class="text-lg font-semibold">
-                            {{
-                                tabs.find((tab) => tab.key === activeTab)?.label
-                            }}
-                            Information
-                        </h2>
+                    <CardHeader
+                        class="flex flex-row items-center justify-between border-b border-slate-100 px-4 py-3"
+                    >
+                        <CardTitle
+                            class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase"
+                        >
+                            <component
+                                :is="
+                                    tabs.find((t) => t.key === activeTab)?.icon
+                                "
+                                class="h-4 w-4 text-blue-600"
+                            />
+                            <span>{{
+                                tabs.find((t) => t.key === activeTab)?.label
+                            }}</span>
+                        </CardTitle>
                         <Button
                             type="button"
                             variant="outline"
+                            size="sm"
+                            class="h-8 gap-1 text-xs"
                             @click="openEditMode"
                         >
-                            {{ activeTabActionLabel }}
+                            <PenSquare class="h-3.5 w-3.5" />
+                            <span>{{ activeTabActionLabel }}</span>
                         </Button>
-                    </div>
+                    </CardHeader>
 
-                    <section
-                        v-if="activeTab === 'personal'"
-                        class="grid gap-3 text-sm md:grid-cols-2"
-                    >
-                        <p>
-                            <span class="font-medium">Name:</span>
-                            {{ form.name || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Phone:</span>
-                            {{ form.phone || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Guardian Name:</span>
-                            {{ form.guardian_name || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Relationship:</span>
-                            {{ form.relationship_to_student || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Emergency Contact:</span>
-                            {{ form.emergency_contact || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Occupation:</span>
-                            {{ form.occupation || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Status:</span>
-                            {{ form.status || '—' }}
-                        </p>
-                    </section>
+                    <CardContent class="p-4">
+                        <!-- Personal Info Tab View -->
+                        <section
+                            v-if="activeTab === 'personal'"
+                            class="grid gap-3 text-xs sm:grid-cols-2 lg:grid-cols-3"
+                        >
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Full Name</span
+                                >
+                                <span class="block font-bold text-slate-900">{{
+                                    form.name || '—'
+                                }}</span>
+                            </div>
 
-                    <section
-                        v-if="activeTab === 'contact'"
-                        class="grid gap-3 text-sm md:grid-cols-2"
-                    >
-                        <p>
-                            <span class="font-medium">Alternative Phone:</span>
-                            {{ form.phone_alt || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Preferred Contact Time:</span>
-                            {{ form.preferred_contact_time || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">City:</span>
-                            {{ form.city || '—' }}
-                        </p>
-                        <p>
-                            <span class="font-medium">Area:</span>
-                            {{ form.area || '—' }}
-                        </p>
-                        <p class="md:col-span-2">
-                            <span class="font-medium">Address:</span>
-                            {{ form.address || '—' }}
-                        </p>
-                        <p class="md:col-span-2">
-                            <span class="font-medium">Notes:</span>
-                            {{ form.notes || '—' }}
-                        </p>
-                    </section>
-                </div>
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Guardian / Primary Contact</span
+                                >
+                                <span class="block font-bold text-slate-900">{{
+                                    form.guardian_name || '—'
+                                }}</span>
+                            </div>
 
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Relationship to Student</span
+                                >
+                                <span
+                                    class="block font-semibold text-slate-900"
+                                    >{{
+                                        form.relationship_to_student || '—'
+                                    }}</span
+                                >
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Occupation / Profession</span
+                                >
+                                <span
+                                    class="block font-semibold text-slate-900"
+                                    >{{ form.occupation || '—' }}</span
+                                >
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Account Status</span
+                                >
+                                <Badge
+                                    variant="outline"
+                                    class="text-[11px] capitalize"
+                                >
+                                    {{ form.status || 'Active' }}
+                                </Badge>
+                            </div>
+                        </section>
+
+                        <!-- Contact & Location Tab View -->
+                        <section
+                            v-if="activeTab === 'contact'"
+                            class="grid gap-3 text-xs sm:grid-cols-2 lg:grid-cols-3"
+                        >
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Primary Phone</span
+                                >
+                                <span class="block font-bold text-slate-900">{{
+                                    form.phone || '—'
+                                }}</span>
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Alternative Phone</span
+                                >
+                                <span class="block font-bold text-slate-900">{{
+                                    form.phone_alt || '—'
+                                }}</span>
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Emergency Contact</span
+                                >
+                                <span class="block font-bold text-slate-900">{{
+                                    form.emergency_contact || '—'
+                                }}</span>
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >City</span
+                                >
+                                <span
+                                    class="block font-semibold text-slate-900"
+                                    >{{ form.city || '—' }}</span
+                                >
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Area / Locality</span
+                                >
+                                <span
+                                    class="block font-semibold text-slate-900"
+                                    >{{ form.area || '—' }}</span
+                                >
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Preferred Contact Time</span
+                                >
+                                <span
+                                    class="block font-semibold text-slate-900"
+                                    >{{
+                                        form.preferred_contact_time ||
+                                        'Flexible'
+                                    }}</span
+                                >
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 sm:col-span-2 lg:col-span-3"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Full Address</span
+                                >
+                                <span
+                                    class="block font-medium text-slate-900"
+                                    >{{ form.address || '—' }}</span
+                                >
+                            </div>
+
+                            <div
+                                class="space-y-0.5 rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 sm:col-span-2 lg:col-span-3"
+                            >
+                                <span
+                                    class="block text-[10px] font-semibold text-slate-400 uppercase"
+                                    >Additional Notes / Instructions</span
+                                >
+                                <p
+                                    class="leading-relaxed font-normal text-slate-800"
+                                >
+                                    {{
+                                        form.notes ||
+                                        'No additional notes provided.'
+                                    }}
+                                </p>
+                            </div>
+                        </section>
+                    </CardContent>
+                </Card>
+
+                <!-- Edit Mode Form Section -->
                 <form
                     v-if="activeTab !== 'verification' && isEditingActiveTab"
-                    class="space-y-6"
+                    class="space-y-4"
                     @submit.prevent="submit"
                 >
-                    <section
+                    <!-- Personal Info Form -->
+                    <Card
                         v-if="activeTab === 'personal'"
-                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-2"
+                        class="border-slate-200/80 shadow-2xs"
                     >
-                        <div class="grid gap-2">
-                            <Label for="name">Name</Label>
-                            <Input
-                                id="name"
-                                v-model="form.name"
-                                type="text"
-                                required
-                            />
-                            <InputError :message="form.errors.name" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label for="phone">Phone</Label>
-                            <Input
-                                id="phone"
-                                v-model="form.phone"
-                                type="text"
-                                placeholder="01XXXXXXXXX"
-                            />
-                            <InputError :message="form.errors.phone" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label for="guardian_name">Guardian Name</Label>
-                            <Input
-                                id="guardian_name"
-                                v-model="form.guardian_name"
-                                type="text"
-                            />
-                            <InputError :message="form.errors.guardian_name" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label for="relationship_to_student">Relationship to Student</Label>
-                            <Input
-                                id="relationship_to_student"
-                                v-model="form.relationship_to_student"
-                                type="text"
-                                placeholder="e.g. Parent, Sibling, Relative"
-                            />
-                            <InputError :message="form.errors.relationship_to_student" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label for="emergency_contact">Emergency Contact</Label>
-                            <Input
-                                id="emergency_contact"
-                                v-model="form.emergency_contact"
-                                type="text"
-                                placeholder="01XXXXXXXXX"
-                            />
-                            <InputError :message="form.errors.emergency_contact" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label>Status</Label>
-                            <Select v-model="form.status">
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="active"
-                                        >Active</SelectItem
+                        <CardHeader class="border-b border-slate-100 px-4 py-3">
+                            <CardTitle
+                                class="text-xs font-bold tracking-wider text-slate-700 uppercase"
+                                >Edit Personal Information</CardTitle
+                            >
+                        </CardHeader>
+                        <CardContent class="space-y-3 p-4 text-xs">
+                            <div class="grid gap-3 sm:grid-cols-2">
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="name"
+                                        class="text-xs font-semibold"
+                                        >Account Name</Label
                                     >
-                                    <SelectItem value="inactive"
-                                        >Inactive</SelectItem
+                                    <Input
+                                        id="name"
+                                        v-model="form.name"
+                                        type="text"
+                                        class="h-8 text-xs"
+                                        required
+                                    />
+                                    <InputError :message="form.errors.name" />
+                                </div>
+
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="guardian_name"
+                                        class="text-xs font-semibold"
+                                        >Guardian / Contact Person Name</Label
                                     >
-                                </SelectContent>
-                            </Select>
-                            <InputError :message="form.errors.status" />
-                        </div>
+                                    <Input
+                                        id="guardian_name"
+                                        v-model="form.guardian_name"
+                                        type="text"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError
+                                        :message="form.errors.guardian_name"
+                                    />
+                                </div>
 
-                        <div class="grid gap-2 md:col-span-2">
-                            <Label for="occupation">Occupation</Label>
-                            <Input
-                                id="occupation"
-                                v-model="form.occupation"
-                                type="text"
-                            />
-                            <InputError :message="form.errors.occupation" />
-                        </div>
-                    </section>
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="relationship_to_student"
+                                        class="text-xs font-semibold"
+                                        >Relationship to Student</Label
+                                    >
+                                    <Input
+                                        id="relationship_to_student"
+                                        v-model="form.relationship_to_student"
+                                        type="text"
+                                        placeholder="e.g. Father, Mother, Guardian"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError
+                                        :message="
+                                            form.errors.relationship_to_student
+                                        "
+                                    />
+                                </div>
 
-                    <section
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="occupation"
+                                        class="text-xs font-semibold"
+                                        >Occupation / Profession</Label
+                                    >
+                                    <Input
+                                        id="occupation"
+                                        v-model="form.occupation"
+                                        type="text"
+                                        placeholder="e.g. Business / Engineer"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError
+                                        :message="form.errors.occupation"
+                                    />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <!-- Contact & Location Form -->
+                    <Card
                         v-if="activeTab === 'contact'"
-                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-2"
+                        class="border-slate-200/80 shadow-2xs"
                     >
-                        <div class="grid gap-2">
-                            <Label for="phone_alt">Alternative Phone</Label>
-                            <Input
-                                id="phone_alt"
-                                v-model="form.phone_alt"
-                                type="text"
-                                placeholder="Optional"
-                            />
-                            <InputError :message="form.errors.phone_alt" />
-                        </div>
+                        <CardHeader class="border-b border-slate-100 px-4 py-3">
+                            <CardTitle
+                                class="text-xs font-bold tracking-wider text-slate-700 uppercase"
+                                >Edit Contact & Address</CardTitle
+                            >
+                        </CardHeader>
+                        <CardContent class="space-y-3 p-4 text-xs">
+                            <div class="grid gap-3 sm:grid-cols-2">
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="phone"
+                                        class="text-xs font-semibold"
+                                        >Primary Phone</Label
+                                    >
+                                    <Input
+                                        id="phone"
+                                        v-model="form.phone"
+                                        type="text"
+                                        placeholder="01XXXXXXXXX"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError :message="form.errors.phone" />
+                                </div>
 
-                        <div class="grid gap-2">
-                            <Label for="preferred_contact_time">Preferred Contact Time</Label>
-                            <Input
-                                id="preferred_contact_time"
-                                v-model="form.preferred_contact_time"
-                                type="text"
-                                placeholder="e.g. Evening (5PM - 8PM)"
-                            />
-                            <InputError :message="form.errors.preferred_contact_time" />
-                        </div>
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="phone_alt"
+                                        class="text-xs font-semibold"
+                                        >Alternative Phone</Label
+                                    >
+                                    <Input
+                                        id="phone_alt"
+                                        v-model="form.phone_alt"
+                                        type="text"
+                                        placeholder="01XXXXXXXXX"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError
+                                        :message="form.errors.phone_alt"
+                                    />
+                                </div>
 
-                        <div class="grid gap-2">
-                            <Label for="city">City</Label>
-                            <Input
-                                id="city"
-                                v-model="form.city"
-                                type="text"
-                                placeholder="e.g. Dhaka"
-                            />
-                            <InputError :message="form.errors.city" />
-                        </div>
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="emergency_contact"
+                                        class="text-xs font-semibold"
+                                        >Emergency Contact</Label
+                                    >
+                                    <Input
+                                        id="emergency_contact"
+                                        v-model="form.emergency_contact"
+                                        type="text"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError
+                                        :message="form.errors.emergency_contact"
+                                    />
+                                </div>
 
-                        <div class="grid gap-2">
-                            <Label for="area">Area</Label>
-                            <Input
-                                id="area"
-                                v-model="form.area"
-                                type="text"
-                                placeholder="e.g. Dhanmondi"
-                            />
-                            <InputError :message="form.errors.area" />
-                        </div>
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="preferred_contact_time"
+                                        class="text-xs font-semibold"
+                                        >Preferred Contact Time</Label
+                                    >
+                                    <Input
+                                        id="preferred_contact_time"
+                                        v-model="form.preferred_contact_time"
+                                        type="text"
+                                        placeholder="e.g. Evening / 6 PM - 9 PM"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError
+                                        :message="
+                                            form.errors.preferred_contact_time
+                                        "
+                                    />
+                                </div>
 
-                        <div class="grid gap-2 md:col-span-2">
-                            <Label for="address">Address</Label>
-                            <textarea
-                                id="address"
-                                v-model="form.address"
-                                rows="4"
-                                class="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                                placeholder="House, road, area"
-                            ></textarea>
-                            <InputError :message="form.errors.address" />
-                        </div>
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="city"
+                                        class="text-xs font-semibold"
+                                        >City</Label
+                                    >
+                                    <Input
+                                        id="city"
+                                        v-model="form.city"
+                                        type="text"
+                                        placeholder="e.g. Dhaka"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError :message="form.errors.city" />
+                                </div>
 
-                        <div class="grid gap-2 md:col-span-2">
-                            <Label for="notes">Notes</Label>
-                            <textarea
-                                id="notes"
-                                v-model="form.notes"
-                                rows="4"
-                                class="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                                placeholder="Additional information"
-                            ></textarea>
-                            <InputError :message="form.errors.notes" />
-                        </div>
-                    </section>
+                                <div class="grid gap-1">
+                                    <Label
+                                        for="area"
+                                        class="text-xs font-semibold"
+                                        >Area / Locality</Label
+                                    >
+                                    <Input
+                                        id="area"
+                                        v-model="form.area"
+                                        type="text"
+                                        placeholder="e.g. Mirpur, Gulshan"
+                                        class="h-8 text-xs"
+                                    />
+                                    <InputError :message="form.errors.area" />
+                                </div>
 
-                    <div class="flex items-center gap-3">
-                        <Button type="submit" :disabled="form.processing"
-                            >Save Profile</Button
-                        >
+                                <div class="grid gap-1 sm:col-span-2">
+                                    <Label
+                                        for="address"
+                                        class="text-xs font-semibold"
+                                        >Full Address</Label
+                                    >
+                                    <Textarea
+                                        id="address"
+                                        v-model="form.address"
+                                        rows="2"
+                                        placeholder="House no, Road no, Locality..."
+                                        class="text-xs"
+                                    />
+                                    <InputError
+                                        :message="form.errors.address"
+                                    />
+                                </div>
+
+                                <div class="grid gap-1 sm:col-span-2">
+                                    <Label
+                                        for="notes"
+                                        class="text-xs font-semibold"
+                                        >Additional Notes</Label
+                                    >
+                                    <Textarea
+                                        id="notes"
+                                        v-model="form.notes"
+                                        rows="2"
+                                        placeholder="Any specific requirements or notes..."
+                                        class="text-xs"
+                                    />
+                                    <InputError :message="form.errors.notes" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <!-- Submit & Cancel Action Buttons -->
+                    <div class="flex items-center justify-end gap-2 pt-2">
                         <Button
                             type="button"
                             variant="outline"
+                            size="sm"
+                            class="text-xs"
                             @click="closeEditMode"
-                            >Cancel</Button
                         >
-                        <span
-                            v-if="form.processing"
-                            class="text-sm text-muted-foreground"
-                            >Saving...</span
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            size="sm"
+                            class="bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700"
+                            :disabled="form.processing"
                         >
+                            Save Profile Changes
+                        </Button>
                     </div>
                 </form>
 
-                <div v-if="activeTab === 'verification'" class="space-y-6">
-                    <div
-                        v-if="
-                            $page.props.errors?.payment ||
-                            $page.props.errors?.verification
-                        "
-                        class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-                    >
-                        {{
-                            $page.props.errors.payment ||
-                            $page.props.errors.verification
-                        }}
-                    </div>
-
-                    <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
-                    >
+                <!-- Verification Status Tab -->
+                <Card
+                    v-if="activeTab === 'verification'"
+                    class="border-slate-200/80 shadow-2xs"
+                >
+                    <CardHeader class="border-b border-slate-100 px-4 py-3">
+                        <CardTitle
+                            class="flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 uppercase"
+                        >
+                            <ShieldCheck class="h-4 w-4 text-blue-600" />
+                            <span>Guardian Verification Status</span>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent class="space-y-4 p-4 text-xs">
                         <div
-                            class="flex flex-wrap items-center justify-between gap-3"
+                            class="flex flex-col justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4 sm:flex-row sm:items-center"
                         >
                             <div class="space-y-1">
-                                <p class="text-sm text-muted-foreground">
-                                    Current Status
+                                <h4 class="text-sm font-bold text-slate-900">
+                                    Verification Status: {{ statusLabel }}
+                                </h4>
+                                <p class="text-xs text-slate-500">
+                                    Verified guardians build trust with tutors
+                                    and enjoy expedited tuition posting and
+                                    matching.
                                 </p>
-                                <Badge :variant="statusVariant">{{
-                                    statusLabel
-                                }}</Badge>
                             </div>
-
                             <Button
                                 v-if="canRequestVerification"
                                 type="button"
+                                size="sm"
+                                class="shrink-0 bg-blue-600 text-xs text-white hover:bg-blue-700"
                                 @click="requestDialogOpen = true"
                             >
-                                Request Verification (BDT 500)
+                                Request Profile Verification
                             </Button>
                         </div>
 
-                        <p
-                            v-if="normalizedStatus === 'verified' && verifiedAt"
-                            class="mt-4 text-sm text-muted-foreground"
+                        <!-- Verification Invoice Payment Card -->
+                        <div
+                            v-if="canPayInvoice && verificationInvoice"
+                            class="space-y-3 rounded-xl border border-blue-200 bg-blue-50/50 p-4"
                         >
-                            Verified on
-                            {{ new Date(verifiedAt).toLocaleString() }}.
-                        </p>
-
-                        <p
-                            v-if="verification?.decision_reason"
-                            class="mt-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
-                        >
-                            {{ verification.decision_reason }}
-                        </p>
-                    </section>
-
-                    <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm"
-                    >
-                        <h2 class="text-lg font-semibold">Invoice</h2>
-
-                        <p
-                            v-if="!verificationInvoice"
-                            class="mt-3 text-sm text-muted-foreground"
-                        >
-                            Invoice will be generated after admin approval.
-                        </p>
-
-                        <div v-else class="mt-4 space-y-4">
-                            <div
-                                class="grid gap-3 rounded-lg border p-4 text-sm md:grid-cols-2"
-                            >
-                                <p>
-                                    <span class="font-medium">Invoice No:</span>
-                                    {{ verificationInvoice.invoice_no }}
-                                </p>
-                                <p>
-                                    <span class="font-medium">Amount:</span>
+                            <div class="flex items-center justify-between">
+                                <h4
+                                    class="flex items-center gap-1.5 text-sm font-bold text-blue-900"
+                                >
+                                    <Receipt class="h-4 w-4 text-blue-600" />
+                                    <span>Verification Fee Invoice</span>
+                                </h4>
+                                <Badge
+                                    variant="outline"
+                                    class="border-blue-300 bg-white text-blue-800"
+                                >
                                     {{ verificationInvoice.amount }}
                                     {{ verificationInvoice.currency }}
-                                </p>
-                                <p>
-                                    <span class="font-medium">Status:</span>
-                                    {{ verificationInvoice.status }}
-                                </p>
-                                <p>
-                                    <span class="font-medium">Due At:</span>
-                                    {{
-                                        verificationInvoice.due_at
-                                            ? new Date(
-                                                  verificationInvoice.due_at,
-                                              ).toLocaleString()
-                                            : '—'
-                                    }}
-                                </p>
-                                <p>
-                                    <span class="font-medium">Expires At:</span>
-                                    {{
-                                        verificationInvoice.expires_at
-                                            ? new Date(
-                                                  verificationInvoice.expires_at,
-                                              ).toLocaleString()
-                                            : '—'
-                                    }}
-                                </p>
-                                <p>
-                                    <span class="font-medium">Paid At:</span>
-                                    {{
-                                        verificationInvoice.paid_at
-                                            ? new Date(
-                                                  verificationInvoice.paid_at,
-                                              ).toLocaleString()
-                                            : '—'
-                                    }}
-                                </p>
+                                </Badge>
                             </div>
-
-                            <div class="flex flex-wrap gap-2">
+                            <p class="text-xs text-blue-950">
+                                Invoice #{{
+                                    verificationInvoice.invoice_no
+                                }}
+                                has been issued. Pay now to complete
+                                verification.
+                            </p>
+                            <div class="flex flex-wrap gap-2 pt-1">
                                 <Button
                                     type="button"
-                                    :disabled="!canPayInvoice"
+                                    size="sm"
+                                    class="bg-pink-600 text-xs text-white hover:bg-pink-700"
                                     @click="startPayment('bkash')"
                                 >
                                     Pay with bKash
                                 </Button>
                                 <Button
                                     type="button"
-                                    variant="outline"
-                                    :disabled="!canPayInvoice"
+                                    size="sm"
+                                    class="bg-emerald-600 text-xs text-white hover:bg-emerald-700"
                                     @click="startPayment('sslcommerz')"
                                 >
-                                    Pay with SSLCommerz
+                                    Pay with SSLCommerz / Cards
                                 </Button>
                             </div>
-
-                            <p
-                                v-if="verificationInvoice.status !== 'unpaid'"
-                                class="text-xs text-muted-foreground"
-                            >
-                                Payment buttons are available only when invoice
-                                is unpaid.
-                            </p>
                         </div>
-                    </section>
-
-                    <ConfirmDialog
-                        v-model:open="requestDialogOpen"
-                        title="Submit Verification Request"
-                        description="A one-time non-refundable verification fee of BDT 500 will apply. Continue?"
-                        confirm-label="Submit Request"
-                        @confirm="requestVerification"
-                    />
-                </div>
+                    </CardContent>
+                </Card>
             </div>
         </div>
+
+        <!-- Request Verification Dialog Modal -->
+        <Dialog
+            :open="requestDialogOpen"
+            @update:open="requestDialogOpen = $event"
+        >
+            <DialogContent class="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle
+                        class="flex items-center gap-1.5 text-base text-blue-800"
+                    >
+                        <ShieldCheck class="h-4 w-4 text-blue-600" />
+                        <span>Request Profile Verification</span>
+                    </DialogTitle>
+                    <DialogDescription class="text-xs">
+                        Submitting a verification request will submit your
+                        guardian details to admins for review.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <p class="py-2 text-xs text-slate-600">
+                    Once submitted, our team will review your information and
+                    process your verification status.
+                </p>
+
+                <DialogFooter class="gap-2 sm:gap-0">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        class="text-xs"
+                        @click="requestDialogOpen = false"
+                        >Cancel</Button
+                    >
+                    <Button
+                        type="button"
+                        size="sm"
+                        class="bg-blue-600 text-xs text-white hover:bg-blue-700"
+                        @click="requestVerification"
+                    >
+                        Submit Verification Request
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </GuardianLayout>
 </template>
