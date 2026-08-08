@@ -54,7 +54,8 @@ const colorStyles = computed(() => {
         emerald: {
             iconGradient: 'from-emerald-500 to-teal-600',
             iconColor: 'text-emerald-600 dark:text-emerald-400',
-            borderHover: 'hover:border-emerald-200 dark:hover:border-emerald-800',
+            borderHover:
+                'hover:border-emerald-200 dark:hover:border-emerald-800',
             gradientBar: 'from-emerald-500 to-teal-500',
             labelColor: 'text-emerald-600 dark:text-emerald-400',
             valueColor: 'text-emerald-700 dark:text-emerald-300',
@@ -217,7 +218,14 @@ function formatValue(val: number | string): string {
         <!-- Decorative dot pattern -->
         <div
             class="pointer-events-none absolute inset-0 opacity-[0.015]"
-            style="background-image: radial-gradient(circle, currentColor 1px, transparent 1px); background-size: 16px 16px;"
+            style="
+                background-image: radial-gradient(
+                    circle,
+                    currentColor 1px,
+                    transparent 1px
+                );
+                background-size: 16px 16px;
+            "
             aria-hidden="true"
         />
 
@@ -253,10 +261,7 @@ function formatValue(val: number | string): string {
                 class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br text-white shadow-sm ring-1 ring-white/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md"
                 :class="colorStyles.iconGradient"
             >
-                <component
-                    :is="icon"
-                    class="h-5 w-5"
-                />
+                <component :is="icon" class="h-5 w-5" />
             </div>
         </div>
 
@@ -273,17 +278,14 @@ function formatValue(val: number | string): string {
 
         <div
             v-if="trend"
-            class="absolute top-5 right-5 flex items-center gap-1 rounded-full bg-background/80 px-2 py-0.5 text-[11px] font-semibold shadow-xs backdrop-blur-sm ring-1 ring-border/20"
+            class="absolute top-5 right-5 flex items-center gap-1 rounded-full bg-background/80 px-2 py-0.5 text-[11px] font-semibold shadow-xs ring-1 ring-border/20 backdrop-blur-sm"
             :class="[
                 trend.direction === 'up'
                     ? colorStyles.trendUp
                     : colorStyles.trendDown,
             ]"
         >
-            <TrendingUp
-                v-if="trend.direction === 'up'"
-                class="h-3 w-3"
-            />
+            <TrendingUp v-if="trend.direction === 'up'" class="h-3 w-3" />
             <TrendingDown v-else class="h-3 w-3" />
             {{ trend.value }}
         </div>

@@ -104,7 +104,9 @@ function handlePrint(): void {
                 class="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6 print:border-0 print:p-0 print:shadow-none"
             >
                 <div>
-                    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+                    <h1
+                        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                    >
                         User Registration Report
                     </h1>
                     <p class="mt-1 text-sm text-muted-foreground">
@@ -243,127 +245,129 @@ function handlePrint(): void {
                 class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm print:rounded-none print:shadow-none"
             >
                 <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 print:bg-gray-100">
-                        <tr>
-                            <th
-                                class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 print:bg-gray-100">
+                            <tr>
+                                <th
+                                    class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Month
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    New Tutors
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    New Guardians
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Total
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Active Tutors
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Active Guardians
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Verified Tutors
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Verified Guardians
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="row in reportData"
+                                :key="row.month"
+                                class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 print:hover:bg-transparent"
                             >
-                                Month
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                New Tutors
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                New Guardians
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Total
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Active Tutors
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Active Guardians
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Verified Tutors
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Verified Guardians
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="row in reportData"
-                            :key="row.month"
-                            class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 print:hover:bg-transparent"
+                                <td
+                                    class="px-5 py-4 font-medium text-slate-700"
+                                >
+                                    {{ row.label }}
+                                </td>
+                                <td
+                                    class="px-5 py-4 text-right font-medium text-blue-600"
+                                >
+                                    {{ row.newTutors }}
+                                </td>
+                                <td
+                                    class="px-5 py-4 text-right font-medium text-purple-600"
+                                >
+                                    {{ row.newGuardians }}
+                                </td>
+                                <td class="px-5 py-4 text-right font-semibold">
+                                    {{ row.totalRegistrations }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ row.activeTutors }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ row.activeGuardians }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ row.verifiedTutors }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ row.verifiedGuardians }}
+                                </td>
+                            </tr>
+                            <tr v-if="reportData.length === 0" class="border-t">
+                                <td
+                                    colspan="8"
+                                    class="px-5 py-8 text-center text-muted-foreground"
+                                >
+                                    No registration data found for the selected
+                                    period.
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot
+                            class="border-t-2 border-slate-300 bg-slate-50 font-semibold print:bg-gray-100"
                         >
-                            <td class="px-5 py-4 font-medium text-slate-700">
-                                {{ row.label }}
-                            </td>
-                            <td
-                                class="px-5 py-4 text-right font-medium text-blue-600"
-                            >
-                                {{ row.newTutors }}
-                            </td>
-                            <td
-                                class="px-5 py-4 text-right font-medium text-purple-600"
-                            >
-                                {{ row.newGuardians }}
-                            </td>
-                            <td class="px-5 py-4 text-right font-semibold">
-                                {{ row.totalRegistrations }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ row.activeTutors }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ row.activeGuardians }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ row.verifiedTutors }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ row.verifiedGuardians }}
-                            </td>
-                        </tr>
-                        <tr v-if="reportData.length === 0" class="border-t">
-                            <td
-                                colspan="8"
-                                class="px-5 py-8 text-center text-muted-foreground"
-                            >
-                                No registration data found for the selected
-                                period.
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot
-                        class="border-t-2 border-slate-300 bg-slate-50 font-semibold print:bg-gray-100"
-                    >
-                        <tr>
-                            <td class="px-5 py-4 text-slate-900">
-                                Grand Total
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalTutors }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalGuardians }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalRegistrations }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalActive }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                —
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalVerified }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                —
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                            <tr>
+                                <td class="px-5 py-4 text-slate-900">
+                                    Grand Total
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalTutors }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalGuardians }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalRegistrations }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalActive }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    —
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalVerified }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    —
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>

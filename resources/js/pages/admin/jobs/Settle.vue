@@ -151,7 +151,13 @@ function submit() {
                                     Change this value to adjust the commission.
                                     The original job salary was
                                     <strong
-                                        >{{ Number(job.salary_amount).toLocaleString('en-BD', { maximumFractionDigits: 0 }) }}
+                                        >{{
+                                            Number(
+                                                job.salary_amount,
+                                            ).toLocaleString('en-BD', {
+                                                maximumFractionDigits: 0,
+                                            })
+                                        }}
                                         {{ job.salary_currency }}</strong
                                     >.
                                 </p>
@@ -197,7 +203,12 @@ function submit() {
                                         <span
                                             class="text-lg font-semibold text-blue-600"
                                             >+{{
-                                                commissionAmount.toLocaleString('en-BD', { maximumFractionDigits: 0 })
+                                                commissionAmount.toLocaleString(
+                                                    'en-BD',
+                                                    {
+                                                        maximumFractionDigits: 0,
+                                                    },
+                                                )
                                             }}
                                             {{ job.salary_currency }}</span
                                         >
@@ -214,7 +225,12 @@ function submit() {
                                             class="text-2xl font-black text-slate-900"
                                         >
                                             {{
-                                                commissionAmount.toLocaleString('en-BD', { maximumFractionDigits: 0 })
+                                                commissionAmount.toLocaleString(
+                                                    'en-BD',
+                                                    {
+                                                        maximumFractionDigits: 0,
+                                                    },
+                                                )
                                             }}
                                             {{ job.salary_currency }}
                                         </span>

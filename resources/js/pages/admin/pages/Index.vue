@@ -269,7 +269,9 @@ function handleRowAction(actionKey, row) {
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
-                        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+                        <h1
+                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        >
                             {{ filters.trash ? 'Page Recycle Bin' : 'Pages' }}
                         </h1>
                         <p class="text-sm text-muted-foreground">

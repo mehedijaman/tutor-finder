@@ -76,7 +76,7 @@ function getSanitizedAnswer(answer: string): string {
     </Head>
 
     <PublicLayout>
-        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
+        <section class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
             <div
                 class="rounded-3xl bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white shadow-sm md:p-10"
             >
@@ -93,8 +93,10 @@ function getSanitizedAnswer(answer: string): string {
             </div>
         </section>
 
-        <main class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-16">
-            <div class="rounded-xl border bg-white p-4 shadow-sm">
+        <main class="mx-auto max-w-5xl px-4 pb-16 sm:px-6 lg:px-8">
+            <div
+                class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+            >
                 <div class="mb-5 flex flex-wrap gap-2">
                     <Link
                         v-for="tab in audienceTabs"
@@ -106,7 +108,7 @@ function getSanitizedAnswer(answer: string): string {
                         :class="
                             selectedAudience === tab.key
                                 ? 'border-blue-600 bg-blue-600 text-white'
-                                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
                         "
                     >
                         {{ tab.label }}
@@ -115,12 +117,15 @@ function getSanitizedAnswer(answer: string): string {
 
                 <div
                     v-if="faqs.length === 0"
-                    class="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground"
+                    class="rounded-lg border border-dashed border-slate-200 p-8 text-center text-sm text-muted-foreground dark:border-slate-800"
                 >
                     No FAQs found for this audience.
                 </div>
 
-                <div v-else class="divide-y">
+                <div
+                    v-else
+                    class="divide-y divide-slate-100 dark:divide-slate-800"
+                >
                     <section v-for="faq in faqs" :key="faq.id" class="py-3">
                         <button
                             type="button"
@@ -128,11 +133,12 @@ function getSanitizedAnswer(answer: string): string {
                             :aria-expanded="openFaqId === faq.id"
                             @click="toggleFaq(faq.id)"
                         >
-                            <span class="font-semibold text-slate-900">{{
-                                faq.question
-                            }}</span>
                             <span
-                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border text-slate-500 transition-transform"
+                                class="font-semibold text-slate-900 dark:text-slate-100"
+                                >{{ faq.question }}</span
+                            >
+                            <span
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition-transform dark:border-slate-800 dark:text-slate-400"
                                 :class="
                                     openFaqId === faq.id ? 'rotate-180' : ''
                                 "
@@ -162,7 +168,7 @@ function getSanitizedAnswer(answer: string): string {
                         >
                             <div
                                 v-if="openFaqId === faq.id"
-                                class="prose prose-sm mt-3 max-w-none text-slate-700"
+                                class="prose prose-sm dark:prose-invert mt-3 max-w-none text-slate-700 dark:text-slate-300"
                                 v-html="getSanitizedAnswer(faq.answer)"
                             />
                         </transition>

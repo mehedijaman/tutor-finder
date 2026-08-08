@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ArrowDown, ArrowUp, ArrowUpDown, Columns3, Inbox } from 'lucide-vue-next';
+import {
+    ArrowDown,
+    ArrowUp,
+    ArrowUpDown,
+    Columns3,
+    Inbox,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -292,7 +298,9 @@ function mobilePrimaryValue(row: any): string {
             :style="maxHeight ? { maxHeight } : undefined"
         >
             <template v-if="loading">
-                <div class="flex flex-col items-center gap-2 px-4 py-12 text-muted-foreground">
+                <div
+                    class="flex flex-col items-center gap-2 px-4 py-12 text-muted-foreground"
+                >
                     <div
                         class="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary"
                     />
@@ -327,26 +335,29 @@ function mobilePrimaryValue(row: any): string {
                                     #{{ serialNumber(index) }}
                                 </p>
                             </div>
-                            <slot
-                                name="cell-actions"
-                                :row="row"
-                            >
+                            <slot name="cell-actions" :row="row">
                                 <slot
                                     :name="`cell-${columns[columns.length - 1]?.key}`"
                                     :row="row"
-                                    :value="row[columns[columns.length - 1]?.key]"
+                                    :value="
+                                        row[columns[columns.length - 1]?.key]
+                                    "
                                 />
                             </slot>
                         </div>
 
                         <div class="space-y-2">
                             <div
-                                v-for="(column, colIndex) in visibleColumns.slice(1)"
+                                v-for="(
+                                    column, colIndex
+                                ) in visibleColumns.slice(1)"
                                 :key="column.key"
                                 v-show="colIndex < 4"
                                 class="flex items-start justify-between gap-3"
                             >
-                                <span class="shrink-0 text-xs font-medium text-muted-foreground">
+                                <span
+                                    class="shrink-0 text-xs font-medium text-muted-foreground"
+                                >
                                     {{ column.label }}
                                 </span>
                                 <div
@@ -358,7 +369,9 @@ function mobilePrimaryValue(row: any): string {
                                         :row="row"
                                         :value="row[column.key]"
                                     >
-                                        <span class="truncate block max-w-[200px]">
+                                        <span
+                                            class="block max-w-[200px] truncate"
+                                        >
                                             {{ row[column.key] ?? '—' }}
                                         </span>
                                     </slot>
@@ -370,7 +383,9 @@ function mobilePrimaryValue(row: any): string {
             </template>
 
             <template v-else>
-                <div class="flex flex-col items-center gap-3 px-4 py-16 text-muted-foreground">
+                <div
+                    class="flex flex-col items-center gap-3 px-4 py-16 text-muted-foreground"
+                >
                     <div
                         class="flex h-12 w-12 items-center justify-center rounded-full bg-muted"
                     >
@@ -396,7 +411,8 @@ function mobilePrimaryValue(row: any): string {
                         v-if="items.from && items.to && items.total"
                         class="text-center text-xs text-muted-foreground sm:text-left"
                     >
-                        Showing {{ items.from }}–{{ items.to }} of {{ items.total }}
+                        Showing {{ items.from }}–{{ items.to }} of
+                        {{ items.total }}
                     </span>
 
                     <!-- Column visibility toggle -->
@@ -421,7 +437,9 @@ function mobilePrimaryValue(row: any): string {
                                 :key="column.key"
                                 :checked="!hiddenColumns.has(column.key)"
                                 class="text-xs"
-                                @update:checked="toggleColumnVisibility(column.key)"
+                                @update:checked="
+                                    toggleColumnVisibility(column.key)
+                                "
                             >
                                 {{ column.label }}
                             </DropdownMenuCheckboxItem>

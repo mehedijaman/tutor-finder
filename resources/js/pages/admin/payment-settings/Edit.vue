@@ -66,7 +66,7 @@ function submit() {
                     class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                 >
                     <h1
-                        class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
                     >
                         Payment Settings
                     </h1>

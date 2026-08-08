@@ -90,7 +90,9 @@ function badgeVariant(status) {
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight sm:text-3xl">
+                        <h1
+                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        >
                             Applications for {{ job.title }}
                         </h1>
                         <p class="mt-1 text-sm text-muted-foreground">
@@ -179,15 +181,33 @@ function badgeVariant(status) {
                 <template #cell-tutor_name="{ row }">
                     <div class="space-y-1.5">
                         <div class="flex items-center gap-2">
-                            <p class="font-bold text-slate-900">{{ row.tutor.name }}</p>
-                            <Badge v-if="row.is_selected" variant="default" class="bg-emerald-600">Selected</Badge>
+                            <p class="font-bold text-slate-900">
+                                {{ row.tutor.name }}
+                            </p>
+                            <Badge
+                                v-if="row.is_selected"
+                                variant="default"
+                                class="bg-emerald-600"
+                                >Selected</Badge
+                            >
                         </div>
-                        <div v-if="job.subjects?.length" class="flex flex-wrap items-center gap-1 text-xs">
-                            <span class="font-semibold text-slate-400">Subject:</span>
-                            <span class="font-semibold text-slate-700">{{ job.subjects.join(', ') }}</span>
+                        <div
+                            v-if="job.subjects?.length"
+                            class="flex flex-wrap items-center gap-1 text-xs"
+                        >
+                            <span class="font-semibold text-slate-400"
+                                >Subject:</span
+                            >
+                            <span class="font-semibold text-slate-700">{{
+                                job.subjects.join(', ')
+                            }}</span>
                         </div>
                         <div class="flex flex-wrap items-center gap-3 text-xs">
-                            <span v-if="row.tutor.email" class="text-slate-500">{{ row.tutor.email }}</span>
+                            <span
+                                v-if="row.tutor.email"
+                                class="text-slate-500"
+                                >{{ row.tutor.email }}</span
+                            >
                             <a
                                 v-if="row.tutor.download_cv_url"
                                 :href="row.tutor.download_cv_url"

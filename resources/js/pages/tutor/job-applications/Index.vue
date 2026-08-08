@@ -106,8 +106,7 @@ function jobStatusBadgeClass(status: string): string {
     const map: Record<string, string> = {
         live: 'bg-emerald-50 text-emerald-700 border-emerald-200',
         pending: 'bg-amber-50 text-amber-700 border-amber-200',
-        confirmed:
-            'bg-indigo-50 text-indigo-700 border-indigo-200',
+        confirmed: 'bg-indigo-50 text-indigo-700 border-indigo-200',
         cancelled: 'bg-slate-50 text-slate-600 border-slate-200',
         closed: 'bg-slate-50 text-slate-500 border-slate-200',
     };
@@ -229,7 +228,7 @@ function formatPaginationLabel(label: string): string {
                     class="flex flex-wrap items-center justify-between gap-3 border-b border-blue-200/80"
                 >
                     <div
-                        class="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] md:w-auto"
+                        class="w-full [scrollbar-width:none] overflow-x-auto [-ms-overflow-style:none] md:w-auto"
                     >
                         <div
                             class="flex min-w-max items-center gap-6 pr-2 [&::-webkit-scrollbar]:hidden"
@@ -265,7 +264,10 @@ function formatPaginationLabel(label: string): string {
             </div>
 
             <!-- Application Cards -->
-            <div v-if="rows.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div
+                v-if="rows.length"
+                class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+            >
                 <div
                     v-for="row in rows"
                     :key="row.id"
@@ -324,9 +326,7 @@ function formatPaginationLabel(label: string): string {
                         </div>
 
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-slate-500"
-                                >Expected Salary</span
-                            >
+                            <span class="text-slate-500">Expected Salary</span>
                             <span class="font-medium text-slate-700">
                                 {{
                                     row.expected_salary_amount
@@ -347,18 +347,27 @@ function formatPaginationLabel(label: string): string {
                         </div>
 
                         <!-- Subject & CV Download -->
-                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                        <div
+                            class="flex items-center justify-between border-t border-slate-100 pt-2 text-xs"
+                        >
                             <div class="min-w-0 flex-1">
-                                <span class="font-semibold text-slate-400 uppercase tracking-wider block text-[10px]">Subject</span>
+                                <span
+                                    class="block text-[10px] font-semibold tracking-wider text-slate-400 uppercase"
+                                    >Subject</span
+                                >
                                 <span class="font-bold text-slate-800">
-                                    {{ row.job?.subject_names?.length ? row.job.subject_names.join(', ') : 'All Subjects' }}
+                                    {{
+                                        row.job?.subject_names?.length
+                                            ? row.job.subject_names.join(', ')
+                                            : 'All Subjects'
+                                    }}
                                 </span>
                             </div>
                             <a
                                 v-if="row.download_cv_url"
                                 :href="row.download_cv_url"
                                 target="_blank"
-                                class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 hover:underline bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100 shadow-2xs"
+                                class="inline-flex items-center gap-1 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1 font-bold text-blue-600 shadow-2xs hover:text-blue-700 hover:underline"
                             >
                                 <span>CV View</span>
                                 <span>↓</span>
@@ -428,10 +437,7 @@ function formatPaginationLabel(label: string): string {
             </div>
 
             <!-- Pagination -->
-            <div
-                v-if="hasPagination"
-                class="flex items-center justify-between"
-            >
+            <div v-if="hasPagination" class="flex items-center justify-between">
                 <span
                     v-if="items.from && items.to && items.total"
                     class="text-xs text-slate-500"
@@ -440,7 +446,7 @@ function formatPaginationLabel(label: string): string {
                     {{ items.total }}
                 </span>
 
-                <div class="flex items-center gap-1.5 ml-auto">
+                <div class="ml-auto flex items-center gap-1.5">
                     <template
                         v-for="(link, index) in links"
                         :key="`${index}-${link.label}`"

@@ -36,7 +36,7 @@ const initialValues = {
                 >
                     <div class="space-y-1">
                         <h1
-                            class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
                         >
                             Create SMS Setting
                         </h1>

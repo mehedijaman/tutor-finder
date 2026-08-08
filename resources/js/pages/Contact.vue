@@ -175,7 +175,9 @@ function submit(): void {
     <Head title="Contact" />
 
     <PublicLayout>
-        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 pb-12 sm:pt-8">
+        <section
+            class="mx-auto max-w-7xl px-4 pt-4 pb-12 sm:px-6 sm:pt-8 lg:px-8"
+        >
             <div
                 class="relative overflow-hidden rounded-3xl bg-blue-600 px-6 py-12 text-center shadow-2xl shadow-blue-600/20 sm:px-12 sm:py-16"
             >
@@ -196,14 +198,14 @@ function submit(): void {
             </div>
         </section>
 
-        <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+        <main class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
             <div class="grid gap-6 lg:grid-cols-5 lg:items-start lg:gap-8">
                 <aside class="space-y-6 lg:sticky lg:top-24 lg:col-span-2">
                     <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                     >
                         <h2
-                            class="text-lg font-semibold tracking-tight text-slate-900"
+                            class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100"
                         >
                             Get in touch
                         </h2>
@@ -217,7 +219,7 @@ function submit(): void {
                         <div class="mt-6 space-y-5 text-sm">
                             <div>
                                 <p
-                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900"
+                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100"
                                 >
                                     <Mail class="h-4 w-4 text-blue-600" />
                                     Email
@@ -229,7 +231,7 @@ function submit(): void {
                                     <li v-for="email in emails" :key="email">
                                         <a
                                             :href="`mailto:${email}`"
-                                            class="inline-flex items-center break-all transition-colors hover:text-slate-900"
+                                            class="inline-flex items-center break-all transition-colors hover:text-slate-900 dark:hover:text-slate-100"
                                             >{{ email }}</a
                                         >
                                     </li>
@@ -241,7 +243,7 @@ function submit(): void {
 
                             <div>
                                 <p
-                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900"
+                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100"
                                 >
                                     <Phone class="h-4 w-4 text-emerald-600" />
                                     Phone
@@ -253,7 +255,7 @@ function submit(): void {
                                     <li v-for="phone in phones" :key="phone">
                                         <a
                                             :href="`tel:${phone}`"
-                                            class="inline-flex items-center transition-colors hover:text-slate-900"
+                                            class="inline-flex items-center transition-colors hover:text-slate-900 dark:hover:text-slate-100"
                                             >{{ phone }}</a
                                         >
                                     </li>
@@ -265,7 +267,7 @@ function submit(): void {
 
                             <div>
                                 <p
-                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900"
+                                    class="mb-2 flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100"
                                 >
                                     <MapPin class="h-4 w-4 text-amber-600" />
                                     Address
@@ -277,12 +279,12 @@ function submit(): void {
                                     <li
                                         v-for="(address, index) in addresses"
                                         :key="`${address.address}-${index}`"
-                                        class="rounded-lg border border-slate-100 bg-slate-50/60 p-3"
+                                        class="rounded-lg border border-slate-100 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-800/60"
                                     >
                                         <p class="leading-relaxed">
                                             <span
                                                 v-if="address.label"
-                                                class="font-medium text-slate-900"
+                                                class="font-medium text-slate-900 dark:text-slate-100"
                                                 >{{ address.label }}:</span
                                             >
                                             {{ address.address }}
@@ -292,7 +294,7 @@ function submit(): void {
                                             :href="address.map_url"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            class="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-blue-700 transition-colors hover:text-blue-900"
+                                            class="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-blue-700 transition-colors hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                                         >
                                             Open map
                                             <ExternalLink class="h-3.5 w-3.5" />
@@ -308,7 +310,7 @@ function submit(): void {
 
                     <section
                         v-if="socialEntries.length"
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                     >
                         <h3
                             class="text-sm font-semibold tracking-[0.08em] text-muted-foreground uppercase"
@@ -322,7 +324,7 @@ function submit(): void {
                                 :href="social.url"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900"
+                                class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                             >
                                 <component
                                     :is="socialIcon(social.platform)"
@@ -336,10 +338,10 @@ function submit(): void {
 
                 <section class="lg:col-span-3">
                     <div
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 md:p-8"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 md:p-8 dark:border-slate-800 dark:bg-slate-900"
                     >
                         <h2
-                            class="text-xl font-semibold tracking-tight text-slate-900"
+                            class="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100"
                         >
                             Send a message
                         </h2>
@@ -354,7 +356,7 @@ function submit(): void {
                             v-if="successMessage"
                             role="status"
                             aria-live="polite"
-                            class="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                            class="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
                         >
                             {{ successMessage }}
                         </div>
@@ -364,7 +366,7 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="name"
-                                        class="text-sm font-medium text-slate-800"
+                                        class="text-sm font-medium text-slate-800 dark:text-slate-200"
                                         >Full name
                                         <span class="text-red-600"
                                             >*</span
@@ -375,12 +377,12 @@ function submit(): void {
                                         v-model="form.name"
                                         type="text"
                                         autocomplete="name"
-                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:ring-offset-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-blue-900/30"
                                         placeholder="Your full name"
                                     />
                                     <p
                                         v-if="form.errors.name"
-                                        class="mt-1 text-sm text-red-600"
+                                        class="mt-1 text-sm text-red-600 dark:text-red-400"
                                     >
                                         {{ form.errors.name }}
                                     </p>
@@ -389,19 +391,19 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="subject"
-                                        class="text-sm font-medium text-slate-800"
+                                        class="text-sm font-medium text-slate-800 dark:text-slate-200"
                                         >Subject</label
                                     >
                                     <input
                                         id="subject"
                                         v-model="form.subject"
                                         type="text"
-                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:ring-offset-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-blue-900/30"
                                         placeholder="How can we help?"
                                     />
                                     <p
                                         v-if="form.errors.subject"
-                                        class="mt-1 text-sm text-red-600"
+                                        class="mt-1 text-sm text-red-600 dark:text-red-400"
                                     >
                                         {{ form.errors.subject }}
                                     </p>
@@ -412,7 +414,7 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="email"
-                                        class="text-sm font-medium text-slate-800"
+                                        class="text-sm font-medium text-slate-800 dark:text-slate-200"
                                         >Email</label
                                     >
                                     <input
@@ -420,12 +422,12 @@ function submit(): void {
                                         v-model="form.email"
                                         type="email"
                                         autocomplete="email"
-                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:ring-offset-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-blue-900/30"
                                         placeholder="you@example.com"
                                     />
                                     <p
                                         v-if="form.errors.email"
-                                        class="mt-1 text-sm text-red-600"
+                                        class="mt-1 text-sm text-red-600 dark:text-red-400"
                                     >
                                         {{ form.errors.email }}
                                     </p>
@@ -434,7 +436,7 @@ function submit(): void {
                                 <div>
                                     <label
                                         for="phone"
-                                        class="text-sm font-medium text-slate-800"
+                                        class="text-sm font-medium text-slate-800 dark:text-slate-200"
                                         >Phone</label
                                     >
                                     <input
@@ -442,12 +444,12 @@ function submit(): void {
                                         v-model="form.phone"
                                         type="text"
                                         autocomplete="tel"
-                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:ring-offset-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-blue-900/30"
                                         placeholder="017XXXXXXXX"
                                     />
                                     <p
                                         v-if="form.errors.phone"
-                                        class="mt-1 text-sm text-red-600"
+                                        class="mt-1 text-sm text-red-600 dark:text-red-400"
                                     >
                                         {{ form.errors.phone }}
                                     </p>
@@ -457,7 +459,7 @@ function submit(): void {
                             <div>
                                 <label
                                     for="message"
-                                    class="text-sm font-medium text-slate-800"
+                                    class="text-sm font-medium text-slate-800 dark:text-slate-200"
                                     >Message
                                     <span class="text-red-600">*</span></label
                                 >
@@ -465,12 +467,12 @@ function submit(): void {
                                     id="message"
                                     v-model="form.message"
                                     rows="6"
-                                    class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                    class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 ring-offset-white transition outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:ring-offset-slate-900 dark:placeholder:text-slate-500 dark:focus:ring-blue-900/30"
                                     placeholder="Write your message..."
                                 ></textarea>
                                 <p
                                     v-if="form.errors.message"
-                                    class="mt-1 text-sm text-red-600"
+                                    class="mt-1 text-sm text-red-600 dark:text-red-400"
                                 >
                                     {{ form.errors.message }}
                                 </p>

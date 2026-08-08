@@ -177,9 +177,7 @@ const roleActions = computed<ActionCardConfig[]>(() => {
             <DashboardWelcome />
 
             <div>
-                <h2
-                    class="mb-4 text-base font-semibold text-card-foreground"
-                >
+                <h2 class="mb-4 text-base font-semibold text-card-foreground">
                     Quick Actions
                 </h2>
                 <div
@@ -196,18 +194,14 @@ const roleActions = computed<ActionCardConfig[]>(() => {
             <div
                 class="rounded-2xl border border-border/60 bg-card p-6 shadow-sm"
             >
-                <h2
-                    class="text-base font-semibold text-card-foreground"
-                >
+                <h2 class="text-base font-semibold text-card-foreground">
                     Getting Started
                 </h2>
                 <p class="mt-1 text-sm text-muted-foreground">
                     Use the sidebar or quick actions above to navigate the
                     platform.
                 </p>
-                <div
-                    class="mt-6 grid gap-4 sm:grid-cols-2"
-                >
+                <div class="mt-6 grid gap-4 sm:grid-cols-2">
                     <Link
                         v-if="user?.role === 'tutor'"
                         href="/jobs"
@@ -224,11 +218,9 @@ const roleActions = computed<ActionCardConfig[]>(() => {
                             >
                                 Find Your First Tutoring Job
                             </h3>
-                            <p
-                                class="mt-0.5 text-xs text-muted-foreground"
-                            >
-                                Browse available positions and apply to
-                                the ones that match your skills.
+                            <p class="mt-0.5 text-xs text-muted-foreground">
+                                Browse available positions and apply to the ones
+                                that match your skills.
                             </p>
                         </div>
                     </Link>
@@ -248,11 +240,9 @@ const roleActions = computed<ActionCardConfig[]>(() => {
                             >
                                 Post Your First Job
                             </h3>
-                            <p
-                                class="mt-0.5 text-xs text-muted-foreground"
-                            >
-                                Describe your tutoring requirements and
-                                start receiving applications.
+                            <p class="mt-0.5 text-xs text-muted-foreground">
+                                Describe your tutoring requirements and start
+                                receiving applications.
                             </p>
                         </div>
                     </Link>
@@ -272,11 +262,9 @@ const roleActions = computed<ActionCardConfig[]>(() => {
                             >
                                 Review New Registrations
                             </h3>
-                            <p
-                                class="mt-0.5 text-xs text-muted-foreground"
-                            >
-                                Approve new tutors and guardians who have
-                                signed up recently.
+                            <p class="mt-0.5 text-xs text-muted-foreground">
+                                Approve new tutors and guardians who have signed
+                                up recently.
                             </p>
                         </div>
                     </Link>
@@ -295,11 +283,9 @@ const roleActions = computed<ActionCardConfig[]>(() => {
                             >
                                 Complete Your Profile
                             </h3>
-                            <p
-                                class="mt-0.5 text-xs text-muted-foreground"
-                            >
-                                Make sure your profile is complete for
-                                the best experience.
+                            <p class="mt-0.5 text-xs text-muted-foreground">
+                                Make sure your profile is complete for the best
+                                experience.
                             </p>
                         </div>
                     </Link>

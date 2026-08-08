@@ -100,7 +100,9 @@ function handlePrint(): void {
                 class="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6 print:border-0 print:p-0 print:shadow-none"
             >
                 <div>
-                    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+                    <h1
+                        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                    >
                         Job Performance Report
                     </h1>
                     <p class="mt-1 text-sm text-muted-foreground">
@@ -229,160 +231,163 @@ function handlePrint(): void {
                 class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm print:rounded-none print:shadow-none"
             >
                 <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 print:bg-gray-100">
-                        <tr>
-                            <th
-                                class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 print:bg-gray-100">
+                            <tr>
+                                <th
+                                    class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Month
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Jobs
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Applications
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Avg/Job
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Shortlisted
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Appointed
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Confirmed
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Cancelled
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Conversion
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="row in reportData"
+                                :key="row.month"
+                                class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 print:hover:bg-transparent"
                             >
-                                Month
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Jobs
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Applications
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Avg/Job
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Shortlisted
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Appointed
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Confirmed
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Cancelled
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Conversion
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="row in reportData"
-                            :key="row.month"
-                            class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 print:hover:bg-transparent"
+                                <td
+                                    class="px-5 py-4 font-medium text-slate-700"
+                                >
+                                    {{ row.label }}
+                                </td>
+                                <td class="px-5 py-4 text-right font-semibold">
+                                    {{ row.totalJobs }}
+                                </td>
+                                <td
+                                    class="px-5 py-4 text-right font-medium text-blue-600"
+                                >
+                                    {{ row.totalApplications }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ row.avgApplicationsPerJob }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ row.shortlisted }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ row.appointed }}
+                                </td>
+                                <td
+                                    class="px-5 py-4 text-right font-medium text-emerald-600"
+                                >
+                                    {{ row.confirmed }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-red-500">
+                                    {{ row.cancelledApplications }}
+                                </td>
+                                <td
+                                    class="px-5 py-4 text-right font-semibold text-indigo-600"
+                                >
+                                    {{ row.conversionRate }}%
+                                </td>
+                            </tr>
+                            <tr v-if="reportData.length === 0" class="border-t">
+                                <td
+                                    colspan="9"
+                                    class="px-5 py-8 text-center text-muted-foreground"
+                                >
+                                    No job performance data found for the
+                                    selected period.
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot
+                            class="border-t-2 border-slate-300 bg-slate-50 font-semibold print:bg-gray-100"
                         >
-                            <td class="px-5 py-4 font-medium text-slate-700">
-                                {{ row.label }}
-                            </td>
-                            <td class="px-5 py-4 text-right font-semibold">
-                                {{ row.totalJobs }}
-                            </td>
-                            <td
-                                class="px-5 py-4 text-right font-medium text-blue-600"
-                            >
-                                {{ row.totalApplications }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ row.avgApplicationsPerJob }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ row.shortlisted }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ row.appointed }}
-                            </td>
-                            <td
-                                class="px-5 py-4 text-right font-medium text-emerald-600"
-                            >
-                                {{ row.confirmed }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-red-500">
-                                {{ row.cancelledApplications }}
-                            </td>
-                            <td
-                                class="px-5 py-4 text-right font-semibold text-indigo-600"
-                            >
-                                {{ row.conversionRate }}%
-                            </td>
-                        </tr>
-                        <tr v-if="reportData.length === 0" class="border-t">
-                            <td
-                                colspan="9"
-                                class="px-5 py-8 text-center text-muted-foreground"
-                            >
-                                No job performance data found for the selected
-                                period.
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot
-                        class="border-t-2 border-slate-300 bg-slate-50 font-semibold print:bg-gray-100"
-                    >
-                        <tr>
-                            <td class="px-5 py-4 text-slate-900">
-                                Grand Total
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalJobs }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalApplications }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.avgApplicationsPerJob }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    reportData.reduce(
-                                        (s, r) => s + r.shortlisted,
-                                        0,
-                                    )
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    reportData.reduce(
-                                        (s, r) => s + r.appointed,
-                                        0,
-                                    )
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    reportData.reduce(
-                                        (s, r) => s + r.confirmed,
-                                        0,
-                                    )
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    reportData.reduce(
-                                        (s, r) => s + r.cancelledApplications,
-                                        0,
-                                    )
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.overallConversionRate }}%
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                            <tr>
+                                <td class="px-5 py-4 text-slate-900">
+                                    Grand Total
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalJobs }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalApplications }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.avgApplicationsPerJob }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) => s + r.shortlisted,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) => s + r.appointed,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) => s + r.confirmed,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) =>
+                                                s + r.cancelledApplications,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.overallConversionRate }}%
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>

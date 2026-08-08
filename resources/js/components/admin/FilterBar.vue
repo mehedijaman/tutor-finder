@@ -26,9 +26,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div
-        class="flex flex-col gap-4 sm:flex-row sm:items-center"
-    >
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div class="relative flex-1">
             <Search
                 class="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -52,7 +50,7 @@ const emit = defineEmits<{
                     <component
                         :is="filter.icon"
                         v-if="filter.icon"
-                        class="mr-2 h-4 w-4 text-muted-foreground shrink-0"
+                        class="mr-2 h-4 w-4 shrink-0 text-muted-foreground"
                     />
                     <SelectValue :placeholder="filter.placeholder" />
                 </SelectTrigger>
@@ -68,3 +66,4 @@ const emit = defineEmits<{
             </Select>
         </template>
     </div>
+</template>

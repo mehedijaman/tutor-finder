@@ -68,10 +68,10 @@ function stripHtml(html: string): string {
 <template>
     <div
         v-if="notices.length"
-        class="relative overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 shadow-sm"
+        class="relative overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 shadow-sm dark:border-amber-900/50 dark:from-amber-950/40 dark:via-amber-950/30 dark:to-yellow-950/20"
     >
         <div
-            class="flex items-center justify-between border-b border-amber-200/60 bg-amber-100/50 px-5 py-3"
+            class="flex items-center justify-between border-b border-amber-200/60 bg-amber-100/50 px-5 py-3 dark:border-amber-900/50 dark:bg-amber-900/30"
         >
             <div class="flex items-center gap-2">
                 <div
@@ -79,25 +79,31 @@ function stripHtml(html: string): string {
                 >
                     <Megaphone class="h-4 w-4" />
                 </div>
-                <h2 class="text-sm font-semibold text-amber-900">Notices</h2>
+                <h2
+                    class="text-sm font-semibold text-amber-900 dark:text-amber-200"
+                >
+                    Notices
+                </h2>
             </div>
             <div v-if="notices.length > 1" class="flex items-center gap-1">
                 <Button
                     variant="ghost"
                     size="icon"
-                    class="h-7 w-7 text-amber-700 hover:bg-amber-200/50"
+                    class="h-7 w-7 text-amber-700 hover:bg-amber-200/50 dark:text-amber-300 dark:hover:bg-amber-900/50"
                     :disabled="!canScrollPrev"
                     @click="scrollPrev"
                 >
                     <ChevronLeft class="h-4 w-4" />
                 </Button>
-                <span class="min-w-[3rem] text-center text-xs text-amber-700">
+                <span
+                    class="min-w-[3rem] text-center text-xs text-amber-700 dark:text-amber-300"
+                >
                     {{ currentIndex + 1 }} / {{ notices.length }}
                 </span>
                 <Button
                     variant="ghost"
                     size="icon"
-                    class="h-7 w-7 text-amber-700 hover:bg-amber-200/50"
+                    class="h-7 w-7 text-amber-700 hover:bg-amber-200/50 dark:text-amber-300 dark:hover:bg-amber-900/50"
                     :disabled="!canScrollNext"
                     @click="scrollNext"
                 >
@@ -115,23 +121,23 @@ function stripHtml(html: string): string {
                 <CarouselItem v-for="notice in notices" :key="notice.id">
                     <div class="p-5">
                         <h3
-                            class="line-clamp-1 text-base font-semibold text-slate-900"
+                            class="line-clamp-1 text-base font-semibold text-slate-900 dark:text-slate-100"
                         >
                             {{ notice.title }}
                         </h3>
                         <p
-                            class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600"
+                            class="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400"
                         >
                             {{ stripHtml(notice.body) }}
                         </p>
                         <div
-                            class="mt-3 flex items-center gap-1.5 text-xs text-amber-700"
+                            class="mt-3 flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400"
                         >
                             <Calendar class="h-3.5 w-3.5" />
                             <span>{{ formatDate(notice.published_at) }}</span>
                             <span
                                 v-if="notice.expires_at"
-                                class="text-slate-400"
+                                class="text-slate-400 dark:text-slate-500"
                             >
                                 · Expires {{ formatDate(notice.expires_at) }}
                             </span>
@@ -149,7 +155,7 @@ function stripHtml(html: string): string {
                 :class="[
                     idx === currentIndex
                         ? 'w-6 bg-amber-500'
-                        : 'w-1.5 bg-amber-300 hover:bg-amber-400',
+                        : 'w-1.5 bg-amber-300 hover:bg-amber-400 dark:bg-amber-700 dark:hover:bg-amber-600',
                 ]"
                 @click="emblaApi?.scrollTo(idx)"
             />

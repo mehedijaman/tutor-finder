@@ -98,106 +98,116 @@ type Tutor = {
 const props = defineProps<{
     tutor: Tutor;
     reviews: PaginatedReviews;
-    ratingDistribution: Record<number, number>;
-    canReview: boolean;
-    reviewableAssignments: ReviewableAssignment[];
-    guardianJobs: Array<{ id: number; title: string }>;
-    filterOptions: any;
+    filterOptions: {
+        categories: Array<{ id: number; name: string }>;
+        classes: Array<{ id: number; name: string }>;
+        subjects: Array<{ id: number; name: string }>;
+
+        locations: Array<{ id: number; name: string }>;
+        tuitionTypes: Array<{ id: number; name: string }>;
+    };
+    guardianJobs?: Array<{
+        id: number;
+        title: string;
+        code: string;
+    }>;
+    ratingDistribution?: Record<number, number>;
+    reviewableAssignments?: ReviewableAssignment[];
     meta: {
         title: string;
         description: string;
     };
 }>();
 
-const isVerified = computed(() => !!props.tutor.verified_at);
-const averageRating = computed(
-    () => Number(props.tutor.tutor_reviews_avg_rating) || 0,
-);
-const totalReviews = computed(() => props.tutor.tutor_reviews_count ?? 0);
+const editingReview = ref<Review | null>(null);
 
-const page = usePage();
-const successMessage = computed(
-    () => (page.props.flash as { success?: string })?.success,
-);
-
-type EditReview = {
-    id: number;
-    rating: number;
-    comment: string | null;
-};
-
-const editingReview = ref<EditReview | null>(null);
-
-function handleEditReview(review: {
-    id: number;
-    rating: number;
-    comment: string | null;
-}): void {
-    editingReview.value = {
-        id: review.id,
-        rating: review.rating,
-        comment: review.comment,
-    };
+function handleEditReview(review: Review) {
+    editingReview.value = review;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 
-function cancelEdit(): void {
+function cancelEdit() {
     editingReview.value = null;
 }
 
-const showReviewForm = computed(
-    () => props.canReview || editingReview.value !== null,
+const page = usePage();
+const flashSuccess = computed(
+    () => (page.props.flash as Record<string, string>)?.success,
 );
+const successMessage = ref(flashSuccess.value);
 
-function formatDate(dateStr: string | null): string {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
-}
+const isVerified = computed(() => Boolean(props.tutor.verified_at));
 
-function normalizeList(value: unknown): string[] {
-    if (Array.isArray(value)) {
-        return value
-            .map((item) => String(item).trim())
-            .filter((item) => item !== '');
-    }
+const averageRating = computed(() => {
+    return Number(props.tutor.tutor_reviews_avg_rating ?? 0);
+});
 
-    if (typeof value !== 'string' || value.trim() === '') {
-        return [];
-    }
+const totalReviews = computed(() => props.tutor.tutor_reviews_count ?? 0);
 
-    try {
-        const parsed = JSON.parse(value);
-
-        if (!Array.isArray(parsed)) {
-            return [];
-        }
-
-        return parsed
-            .map((item) => String(item).trim())
-            .filter((item) => item !== '');
-    } catch {
-        return [];
-    }
-}
+const showReviewForm = computed(() => {
+    const user = page.props.auth?.user;
+    if (!user || user.role !== 'guardian') return false;
+    return (props.reviewableAssignments?.length ?? 0) > 0;
+});
 
 function getSalaryRange(): string {
     const min = props.tutor.tutor_profile?.expected_salary_min;
     const max = props.tutor.tutor_profile?.expected_salary_max;
 
+    if (!min && !max) {
+        return 'Negotiable';
+    }
+
+    const fmt = (v: number) => `৳${v.toLocaleString()}`;
+
     if (min && max) {
-        return `৳ ${min.toLocaleString()} - ৳ ${max.toLocaleString()}`;
+        return `${fmt(min)} - ${fmt(max)}/month`;
     }
+
     if (min) {
-        return `৳ ${min.toLocaleString()}`;
+        return `${fmt(min)}+ /month`;
     }
-    if (max) {
-        return `Up to ৳ ${max.toLocaleString()}`;
+
+    return `Up to ${fmt(max!)}/month`;
+}
+
+function formatDate(dateStr: string | null): string {
+    if (!dateStr) {
+        return 'N/A';
     }
-    return 'Negotiable';
+
+    return new Date(dateStr).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+}
+
+function normalizeList(val: unknown): string[] {
+    if (!val) {
+        return [];
+    }
+
+    if (Array.isArray(val)) {
+        return val.map((v) => String(v));
+    }
+
+    if (typeof val === 'string') {
+        try {
+            const parsed = JSON.parse(val);
+
+            if (Array.isArray(parsed)) {
+                return parsed.map((v) => String(v));
+            }
+        } catch {
+            return val
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean);
+        }
+    }
+
+    return [];
 }
 
 const dayLabelMap: Record<string, string> = {
@@ -268,7 +278,7 @@ const { tutor } = props;
 
     <PublicLayout>
         <div
-            class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50/50"
+            class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
         >
             <!-- Hero Banner -->
             <div
@@ -304,7 +314,7 @@ const { tutor } = props;
                 <!-- Profile Card (overlapping hero) -->
                 <div class="-mt-20 mb-8">
                     <div
-                        class="rounded-3xl border border-white/80 bg-white/95 p-5 shadow-2xl shadow-slate-300/30 backdrop-blur-xl sm:p-7 lg:p-8"
+                        class="rounded-3xl border border-white/80 bg-white/95 p-5 shadow-2xl shadow-slate-300/30 backdrop-blur-xl sm:p-7 lg:p-8 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-slate-950/50"
                     >
                         <div
                             class="flex flex-col items-center gap-5 sm:flex-row sm:items-start sm:gap-7 lg:gap-8"
@@ -312,7 +322,7 @@ const { tutor } = props;
                             <!-- Avatar -->
                             <div class="relative shrink-0">
                                 <div
-                                    class="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-4xl font-bold text-white shadow-xl ring-[5px] shadow-blue-600/30 ring-white sm:h-36 sm:w-36 sm:text-5xl"
+                                    class="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-4xl font-bold text-white shadow-xl ring-[5px] shadow-blue-600/30 ring-white sm:h-36 sm:w-36 sm:text-5xl dark:ring-slate-800"
                                 >
                                     <img
                                         v-if="tutor.photo_url"
@@ -326,7 +336,7 @@ const { tutor } = props;
                                 </div>
                                 <div
                                     v-if="isVerified"
-                                    class="absolute -right-1.5 -bottom-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-lg ring-[3px] shadow-emerald-500/30 ring-white"
+                                    class="absolute -right-1.5 -bottom-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-lg ring-[3px] shadow-emerald-500/30 ring-white dark:ring-slate-800"
                                     title="Verified Tutor"
                                 >
                                     <BadgeCheck class="h-5 w-5" />
@@ -341,13 +351,13 @@ const { tutor } = props;
                                     class="flex flex-col items-center gap-2.5 sm:flex-row sm:items-center"
                                 >
                                     <h1
-                                        class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                                        class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                                     >
                                         {{ tutor.name }}
                                     </h1>
                                     <Badge
                                         v-if="isVerified"
-                                        class="border-emerald-200 bg-emerald-50 px-2.5 text-emerald-700"
+                                        class="border-emerald-200 bg-emerald-50 px-2.5 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
                                     >
                                         <BadgeCheck class="mr-1 h-3.5 w-3.5" />
                                         Verified
@@ -355,14 +365,16 @@ const { tutor } = props;
                                     <Badge
                                         v-else
                                         variant="outline"
-                                        class="border-amber-200 bg-amber-50 px-2.5 text-amber-700"
+                                        class="border-amber-200 bg-amber-50 px-2.5 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
                                     >
                                         <ShieldAlert class="mr-1 h-3.5 w-3.5" />
                                         Unverified
                                     </Badge>
                                 </div>
 
-                                <p class="mt-1.5 text-sm text-slate-400">
+                                <p
+                                    class="mt-1.5 text-sm text-slate-400 dark:text-slate-500"
+                                >
                                     Tutor ID: #{{ tutor.id }}
                                 </p>
 
@@ -387,10 +399,10 @@ const { tutor } = props;
                                         v-if="
                                             tutor.tutor_profile?.present_address
                                         "
-                                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200"
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                                     >
                                         <MapPin
-                                            class="h-3.5 w-3.5 text-slate-400"
+                                            class="h-3.5 w-3.5 text-slate-400 dark:text-slate-500"
                                         />
                                         {{
                                             tutor.tutor_profile.present_address
@@ -433,19 +445,19 @@ const { tutor } = props;
 
                             <!-- Salary Card -->
                             <div
-                                class="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm"
+                                class="overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
                             >
                                 <div
-                                    class="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4"
+                                    class="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 dark:from-blue-950/40 dark:to-indigo-950/40"
                                 >
                                     <div
-                                        class="flex items-center gap-2 text-sm font-medium text-blue-700"
+                                        class="flex items-center gap-2 text-sm font-medium text-blue-700 dark:text-blue-300"
                                     >
                                         <Wallet class="h-4 w-4" />
                                         Expected Salary
                                     </div>
                                     <p
-                                        class="mt-1.5 text-2xl font-bold tracking-tight text-slate-900"
+                                        class="mt-1.5 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
                                     >
                                         {{ getSalaryRange() }}
                                     </p>
@@ -454,10 +466,10 @@ const { tutor } = props;
 
                             <!-- Quick Details Card -->
                             <div
-                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm"
+                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                             >
                                 <h3
-                                    class="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-900"
+                                    class="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100"
                                 >
                                     <Sparkles class="h-4 w-4 text-amber-500" />
                                     Quick Details
@@ -467,18 +479,18 @@ const { tutor } = props;
                                         class="flex items-center gap-3 text-sm"
                                     >
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600"
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
                                         >
                                             <User class="h-4 w-4" />
                                         </div>
                                         <div>
                                             <p
-                                                class="text-xs font-medium text-slate-400"
+                                                class="text-xs font-medium text-slate-400 dark:text-slate-500"
                                             >
                                                 Gender
                                             </p>
                                             <p
-                                                class="font-medium text-slate-800"
+                                                class="font-medium text-slate-800 dark:text-slate-200"
                                             >
                                                 {{
                                                     tutor.tutor_profile?.gender
@@ -501,18 +513,18 @@ const { tutor } = props;
                                         class="flex items-center gap-3 text-sm"
                                     >
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600"
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400"
                                         >
                                             <Clock class="h-4 w-4" />
                                         </div>
                                         <div>
                                             <p
-                                                class="text-xs font-medium text-slate-400"
+                                                class="text-xs font-medium text-slate-400 dark:text-slate-500"
                                             >
                                                 Available Time
                                             </p>
                                             <p
-                                                class="font-medium text-slate-800"
+                                                class="font-medium text-slate-800 dark:text-slate-200"
                                             >
                                                 {{
                                                     tutor.tutor_profile
@@ -527,18 +539,18 @@ const { tutor } = props;
                                         class="flex items-center gap-3 text-sm"
                                     >
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
                                         >
                                             <Calendar class="h-4 w-4" />
                                         </div>
                                         <div>
                                             <p
-                                                class="text-xs font-medium text-slate-400"
+                                                class="text-xs font-medium text-slate-400 dark:text-slate-500"
                                             >
                                                 Member Since
                                             </p>
                                             <p
-                                                class="font-medium text-slate-800"
+                                                class="font-medium text-slate-800 dark:text-slate-200"
                                             >
                                                 {{
                                                     formatDate(tutor.created_at)
@@ -552,10 +564,10 @@ const { tutor } = props;
                             <!-- Available Days Card -->
                             <div
                                 v-if="formattedAvailableDays.length > 0"
-                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm"
+                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                             >
                                 <h3
-                                    class="mb-3.5 flex items-center gap-2 text-sm font-semibold text-slate-900"
+                                    class="mb-3.5 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100"
                                 >
                                     <CalendarDays
                                         class="h-4 w-4 text-purple-500"
@@ -568,11 +580,11 @@ const { tutor } = props;
                                     <div
                                         v-for="day in formattedAvailableDays"
                                         :key="day.key"
-                                        class="flex flex-col items-center rounded-xl border border-purple-100 bg-gradient-to-b from-purple-50 to-white px-2 py-2.5 text-center"
+                                        class="flex flex-col items-center rounded-xl border border-purple-100 bg-gradient-to-b from-purple-50 to-white px-2 py-2.5 text-center dark:border-purple-900/60 dark:from-purple-950/40 dark:to-slate-900"
                                         :title="day.full"
                                     >
                                         <span
-                                            class="text-xs font-bold text-purple-700"
+                                            class="text-xs font-bold text-purple-700 dark:text-purple-300"
                                         >
                                             {{ day.short }}
                                         </span>
@@ -583,10 +595,10 @@ const { tutor } = props;
                             <!-- Preferred Locations Card -->
                             <div
                                 v-if="preferredLocations.length > 0"
-                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm"
+                                class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                             >
                                 <h3
-                                    class="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900"
+                                    class="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100"
                                 >
                                     <MapPin class="h-4 w-4 text-rose-400" />
                                     Preferred Locations
@@ -596,10 +608,10 @@ const { tutor } = props;
                                         v-for="location in preferredLocations"
                                         :key="location"
                                         variant="outline"
-                                        class="rounded-lg border-slate-200 bg-slate-50 font-normal text-slate-600"
+                                        class="rounded-lg border-slate-200 bg-slate-50 font-normal text-slate-600 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
                                     >
                                         <MapPin
-                                            class="mr-1 h-3 w-3 text-slate-400"
+                                            class="mr-1 h-3 w-3 text-slate-400 dark:text-slate-500"
                                         />
                                         {{ location }}
                                     </Badge>
@@ -614,13 +626,13 @@ const { tutor } = props;
                     >
                         <!-- About Me -->
                         <section
-                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6"
+                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                         >
                             <h2
-                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900"
+                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900 dark:text-slate-100"
                             >
                                 <div
-                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600"
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 dark:from-blue-950/40 dark:to-blue-900/40 dark:text-blue-400"
                                 >
                                     <User class="h-4.5 w-4.5" />
                                 </div>
@@ -629,11 +641,14 @@ const { tutor } = props;
                             <div class="mt-4 pl-0 sm:pl-[46px]">
                                 <p
                                     v-if="tutor.tutor_profile?.bio"
-                                    class="text-[15px] leading-relaxed whitespace-pre-line text-slate-600"
+                                    class="text-[15px] leading-relaxed whitespace-pre-line text-slate-600 dark:text-slate-300"
                                 >
                                     {{ tutor.tutor_profile.bio }}
                                 </p>
-                                <p v-else class="text-sm text-slate-400 italic">
+                                <p
+                                    v-else
+                                    class="text-sm text-slate-400 italic dark:text-slate-500"
+                                >
                                     No bio provided
                                 </p>
                             </div>
@@ -641,13 +656,13 @@ const { tutor } = props;
 
                         <!-- Academic Information -->
                         <section
-                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6"
+                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                         >
                             <h2
-                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900"
+                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900 dark:text-slate-100"
                             >
                                 <div
-                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600"
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600 dark:from-indigo-950/40 dark:to-indigo-900/40 dark:text-indigo-400"
                                 >
                                     <GraduationCap class="h-4.5 w-4.5" />
                                 </div>
@@ -673,7 +688,7 @@ const { tutor } = props;
                                             class="hidden shrink-0 flex-col items-center sm:flex"
                                         >
                                             <div
-                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600 group-hover:bg-indigo-200"
+                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600 group-hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-300"
                                             >
                                                 {{ i + 1 }}
                                             </div>
@@ -684,31 +699,31 @@ const { tutor } = props;
                                                         .length -
                                                         1
                                                 "
-                                                class="mt-1 w-px flex-1 bg-slate-200"
+                                                class="mt-1 w-px flex-1 bg-slate-200 dark:bg-slate-800"
                                             />
                                         </div>
 
                                         <!-- Card -->
                                         <div
-                                            class="flex-1 rounded-xl border border-slate-100 bg-gradient-to-r from-slate-50/60 to-white p-4 transition-all group-hover:border-indigo-200/60 group-hover:shadow-sm"
+                                            class="flex-1 rounded-xl border border-slate-100 bg-gradient-to-r from-slate-50/60 to-white p-4 transition-all group-hover:border-indigo-200/60 group-hover:shadow-sm dark:border-slate-800 dark:from-slate-800/40 dark:to-slate-900"
                                         >
                                             <div
                                                 class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"
                                             >
                                                 <div class="min-w-0 flex-1">
                                                     <p
-                                                        class="font-semibold text-slate-900"
+                                                        class="font-semibold text-slate-900 dark:text-slate-100"
                                                     >
                                                         {{ edu.degree }}
                                                     </p>
                                                     <p
-                                                        class="mt-0.5 text-sm text-slate-600"
+                                                        class="mt-0.5 text-sm text-slate-600 dark:text-slate-300"
                                                     >
                                                         {{ edu.institute }}
                                                     </p>
                                                     <p
                                                         v-if="edu.department"
-                                                        class="text-sm text-slate-500"
+                                                        class="text-sm text-slate-500 dark:text-slate-400"
                                                     >
                                                         {{ edu.department }}
                                                     </p>
@@ -718,7 +733,7 @@ const { tutor } = props;
                                                 >
                                                     <Badge
                                                         v-if="edu.result"
-                                                        class="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                        class="border-blue-200 bg-blue-50 font-medium text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300"
                                                     >
                                                         {{ edu.result }}
                                                     </Badge>
@@ -726,7 +741,7 @@ const { tutor } = props;
                                                         v-if="
                                                             edu.graduation_year
                                                         "
-                                                        class="text-xs text-slate-500"
+                                                        class="text-xs text-slate-500 dark:text-slate-400"
                                                     >
                                                         {{
                                                             edu.graduation_year
@@ -734,7 +749,7 @@ const { tutor } = props;
                                                     </span>
                                                     <Badge
                                                         v-if="edu.is_current"
-                                                        class="border-emerald-200 bg-emerald-50 text-emerald-700"
+                                                        class="border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
                                                     >
                                                         <span
                                                             class="mr-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"
@@ -746,7 +761,10 @@ const { tutor } = props;
                                         </div>
                                     </div>
                                 </div>
-                                <p v-else class="text-sm text-slate-400 italic">
+                                <p
+                                    v-else
+                                    class="text-sm text-slate-400 italic dark:text-slate-500"
+                                >
                                     No education details provided
                                 </p>
                             </div>
@@ -755,13 +773,13 @@ const { tutor } = props;
                         <!-- Teaching Preferences -->
                         <section
                             v-if="hasPreferences"
-                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6"
+                            class="rounded-2xl border border-slate-200/60 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                         >
                             <h2
-                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900"
+                                class="flex items-center gap-2.5 text-lg font-semibold text-slate-900 dark:text-slate-100"
                             >
                                 <div
-                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600"
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600 dark:from-emerald-950/40 dark:to-emerald-900/40 dark:text-emerald-400"
                                 >
                                     <BookOpen class="h-4.5 w-4.5" />
                                 </div>
@@ -772,7 +790,7 @@ const { tutor } = props;
                                 <!-- Subjects -->
                                 <div v-if="preferredSubjects.length > 0">
                                     <p
-                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                     >
                                         <BookOpen class="h-3.5 w-3.5" />
                                         Subjects
@@ -781,7 +799,7 @@ const { tutor } = props;
                                         <Badge
                                             v-for="subject in preferredSubjects"
                                             :key="subject"
-                                            class="rounded-lg border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700"
+                                            class="rounded-lg border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
                                         >
                                             {{ subject }}
                                         </Badge>
@@ -794,13 +812,13 @@ const { tutor } = props;
                                         preferredSubjects.length > 0 &&
                                         preferredCategories.length > 0
                                     "
-                                    class="border-t border-slate-100"
+                                    class="border-t border-slate-100 dark:border-slate-800"
                                 />
 
                                 <!-- Categories -->
                                 <div v-if="preferredCategories.length > 0">
                                     <p
-                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                     >
                                         <Tag class="h-3.5 w-3.5" />
                                         Categories
@@ -809,7 +827,7 @@ const { tutor } = props;
                                         <Badge
                                             v-for="category in preferredCategories"
                                             :key="category"
-                                            class="rounded-lg border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700"
+                                            class="rounded-lg border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300"
                                         >
                                             {{ category }}
                                         </Badge>
@@ -823,13 +841,13 @@ const { tutor } = props;
                                             preferredCategories.length > 0) &&
                                         preferredClasses.length > 0
                                     "
-                                    class="border-t border-slate-100"
+                                    class="border-t border-slate-100 dark:border-slate-800"
                                 />
 
                                 <!-- Classes -->
                                 <div v-if="preferredClasses.length > 0">
                                     <p
-                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                        class="mb-2.5 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400"
                                     >
                                         <GraduationCap class="h-3.5 w-3.5" />
                                         Classes
@@ -838,7 +856,7 @@ const { tutor } = props;
                                         <Badge
                                             v-for="cls in preferredClasses"
                                             :key="cls"
-                                            class="rounded-lg border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700"
+                                            class="rounded-lg border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 dark:border-purple-900/60 dark:bg-purple-950/40 dark:text-purple-300"
                                         >
                                             {{ cls }}
                                         </Badge>

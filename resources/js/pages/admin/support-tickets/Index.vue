@@ -157,7 +157,9 @@ function formatCategory(category: string): string {
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
-                        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+                        <h1
+                            class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        >
                             Support Tickets
                         </h1>
                         <p class="text-sm text-muted-foreground">

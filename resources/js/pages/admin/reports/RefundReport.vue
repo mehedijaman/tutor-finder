@@ -117,7 +117,9 @@ function handlePrint(): void {
                 class="flex flex-col gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6 print:border-0 print:p-0 print:shadow-none"
             >
                 <div>
-                    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+                    <h1
+                        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                    >
                         Refund Report
                     </h1>
                     <p class="mt-1 text-sm text-muted-foreground">
@@ -251,167 +253,181 @@ function handlePrint(): void {
                 class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm print:rounded-none print:shadow-none"
             >
                 <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 print:bg-gray-100">
-                        <tr>
-                            <th
-                                class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 print:bg-gray-100">
+                            <tr>
+                                <th
+                                    class="px-5 py-4 text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Month
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Total
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Pending
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Approved
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Rejected
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Paid
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Amount (BDT)
+                                </th>
+                                <th
+                                    class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
+                                >
+                                    Paid (BDT)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="row in reportData"
+                                :key="row.month"
+                                class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 print:hover:bg-transparent"
                             >
-                                Month
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Total
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Pending
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Approved
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Rejected
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Paid
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Amount (BDT)
-                            </th>
-                            <th
-                                class="px-5 py-4 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase"
-                            >
-                                Paid (BDT)
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="row in reportData"
-                            :key="row.month"
-                            class="border-t border-slate-100 transition-colors hover:bg-slate-50/80 print:hover:bg-transparent"
+                                <td
+                                    class="px-5 py-4 font-medium text-slate-700"
+                                >
+                                    {{ row.label }}
+                                </td>
+                                <td class="px-5 py-4 text-right font-semibold">
+                                    {{ row.totalRequests }}
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <Badge
+                                        v-if="row.pending > 0"
+                                        variant="secondary"
+                                        >{{ row.pending }}</Badge
+                                    >
+                                    <span v-else class="text-muted-foreground"
+                                        >0</span
+                                    >
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <Badge
+                                        v-if="row.approved > 0"
+                                        variant="default"
+                                        >{{ row.approved }}</Badge
+                                    >
+                                    <span v-else class="text-muted-foreground"
+                                        >0</span
+                                    >
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <Badge
+                                        v-if="row.rejected > 0"
+                                        variant="destructive"
+                                        >{{ row.rejected }}</Badge
+                                    >
+                                    <span v-else class="text-muted-foreground"
+                                        >0</span
+                                    >
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <Badge
+                                        v-if="row.paid > 0"
+                                        variant="default"
+                                        >{{ row.paid }}</Badge
+                                    >
+                                    <span v-else class="text-muted-foreground"
+                                        >0</span
+                                    >
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-600">
+                                    {{ formatCurrency(row.totalAmount) }}
+                                </td>
+                                <td
+                                    class="px-5 py-4 text-right font-medium text-emerald-600"
+                                >
+                                    {{ formatCurrency(row.paidAmount) }}
+                                </td>
+                            </tr>
+                            <tr v-if="reportData.length === 0" class="border-t">
+                                <td
+                                    colspan="8"
+                                    class="px-5 py-8 text-center text-muted-foreground"
+                                >
+                                    No refund data found for the selected
+                                    period.
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot
+                            class="border-t-2 border-slate-300 bg-slate-50 font-semibold print:bg-gray-100"
                         >
-                            <td class="px-5 py-4 font-medium text-slate-700">
-                                {{ row.label }}
-                            </td>
-                            <td class="px-5 py-4 text-right font-semibold">
-                                {{ row.totalRequests }}
-                            </td>
-                            <td class="px-5 py-4 text-right">
-                                <Badge
-                                    v-if="row.pending > 0"
-                                    variant="secondary"
-                                    >{{ row.pending }}</Badge
-                                >
-                                <span v-else class="text-muted-foreground"
-                                    >0</span
-                                >
-                            </td>
-                            <td class="px-5 py-4 text-right">
-                                <Badge
-                                    v-if="row.approved > 0"
-                                    variant="default"
-                                    >{{ row.approved }}</Badge
-                                >
-                                <span v-else class="text-muted-foreground"
-                                    >0</span
-                                >
-                            </td>
-                            <td class="px-5 py-4 text-right">
-                                <Badge
-                                    v-if="row.rejected > 0"
-                                    variant="destructive"
-                                    >{{ row.rejected }}</Badge
-                                >
-                                <span v-else class="text-muted-foreground"
-                                    >0</span
-                                >
-                            </td>
-                            <td class="px-5 py-4 text-right">
-                                <Badge v-if="row.paid > 0" variant="default">{{
-                                    row.paid
-                                }}</Badge>
-                                <span v-else class="text-muted-foreground"
-                                    >0</span
-                                >
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-600">
-                                {{ formatCurrency(row.totalAmount) }}
-                            </td>
-                            <td
-                                class="px-5 py-4 text-right font-medium text-emerald-600"
-                            >
-                                {{ formatCurrency(row.paidAmount) }}
-                            </td>
-                        </tr>
-                        <tr v-if="reportData.length === 0" class="border-t">
-                            <td
-                                colspan="8"
-                                class="px-5 py-8 text-center text-muted-foreground"
-                            >
-                                No refund data found for the selected period.
-                            </td>
-                        </tr>
-                    </tbody>
-                    <tfoot
-                        class="border-t-2 border-slate-300 bg-slate-50 font-semibold print:bg-gray-100"
-                    >
-                        <tr>
-                            <td class="px-5 py-4 text-slate-900">
-                                Grand Total
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ summary.totalRequests }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    reportData.reduce(
-                                        (s, r) => s + r.pending,
-                                        0,
-                                    )
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    reportData.reduce(
-                                        (s, r) => s + r.approved,
-                                        0,
-                                    )
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    reportData.reduce(
-                                        (s, r) => s + r.rejected,
-                                        0,
-                                    )
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ reportData.reduce((s, r) => s + r.paid, 0) }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{
-                                    formatCurrency(summary.totalRequestedAmount)
-                                }}
-                            </td>
-                            <td class="px-5 py-4 text-right text-slate-900">
-                                {{ formatCurrency(summary.totalPaidAmount) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                            <tr>
+                                <td class="px-5 py-4 text-slate-900">
+                                    Grand Total
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{ summary.totalRequests }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) => s + r.pending,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) => s + r.approved,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) => s + r.rejected,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        reportData.reduce(
+                                            (s, r) => s + r.paid,
+                                            0,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        formatCurrency(
+                                            summary.totalRequestedAmount,
+                                        )
+                                    }}
+                                </td>
+                                <td class="px-5 py-4 text-right text-slate-900">
+                                    {{
+                                        formatCurrency(summary.totalPaidAmount)
+                                    }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>

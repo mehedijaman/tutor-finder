@@ -74,17 +74,17 @@ const readingTimeMinutes = computed(() => {
 
     <PublicLayout>
         <div
-            class="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-100 via-white to-slate-100 py-10 sm:py-12"
+            class="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-100 via-white to-slate-100 py-10 sm:py-12 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
         >
             <div
-                class="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-indigo-100/60 via-cyan-100/25 to-transparent"
+                class="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-indigo-100/60 via-cyan-100/25 to-transparent dark:from-indigo-950/40 dark:via-cyan-950/20"
             />
 
             <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                 <div class="mb-6">
                     <Link
                         href="/blog"
-                        class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                        class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                     >
                         <ArrowLeft class="h-4 w-4" />
                         Back to Blog
@@ -92,7 +92,7 @@ const readingTimeMinutes = computed(() => {
                 </div>
 
                 <article
-                    class="overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-xl ring-1 ring-slate-900/5"
+                    class="overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-xl ring-1 ring-slate-900/5 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10"
                 >
                     <header class="relative overflow-hidden">
                         <img
@@ -158,72 +158,72 @@ const readingTimeMinutes = computed(() => {
 
                     <div class="grid lg:grid-cols-[minmax(0,1fr)_260px]">
                         <section
-                            class="order-2 border-t border-slate-100 p-6 sm:p-8 lg:order-1 lg:border-t-0 lg:border-r"
+                            class="order-2 border-t border-slate-100 p-6 sm:p-8 lg:order-1 lg:border-t-0 lg:border-r dark:border-slate-800"
                         >
                             <p
                                 v-if="post.summary"
-                                class="rounded-2xl border border-blue-100 bg-blue-50/70 p-4 text-sm leading-relaxed text-slate-700 sm:text-base"
+                                class="rounded-2xl border border-blue-100 bg-blue-50/70 p-4 text-sm leading-relaxed text-slate-700 sm:text-base dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-slate-300"
                             >
                                 {{ post.summary }}
                             </p>
 
                             <div
-                                class="prose prose-slate prose-headings:mt-8 prose-headings:font-semibold prose-p:leading-7 prose-a:text-blue-700 hover:prose-a:text-blue-800 prose-img:rounded-xl prose-img:shadow-sm mt-6 max-w-none"
+                                class="prose prose-slate dark:prose-invert prose-headings:mt-8 prose-headings:font-semibold prose-p:leading-7 prose-a:text-blue-700 dark:prose-a:text-blue-400 hover:prose-a:text-blue-800 dark:hover:prose-a:text-blue-300 prose-img:rounded-xl prose-img:shadow-sm mt-6 max-w-none text-slate-700 dark:text-slate-300"
                                 v-html="sanitizedContent"
                             ></div>
                         </section>
 
                         <aside
-                            class="order-1 border-b border-slate-100 bg-slate-50/50 p-6 lg:order-2 lg:border-b-0"
+                            class="order-1 border-b border-slate-100 bg-slate-50/50 p-6 lg:order-2 lg:border-b-0 dark:border-slate-800 dark:bg-slate-900/50"
                         >
                             <div class="space-y-6 lg:sticky lg:top-24">
                                 <div>
                                     <h2
-                                        class="text-xs font-semibold tracking-wide text-slate-500 uppercase"
+                                        class="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
                                     >
                                         Post Details
                                     </h2>
                                     <dl class="mt-3 space-y-3 text-sm">
                                         <div
-                                            class="rounded-xl border border-slate-200 bg-white px-3 py-2.5"
+                                            class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-800"
                                         >
                                             <dt
-                                                class="text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+                                                class="text-[11px] font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
                                             >
                                                 Author
                                             </dt>
                                             <dd
-                                                class="mt-1 font-medium text-slate-800"
+                                                class="mt-1 font-medium text-slate-800 dark:text-slate-200"
                                             >
                                                 {{ authorLabel }}
                                             </dd>
                                         </div>
 
                                         <div
-                                            class="rounded-xl border border-slate-200 bg-white px-3 py-2.5"
+                                            class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-800"
                                         >
                                             <dt
-                                                class="text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+                                                class="text-[11px] font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
                                             >
                                                 Published
                                             </dt>
                                             <dd
-                                                class="mt-1 font-medium text-slate-800"
+                                                class="mt-1 font-medium text-slate-800 dark:text-slate-200"
                                             >
                                                 {{ publishedLabel }}
                                             </dd>
                                         </div>
 
                                         <div
-                                            class="rounded-xl border border-slate-200 bg-white px-3 py-2.5"
+                                            class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-800 dark:bg-slate-800"
                                         >
                                             <dt
-                                                class="text-[11px] font-medium tracking-wide text-slate-500 uppercase"
+                                                class="text-[11px] font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
                                             >
                                                 Reading Time
                                             </dt>
                                             <dd
-                                                class="mt-1 font-medium text-slate-800"
+                                                class="mt-1 font-medium text-slate-800 dark:text-slate-200"
                                             >
                                                 {{ readingTimeMinutes }} minutes
                                             </dd>
@@ -233,7 +233,7 @@ const readingTimeMinutes = computed(() => {
 
                                 <div v-if="post.tags.length">
                                     <h2
-                                        class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-slate-500 uppercase"
+                                        class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
                                     >
                                         <Hash class="h-3.5 w-3.5" />
                                         Topics
@@ -243,7 +243,7 @@ const readingTimeMinutes = computed(() => {
                                             v-for="tag in post.tags"
                                             :key="`post-tag-${tag.slug}`"
                                             :href="`/blog?tag=${tag.slug}`"
-                                            class="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100"
+                                            class="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                                         >
                                             {{ tag.name }}
                                         </Link>
@@ -251,22 +251,22 @@ const readingTimeMinutes = computed(() => {
                                 </div>
 
                                 <div
-                                    class="rounded-2xl border border-slate-200 bg-white p-4"
+                                    class="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-800"
                                 >
                                     <p
-                                        class="text-sm font-semibold text-slate-900"
+                                        class="text-sm font-semibold text-slate-900 dark:text-slate-100"
                                     >
                                         Continue Reading
                                     </p>
                                     <p
-                                        class="mt-1 text-xs leading-relaxed text-slate-600"
+                                        class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400"
                                     >
                                         Explore more platform updates, tutoring
                                         strategies, and learning insights.
                                     </p>
                                     <Link
                                         href="/blog"
-                                        class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800"
+                                        class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                                     >
                                         Back to all posts
                                         <ArrowLeft class="h-4 w-4 rotate-180" />

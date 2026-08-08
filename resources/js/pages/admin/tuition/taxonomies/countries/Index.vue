@@ -247,7 +247,7 @@ function handleRowAction(actionKey, row) {
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-1">
-                    <h1 class="text-2xl sm:text-3xl font-semibold">
+                    <h1 class="text-2xl font-semibold sm:text-3xl">
                         {{
                             filters.trash ? 'Country Recycle Bin' : 'Countries'
                         }}

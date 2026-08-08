@@ -89,19 +89,21 @@ const tuitionMethodDecoration = (index: number) => {
 
     <PublicLayout>
         <!-- Hero Section -->
-        <section class="relative overflow-hidden py-16 sm:py-24 lg:py-32">
+        <section
+            class="relative overflow-hidden py-16 sm:py-24 lg:py-32 dark:bg-slate-950"
+        >
             <!-- Background Gradients -->
             <div
-                class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.blue.100),white)] opacity-20"
+                class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.blue.100),white)] opacity-20 dark:bg-[radial-gradient(45rem_50rem_at_top,theme(colors.blue.950),theme(colors.slate.950))]"
             />
             <div
-                class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl ring-1 shadow-blue-600/10 ring-blue-50 sm:mr-28 lg:mr-0 lg:w-[200%] lg:origin-center"
+                class="absolute inset-y-0 right-1/2 -z-10 mr-16 w-[200%] origin-bottom-left skew-x-[-30deg] bg-white shadow-xl ring-1 shadow-blue-600/10 ring-blue-50 sm:mr-28 lg:mr-0 lg:w-[200%] lg:origin-center dark:bg-slate-900 dark:ring-slate-800"
             />
 
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="relative mx-auto max-w-4xl text-center">
                     <div
-                        class="mb-6 inline-flex items-center rounded-full border border-blue-200 bg-blue-50/50 px-3 py-1 text-sm font-medium text-blue-800 backdrop-blur-sm"
+                        class="mb-6 inline-flex items-center rounded-full border border-blue-200 bg-blue-50/50 px-3 py-1 text-sm font-medium text-blue-800 backdrop-blur-sm dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300"
                     >
                         <span
                             class="mr-2 h-2 w-2 rounded-full bg-blue-600"
@@ -110,18 +112,21 @@ const tuitionMethodDecoration = (index: number) => {
                     </div>
 
                     <h1
-                        class="font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl"
+                        class="font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl dark:text-slate-100"
                     >
                         Hire the Right Tutor
-                        <span class="relative whitespace-nowrap text-blue-600">
-                            <span class="relative">with Confidences</span>
+                        <span
+                            class="relative whitespace-nowrap text-blue-600 dark:text-blue-400"
+                        >
+                            <span class="relative">with Confidence</span>
                         </span>
                     </h1>
 
                     <p
-                        class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl"
+                        class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 sm:text-xl dark:text-slate-400"
                     >
-                        Quickly match with competent tutors tailored to your child's need to succeed.
+                        Quickly match with competent tutors tailored to your
+                        child's need to succeed.
                     </p>
 
                     <div
@@ -135,7 +140,7 @@ const tuitionMethodDecoration = (index: number) => {
                         </Link>
                         <Link
                             :href="jobs()"
-                            class="inline-flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-8 text-base font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95"
+                            class="inline-flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-8 text-base font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800"
                         >
                             Post a Requirement
                         </Link>
@@ -143,11 +148,11 @@ const tuitionMethodDecoration = (index: number) => {
 
                     <!-- Hero Stats -->
                     <div
-                        class="mt-12 grid grid-cols-2 gap-4 rounded-2xl border border-slate-200/60 bg-white/60 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-md sm:grid-cols-4 md:mt-16 lg:mt-20"
+                        class="mt-12 grid grid-cols-2 gap-4 rounded-2xl border border-slate-200/60 bg-white/60 p-4 shadow-xl shadow-slate-200/40 backdrop-blur-md sm:grid-cols-4 md:mt-16 lg:mt-20 dark:border-slate-800 dark:bg-slate-900/60 dark:shadow-slate-950/50"
                     >
                         <div class="p-4 text-center">
                             <p
-                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                             >
                                 {{
                                     formatCompactNumber(
@@ -155,13 +160,15 @@ const tuitionMethodDecoration = (index: number) => {
                                     )
                                 }}+
                             </p>
-                            <p class="mt-1 text-sm font-medium text-slate-500">
+                            <p
+                                class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400"
+                            >
                                 Active Tutors
                             </p>
                         </div>
                         <div class="p-4 text-center">
                             <p
-                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                             >
                                 {{
                                     formatCompactNumber(
@@ -169,13 +176,15 @@ const tuitionMethodDecoration = (index: number) => {
                                     )
                                 }}+
                             </p>
-                            <p class="mt-1 text-sm font-medium text-slate-500">
+                            <p
+                                class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400"
+                            >
                                 Students Helped
                             </p>
                         </div>
                         <div class="p-4 text-center">
                             <p
-                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                                class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                             >
                                 {{
                                     formatAverageRating(
@@ -183,7 +192,9 @@ const tuitionMethodDecoration = (index: number) => {
                                     )
                                 }}
                             </p>
-                            <p class="mt-1 text-sm font-medium text-slate-500">
+                            <p
+                                class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400"
+                            >
                                 Average Rating
                             </p>
                         </div>
@@ -192,21 +203,23 @@ const tuitionMethodDecoration = (index: number) => {
                                 class="flex items-center justify-center -space-x-2"
                             >
                                 <div
-                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-200"
+                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-200 dark:border-slate-800 dark:bg-slate-700"
                                 ></div>
                                 <div
-                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-300"
+                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-300 dark:border-slate-800 dark:bg-slate-600"
                                 ></div>
                                 <div
-                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-400"
+                                    class="h-8 w-8 rounded-full border-2 border-white bg-slate-400 dark:border-slate-800 dark:bg-slate-500"
                                 ></div>
                                 <div
-                                    class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-100 text-xs font-bold text-blue-600"
+                                    class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-blue-100 text-xs font-bold text-blue-600 dark:border-slate-800 dark:bg-blue-900/50 dark:text-blue-300"
                                 >
                                     99%
                                 </div>
                             </div>
-                            <p class="mt-2 text-sm font-medium text-slate-500">
+                            <p
+                                class="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400"
+                            >
                                 Satisfaction
                             </p>
                         </div>
@@ -217,25 +230,27 @@ const tuitionMethodDecoration = (index: number) => {
 
         <!-- How It Works (Premium / Minimal) -->
         <section
-            class="relative isolate overflow-hidden bg-white py-24 sm:py-32"
+            class="relative isolate overflow-hidden bg-white py-24 sm:py-32 dark:bg-slate-900"
         >
             <div
-                class="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] [background-size:16px_16px] opacity-50"
+                class="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] [background-size:16px_16px] opacity-50 dark:bg-slate-900 dark:bg-[radial-gradient(#334155_1px,transparent_1px)]"
             ></div>
 
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="mx-auto max-w-2xl text-center">
                     <h2
-                        class="text-base leading-7 font-semibold tracking-widest text-blue-600 uppercase"
+                        class="text-base leading-7 font-semibold tracking-widest text-blue-600 uppercase dark:text-blue-400"
                     >
                         How It Works
                     </h2>
                     <p
-                        class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+                        class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100"
                     >
                         Find your perfect tutor in 3 steps
                     </p>
-                    <p class="mt-6 text-lg leading-8 text-slate-600">
+                    <p
+                        class="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-400"
+                    >
                         We've simplified the process to help you get started
                         quickly and securely.
                     </p>
@@ -246,18 +261,20 @@ const tuitionMethodDecoration = (index: number) => {
                 >
                     <!-- Step 1 -->
                     <div
-                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60"
+                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60 dark:bg-slate-800 dark:shadow-slate-950/50 dark:ring-slate-700 dark:hover:shadow-slate-950/60"
                     >
                         <div
-                            class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg shadow-slate-900/20"
+                            class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg shadow-slate-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-100/10"
                         >
                             <span class="text-xl font-bold">1</span>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900">
+                        <h3
+                            class="text-xl font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Post Your Needs
                         </h3>
                         <p
-                            class="mt-4 text-base leading-relaxed text-slate-600"
+                            class="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400"
                         >
                             Tell us what you're looking for—subject, location,
                             schedule, and any specific requirements for your
@@ -267,18 +284,20 @@ const tuitionMethodDecoration = (index: number) => {
 
                     <!-- Step 2 -->
                     <div
-                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60"
+                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60 dark:bg-slate-800 dark:shadow-slate-950/50 dark:ring-slate-700 dark:hover:shadow-slate-950/60"
                     >
                         <div
                             class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                         >
                             <span class="text-xl font-bold">2</span>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900">
+                        <h3
+                            class="text-xl font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Get Matched
                         </h3>
                         <p
-                            class="mt-4 text-base leading-relaxed text-slate-600"
+                            class="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400"
                         >
                             Receive applications from verified tutors. Review
                             their profiles, ratings, and experience to choose
@@ -288,18 +307,20 @@ const tuitionMethodDecoration = (index: number) => {
 
                     <!-- Step 3 -->
                     <div
-                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60"
+                        class="relative rounded-3xl bg-white p-8 shadow-2xl ring-1 shadow-slate-200/50 ring-slate-200 transition-shadow hover:shadow-xl hover:shadow-slate-200/60 dark:bg-slate-800 dark:shadow-slate-950/50 dark:ring-slate-700 dark:hover:shadow-slate-950/60"
                     >
                         <div
-                            class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-900 shadow-lg ring-1 ring-slate-200"
+                            class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-900 shadow-lg ring-1 ring-slate-200 dark:bg-slate-700 dark:text-slate-100 dark:ring-slate-600"
                         >
                             <span class="text-xl font-bold">3</span>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900">
+                        <h3
+                            class="text-xl font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Start Learning
                         </h3>
                         <p
-                            class="mt-4 text-base leading-relaxed text-slate-600"
+                            class="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400"
                         >
                             Connect with your tutor, schedule your first
                             session, and watch the progress happen. It's that
@@ -311,20 +332,22 @@ const tuitionMethodDecoration = (index: number) => {
         </section>
 
         <!-- Tuition Methods -->
-        <section class="bg-slate-50 py-24 sm:py-32">
+        <section class="bg-slate-50 py-24 sm:py-32 dark:bg-slate-950">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="mx-auto max-w-2xl text-center">
                     <h2
-                        class="text-base leading-7 font-semibold tracking-widest text-blue-600 uppercase"
+                        class="text-base leading-7 font-semibold tracking-widest text-blue-600 uppercase dark:text-blue-400"
                     >
                         Tuition Methods
                     </h2>
                     <p
-                        class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+                        class="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100"
                     >
                         Choose your preferred learning style
                     </p>
-                    <p class="mt-6 text-lg leading-8 text-slate-600">
+                    <p
+                        class="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-400"
+                    >
                         Explore currently active tuition categories and pick
                         what matches your learning goals.
                     </p>
@@ -337,10 +360,10 @@ const tuitionMethodDecoration = (index: number) => {
                     <div
                         v-for="(method, index) in props.tuitionMethods"
                         :key="method.id"
-                        class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md"
+                        class="flex flex-col rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-1 hover:shadow-md dark:bg-slate-900 dark:ring-slate-800"
                     >
                         <dt
-                            class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900"
+                            class="flex items-center gap-x-3 text-base leading-7 font-semibold text-slate-900 dark:text-slate-100"
                         >
                             <div
                                 class="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -358,7 +381,7 @@ const tuitionMethodDecoration = (index: number) => {
                             {{ method.name }}
                         </dt>
                         <dd
-                            class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600"
+                            class="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600 dark:text-slate-400"
                         >
                             <p class="flex-auto">
                                 {{
@@ -375,7 +398,7 @@ const tuitionMethodDecoration = (index: number) => {
                                             },
                                         })
                                     "
-                                    class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500"
+                                    class="text-sm leading-6 font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400"
                                 >
                                     Explore category
                                     <ArrowRight class="inline-block h-4 w-4" />
@@ -387,9 +410,9 @@ const tuitionMethodDecoration = (index: number) => {
 
                 <div
                     v-else
-                    class="mx-auto mt-16 max-w-3xl rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center"
+                    class="mx-auto mt-16 max-w-3xl rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <p class="text-sm text-slate-500">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
                         Tuition categories are not available right now.
                     </p>
                 </div>
@@ -397,20 +420,22 @@ const tuitionMethodDecoration = (index: number) => {
         </section>
 
         <!-- Testimonials -->
-        <section class="bg-white py-14 md:py-20">
+        <section class="bg-white py-14 md:py-20 dark:bg-slate-900">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="text-center">
                     <p
-                        class="text-sm font-medium tracking-widest text-blue-600 uppercase"
+                        class="text-sm font-medium tracking-widest text-blue-600 uppercase dark:text-blue-400"
                     >
                         Testimonials
                     </p>
                     <h2
-                        class="mt-2 text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl"
+                        class="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100"
                     >
                         What Parents Say
                     </h2>
-                    <p class="mx-auto mt-3 max-w-2xl text-sm text-slate-500">
+                    <p
+                        class="mx-auto mt-3 max-w-2xl text-sm text-slate-500 dark:text-slate-400"
+                    >
                         Hear from satisfied parents and guardians
                     </p>
                 </div>
@@ -420,9 +445,9 @@ const tuitionMethodDecoration = (index: number) => {
                 />
                 <div
                     v-else
-                    class="mt-12 rounded-2xl border border-dashed border-slate-300 px-6 py-12 text-center"
+                    class="mt-12 rounded-2xl border border-dashed border-slate-300 px-6 py-12 text-center dark:border-slate-800"
                 >
-                    <p class="text-sm text-slate-500">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
                         Testimonials will appear here once published.
                     </p>
                 </div>
@@ -430,7 +455,7 @@ const tuitionMethodDecoration = (index: number) => {
         </section>
 
         <!-- Final CTA -->
-        <section class="bg-slate-50 py-14 md:py-20">
+        <section class="bg-slate-50 py-14 md:py-20 dark:bg-slate-950">
             <div class="mx-auto max-w-7xl px-4 sm:px-6">
                 <div
                     class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-10 text-center shadow-lg sm:px-8 md:px-12 md:py-14"

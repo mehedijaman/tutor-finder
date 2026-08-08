@@ -84,7 +84,7 @@ function deleteBackup(backup) {
                     class="w-full rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
                 >
                     <h1
-                        class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
                     >
                         Backup Management
                     </h1>
@@ -129,35 +129,39 @@ function deleteBackup(backup) {
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <div class="rounded-xl border bg-white p-4">
                     <p class="text-xs text-muted-foreground">Destinations</p>
-                    <p class="mt-1 text-2xl sm:text-3xl font-semibold">
+                    <p class="mt-1 text-2xl font-semibold sm:text-3xl">
                         {{ stats.destinations_count ?? 0 }}
                     </p>
                 </div>
 
                 <div class="rounded-xl border bg-white p-4">
                     <p class="text-xs text-muted-foreground">Healthy</p>
-                    <p class="mt-1 text-2xl sm:text-3xl font-semibold text-emerald-700">
+                    <p
+                        class="mt-1 text-2xl font-semibold text-emerald-700 sm:text-3xl"
+                    >
                         {{ stats.healthy_count ?? 0 }}
                     </p>
                 </div>
 
                 <div class="rounded-xl border bg-white p-4">
                     <p class="text-xs text-muted-foreground">Unhealthy</p>
-                    <p class="mt-1 text-2xl sm:text-3xl font-semibold text-rose-700">
+                    <p
+                        class="mt-1 text-2xl font-semibold text-rose-700 sm:text-3xl"
+                    >
                         {{ stats.unhealthy_count ?? 0 }}
                     </p>
                 </div>
 
                 <div class="rounded-xl border bg-white p-4">
                     <p class="text-xs text-muted-foreground">Backup Files</p>
-                    <p class="mt-1 text-2xl sm:text-3xl font-semibold">
+                    <p class="mt-1 text-2xl font-semibold sm:text-3xl">
                         {{ stats.backup_files_count ?? 0 }}
                     </p>
                 </div>
 
                 <div class="rounded-xl border bg-white p-4">
                     <p class="text-xs text-muted-foreground">Total Storage</p>
-                    <p class="mt-1 text-2xl sm:text-3xl font-semibold">
+                    <p class="mt-1 text-2xl font-semibold sm:text-3xl">
                         {{ stats.total_storage ?? '0 KB' }}
                     </p>
                 </div>

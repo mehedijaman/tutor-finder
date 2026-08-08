@@ -145,17 +145,23 @@ const subjectError = computed(() => {
 });
 
 const selectedCategoryName = computed(() => {
-    const cat = props.categories.find((c) => String(c.id) === String(form.category_id));
+    const cat = props.categories.find(
+        (c) => String(c.id) === String(form.category_id),
+    );
     return cat?.name ?? 'Not selected';
 });
 
 const selectedClassName = computed(() => {
-    const sc = props.schoolClasses.find((c) => String(c.id) === String(form.class_id));
+    const sc = props.schoolClasses.find(
+        (c) => String(c.id) === String(form.class_id),
+    );
     return sc?.name ?? 'Not selected';
 });
 
 const selectedCityName = computed(() => {
-    const city = props.cities.find((c) => String(c.id) === String(form.city_id));
+    const city = props.cities.find(
+        (c) => String(c.id) === String(form.city_id),
+    );
     return city?.name ?? 'Not selected';
 });
 
@@ -168,7 +174,9 @@ const selectedSubjectNames = computed(() => {
 watch(
     () => form.category_id,
     () => {
-        const classIds = filteredClasses.value.map((schoolClass) => Number(schoolClass.id));
+        const classIds = filteredClasses.value.map((schoolClass) =>
+            Number(schoolClass.id),
+        );
         if (form.class_id && !classIds.includes(Number(form.class_id))) {
             form.class_id = '';
             form.subject_ids = [];
@@ -200,7 +208,9 @@ watch(
 watch(
     () => form.class_id,
     () => {
-        const subjectIds = filteredSubjects.value.map((subject) => Number(subject.id));
+        const subjectIds = filteredSubjects.value.map((subject) =>
+            Number(subject.id),
+        );
         form.subject_ids = (form.subject_ids ?? []).filter((subjectId: any) =>
             subjectIds.includes(Number(subjectId)),
         );
@@ -246,7 +256,9 @@ function submit() {
 <template>
     <div class="space-y-6">
         <!-- 3-Step Wizard Navigation Bar -->
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
+        <div
+            class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+        >
             <div class="grid grid-cols-3 gap-2">
                 <!-- Step 1 Indicator -->
                 <button
@@ -256,13 +268,13 @@ function submit() {
                         currentStep === 1
                             ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
                             : currentStep > 1
-                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                              : 'bg-slate-50 text-slate-500 border border-slate-200/60'
+                              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800'
+                              : 'border border-slate-200/60 bg-slate-50 text-slate-500'
                     "
                     @click="currentStep = 1"
                 >
                     <div
-                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-xs"
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold"
                         :class="
                             currentStep === 1
                                 ? 'bg-white/20 text-white'
@@ -271,12 +283,19 @@ function submit() {
                                   : 'bg-slate-200 text-slate-600'
                         "
                     >
-                        <CheckCircle2 v-if="currentStep > 1" class="h-4 w-4 text-emerald-600" />
+                        <CheckCircle2
+                            v-if="currentStep > 1"
+                            class="h-4 w-4 text-emerald-600"
+                        />
                         <span v-else>1</span>
                     </div>
                     <div class="hidden min-w-0 sm:block">
-                        <p class="text-xs font-bold uppercase tracking-wider">Step 1</p>
-                        <p class="truncate text-xs font-semibold">Category & Class</p>
+                        <p class="text-xs font-bold tracking-wider uppercase">
+                            Step 1
+                        </p>
+                        <p class="truncate text-xs font-semibold">
+                            Category & Class
+                        </p>
                     </div>
                 </button>
 
@@ -288,13 +307,13 @@ function submit() {
                         currentStep === 2
                             ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
                             : currentStep > 2
-                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                              : 'bg-slate-50 text-slate-500 border border-slate-200/60'
+                              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800'
+                              : 'border border-slate-200/60 bg-slate-50 text-slate-500'
                     "
                     @click="currentStep = 2"
                 >
                     <div
-                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-xs"
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold"
                         :class="
                             currentStep === 2
                                 ? 'bg-white/20 text-white'
@@ -303,12 +322,19 @@ function submit() {
                                   : 'bg-slate-200 text-slate-600'
                         "
                     >
-                        <CheckCircle2 v-if="currentStep > 2" class="h-4 w-4 text-emerald-600" />
+                        <CheckCircle2
+                            v-if="currentStep > 2"
+                            class="h-4 w-4 text-emerald-600"
+                        />
                         <span v-else>2</span>
                     </div>
                     <div class="hidden min-w-0 sm:block">
-                        <p class="text-xs font-bold uppercase tracking-wider">Step 2</p>
-                        <p class="truncate text-xs font-semibold">Schedule & Location</p>
+                        <p class="text-xs font-bold tracking-wider uppercase">
+                            Step 2
+                        </p>
+                        <p class="truncate text-xs font-semibold">
+                            Schedule & Location
+                        </p>
                     </div>
                 </button>
 
@@ -319,19 +345,27 @@ function submit() {
                     :class="
                         currentStep === 3
                             ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
-                            : 'bg-slate-50 text-slate-500 border border-slate-200/60'
+                            : 'border border-slate-200/60 bg-slate-50 text-slate-500'
                     "
                     @click="currentStep = 3"
                 >
                     <div
-                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-xs"
-                        :class="currentStep === 3 ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'"
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold"
+                        :class="
+                            currentStep === 3
+                                ? 'bg-white/20 text-white'
+                                : 'bg-slate-200 text-slate-600'
+                        "
                     >
                         3
                     </div>
                     <div class="hidden min-w-0 sm:block">
-                        <p class="text-xs font-bold uppercase tracking-wider">Step 3</p>
-                        <p class="truncate text-xs font-semibold">Salary & Review</p>
+                        <p class="text-xs font-bold tracking-wider uppercase">
+                            Step 3
+                        </p>
+                        <p class="truncate text-xs font-semibold">
+                            Salary & Review
+                        </p>
                     </div>
                 </button>
             </div>
@@ -340,10 +374,16 @@ function submit() {
         <form class="space-y-6" @submit.prevent="submit">
             <!-- STEP 1: Category, Curriculum & Class -->
             <div v-show="currentStep === 1" class="space-y-6">
-                <section class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                <section
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                >
+                    <div
+                        class="flex items-center gap-2 border-b border-slate-100 pb-3"
+                    >
                         <FileText class="h-5 w-5 text-blue-600" />
-                        <h2 class="text-lg font-bold text-slate-900">Job Title & Description</h2>
+                        <h2 class="text-lg font-bold text-slate-900">
+                            Job Title & Description
+                        </h2>
                     </div>
 
                     <div class="grid gap-2">
@@ -359,7 +399,9 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-description">Description / Requirements</Label>
+                        <Label for="job-description"
+                            >Description / Requirements</Label
+                        >
                         <textarea
                             id="job-description"
                             v-model="form.description"
@@ -371,9 +413,13 @@ function submit() {
                     </div>
                 </section>
 
-                <section class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:grid-cols-2">
-                    <div class="sm:col-span-2 border-b border-slate-100 pb-3">
-                        <h2 class="text-lg font-bold text-slate-900">Tuition Type, Curriculum & Class</h2>
+                <section
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                >
+                    <div class="border-b border-slate-100 pb-3 sm:col-span-2">
+                        <h2 class="text-lg font-bold text-slate-900">
+                            Tuition Type, Curriculum & Class
+                        </h2>
                     </div>
 
                     <div class="grid gap-2">
@@ -404,7 +450,9 @@ function submit() {
                             class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
                             required
                         >
-                            <option value="">Select curriculum / category</option>
+                            <option value="">
+                                Select curriculum / category
+                            </option>
                             <option
                                 v-for="item in categories"
                                 :key="item.id"
@@ -438,11 +486,13 @@ function submit() {
 
                     <div class="grid gap-2 sm:col-span-2">
                         <Label>Subjects (select all that apply)</Label>
-                        <div class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div
+                            class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-2 lg:grid-cols-3"
+                        >
                             <label
                                 v-for="subject in filteredSubjects"
                                 :key="subject.id"
-                                class="flex items-center gap-2 rounded-lg bg-white p-2 border border-slate-200 text-sm font-medium transition hover:border-blue-300 cursor-pointer"
+                                class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-medium transition hover:border-blue-300"
                             >
                                 <input
                                     v-model="form.subject_ids"
@@ -455,7 +505,7 @@ function submit() {
 
                             <p
                                 v-if="filteredSubjects.length === 0"
-                                class="text-xs text-muted-foreground col-span-full"
+                                class="col-span-full text-xs text-muted-foreground"
                             >
                                 Please select a class to view subjects.
                             </p>
@@ -467,10 +517,16 @@ function submit() {
 
             <!-- STEP 2: Schedule & Location -->
             <div v-show="currentStep === 2" class="space-y-6">
-                <section class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:grid-cols-2">
-                    <div class="sm:col-span-2 flex items-center gap-2 border-b border-slate-100 pb-3">
+                <section
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                >
+                    <div
+                        class="flex items-center gap-2 border-b border-slate-100 pb-3 sm:col-span-2"
+                    >
                         <MapPin class="h-5 w-5 text-rose-500" />
-                        <h2 class="text-lg font-bold text-slate-900">Location</h2>
+                        <h2 class="text-lg font-bold text-slate-900">
+                            Location
+                        </h2>
                     </div>
 
                     <div class="grid gap-2">
@@ -533,24 +589,37 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-location">Location / Landmark Address</Label>
-                        <Input id="job-location" v-model="form.location" type="text" placeholder="e.g. Near City College, Dhanmondi 2" />
+                        <Label for="job-location"
+                            >Location / Landmark Address</Label
+                        >
+                        <Input
+                            id="job-location"
+                            v-model="form.location"
+                            type="text"
+                            placeholder="e.g. Near City College, Dhanmondi 2"
+                        />
                         <InputError :message="form.errors.location" />
                     </div>
                 </section>
 
-                <section class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:grid-cols-2">
-                    <div class="sm:col-span-2 border-b border-slate-100 pb-3">
-                        <h2 class="text-lg font-bold text-slate-900">Schedule & Days</h2>
+                <section
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                >
+                    <div class="border-b border-slate-100 pb-3 sm:col-span-2">
+                        <h2 class="text-lg font-bold text-slate-900">
+                            Schedule & Days
+                        </h2>
                     </div>
 
                     <div class="grid gap-2 sm:col-span-2">
                         <Label>Tuition Days</Label>
-                        <div class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-3 lg:grid-cols-4">
+                        <div
+                            class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-3 lg:grid-cols-4"
+                        >
                             <label
                                 v-for="day in dayOptions"
                                 :key="day.value"
-                                class="flex items-center gap-2 rounded-lg bg-white p-2 border border-slate-200 text-sm font-medium cursor-pointer"
+                                class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-medium"
                             >
                                 <input
                                     v-model="form.tuition_days"
@@ -576,7 +645,9 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-tuition-duration">Tuition Duration</Label>
+                        <Label for="job-tuition-duration"
+                            >Tuition Duration</Label
+                        >
                         <Input
                             id="job-tuition-duration"
                             v-model="form.tuition_duration"
@@ -590,10 +661,16 @@ function submit() {
 
             <!-- STEP 3: Salary, Tutor Requirements & Review -->
             <div v-show="currentStep === 3" class="space-y-6">
-                <section class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:grid-cols-2">
-                    <div class="sm:col-span-2 flex items-center gap-2 border-b border-slate-100 pb-3">
+                <section
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                >
+                    <div
+                        class="flex items-center gap-2 border-b border-slate-100 pb-3 sm:col-span-2"
+                    >
                         <Wallet class="h-5 w-5 text-emerald-600" />
-                        <h2 class="text-lg font-bold text-slate-900">Salary & Gender Requirements</h2>
+                        <h2 class="text-lg font-bold text-slate-900">
+                            Salary & Gender Requirements
+                        </h2>
                     </div>
 
                     <div class="grid gap-2">
@@ -616,7 +693,9 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-tutor-gender">Tutor Gender Preference</Label>
+                        <Label for="job-tutor-gender"
+                            >Tutor Gender Preference</Label
+                        >
                         <select
                             id="job-tutor-gender"
                             v-model="form.tutor_gender"
@@ -647,7 +726,9 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-salary-amount">Salary Amount (BDT / month)</Label>
+                        <Label for="job-salary-amount"
+                            >Salary Amount (BDT / month)</Label
+                        >
                         <Input
                             id="job-salary-amount"
                             v-model="form.salary_amount"
@@ -659,13 +740,17 @@ function submit() {
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <label
+                            class="flex cursor-pointer items-center gap-2 text-sm"
+                        >
                             <input
                                 v-model="form.salary_negotiable"
                                 type="checkbox"
                                 class="h-4 w-4 rounded border-slate-300 text-blue-600"
                             />
-                            <span class="font-semibold text-slate-700">Salary is negotiable</span>
+                            <span class="font-semibold text-slate-700"
+                                >Salary is negotiable</span
+                            >
                         </label>
                         <InputError :message="form.errors.salary_negotiable" />
                     </div>
@@ -713,34 +798,70 @@ function submit() {
                 </section>
 
                 <!-- Summary Preview Card -->
-                <div class="rounded-2xl border border-blue-200 bg-blue-50/40 p-5 space-y-3">
-                    <h3 class="font-bold text-blue-900 text-sm uppercase tracking-wide">Review Job Summary</h3>
+                <div
+                    class="space-y-3 rounded-2xl border border-blue-200 bg-blue-50/40 p-5"
+                >
+                    <h3
+                        class="text-sm font-bold tracking-wide text-blue-900 uppercase"
+                    >
+                        Review Job Summary
+                    </h3>
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div>
-                            <span class="text-slate-400 font-semibold block">Title</span>
-                            <span class="font-bold text-slate-800">{{ form.title || '—' }}</span>
+                            <span class="block font-semibold text-slate-400"
+                                >Title</span
+                            >
+                            <span class="font-bold text-slate-800">{{
+                                form.title || '—'
+                            }}</span>
                         </div>
                         <div>
-                            <span class="text-slate-400 font-semibold block">Curriculum & Class</span>
-                            <span class="font-bold text-slate-800">{{ selectedCategoryName }} — {{ selectedClassName }}</span>
+                            <span class="block font-semibold text-slate-400"
+                                >Curriculum & Class</span
+                            >
+                            <span class="font-bold text-slate-800"
+                                >{{ selectedCategoryName }} —
+                                {{ selectedClassName }}</span
+                            >
                         </div>
                         <div>
-                            <span class="text-slate-400 font-semibold block">City</span>
-                            <span class="font-bold text-slate-800">{{ selectedCityName }}</span>
+                            <span class="block font-semibold text-slate-400"
+                                >City</span
+                            >
+                            <span class="font-bold text-slate-800">{{
+                                selectedCityName
+                            }}</span>
                         </div>
                         <div>
-                            <span class="text-slate-400 font-semibold block">Salary</span>
+                            <span class="block font-semibold text-slate-400"
+                                >Salary</span
+                            >
                             <span class="font-bold text-slate-800">
-                                {{ form.salary_negotiable ? 'Negotiable' : `${form.salary_currency} ${form.salary_amount || '—'}` }}
+                                {{
+                                    form.salary_negotiable
+                                        ? 'Negotiable'
+                                        : `${form.salary_currency} ${form.salary_amount || '—'}`
+                                }}
                             </span>
                         </div>
                         <div class="col-span-2">
-                            <span class="text-slate-400 font-semibold block">Selected Subjects</span>
+                            <span class="block font-semibold text-slate-400"
+                                >Selected Subjects</span
+                            >
                             <div class="flex flex-wrap gap-1 pt-1">
-                                <Badge v-for="subj in selectedSubjectNames" :key="subj" variant="secondary" class="bg-blue-100 text-blue-800 text-[10px]">
+                                <Badge
+                                    v-for="subj in selectedSubjectNames"
+                                    :key="subj"
+                                    variant="secondary"
+                                    class="bg-blue-100 text-[10px] text-blue-800"
+                                >
                                     {{ subj }}
                                 </Badge>
-                                <span v-if="!selectedSubjectNames.length" class="text-slate-400">—</span>
+                                <span
+                                    v-if="!selectedSubjectNames.length"
+                                    class="text-slate-400"
+                                    >—</span
+                                >
                             </div>
                         </div>
                     </div>
@@ -748,7 +869,9 @@ function submit() {
             </div>
 
             <!-- Navigation Buttons -->
-            <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+            <div
+                class="flex items-center justify-between border-t border-slate-200 pt-4"
+            >
                 <Button
                     v-if="currentStep > 1"
                     type="button"
@@ -772,7 +895,7 @@ function submit() {
                     <Button
                         v-if="currentStep < 3"
                         type="button"
-                        class="bg-blue-600 hover:bg-blue-700 gap-2"
+                        class="gap-2 bg-blue-600 hover:bg-blue-700"
                         @click="goToNextStep"
                     >
                         Next Step
@@ -782,7 +905,7 @@ function submit() {
                     <Button
                         v-else
                         type="submit"
-                        class="bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200"
+                        class="bg-emerald-600 shadow-lg shadow-emerald-200 hover:bg-emerald-700"
                         :disabled="form.processing"
                     >
                         {{ submitLabel }}

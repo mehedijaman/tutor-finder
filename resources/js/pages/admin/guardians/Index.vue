@@ -81,7 +81,11 @@ const columns = [
     { key: 'status', label: 'Status', sortable: true },
     { key: 'profile', label: 'Profile Details' },
     { key: 'created_at', label: 'Created', sortable: true },
-    { key: 'actions', label: 'Actions', cellClass: 'w-[1%] whitespace-nowrap text-right' },
+    {
+        key: 'actions',
+        label: 'Actions',
+        cellClass: 'w-[1%] whitespace-nowrap text-right',
+    },
 ];
 
 const sortKeyMap: Record<string, string> = {
@@ -313,23 +317,21 @@ function closeResetPasswordDialog() {
         <div class="mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
             <PageHeading
                 :title="isTrash ? 'Recycle Bin' : 'Guardian Directory'"
-                :description="isTrash ? 'Manage recently deleted guardian profiles.' : `Total of ${filteredItemsCount} guardian accounts.`"
+                :description="
+                    isTrash
+                        ? 'Manage recently deleted guardian profiles.'
+                        : `Total of ${filteredItemsCount} guardian accounts.`
+                "
             >
                 <template #actions>
-                    <Button
-                        v-if="!isTrash"
-                        as-child
-                    >
+                    <Button v-if="!isTrash" as-child>
                         <Link href="/admin/guardians/create">
                             <UserPlus class="mr-2 h-4 w-4" />
                             Add Guardian
                         </Link>
                     </Button>
 
-                    <Button
-                        variant="outline"
-                        as-child
-                    >
+                    <Button variant="outline" as-child>
                         <Link
                             :href="
                                 isTrash
@@ -387,7 +389,9 @@ function closeResetPasswordDialog() {
                     <SelectTrigger
                         class="h-11 w-full rounded-xl border-border sm:w-auto sm:min-w-[180px]"
                     >
-                        <Filter class="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                        <Filter
+                            class="mr-2 h-4 w-4 shrink-0 text-muted-foreground"
+                        />
                         <SelectValue placeholder="All Status" />
                     </SelectTrigger>
                     <SelectContent class="rounded-xl">
@@ -401,7 +405,9 @@ function closeResetPasswordDialog() {
                     <SelectTrigger
                         class="h-11 w-full rounded-xl border-border sm:w-auto sm:min-w-[180px]"
                     >
-                        <Shield class="mr-2 h-4 w-4 text-muted-foreground shrink-0" />
+                        <Shield
+                            class="mr-2 h-4 w-4 shrink-0 text-muted-foreground"
+                        />
                         <SelectValue placeholder="Verification" />
                     </SelectTrigger>
                     <SelectContent class="rounded-xl">
@@ -443,7 +449,9 @@ function closeResetPasswordDialog() {
                             </AvatarFallback>
                         </Avatar>
                         <div class="space-y-0.5">
-                            <p class="leading-tight font-bold tracking-tight text-card-foreground">
+                            <p
+                                class="leading-tight font-bold tracking-tight text-card-foreground"
+                            >
                                 {{ row.name }}
                             </p>
                             <div class="flex items-center gap-1.5 pt-0.5">
@@ -458,9 +466,13 @@ function closeResetPasswordDialog() {
                                         )
                                     "
                                 >
-                                    {{ row.verification_status || 'Unverified' }}
+                                    {{
+                                        row.verification_status || 'Unverified'
+                                    }}
                                 </Badge>
-                                <span class="text-[9px] font-medium tracking-tighter text-muted-foreground uppercase">
+                                <span
+                                    class="text-[9px] font-medium tracking-tighter text-muted-foreground uppercase"
+                                >
                                     #{{ row.id }}
                                 </span>
                             </div>
@@ -470,11 +482,15 @@ function closeResetPasswordDialog() {
 
                 <template #cell-contact="{ row }">
                     <div class="space-y-1.5">
-                        <div class="flex items-center gap-2 text-xs font-semibold text-card-foreground">
+                        <div
+                            class="flex items-center gap-2 text-xs font-semibold text-card-foreground"
+                        >
                             <Phone class="h-3 w-3 text-emerald-400" />
                             {{ row.phone || '—' }}
                         </div>
-                        <div class="flex max-w-[180px] items-center gap-2 truncate text-[10px] font-medium text-muted-foreground">
+                        <div
+                            class="flex max-w-[180px] items-center gap-2 truncate text-[10px] font-medium text-muted-foreground"
+                        >
                             <Mail class="h-3 w-3 opacity-60" />
                             {{ row.email || '—' }}
                         </div>
@@ -497,12 +513,20 @@ function closeResetPasswordDialog() {
 
                 <template #cell-profile="{ row }">
                     <div class="space-y-1.5">
-                        <div class="flex items-center gap-2 text-[11px] font-bold text-card-foreground">
+                        <div
+                            class="flex items-center gap-2 text-[11px] font-bold text-card-foreground"
+                        >
                             <Briefcase class="h-3 w-3 text-primary" />
-                            <span class="max-w-[140px] truncate">{{ row.occupation || 'No Occupation' }}</span>
+                            <span class="max-w-[140px] truncate">{{
+                                row.occupation || 'No Occupation'
+                            }}</span>
                         </div>
-                        <div class="flex max-w-[180px] items-center gap-2 truncate text-[10px] font-medium text-muted-foreground">
-                            <MapPin class="h-3 w-3 text-muted-foreground opacity-60" />
+                        <div
+                            class="flex max-w-[180px] items-center gap-2 truncate text-[10px] font-medium text-muted-foreground"
+                        >
+                            <MapPin
+                                class="h-3 w-3 text-muted-foreground opacity-60"
+                            />
                             {{ row.address || 'No address' }}
                         </div>
                     </div>
@@ -545,7 +569,12 @@ function closeResetPasswordDialog() {
 
                                 <template v-if="!isTrash">
                                     <DropdownMenuItem
-                                        @click="handleRowAction('reset-password', row)"
+                                        @click="
+                                            handleRowAction(
+                                                'reset-password',
+                                                row,
+                                            )
+                                        "
                                         class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
                                     >
                                         <Key class="h-4 w-4 text-emerald-500" />
@@ -553,15 +582,26 @@ function closeResetPasswordDialog() {
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         v-if="canImpersonateRow(row)"
-                                        @click="handleRowAction('impersonate', row)"
+                                        @click="
+                                            handleRowAction('impersonate', row)
+                                        "
                                         class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
                                     >
-                                        <UserCircle class="h-4 w-4 text-blue-500" />
+                                        <UserCircle
+                                            class="h-4 w-4 text-blue-500"
+                                        />
                                         Impersonate
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                        @click="handleRowAction(row.status === 'active' ? 'suspend' : 'unsuspend', row)"
+                                        @click="
+                                            handleRowAction(
+                                                row.status === 'active'
+                                                    ? 'suspend'
+                                                    : 'unsuspend',
+                                                row,
+                                            )
+                                        "
                                         class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold"
                                     >
                                         <ShieldAlert
@@ -572,7 +612,11 @@ function closeResetPasswordDialog() {
                                             v-else
                                             class="h-4 w-4 text-emerald-500"
                                         />
-                                        {{ row.status === 'active' ? 'Suspend Account' : 'Re-activate Account' }}
+                                        {{
+                                            row.status === 'active'
+                                                ? 'Suspend Account'
+                                                : 'Re-activate Account'
+                                        }}
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         @click="handleRowAction('delete', row)"
@@ -592,7 +636,9 @@ function closeResetPasswordDialog() {
                                         Restore Account
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        @click="handleRowAction('force-delete', row)"
+                                        @click="
+                                            handleRowAction('force-delete', row)
+                                        "
                                         class="cursor-pointer gap-2 rounded-lg py-2.5 text-xs font-bold text-red-600 focus:bg-red-50/50 focus:text-red-700"
                                     >
                                         <Trash2 class="h-4 w-4" />

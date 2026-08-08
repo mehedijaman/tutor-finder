@@ -86,7 +86,7 @@ function submit() {
     <form class="space-y-6" @submit.prevent="submit">
         <div class="grid gap-6 sm:grid-cols-12">
             <section
-                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 sm:col-span-8"
+                class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:col-span-8 sm:p-6"
             >
                 <h2 class="text-lg font-semibold">Notice Content</h2>
 

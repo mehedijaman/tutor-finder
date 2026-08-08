@@ -591,10 +591,7 @@ const quickActions: ActionCardConfig[] = [
                             class="h-4 w-4 shrink-0"
                             :class="item.color"
                         />
-                        <span
-                            class="text-sm font-semibold"
-                            :class="item.color"
-                        >
+                        <span class="text-sm font-semibold" :class="item.color">
                             {{ item.count }}
                         </span>
                         <span
@@ -615,16 +612,16 @@ const quickActions: ActionCardConfig[] = [
                 <div
                     class="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-6"
                 >
-                    <div class="mb-4 flex flex-wrap items-start justify-between gap-2 sm:mb-5">
+                    <div
+                        class="mb-4 flex flex-wrap items-start justify-between gap-2 sm:mb-5"
+                    >
                         <div>
                             <h3
                                 class="text-base font-semibold text-card-foreground"
                             >
                                 User Registrations
                             </h3>
-                            <p
-                                class="mt-0.5 text-sm text-muted-foreground"
-                            >
+                            <p class="mt-0.5 text-sm text-muted-foreground">
                                 Last 12 months
                             </p>
                         </div>
@@ -664,9 +661,7 @@ const quickActions: ActionCardConfig[] = [
                             >
                                 Revenue Trend
                             </h3>
-                            <p
-                                class="mt-0.5 text-sm text-muted-foreground"
-                            >
+                            <p class="mt-0.5 text-sm text-muted-foreground">
                                 Last 12 months
                             </p>
                         </div>
@@ -705,7 +700,9 @@ const quickActions: ActionCardConfig[] = [
                             View all
                         </Link>
                     </div>
-                    <div class="flex w-full flex-col items-center gap-4 sm:flex-row sm:gap-6">
+                    <div
+                        class="flex w-full flex-col items-center gap-4 sm:flex-row sm:gap-6"
+                    >
                         <div
                             class="relative h-36 w-36 shrink-0 sm:h-44 sm:w-44"
                         >
@@ -766,7 +763,7 @@ const quickActions: ActionCardConfig[] = [
                     </h3>
                     <div class="grid grid-cols-2 gap-3">
                         <div
-                            class="rounded-xl border border-blue-100 bg-blue-50/60 p-3 dark:border-blue-900/30 dark:bg-blue-950/20 md:p-4"
+                            class="rounded-xl border border-blue-100 bg-blue-50/60 p-3 md:p-4 dark:border-blue-900/30 dark:bg-blue-950/20"
                         >
                             <div
                                 class="flex items-center gap-1.5 text-blue-600 md:gap-2 dark:text-blue-400"
@@ -785,7 +782,7 @@ const quickActions: ActionCardConfig[] = [
                             </p>
                         </div>
                         <div
-                            class="rounded-xl border border-amber-100 bg-amber-50/60 p-3 dark:border-amber-900/30 dark:bg-amber-950/20 md:p-4"
+                            class="rounded-xl border border-amber-100 bg-amber-50/60 p-3 md:p-4 dark:border-amber-900/30 dark:bg-amber-950/20"
                         >
                             <div
                                 class="flex items-center gap-1.5 text-amber-600 md:gap-2 dark:text-amber-400"
@@ -804,7 +801,7 @@ const quickActions: ActionCardConfig[] = [
                             </p>
                         </div>
                         <div
-                            class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 dark:border-emerald-900/30 dark:bg-emerald-950/20 md:p-4"
+                            class="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 md:p-4 dark:border-emerald-900/30 dark:bg-emerald-950/20"
                         >
                             <div
                                 class="flex items-center gap-1.5 text-emerald-600 md:gap-2 dark:text-emerald-400"
@@ -823,7 +820,7 @@ const quickActions: ActionCardConfig[] = [
                             </p>
                         </div>
                         <div
-                            class="rounded-xl border border-rose-100 bg-rose-50/60 p-3 dark:border-rose-900/30 dark:bg-rose-950/20 md:p-4"
+                            class="rounded-xl border border-rose-100 bg-rose-50/60 p-3 md:p-4 dark:border-rose-900/30 dark:bg-rose-950/20"
                         >
                             <div
                                 class="flex items-center gap-1.5 text-rose-600 md:gap-2 dark:text-rose-400"
@@ -949,17 +946,13 @@ const quickActions: ActionCardConfig[] = [
                             >
                                 <span
                                     class="rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                                    :class="
-                                        priorityBadgeClass(ticket.priority)
-                                    "
+                                    :class="priorityBadgeClass(ticket.priority)"
                                 >
                                     {{ ticket.priorityLabel }}
                                 </span>
                                 <span
                                     class="rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                                    :class="
-                                        statusBadgeClass(ticket.status)
-                                    "
+                                    :class="statusBadgeClass(ticket.status)"
                                 >
                                     {{ ticket.statusLabel }}
                                 </span>
@@ -983,9 +976,7 @@ const quickActions: ActionCardConfig[] = [
                 <div
                     class="flex items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6"
                 >
-                    <h3
-                        class="text-base font-semibold text-card-foreground"
-                    >
+                    <h3 class="text-base font-semibold text-card-foreground">
                         Pending Verifications
                     </h3>
                     <Link
@@ -1030,9 +1021,7 @@ const quickActions: ActionCardConfig[] = [
 
             <!-- Quick Access -->
             <div>
-                <h2
-                    class="mb-4 text-base font-semibold text-card-foreground"
-                >
+                <h2 class="mb-4 text-base font-semibold text-card-foreground">
                     Quick Access
                 </h2>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

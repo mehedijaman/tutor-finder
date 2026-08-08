@@ -123,7 +123,7 @@ function resetConfirmState(): void {
                     <div class="space-y-1">
                         <div class="flex items-center gap-2">
                             <h1
-                                class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                                class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
                             >
                                 {{ ticket.subject }}
                             </h1>

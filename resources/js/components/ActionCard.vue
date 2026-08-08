@@ -41,7 +41,8 @@ const colorStyles = computed(() => {
         emerald: {
             gradient: 'from-emerald-500 to-emerald-600',
             shadow: 'shadow-emerald-500/25',
-            borderHover: 'hover:border-emerald-200 dark:hover:border-emerald-800',
+            borderHover:
+                'hover:border-emerald-200 dark:hover:border-emerald-800',
             arrowColor: 'group-hover:text-emerald-600',
             glowShadow: 'hover:shadow-emerald-500/20',
             accentBorder: 'group-hover:border-l-emerald-500',
@@ -149,7 +150,14 @@ const colorStyles = computed(() => {
         <!-- Decorative dot pattern -->
         <div
             class="pointer-events-none absolute inset-0 opacity-[0.015]"
-            style="background-image: radial-gradient(circle, currentColor 1px, transparent 1px); background-size: 16px 16px;"
+            style="
+                background-image: radial-gradient(
+                    circle,
+                    currentColor 1px,
+                    transparent 1px
+                );
+                background-size: 16px 16px;
+            "
             aria-hidden="true"
         />
 
@@ -163,7 +171,7 @@ const colorStyles = computed(() => {
 
             <div class="min-w-0 flex-1">
                 <h3
-                    class="text-sm font-semibold leading-snug tracking-tight text-card-foreground"
+                    class="text-sm leading-snug font-semibold tracking-tight text-card-foreground"
                 >
                     {{ title }}
                 </h3>

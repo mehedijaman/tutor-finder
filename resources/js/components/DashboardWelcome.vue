@@ -25,9 +25,12 @@ const roleLabel = computed(() => {
 
 const roleBadgeClass = computed(() => {
     const role = user.value?.role;
-    if (role === 'admin') return 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300';
-    if (role === 'tutor') return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
-    if (role === 'guardian') return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
+    if (role === 'admin')
+        return 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300';
+    if (role === 'tutor')
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
+    if (role === 'guardian')
+        return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
     return 'bg-primary/10 text-primary';
 });
 
@@ -48,7 +51,14 @@ const formattedDate = computed(() =>
         <!-- Decorative dot pattern -->
         <div
             class="pointer-events-none absolute inset-0 opacity-[0.02]"
-            style="background-image: radial-gradient(circle, currentColor 1px, transparent 1px); background-size: 16px 16px;"
+            style="
+                background-image: radial-gradient(
+                    circle,
+                    currentColor 1px,
+                    transparent 1px
+                );
+                background-size: 16px 16px;
+            "
             aria-hidden="true"
         />
 
@@ -78,7 +88,9 @@ const formattedDate = computed(() =>
                 >
                     {{ user?.name ?? 'Welcome' }}
                 </h1>
-                <div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <div
+                    class="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground"
+                >
                     <span
                         class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold"
                         :class="roleBadgeClass"
@@ -94,7 +106,7 @@ const formattedDate = computed(() =>
 
             <div
                 v-if="user"
-                class="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/80 text-lg font-bold text-primary-foreground shadow-lg shadow-primary/25 ring-2 ring-primary/10"
+                class="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/80 text-lg font-bold text-primary-foreground shadow-lg ring-2 shadow-primary/25 ring-primary/10"
             >
                 {{ getInitials(user.name) }}
             </div>

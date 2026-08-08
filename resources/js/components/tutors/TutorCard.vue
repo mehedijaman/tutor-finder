@@ -159,10 +159,10 @@ function memberSinceYear(): string {
 
 <template>
     <Card
-        class="group relative flex h-full flex-col overflow-hidden border-slate-200/80 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
+        class="group relative flex h-full flex-col overflow-hidden border-slate-200/80 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
     >
         <div
-            class="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white"
+            class="relative overflow-hidden border-b border-slate-200/80 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white dark:border-slate-800"
         >
             <div class="absolute inset-0 bg-white/5" />
             <div
@@ -219,18 +219,22 @@ function memberSinceYear(): string {
             <div class="flex items-center justify-between">
                 <Badge
                     variant="outline"
-                    class="border-slate-200 bg-slate-50 text-slate-700"
+                    class="border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
                 >
                     {{ getGenderLabel() }}
                 </Badge>
-                <span class="text-xs text-slate-400">
+                <span class="text-xs text-slate-400 dark:text-slate-500">
                     Member since {{ memberSinceYear() }}
                 </span>
             </div>
 
             <div class="space-y-2.5 text-sm">
-                <div class="flex items-start gap-2.5 text-slate-600">
-                    <MapPin class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                <div
+                    class="flex items-start gap-2.5 text-slate-600 dark:text-slate-400"
+                >
+                    <MapPin
+                        class="mt-0.5 h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500"
+                    />
                     <span class="line-clamp-1">
                         {{
                             tutor.tutor_profile?.present_address ||
@@ -239,15 +243,25 @@ function memberSinceYear(): string {
                     </span>
                 </div>
 
-                <div class="flex items-start gap-2.5 text-slate-600">
-                    <Wallet class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-                    <span class="font-medium text-slate-900">
+                <div
+                    class="flex items-start gap-2.5 text-slate-600 dark:text-slate-400"
+                >
+                    <Wallet
+                        class="mt-0.5 h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500"
+                    />
+                    <span
+                        class="font-medium text-slate-900 dark:text-slate-100"
+                    >
                         {{ formatSalary() }}
                     </span>
                 </div>
 
-                <div class="flex items-start gap-2.5 text-slate-600">
-                    <Clock class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                <div
+                    class="flex items-start gap-2.5 text-slate-600 dark:text-slate-400"
+                >
+                    <Clock
+                        class="mt-0.5 h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500"
+                    />
                     <span class="line-clamp-1">{{
                         getAvailableSummary()
                     }}</span>
@@ -262,7 +276,7 @@ function memberSinceYear(): string {
                     v-for="subject in preferredSubjectPreview"
                     :key="subject"
                     variant="outline"
-                    class="rounded-lg border-blue-200 bg-blue-50 px-2 py-1 text-[11px] text-blue-700"
+                    class="rounded-lg border-blue-200 bg-blue-50 px-2 py-1 text-[11px] text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300"
                 >
                     <GraduationCap class="mr-1 h-3 w-3" />
                     {{ subject }}
@@ -277,7 +291,7 @@ function memberSinceYear(): string {
                     size="sm"
                     show-value
                 />
-                <span v-else class="text-xs text-slate-400"
+                <span v-else class="text-xs text-slate-400 dark:text-slate-500"
                     >No reviews yet</span
                 >
             </div>
@@ -286,7 +300,7 @@ function memberSinceYear(): string {
         <CardFooter class="p-5 pt-0">
             <Button
                 as-child
-                class="h-10 w-full rounded-xl bg-slate-900 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+                class="h-10 w-full rounded-xl bg-slate-900 text-sm font-semibold text-white transition-colors hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
             >
                 <Link :href="`/tutors/${tutor.id}`">View Full Profile</Link>
             </Button>

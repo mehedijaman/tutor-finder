@@ -45,7 +45,7 @@ const formattedDate = new Date(props.page.updated_at).toLocaleDateString(
     </Head>
 
     <PublicLayout>
-        <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
+        <section class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
             <div
                 class="rounded-3xl bg-gradient-to-r from-blue-600 to-sky-500 p-8 text-white shadow-sm md:p-10"
             >
@@ -63,7 +63,7 @@ const formattedDate = new Date(props.page.updated_at).toLocaleDateString(
 
         <section
             v-if="page.featured_image_url"
-            class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8"
+            class="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8"
         >
             <img
                 :src="page.featured_image_url"
@@ -72,7 +72,7 @@ const formattedDate = new Date(props.page.updated_at).toLocaleDateString(
             />
         </section>
 
-        <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+        <main class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
             <div
                 class="rounded-2xl border border-slate-100 bg-white p-6 shadow-[0_10px_30px_rgba(2,32,71,0.06)] md:p-10"
             >

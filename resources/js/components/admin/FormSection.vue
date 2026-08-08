@@ -21,7 +21,16 @@ const props = withDefaults(
     },
 );
 
-const accentStyles: Record<string, { border: string; bg: string; iconBg: string; iconColor: string; descColor: string }> = {
+const accentStyles: Record<
+    string,
+    {
+        border: string;
+        bg: string;
+        iconBg: string;
+        iconColor: string;
+        descColor: string;
+    }
+> = {
     indigo: {
         border: 'border-indigo-100/50',
         bg: 'bg-indigo-50/30',
@@ -59,13 +68,13 @@ const accentStyles: Record<string, { border: string; bg: string; iconBg: string;
     },
 };
 
-const styles = $computed(() => accentStyles[props.accent] ?? accentStyles.indigo);
+const styles = $computed(
+    () => accentStyles[props.accent] ?? accentStyles.indigo,
+);
 </script>
 
 <template>
-    <Card
-        class="overflow-hidden rounded-2xl border-border/60 shadow-sm"
-    >
+    <Card class="overflow-hidden rounded-2xl border-border/60 shadow-sm">
         <CardHeader
             class="flex flex-row items-center justify-between border-b p-6"
             :class="[styles.bg, styles.border]"
@@ -101,3 +110,4 @@ const styles = $computed(() => accentStyles[props.accent] ?? accentStyles.indigo
             <slot />
         </CardContent>
     </Card>
+</template>

@@ -95,18 +95,18 @@ const detailsBasePath = computed(() =>
 </script>
 
 <template>
-    <div class="min-h-screen bg-slate-50 py-12">
+    <div class="min-h-screen bg-slate-50 py-12 dark:bg-slate-950">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div
                 class="mb-10 flex flex-col gap-6 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"
             >
                 <div>
                     <h1
-                        class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+                        class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100"
                     >
                         {{ pageTitle || 'Job Board' }}
                     </h1>
-                    <p class="mt-3 text-lg text-slate-600">
+                    <p class="mt-3 text-lg text-slate-600 dark:text-slate-400">
                         {{
                             pageDescription ||
                             'Explore active tuition opportunities and apply to the ones that match your expertise.'
@@ -125,18 +125,21 @@ const detailsBasePath = computed(() =>
             </div>
 
             <div class="mb-6 flex items-center justify-between">
-                <div class="flex items-center gap-2 text-sm text-slate-600">
+                <div
+                    class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
+                >
                     <List class="h-5 w-5" />
                     <span>
-                        <span class="font-semibold text-slate-900">{{
-                            total
-                        }}</span>
+                        <span
+                            class="font-semibold text-slate-900 dark:text-slate-100"
+                            >{{ total }}</span
+                        >
                         jobs found
                     </span>
                 </div>
                 <button
                     @click="filtersOpen = true"
-                    class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                    class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                 >
                     <Filter class="h-4 w-4" />
                     Filters
@@ -154,10 +157,10 @@ const detailsBasePath = computed(() =>
 
             <div
                 v-else
-                class="rounded-2xl border border-slate-200 bg-white p-12 text-center"
+                class="rounded-2xl border border-slate-200 bg-white p-12 text-center dark:border-slate-800 dark:bg-slate-900"
             >
                 <svg
-                    class="mx-auto h-16 w-16 text-slate-300"
+                    class="mx-auto h-16 w-16 text-slate-300 dark:text-slate-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -169,10 +172,12 @@ const detailsBasePath = computed(() =>
                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                     />
                 </svg>
-                <h3 class="mt-4 text-xl font-semibold text-slate-900">
+                <h3
+                    class="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-100"
+                >
                     No jobs found
                 </h3>
-                <p class="mt-2 text-slate-600">
+                <p class="mt-2 text-slate-600 dark:text-slate-400">
                     Try adjusting your filters to find more jobs
                 </p>
             </div>

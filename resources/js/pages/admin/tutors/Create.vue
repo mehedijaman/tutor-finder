@@ -126,12 +126,11 @@ const submit = () => {
                     description="Create account, set preferences and add education history in one step."
                 >
                     <template #actions>
-                        <Button
-                            variant="ghost"
-                            as-child
-                            class="group"
-                        >
-                            <Link href="/admin/tutors" class="flex items-center">
+                        <Button variant="ghost" as-child class="group">
+                            <Link
+                                href="/admin/tutors"
+                                class="flex items-center"
+                            >
                                 <ChevronLeft
                                     class="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
                                 />
@@ -224,9 +223,15 @@ const submit = () => {
                                     <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                                 <SelectContent class="rounded-xl">
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="suspended">Suspended</SelectItem>
-                                    <SelectItem value="pending_verification">Pending Verification</SelectItem>
+                                    <SelectItem value="active"
+                                        >Active</SelectItem
+                                    >
+                                    <SelectItem value="suspended"
+                                        >Suspended</SelectItem
+                                    >
+                                    <SelectItem value="pending_verification"
+                                        >Pending Verification</SelectItem
+                                    >
                                 </SelectContent>
                             </Select>
                             <InputError :message="form.errors.status" />
@@ -360,7 +365,9 @@ const submit = () => {
                                 </SelectTrigger>
                                 <SelectContent class="rounded-xl">
                                     <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female">Female</SelectItem>
+                                    <SelectItem value="female"
+                                        >Female</SelectItem
+                                    >
                                     <SelectItem value="other">Other</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -926,9 +933,13 @@ const submit = () => {
                             <div
                                 class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted"
                             >
-                                <GraduationCap class="h-6 w-6 text-muted-foreground" />
+                                <GraduationCap
+                                    class="h-6 w-6 text-muted-foreground"
+                                />
                             </div>
-                            <p class="text-sm font-medium text-muted-foreground">
+                            <p
+                                class="text-sm font-medium text-muted-foreground"
+                            >
                                 No education records added yet.
                             </p>
                             <Button
@@ -998,11 +1009,21 @@ form > * {
     opacity: 0;
 }
 
-form > *:nth-child(1) { animation-delay: 0.1s; }
-form > *:nth-child(2) { animation-delay: 0.2s; }
-form > *:nth-child(3) { animation-delay: 0.3s; }
-form > *:nth-child(4) { animation-delay: 0.4s; }
-form > *:nth-child(5) { animation-delay: 0.5s; }
+form > *:nth-child(1) {
+    animation-delay: 0.1s;
+}
+form > *:nth-child(2) {
+    animation-delay: 0.2s;
+}
+form > *:nth-child(3) {
+    animation-delay: 0.3s;
+}
+form > *:nth-child(4) {
+    animation-delay: 0.4s;
+}
+form > *:nth-child(5) {
+    animation-delay: 0.5s;
+}
 
 @keyframes slideUp {
     from {

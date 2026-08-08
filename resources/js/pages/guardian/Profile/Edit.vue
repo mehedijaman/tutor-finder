@@ -1052,9 +1052,7 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                 </Badge>
                             </div>
                             <p class="text-xs text-blue-950 dark:text-blue-300">
-                                Invoice #{{
-                                    verificationInvoice.invoice_no
-                                }}
+                                Invoice #{{ verificationInvoice.invoice_no }}
                                 has been issued. Pay now to complete
                                 verification.
                             </p>

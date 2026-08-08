@@ -42,7 +42,7 @@ function avatarInitials(name: string): string {
                     class="pl-4 md:basis-1/2 lg:basis-1/3"
                 >
                     <article
-                        class="flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm"
+                        class="flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-800"
                     >
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-1 text-amber-500">
@@ -53,15 +53,17 @@ function avatarInitials(name: string): string {
                                     :class="
                                         index <= testimonial.rating
                                             ? 'fill-current'
-                                            : 'fill-none text-slate-300'
+                                            : 'fill-none text-slate-300 dark:text-slate-600'
                                     "
                                 />
                             </div>
-                            <Quote class="h-5 w-5 text-slate-300" />
+                            <Quote
+                                class="h-5 w-5 text-slate-300 dark:text-slate-600"
+                            />
                         </div>
 
                         <p
-                            class="mt-4 flex-1 text-sm leading-relaxed text-slate-600"
+                            class="mt-4 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
                         >
                             "{{ testimonial.content }}"
                         </p>
@@ -74,16 +76,20 @@ function avatarInitials(name: string): string {
                                     :alt="testimonial.name"
                                 />
                                 <AvatarFallback
-                                    class="bg-slate-200 text-xs font-semibold text-slate-700"
+                                    class="bg-slate-200 text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-200"
                                 >
                                     {{ avatarInitials(testimonial.name) }}
                                 </AvatarFallback>
                             </Avatar>
                             <div>
-                                <p class="text-sm font-semibold text-slate-900">
+                                <p
+                                    class="text-sm font-semibold text-slate-900 dark:text-slate-100"
+                                >
                                     {{ testimonial.name }}
                                 </p>
-                                <p class="text-xs text-slate-500">
+                                <p
+                                    class="text-xs text-slate-500 dark:text-slate-400"
+                                >
                                     {{ testimonial.role || 'Guardian' }}
                                 </p>
                             </div>
@@ -94,11 +100,11 @@ function avatarInitials(name: string): string {
 
             <CarouselPrevious
                 v-if="testimonials.length > 1"
-                class="left-2 h-9 w-9 rounded-xl border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+                class="left-2 h-9 w-9 rounded-xl border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             />
             <CarouselNext
                 v-if="testimonials.length > 1"
-                class="right-2 h-9 w-9 rounded-xl border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50"
+                class="right-2 h-9 w-9 rounded-xl border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             />
         </Carousel>
     </div>
