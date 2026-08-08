@@ -1,0 +1,1 @@
+import{c as o}from"./SheetTitle.vue_vue_type_script_setup_true_lang-dxxFX06t.js";const a=o("ArrowDownIcon",[["path",{d:"M12 5v14",key:"s699le"}],["path",{d:"m19 12-7 7-7-7",key:"1idqje"}]]);const e=o("ArrowUpIcon",[["path",{d:"m5 12 7-7 7 7",key:"hav0vg"}],["path",{d:"M12 19V5",key:"x0mq9r"}]]);export{a as A,e as a};

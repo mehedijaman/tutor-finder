@@ -1,0 +1,1 @@
+.animate-in[data-v-01aae100]{animation-fill-mode:forwards}@keyframes fadeIn-01aae100{0%{opacity:0}to{opacity:1}}@keyframes slideUp-01aae100{0%{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}main>div[data-v-01aae100]{animation:slideUp-01aae100 .4s ease-out forwards}aside[data-v-01aae100]{animation:fadeIn-01aae100 .6s ease-out forwards}
