@@ -63,14 +63,14 @@ function submit() {
         <SettingsLayout full-width>
             <div class="space-y-6 p-4 sm:p-6 lg:p-8">
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                 >
                     <h1
-                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                     >
                         Payment Settings
                     </h1>
-                    <p class="mt-1 text-sm text-slate-600">
+                    <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                         Configure payment gateways and operational modes.
                     </p>
                 </div>
@@ -84,7 +84,7 @@ function submit() {
 
                 <form class="space-y-8" @submit.prevent="submit">
                     <section
-                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">bKash</h2>
@@ -180,7 +180,7 @@ function submit() {
                     </section>
 
                     <section
-                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">SSLCommerz</h2>
@@ -263,7 +263,7 @@ function submit() {
                     </section>
 
                     <section
-                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
                         <div class="flex items-center justify-between gap-3">
                             <h2 class="text-lg font-semibold">
@@ -292,7 +292,7 @@ function submit() {
                                 id="manual_notes"
                                 v-model="form.manual.notes"
                                 rows="4"
-                                class="rounded-md border px-3 py-2 text-sm"
+                                class="rounded-md border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             ></textarea>
                             <InputError
                                 :message="form.errors['manual.notes']"

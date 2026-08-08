@@ -119,7 +119,7 @@ function formatGender(g: string | null | undefined): string {
                             <Briefcase class="h-5 w-5" />
                         </div>
                         <h1
-                            class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                            class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                         >
                             {{ job.title }}
                         </h1>
@@ -143,7 +143,7 @@ function formatGender(g: string | null | undefined): string {
                 <div class="flex flex-wrap items-center gap-2">
                     <Link
                         :href="`/admin/jobs/${job.id}/applications`"
-                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                         <Users class="h-4 w-4" />
                         Applications
@@ -172,7 +172,7 @@ function formatGender(g: string | null | undefined): string {
                     </Link>
                     <Link
                         href="/admin/jobs"
-                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-500 shadow-sm transition hover:bg-slate-50"
+                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-500 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
                     >
                         <ArrowLeft class="h-4 w-4" />
                         Back

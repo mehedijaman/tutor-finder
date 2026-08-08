@@ -336,7 +336,7 @@ const averageRating = computed(() => {
                 <aside class="space-y-6">
                     <!-- Profile Summary Card -->
                     <Card
-                        class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm transition-all hover:shadow-md"
+                        class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm transition-all hover:shadow-md dark:border-slate-700"
                     >
                         <div
                             class="h-24 bg-gradient-to-br from-indigo-500 to-purple-600"
@@ -362,7 +362,7 @@ const averageRating = computed(() => {
 
                                 <div class="mt-4 space-y-1">
                                     <h2
-                                        class="text-xl font-bold tracking-tight text-slate-900"
+                                        class="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
                                     >
                                         {{ tutor.name }}
                                     </h2>

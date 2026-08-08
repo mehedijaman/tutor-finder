@@ -68,28 +68,30 @@ function submit() {
 <template>
     <form class="space-y-6" @submit.prevent="submit">
         <section
-            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
         >
-            <h2 class="text-lg font-semibold">Country Details</h2>
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Country Details</h2>
 
             <div class="grid gap-2">
-                <Label for="country-name">Name</Label>
+                <Label for="country-name" class="dark:text-slate-200">Name</Label>
                 <Input
                     id="country-name"
                     v-model="form.name"
                     type="text"
                     required
+                    class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
                 <InputError :message="form.errors.name" />
             </div>
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between gap-3">
-                    <Label for="country-slug">Slug</Label>
+                    <Label for="country-slug" class="dark:text-slate-200">Slug</Label>
                     <Button
                         type="button"
                         size="sm"
                         variant="outline"
+                        class="dark:border-slate-700 dark:text-slate-300"
                         @click="toggleAutoSlug"
                     >
                         Auto: {{ autoSlug ? 'On' : 'Off' }}
@@ -99,17 +101,18 @@ function submit() {
                     id="country-slug"
                     :model-value="form.slug"
                     type="text"
+                    class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     @update:model-value="onManualSlugInput"
                 />
                 <InputError :message="form.errors.slug" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="country-status">Status</Label>
+                <Label for="country-status" class="dark:text-slate-200">Status</Label>
                 <select
                     id="country-status"
                     v-model="form.status"
-                    class="h-10 rounded-md border px-3 text-sm"
+                    class="h-10 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm text-slate-900 dark:text-slate-100"
                 >
                     <option
                         v-for="option in statusOptions"
@@ -129,7 +132,7 @@ function submit() {
             }}</Button>
             <Link
                 :href="cancelHref"
-                class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                class="inline-flex h-9 items-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
                 >Cancel</Link
             >
         </div>

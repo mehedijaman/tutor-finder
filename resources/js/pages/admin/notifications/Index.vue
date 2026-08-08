@@ -119,7 +119,7 @@ function onAction(action: string, row: Record<string, unknown>) {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="space-y-1">
@@ -152,7 +152,7 @@ function onAction(action: string, row: Record<string, unknown>) {
             </div>
 
             <div
-                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Select v-model="statusFilter">
                     <SelectTrigger>

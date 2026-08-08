@@ -25,11 +25,11 @@ const breadcrumbs = [
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
             >
                 <div class="flex items-center gap-4">
                     <Avatar
-                        class="h-14 w-14 border-2 border-white shadow-sm ring-1 ring-slate-100"
+                        class="h-14 w-14 border-2 border-white dark:border-slate-800 shadow-sm ring-1 ring-slate-100 dark:ring-slate-800"
                     >
                         <AvatarImage
                             v-if="adminUser.photo_url"
@@ -37,7 +37,7 @@ const breadcrumbs = [
                             :alt="adminUser.name"
                         />
                         <AvatarFallback
-                            class="bg-indigo-50 text-lg font-bold text-indigo-700 uppercase"
+                            class="bg-indigo-50 dark:bg-indigo-950/40 text-lg font-bold text-indigo-700 dark:text-indigo-300 uppercase"
                         >
                             {{
                                 adminUser.name
@@ -50,11 +50,11 @@ const breadcrumbs = [
                     </Avatar>
                     <div class="space-y-1">
                         <h1
-                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                         >
                             Edit Admin User
                         </h1>
-                        <p class="text-sm text-slate-600">
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
                             Update account details, status, roles, and
                             permissions.
                         </p>
@@ -62,7 +62,7 @@ const breadcrumbs = [
                 </div>
                 <Link
                     href="/admin/users"
-                    class="inline-flex h-9 items-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    class="inline-flex h-9 items-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
                     >Back</Link
                 >
             </div>
@@ -70,40 +70,42 @@ const breadcrumbs = [
             <Form
                 :action="`/admin/users/${adminUser.id}`"
                 method="put"
-                class="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="space-y-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
                 #default="{ errors, processing }"
             >
                 <div class="grid gap-4 sm:grid-cols-3">
                     <div class="grid gap-2">
-                        <Label for="name">Name</Label>
+                        <Label for="name" class="dark:text-slate-200">Name</Label>
                         <Input
                             id="name"
                             name="name"
                             type="text"
                             :default-value="adminUser.name"
                             required
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="errors.name" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="email">Email</Label>
+                        <Label for="email" class="dark:text-slate-200">Email</Label>
                         <Input
                             id="email"
                             name="email"
                             type="email"
                             :default-value="adminUser.email"
                             required
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="errors.email" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="status">Status</Label>
+                        <Label for="status" class="dark:text-slate-200">Status</Label>
                         <select
                             id="status"
                             name="status"
-                            class="h-10 w-full rounded-md border px-3 text-sm"
+                            class="h-10 w-full rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm text-slate-900 dark:text-slate-100"
                         >
                             <option
                                 value="active"
@@ -123,20 +125,20 @@ const breadcrumbs = [
                 </div>
 
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div class="rounded-xl border border-slate-200/80 p-4">
-                        <h2 class="mb-3 text-sm font-medium">Roles</h2>
+                    <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 p-4">
+                        <h2 class="mb-3 text-sm font-medium text-slate-900 dark:text-slate-100">Roles</h2>
                         <div class="space-y-2">
                             <label
                                 v-for="role in roles"
                                 :key="role"
-                                class="flex items-center gap-2 text-sm"
+                                class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
                             >
                                 <input
                                     type="checkbox"
                                     name="roles[]"
                                     :value="role"
                                     :checked="adminUser.roles.includes(role)"
-                                    class="h-4 w-4 rounded border"
+                                    class="h-4 w-4 rounded border border-slate-300 dark:border-slate-700 dark:bg-slate-800"
                                 />
                                 <span>{{ role }}</span>
                             </label>
@@ -144,15 +146,15 @@ const breadcrumbs = [
                         <InputError :message="errors.roles" />
                     </div>
 
-                    <div class="rounded-xl border border-slate-200/80 p-4">
-                        <h2 class="mb-3 text-sm font-medium">
+                    <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 p-4">
+                        <h2 class="mb-3 text-sm font-medium text-slate-900 dark:text-slate-100">
                             Direct Permissions
                         </h2>
                         <div class="space-y-2">
                             <label
                                 v-for="permission in permissions"
                                 :key="permission"
-                                class="flex items-center gap-2 text-sm"
+                                class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300"
                             >
                                 <input
                                     type="checkbox"
@@ -163,7 +165,7 @@ const breadcrumbs = [
                                             permission,
                                         )
                                     "
-                                    class="h-4 w-4 rounded border"
+                                    class="h-4 w-4 rounded border border-slate-300 dark:border-slate-700 dark:bg-slate-800"
                                 />
                                 <span>{{ permission }}</span>
                             </label>

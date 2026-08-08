@@ -281,7 +281,7 @@ function handleRowAction(actionKey, row) {
                 <div class="flex items-center gap-2">
                     <Link
                         :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
-                        class="rounded-md border px-4 py-2 text-sm"
+                        class="rounded-md border px-4 py-2 text-sm dark:border-slate-700 dark:text-slate-300"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
@@ -298,7 +298,7 @@ function handleRowAction(actionKey, row) {
                     <Link
                         v-if="!filters.trash"
                         href="/admin/tuition/taxonomies/subjects/create"
-                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                        class="rounded-md bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black"
                     >
                         Create Subject
                     </Link>
@@ -306,7 +306,7 @@ function handleRowAction(actionKey, row) {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-4"
+                class="grid gap-3 rounded-xl border bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-2 lg:grid-cols-4"
             >
                 <Input
                     v-model="search"

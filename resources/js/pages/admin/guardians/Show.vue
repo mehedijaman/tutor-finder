@@ -125,7 +125,7 @@ const tabs = [
                 <!-- Sidebar -->
                 <aside class="space-y-6">
                     <Card
-                        class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm transition-all hover:shadow-md"
+                        class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm transition-all hover:shadow-md dark:border-slate-700"
                     >
                         <div
                             class="h-24 bg-gradient-to-br from-indigo-500 to-indigo-700"

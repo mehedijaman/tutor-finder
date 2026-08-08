@@ -258,7 +258,7 @@ onBeforeUnmount(() => {
             <div class="space-y-6 p-4 sm:p-6 lg:p-8">
                 <!-- Page Header -->
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                 >
                     <div class="flex items-center gap-3">
                         <div
@@ -268,11 +268,11 @@ onBeforeUnmount(() => {
                         </div>
                         <div>
                             <h1
-                                class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                                class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                             >
                                 Site Settings
                             </h1>
-                            <p class="text-sm text-slate-600">
+                            <p class="text-sm text-slate-600 dark:text-slate-400">
                                 Manage brand identity, contact channels, and
                                 social details.
                             </p>
@@ -283,13 +283,13 @@ onBeforeUnmount(() => {
                 <form class="space-y-6" @submit.prevent="submit">
                     <!-- Basic Information -->
                     <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
-                        <div class="mb-5 border-b border-slate-100 pb-4">
-                            <h2 class="text-lg font-semibold text-slate-900">
+                        <div class="mb-5 border-b border-slate-100 pb-4 dark:border-slate-800">
+                            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
                                 Basic Information
                             </h2>
-                            <p class="mt-1 text-sm text-slate-600">
+                            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                 Core details that define your site's identity.
                             </p>
                         </div>
@@ -345,18 +345,18 @@ onBeforeUnmount(() => {
 
                     <!-- Branding -->
                     <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
-                        <div class="mb-5 border-b border-slate-100 pb-4">
+                        <div class="mb-5 border-b border-slate-100 pb-4 dark:border-slate-800">
                             <div class="flex items-center gap-2">
-                                <Image class="h-5 w-5 text-slate-600" />
+                                <Image class="h-5 w-5 text-slate-600 dark:text-slate-400" />
                                 <h2
-                                    class="text-lg font-semibold text-slate-900"
+                                    class="text-lg font-semibold text-slate-900 dark:text-slate-100"
                                 >
                                     Branding
                                 </h2>
                             </div>
-                            <p class="mt-1 text-sm text-slate-600">
+                            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                 Logo and favicon for your site's visual
                                 identity.
                             </p>
@@ -365,10 +365,10 @@ onBeforeUnmount(() => {
                         <div class="grid gap-6 sm:grid-cols-2">
                             <!-- Logo -->
                             <div
-                                class="space-y-4 rounded-xl border border-slate-200/80 bg-slate-50/50 p-4"
+                                class="space-y-4 rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50"
                             >
                                 <div>
-                                    <h3 class="font-medium text-slate-900">
+                                    <h3 class="font-medium text-slate-900 dark:text-slate-100">
                                         Site Logo
                                     </h3>
                                     <p class="text-sm text-muted-foreground">
@@ -378,7 +378,7 @@ onBeforeUnmount(() => {
 
                                 <div class="flex items-center gap-4">
                                     <div
-                                        class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white"
+                                        class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white dark:border-slate-700 dark:bg-slate-800"
                                     >
                                         <img
                                             v-if="logoUrl"
@@ -426,10 +426,10 @@ onBeforeUnmount(() => {
 
                             <!-- Favicon -->
                             <div
-                                class="space-y-4 rounded-xl border border-slate-200/80 bg-slate-50/50 p-4"
+                                class="space-y-4 rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50"
                             >
                                 <div>
-                                    <h3 class="font-medium text-slate-900">
+                                    <h3 class="font-medium text-slate-900 dark:text-slate-100">
                                         Favicon
                                     </h3>
                                     <p class="text-sm text-muted-foreground">
@@ -439,7 +439,7 @@ onBeforeUnmount(() => {
 
                                 <div class="flex items-center gap-4">
                                     <div
-                                        class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white"
+                                        class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white dark:border-slate-700 dark:bg-slate-800"
                                     >
                                         <img
                                             v-if="faviconUrl"
@@ -489,13 +489,13 @@ onBeforeUnmount(() => {
 
                     <!-- Contact Information -->
                     <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
-                        <div class="mb-5 border-b border-slate-100 pb-4">
-                            <h2 class="text-lg font-semibold text-slate-900">
+                        <div class="mb-5 border-b border-slate-100 pb-4 dark:border-slate-800">
+                            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
                                 Contact Information
                             </h2>
-                            <p class="mt-1 text-sm text-slate-600">
+                            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                 Phone numbers and email addresses for customer
                                 contact.
                             </p>
@@ -620,21 +620,21 @@ onBeforeUnmount(() => {
 
                     <!-- Addresses -->
                     <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
                         <div
-                            class="mb-5 flex items-center justify-between border-b border-slate-100 pb-4"
+                            class="mb-5 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800"
                         >
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <MapPin class="h-5 w-5 text-slate-600" />
+                                    <MapPin class="h-5 w-5 text-slate-600 dark:text-slate-400" />
                                     <h2
-                                        class="text-lg font-semibold text-slate-900"
+                                        class="text-lg font-semibold text-slate-900 dark:text-slate-100"
                                     >
                                         Addresses
                                     </h2>
                                 </div>
-                                <p class="mt-1 text-sm text-slate-600">
+                                <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                     Physical locations with optional map links.
                                 </p>
                             </div>
@@ -660,7 +660,7 @@ onBeforeUnmount(() => {
                             <div
                                 v-for="(address, index) in addresses"
                                 :key="`address-${index}`"
-                                class="space-y-3 rounded-xl border border-slate-200/80 bg-slate-50/50 p-4"
+                                class="space-y-3 rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-700 dark:bg-slate-800/50"
                             >
                                 <div class="space-y-2">
                                     <Label :for="`address-label-${index}`"
@@ -734,21 +734,21 @@ onBeforeUnmount(() => {
 
                     <!-- Social Details -->
                     <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
                         <div
-                            class="mb-5 flex items-center justify-between border-b border-slate-100 pb-4"
+                            class="mb-5 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800"
                         >
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <Share2 class="h-5 w-5 text-slate-600" />
+                                    <Share2 class="h-5 w-5 text-slate-600 dark:text-slate-400" />
                                     <h2
-                                        class="text-lg font-semibold text-slate-900"
+                                        class="text-lg font-semibold text-slate-900 dark:text-slate-100"
                                     >
                                         Social Details
                                     </h2>
                                 </div>
-                                <p class="mt-1 text-sm text-slate-600">
+                                <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                     Links to your social media profiles.
                                 </p>
                             </div>
@@ -829,18 +829,18 @@ onBeforeUnmount(() => {
 
                     <!-- Business Information -->
                     <section
-                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                        class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                     >
-                        <div class="mb-5 border-b border-slate-100 pb-4">
+                        <div class="mb-5 border-b border-slate-100 pb-4 dark:border-slate-800">
                             <div class="flex items-center gap-2">
-                                <Building2 class="h-5 w-5 text-slate-600" />
+                                <Building2 class="h-5 w-5 text-slate-600 dark:text-slate-400" />
                                 <h2
-                                    class="text-lg font-semibold text-slate-900"
+                                    class="text-lg font-semibold text-slate-900 dark:text-slate-100"
                                 >
                                     Business Information
                                 </h2>
                             </div>
-                            <p class="mt-1 text-sm text-slate-600">
+                            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
                                 Legal and regulatory identification numbers.
                             </p>
                         </div>

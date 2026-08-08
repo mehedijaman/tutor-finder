@@ -157,26 +157,29 @@ function runConfirmedAction() {
     const { action, row } = pendingAction.value;
 
     if (action === 'delete' && row) {
-        router.delete(`/admin/users/${row.id}`);
+        router.delete(`${baseUrl}/${row.id}`, { preserveScroll: true });
     }
 
     if (action === 'force-delete' && row) {
-        router.delete(`/admin/users/${row.id}/force`);
+        router.delete(`${baseUrl}/${row.id}/force-delete`, {
+            preserveScroll: true,
+        });
     }
 
     if (action === 'empty-recycle-bin') {
-        router.delete('/admin/users/recycle-bin/empty');
+        router.delete(`${baseUrl}/empty-recycle-bin`, {
+            preserveScroll: true,
+        });
     }
 
     if (action === 'restore' && row) {
-        router.patch(`/admin/users/${row.id}/restore`);
+        router.patch(`${baseUrl}/${row.id}/restore`, {}, { preserveScroll: true });
     }
 
     if (action === 'restore-all') {
-        router.patch('/admin/users/recycle-bin/restore-all');
+        router.patch(`${baseUrl}/restore-all`, {}, { preserveScroll: true });
     }
 
-    confirmOpen.value = false;
     resetConfirmState();
 }
 
@@ -184,11 +187,7 @@ function actionItemsForRow(row: any) {
     if (props.filters.trash) {
         return [
             { key: 'restore', label: 'Restore' },
-            {
-                key: 'force-delete',
-                label: 'Permanently Delete',
-                destructive: true,
-            },
+            { key: 'force-delete', label: 'Delete Permanently', destructive: true },
         ];
     }
 
@@ -196,7 +195,7 @@ function actionItemsForRow(row: any) {
         { key: 'edit', label: 'Edit' },
         {
             key: 'impersonate',
-            label: 'Impersonate',
+            label: 'Impersonate User',
             show: canImpersonateRow(row),
         },
         { key: 'delete', label: 'Delete', destructive: true },
@@ -241,11 +240,11 @@ function handleRowAction(actionKey: string, row: any) {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <h1
-                        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                     >
                         {{
                             filters.trash
@@ -261,7 +260,7 @@ function handleRowAction(actionKey: string, row: any) {
                                     ? '/admin/users'
                                     : '/admin/users?trash=1'
                             "
-                            class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                            class="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
                         >
                             {{
                                 filters.trash ? 'Back to Active' : 'Recycle Bin'
@@ -272,6 +271,7 @@ function handleRowAction(actionKey: string, row: any) {
                             v-if="filters.trash"
                             type="button"
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             @click="openConfirm('restore-all')"
                         >
                             Restore All
@@ -298,13 +298,13 @@ function handleRowAction(actionKey: string, row: any) {
             </div>
 
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm"
             >
                 <Input
                     v-model="search"
                     type="text"
                     placeholder="Search by name or email"
-                    class="max-w-md"
+                    class="max-w-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
             </div>
 
@@ -318,14 +318,14 @@ function handleRowAction(actionKey: string, row: any) {
             >
                 <template #cell-name="{ row }">
                     <div class="flex items-center gap-3">
-                        <Avatar class="h-8 w-8 border border-slate-200">
+                        <Avatar class="h-8 w-8 border border-slate-200 dark:border-slate-700">
                             <AvatarImage
                                 v-if="row.photo_url"
                                 :src="row.photo_url"
                                 :alt="row.name"
                             />
                             <AvatarFallback
-                                class="bg-indigo-50 text-[10px] font-bold text-indigo-700 uppercase"
+                                class="bg-indigo-50 dark:bg-indigo-950/40 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase"
                             >
                                 {{
                                     row.name
@@ -336,22 +336,28 @@ function handleRowAction(actionKey: string, row: any) {
                                 }}
                             </AvatarFallback>
                         </Avatar>
-                        <span class="font-medium text-slate-900">{{
+                        <span class="font-medium text-slate-900 dark:text-slate-100">{{
                             row.name
                         }}</span>
                     </div>
                 </template>
 
+                <template #cell-email="{ value }">
+                    <span class="text-slate-700 dark:text-slate-300">{{ value }}</span>
+                </template>
+
                 <template #cell-roles="{ row }">
-                    {{ row.roles?.join(', ') || '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">{{ row.roles?.join(', ') || '—' }}</span>
                 </template>
 
                 <template #cell-permissions="{ row }">
-                    {{ row.permissions?.join(', ') || '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">{{ row.permissions?.join(', ') || '—' }}</span>
                 </template>
 
                 <template #cell-created_at="{ value }">
-                    {{ value ? new Date(value).toLocaleString() : '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleString() : '—' }}
+                    </span>
                 </template>
 
                 <template #cell-actions="{ row }">

@@ -227,7 +227,7 @@ function handleRowAction(actionKey, row) {
                                 ? '/admin/blog/posts'
                                 : '/admin/blog/posts?trash=1'
                         "
-                        class="rounded-md border px-4 py-2 text-sm"
+                        class="rounded-md border px-4 py-2 text-sm dark:border-slate-700 dark:text-slate-300"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
@@ -244,14 +244,14 @@ function handleRowAction(actionKey, row) {
                     <Link
                         v-if="!filters.trash"
                         href="/admin/blog/posts/create"
-                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                        class="rounded-md bg-black px-4 py-2 text-sm text-white dark:bg-white dark:text-black"
                     >
                         Create Post
                     </Link>
                 </div>
             </div>
 
-            <div class="rounded-xl border bg-white p-4">
+            <div class="rounded-xl border bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
                 <Input
                     v-model="search"
                     type="text"

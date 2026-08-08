@@ -150,26 +150,29 @@ function runConfirmedAction() {
     const { action, row } = pendingAction.value;
 
     if (action === 'delete' && row) {
-        router.delete(`/admin/roles/${row.id}`);
+        router.delete(`${baseUrl}/${row.id}`, { preserveScroll: true });
     }
 
     if (action === 'force-delete' && row) {
-        router.delete(`/admin/roles/${row.id}/force`);
-    }
-
-    if (action === 'restore' && row) {
-        router.patch(`/admin/roles/${row.id}/restore`);
+        router.delete(`${baseUrl}/${row.id}/force-delete`, {
+            preserveScroll: true,
+        });
     }
 
     if (action === 'empty-recycle-bin') {
-        router.delete('/admin/roles/recycle-bin/empty');
+        router.delete(`${baseUrl}/empty-recycle-bin`, {
+            preserveScroll: true,
+        });
+    }
+
+    if (action === 'restore' && row) {
+        router.patch(`${baseUrl}/${row.id}/restore`, {}, { preserveScroll: true });
     }
 
     if (action === 'restore-all') {
-        router.patch('/admin/roles/recycle-bin/restore-all');
+        router.patch(`${baseUrl}/restore-all`, {}, { preserveScroll: true });
     }
 
-    confirmOpen.value = false;
     resetConfirmState();
 }
 
@@ -213,11 +216,11 @@ function handleRowAction(actionKey, row) {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
             >
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <h1
-                        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                     >
                         {{
                             filters.trash
@@ -233,7 +236,7 @@ function handleRowAction(actionKey, row) {
                                     ? '/admin/roles'
                                     : '/admin/roles?trash=1'
                             "
-                            class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                            class="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
                         >
                             {{
                                 filters.trash ? 'Back to Active' : 'Recycle Bin'
@@ -244,6 +247,7 @@ function handleRowAction(actionKey, row) {
                             v-if="filters.trash"
                             type="button"
                             variant="outline"
+                            class="dark:border-slate-700 dark:text-slate-300"
                             @click="openConfirm('restore-all')"
                         >
                             Restore All
@@ -270,13 +274,13 @@ function handleRowAction(actionKey, row) {
             </div>
 
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm"
             >
                 <Input
                     v-model="search"
                     type="text"
                     placeholder="Search by role name"
-                    class="max-w-md"
+                    class="max-w-md dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
             </div>
 
@@ -288,12 +292,18 @@ function handleRowAction(actionKey, row) {
                 empty-text="No roles found."
                 @sort="handleSort"
             >
+                <template #cell-name="{ value }">
+                    <span class="font-medium text-slate-900 dark:text-slate-100">{{ value }}</span>
+                </template>
+
                 <template #cell-permissions="{ row }">
-                    {{ row.permissions?.join(', ') || '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">{{ row.permissions?.join(', ') || '—' }}</span>
                 </template>
 
                 <template #cell-created_at="{ value }">
-                    {{ value ? new Date(value).toLocaleString() : '—' }}
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleString() : '—' }}
+                    </span>
                 </template>
 
                 <template #cell-actions="{ row }">

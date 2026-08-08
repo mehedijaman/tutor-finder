@@ -72,7 +72,7 @@ const submit = () => {
             >
                 <div class="space-y-1">
                     <h1
-                        class="flex items-center gap-3 text-3xl font-bold tracking-tight text-slate-900"
+                        class="flex items-center gap-3 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100"
                     >
                         <div
                             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 shadow-lg shadow-indigo-200"
@@ -81,7 +81,7 @@ const submit = () => {
                         </div>
                         Register Complete Guardian
                     </h1>
-                    <p class="text-sm font-medium text-slate-500">
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
                         Create account and set profile details in one step.
                     </p>
                 </div>
@@ -120,7 +120,7 @@ const submit = () => {
 
                 <!-- Section 1: Security & Status -->
                 <Card
-                    class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm"
+                    class="overflow-hidden rounded-2xl border-slate-200/60 shadow-sm dark:border-slate-700"
                 >
                     <CardHeader
                         class="border-b border-indigo-100/50 bg-indigo-50/30 p-6"
@@ -133,7 +133,7 @@ const submit = () => {
                             </div>
                             <div>
                                 <CardTitle
-                                    class="text-lg font-bold text-slate-900"
+                                    class="text-lg font-bold text-slate-900 dark:text-slate-100"
                                     >Security & Status</CardTitle
                                 >
                                 <CardDescription

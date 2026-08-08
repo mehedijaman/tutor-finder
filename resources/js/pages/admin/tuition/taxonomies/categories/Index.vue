@@ -132,6 +132,7 @@ function openConfirm(action, row = null, payload = {}) {
             ? 'This category will become inactive.'
             : 'This category will become active.';
         confirmLabel.value = isDeactivate ? 'Deactivate' : 'Activate';
+        confirmDestructive.value = isDeactivate;
     }
 
     if (action === 'restore') {
@@ -151,7 +152,7 @@ function openConfirm(action, row = null, payload = {}) {
     if (action === 'empty-recycle-bin') {
         confirmTitle.value = 'Empty Recycle Bin';
         confirmDescription.value =
-            'This will permanently remove all eligible trashed categories.';
+            'This will permanently delete all trashed categories.';
         confirmLabel.value = 'Empty Recycle Bin';
         confirmDestructive.value = true;
     }
@@ -171,28 +172,33 @@ function runConfirmedAction() {
     const { action, row, payload } = pendingAction.value;
 
     if (action === 'delete' && row) {
-        router.delete(`/admin/tuition/taxonomies/categories/${row.id}`);
+        router.delete(`${baseUrl}/${row.id}`, { preserveScroll: true });
     }
 
     if (action === 'status' && row) {
-        router.patch(`/admin/tuition/taxonomies/categories/${row.id}/status`, {
-            status: payload.status,
-        });
+        router.patch(
+            `${baseUrl}/${row.id}/status`,
+            { status: payload.status },
+            { preserveScroll: true },
+        );
     }
 
     if (action === 'restore' && row) {
-        router.patch(`/admin/tuition/taxonomies/categories/${row.id}/restore`);
+        router.patch(`${baseUrl}/${row.id}/restore`, {}, { preserveScroll: true });
     }
 
     if (action === 'force-delete' && row) {
-        router.delete(`/admin/tuition/taxonomies/categories/${row.id}/force`);
+        router.delete(`${baseUrl}/${row.id}/force-delete`, {
+            preserveScroll: true,
+        });
     }
 
     if (action === 'empty-recycle-bin') {
-        router.delete('/admin/tuition/taxonomies/categories/recycle-bin/empty');
+        router.delete(`${baseUrl}/empty-recycle-bin`, {
+            preserveScroll: true,
+        });
     }
 
-    confirmOpen.value = false;
     resetConfirmState();
 }
 
@@ -247,16 +253,16 @@ function handleRowAction(actionKey, row) {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
-            <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6">
                 <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold sm:text-3xl">
+                    <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100 sm:text-3xl">
                         {{
                             filters.trash
                                 ? 'Category Recycle Bin'
                                 : 'Categories'
                         }}
                     </h1>
-                    <p class="text-sm text-muted-foreground">
+                    <p class="text-sm text-slate-600 dark:text-slate-400">
                         Active: {{ counts.active ?? 0 }} | Trash:
                         {{ counts.trash ?? 0 }}
                     </p>
@@ -265,7 +271,7 @@ function handleRowAction(actionKey, row) {
                 <div class="flex items-center gap-2">
                     <Link
                         :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
-                        class="rounded-md border px-4 py-2 text-sm"
+                        class="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
@@ -282,7 +288,7 @@ function handleRowAction(actionKey, row) {
                     <Link
                         v-if="!filters.trash"
                         href="/admin/tuition/taxonomies/categories/create"
-                        class="rounded-md bg-black px-4 py-2 text-sm text-white"
+                        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
                     >
                         Create Category
                     </Link>
@@ -290,20 +296,20 @@ function handleRowAction(actionKey, row) {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3"
             >
                 <Input
                     v-model="search"
                     type="text"
                     placeholder="Search by name, slug, or description"
-                    class="sm:col-span-2"
+                    class="sm:col-span-2 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
 
                 <Select v-model="statusFilter">
-                    <SelectTrigger>
+                    <SelectTrigger class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
                         <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent class="dark:border-slate-800 dark:bg-slate-900">
                         <SelectItem value="all">All Statuses</SelectItem>
                         <SelectItem
                             v-for="option in statusOptions"
@@ -321,6 +327,22 @@ function handleRowAction(actionKey, row) {
                 :columns="columns"
                 empty-text="No categories found."
             >
+                <template #cell-name="{ value }">
+                    <span class="font-medium text-slate-900 dark:text-slate-100">{{ value }}</span>
+                </template>
+
+                <template #cell-slug="{ value }">
+                    <span class="font-mono text-xs text-slate-600 dark:text-slate-400">{{ value }}</span>
+                </template>
+
+                <template #cell-sort_order="{ value }">
+                    <span class="text-slate-700 dark:text-slate-300">{{ value }}</span>
+                </template>
+
+                <template #cell-classes_count="{ value }">
+                    <span class="text-slate-700 dark:text-slate-300">{{ value }}</span>
+                </template>
+
                 <template #cell-status="{ row }">
                     <Badge
                         :variant="
@@ -330,9 +352,11 @@ function handleRowAction(actionKey, row) {
                     >
                 </template>
 
-                <template #cell-updated_at="{ value }">{{
-                    value ? new Date(value).toLocaleString() : '—'
-                }}</template>
+                <template #cell-updated_at="{ value }">
+                    <span class="text-slate-700 dark:text-slate-300">
+                        {{ value ? new Date(value).toLocaleString() : '—' }}
+                    </span>
+                </template>
 
                 <template #cell-actions="{ row }">
                     <RowActionsDropdown

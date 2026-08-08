@@ -157,15 +157,15 @@ function submitTestSms() {
         <SettingsLayout full-width>
             <div class="space-y-6 p-4 sm:p-6 lg:p-8">
                 <div
-                    class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6"
                 >
                     <div class="space-y-1">
                         <h1
-                            class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+                            class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                         >
                             SMS Settings
                         </h1>
-                        <p class="text-sm text-slate-600">
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
                             Manage SMS providers, credentials, and delivery
                             testing.
                         </p>
@@ -205,7 +205,7 @@ function submitTestSms() {
                 </div>
 
                 <div
-                    class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+                    class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
                 >
                     <Input
                         v-model="search"

@@ -474,7 +474,7 @@ function statusBadge(row: any) {
                             <Briefcase class="h-6 w-6" />
                         </div>
                         <h1
-                            class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl"
+                            class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
                         >
                             {{ pageTitle }}
                         </h1>
@@ -488,7 +488,7 @@ function statusBadge(row: any) {
                 <div class="flex flex-wrap items-center gap-3 pl-11 md:pl-0">
                     <Link
                         :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
-                        class="group inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:shadow-md active:scale-95"
+                        class="group inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:shadow-md active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                         <Trash2
                             class="h-4 w-4 transition-colors group-hover:text-rose-500"
@@ -647,7 +647,7 @@ function statusBadge(row: any) {
             </div>
 
             <div
-                class="flex flex-wrap items-center gap-4 rounded-3xl border border-slate-200/80 bg-white/50 p-4 shadow-sm backdrop-blur-sm"
+                class="flex flex-wrap items-center gap-4 rounded-3xl border border-slate-200/80 bg-white/50 p-4 shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/50"
             >
                 <div class="relative w-full sm:min-w-[240px] sm:flex-1">
                     <Search
@@ -743,7 +743,7 @@ function statusBadge(row: any) {
             </div>
 
             <div
-                class="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40"
+                class="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40 dark:border-slate-700 dark:bg-slate-900 dark:shadow-none"
             >
                 <DataTable
                     :items="items"
