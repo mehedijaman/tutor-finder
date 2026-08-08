@@ -27,17 +27,17 @@ const breadcrumbs = [
     <GuardianLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="flex items-center justify-between gap-3">
                     <h1
-                        class="text-2xl font-semibold tracking-tight sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                     >
                         Post a New Job
                     </h1>
                     <Link
                         href="/guardian/jobs"
-                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >Back</Link
                     >
                 </div>
@@ -49,15 +49,15 @@ const breadcrumbs = [
                 submit-label="Submit for Review"
                 cancel-href="/guardian/jobs"
                 :is-admin="false"
-                :tuition-types="props.tuitionTypes"
-                :categories="props.categories"
-                :school-classes="props.schoolClasses"
-                :countries="props.countries"
-                :cities="props.cities"
-                :areas="props.areas"
-                :subjects="props.subjects"
-                :gender-options="props.genderOptions"
-                :day-options="props.dayOptions"
+                :tuition-types="props.tuitionTypes as any"
+                :categories="props.categories as any"
+                :school-classes="props.schoolClasses as any"
+                :countries="props.countries as any"
+                :cities="props.cities as any"
+                :areas="props.areas as any"
+                :subjects="props.subjects as any"
+                :gender-options="props.genderOptions as any"
+                :day-options="props.dayOptions as any"
             />
         </div>
     </GuardianLayout>

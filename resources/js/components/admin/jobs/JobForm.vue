@@ -148,36 +148,39 @@ const selectedCategoryName = computed(() => {
     const cat = props.categories.find(
         (c) => String(c.id) === String(form.category_id),
     );
-    return cat?.name ?? 'Not selected';
+    return cat?.name ?? '—';
 });
 
 const selectedClassName = computed(() => {
-    const sc = props.schoolClasses.find(
+    const cls = props.schoolClasses.find(
         (c) => String(c.id) === String(form.class_id),
     );
-    return sc?.name ?? 'Not selected';
+    return cls?.name ?? '—';
 });
 
 const selectedCityName = computed(() => {
     const city = props.cities.find(
         (c) => String(c.id) === String(form.city_id),
     );
-    return city?.name ?? 'Not selected';
+    return city?.name ?? '—';
 });
 
 const selectedSubjectNames = computed(() => {
+    const ids = form.subject_ids.map(String);
     return props.subjects
-        .filter((s) => form.subject_ids.includes(s.id as never))
+        .filter((s) => ids.includes(String(s.id)))
         .map((s) => s.name);
 });
 
 watch(
     () => form.category_id,
     () => {
-        const classIds = filteredClasses.value.map((schoolClass) =>
-            Number(schoolClass.id),
-        );
-        if (form.class_id && !classIds.includes(Number(form.class_id))) {
+        if (
+            form.class_id &&
+            !filteredClasses.value.some(
+                (c) => String(c.id) === String(form.class_id),
+            )
+        ) {
             form.class_id = '';
             form.subject_ids = [];
         }
@@ -185,10 +188,26 @@ watch(
 );
 
 watch(
+    () => form.class_id,
+    () => {
+        const availableSubjectIds = filteredSubjects.value.map((s) =>
+            String(s.id),
+        );
+        form.subject_ids = form.subject_ids.filter((id) =>
+            availableSubjectIds.includes(String(id)),
+        );
+    },
+);
+
+watch(
     () => form.country_id,
     () => {
-        const cityIds = filteredCities.value.map((city) => Number(city.id));
-        if (form.city_id && !cityIds.includes(Number(form.city_id))) {
+        if (
+            form.city_id &&
+            !filteredCities.value.some(
+                (c) => String(c.id) === String(form.city_id),
+            )
+        ) {
             form.city_id = '';
             form.area_id = '';
         }
@@ -198,22 +217,14 @@ watch(
 watch(
     () => form.city_id,
     () => {
-        const areaIds = filteredAreas.value.map((area) => Number(area.id));
-        if (form.area_id && !areaIds.includes(Number(form.area_id))) {
+        if (
+            form.area_id &&
+            !filteredAreas.value.some(
+                (a) => String(a.id) === String(form.area_id),
+            )
+        ) {
             form.area_id = '';
         }
-    },
-);
-
-watch(
-    () => form.class_id,
-    () => {
-        const subjectIds = filteredSubjects.value.map((subject) =>
-            Number(subject.id),
-        );
-        form.subject_ids = (form.subject_ids ?? []).filter((subjectId: any) =>
-            subjectIds.includes(Number(subjectId)),
-        );
     },
 );
 
@@ -229,24 +240,26 @@ function goToPrevStep() {
     }
 }
 
-function submit() {
-    const transformPayload = (data: any) => {
-        if (props.isAdmin) return data;
-        const payload = { ...data };
-        delete payload.guardian_id;
-        delete payload.status;
-        delete payload.published_at;
-        return payload;
-    };
+function transformPayload(data: any) {
+    const payload = { ...data };
 
-    if (props.method.toLowerCase() === 'put') {
-        form.transform((data) => ({
-            ...transformPayload(data),
-            _method: 'put',
-        })).post(props.action, { preserveScroll: true });
-        return;
+    if (!payload.area_id) payload.area_id = null;
+    if (!payload.no_of_students) payload.no_of_students = null;
+    if (!payload.salary_amount) payload.salary_amount = null;
+    if (!payload.latitude) payload.latitude = null;
+    if (!payload.longitude) payload.longitude = null;
+    if (!payload.expires_at) payload.expires_at = null;
+    if (!payload.published_at) payload.published_at = null;
+    if (!payload.guardian_id) payload.guardian_id = null;
+
+    if (props.method === 'patch') {
+        payload._method = 'PATCH';
     }
 
+    return payload;
+}
+
+function submit() {
     form.transform(transformPayload).post(props.action, {
         preserveScroll: true,
     });
@@ -257,7 +270,7 @@ function submit() {
     <div class="space-y-6">
         <!-- 3-Step Wizard Navigation Bar -->
         <div
-            class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
+            class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
         >
             <div class="grid grid-cols-3 gap-2">
                 <!-- Step 1 Indicator -->
@@ -266,10 +279,10 @@ function submit() {
                     class="flex items-center gap-3 rounded-xl p-3 text-left transition-all"
                     :class="
                         currentStep === 1
-                            ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none'
                             : currentStep > 1
-                              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800'
-                              : 'border border-slate-200/60 bg-slate-50 text-slate-500'
+                              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300'
+                              : 'border border-slate-200/60 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400'
                     "
                     @click="currentStep = 1"
                 >
@@ -279,13 +292,13 @@ function submit() {
                             currentStep === 1
                                 ? 'bg-white/20 text-white'
                                 : currentStep > 1
-                                  ? 'bg-emerald-100 text-emerald-700'
-                                  : 'bg-slate-200 text-slate-600'
+                                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300'
+                                  : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                         "
                     >
                         <CheckCircle2
                             v-if="currentStep > 1"
-                            class="h-4 w-4 text-emerald-600"
+                            class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
                         />
                         <span v-else>1</span>
                     </div>
@@ -305,10 +318,10 @@ function submit() {
                     class="flex items-center gap-3 rounded-xl p-3 text-left transition-all"
                     :class="
                         currentStep === 2
-                            ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none'
                             : currentStep > 2
-                              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800'
-                              : 'border border-slate-200/60 bg-slate-50 text-slate-500'
+                              ? 'border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300'
+                              : 'border border-slate-200/60 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400'
                     "
                     @click="currentStep = 2"
                 >
@@ -318,13 +331,13 @@ function submit() {
                             currentStep === 2
                                 ? 'bg-white/20 text-white'
                                 : currentStep > 2
-                                  ? 'bg-emerald-100 text-emerald-700'
-                                  : 'bg-slate-200 text-slate-600'
+                                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300'
+                                  : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                         "
                     >
                         <CheckCircle2
                             v-if="currentStep > 2"
-                            class="h-4 w-4 text-emerald-600"
+                            class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
                         />
                         <span v-else>2</span>
                     </div>
@@ -344,8 +357,8 @@ function submit() {
                     class="flex items-center gap-3 rounded-xl p-3 text-left transition-all"
                     :class="
                         currentStep === 3
-                            ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
-                            : 'border border-slate-200/60 bg-slate-50 text-slate-500'
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none'
+                            : 'border border-slate-200/60 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-400'
                     "
                     @click="currentStep = 3"
                 >
@@ -354,7 +367,7 @@ function submit() {
                         :class="
                             currentStep === 3
                                 ? 'bg-white/20 text-white'
-                                : 'bg-slate-200 text-slate-600'
+                                : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                         "
                     >
                         3
@@ -375,37 +388,48 @@ function submit() {
             <!-- STEP 1: Category, Curriculum & Class -->
             <div v-show="currentStep === 1" class="space-y-6">
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
                     <div
-                        class="flex items-center gap-2 border-b border-slate-100 pb-3"
+                        class="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800"
                     >
-                        <FileText class="h-5 w-5 text-blue-600" />
-                        <h2 class="text-lg font-bold text-slate-900">
+                        <FileText
+                            class="h-5 w-5 text-blue-600 dark:text-blue-400"
+                        />
+                        <h2
+                            class="text-lg font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Job Title & Description
                         </h2>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-title">Job Title</Label>
+                        <Label
+                            for="job-title"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Job Title</Label
+                        >
                         <Input
                             id="job-title"
                             v-model="form.title"
                             type="text"
                             placeholder="e.g. Need Class 8 English Medium Tutor for Math & Science"
                             required
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.title" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-description"
+                        <Label
+                            for="job-description"
+                            class="text-slate-800 dark:text-slate-200"
                             >Description / Requirements</Label
                         >
                         <textarea
                             id="job-description"
                             v-model="form.description"
-                            class="min-h-32 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                            class="min-h-32 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
                             placeholder="Describe any specific requirements, timing preferences, or expectations..."
                             required
                         />
@@ -414,20 +438,28 @@ function submit() {
                 </section>
 
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <div class="border-b border-slate-100 pb-3 sm:col-span-2">
-                        <h2 class="text-lg font-bold text-slate-900">
+                    <div
+                        class="border-b border-slate-100 pb-3 sm:col-span-2 dark:border-slate-800"
+                    >
+                        <h2
+                            class="text-lg font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Tuition Type, Curriculum & Class
                         </h2>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-tuition-type">Tuition Type</Label>
+                        <Label
+                            for="job-tuition-type"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Tuition Type</Label
+                        >
                         <select
                             id="job-tuition-type"
                             v-model="form.tuition_type_id"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             required
                         >
                             <option value="">Select tuition type</option>
@@ -443,11 +475,15 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-category">Category / Curriculum</Label>
+                        <Label
+                            for="job-category"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Category / Curriculum</Label
+                        >
                         <select
                             id="job-category"
                             v-model="form.category_id"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             required
                         >
                             <option value="">
@@ -465,11 +501,15 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-class">Class / Standard</Label>
+                        <Label
+                            for="job-class"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Class / Standard</Label
+                        >
                         <select
                             id="job-class"
                             v-model="form.class_id"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             required
                         >
                             <option value="">Select class</option>
@@ -485,20 +525,22 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2 sm:col-span-2">
-                        <Label>Subjects (select all that apply)</Label>
+                        <Label class="text-slate-800 dark:text-slate-200"
+                            >Subjects (select all that apply)</Label
+                        >
                         <div
-                            class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-2 lg:grid-cols-3"
+                            class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-2 lg:grid-cols-3 dark:border-slate-800 dark:bg-slate-800/50"
                         >
                             <label
                                 v-for="subject in filteredSubjects"
                                 :key="subject.id"
-                                class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-medium transition hover:border-blue-300"
+                                class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-medium text-slate-900 transition hover:border-blue-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-blue-600"
                             >
                                 <input
                                     v-model="form.subject_ids"
                                     type="checkbox"
                                     :value="subject.id"
-                                    class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600"
                                 />
                                 <span>{{ subject.name }}</span>
                             </label>
@@ -518,23 +560,29 @@ function submit() {
             <!-- STEP 2: Schedule & Location -->
             <div v-show="currentStep === 2" class="space-y-6">
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
                     <div
-                        class="flex items-center gap-2 border-b border-slate-100 pb-3 sm:col-span-2"
+                        class="flex items-center gap-2 border-b border-slate-100 pb-3 sm:col-span-2 dark:border-slate-800"
                     >
                         <MapPin class="h-5 w-5 text-rose-500" />
-                        <h2 class="text-lg font-bold text-slate-900">
+                        <h2
+                            class="text-lg font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Location
                         </h2>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-country">Country</Label>
+                        <Label
+                            for="job-country"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Country</Label
+                        >
                         <select
                             id="job-country"
                             v-model="form.country_id"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             required
                         >
                             <option value="">Select country</option>
@@ -550,11 +598,15 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-city">City</Label>
+                        <Label
+                            for="job-city"
+                            class="text-slate-800 dark:text-slate-200"
+                            >City</Label
+                        >
                         <select
                             id="job-city"
                             v-model="form.city_id"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             required
                         >
                             <option value="">Select city</option>
@@ -570,11 +622,15 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-area">Area</Label>
+                        <Label
+                            for="job-area"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Area</Label
+                        >
                         <select
                             id="job-area"
                             v-model="form.area_id"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         >
                             <option value="">Select area (optional)</option>
                             <option
@@ -589,7 +645,9 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-location"
+                        <Label
+                            for="job-location"
+                            class="text-slate-800 dark:text-slate-200"
                             >Location / Landmark Address</Label
                         >
                         <Input
@@ -597,35 +655,42 @@ function submit() {
                             v-model="form.location"
                             type="text"
                             placeholder="e.g. Near City College, Dhanmondi 2"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.location" />
                     </div>
                 </section>
 
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <div class="border-b border-slate-100 pb-3 sm:col-span-2">
-                        <h2 class="text-lg font-bold text-slate-900">
+                    <div
+                        class="border-b border-slate-100 pb-3 sm:col-span-2 dark:border-slate-800"
+                    >
+                        <h2
+                            class="text-lg font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Schedule & Days
                         </h2>
                     </div>
 
                     <div class="grid gap-2 sm:col-span-2">
-                        <Label>Tuition Days</Label>
+                        <Label class="text-slate-800 dark:text-slate-200"
+                            >Tuition Days</Label
+                        >
                         <div
-                            class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-3 lg:grid-cols-4"
+                            class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-3 lg:grid-cols-4 dark:border-slate-800 dark:bg-slate-800/50"
                         >
                             <label
                                 v-for="day in dayOptions"
                                 :key="day.value"
-                                class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-medium"
+                                class="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white p-2 text-sm font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             >
                                 <input
                                     v-model="form.tuition_days"
                                     type="checkbox"
                                     :value="day.value"
-                                    class="h-4 w-4 rounded border-slate-300 text-blue-600"
+                                    class="h-4 w-4 rounded border-slate-300 text-blue-600 dark:border-slate-600"
                                 />
                                 <span>{{ day.label }}</span>
                             </label>
@@ -634,18 +699,25 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-tuition-time">Tuition Time</Label>
+                        <Label
+                            for="job-tuition-time"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Tuition Time</Label
+                        >
                         <Input
                             id="job-tuition-time"
                             v-model="form.tuition_time"
                             type="text"
                             placeholder="e.g. 5:00 PM - 7:00 PM"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.tuition_time" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-tuition-duration"
+                        <Label
+                            for="job-tuition-duration"
+                            class="text-slate-800 dark:text-slate-200"
                             >Tuition Duration</Label
                         >
                         <Input
@@ -653,6 +725,7 @@ function submit() {
                             v-model="form.tuition_duration"
                             type="text"
                             placeholder="e.g. 1.5 hours per session"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.tuition_duration" />
                     </div>
@@ -662,23 +735,31 @@ function submit() {
             <!-- STEP 3: Salary, Tutor Requirements & Review -->
             <div v-show="currentStep === 3" class="space-y-6">
                 <section
-                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+                    class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
                     <div
-                        class="flex items-center gap-2 border-b border-slate-100 pb-3 sm:col-span-2"
+                        class="flex items-center gap-2 border-b border-slate-100 pb-3 sm:col-span-2 dark:border-slate-800"
                     >
-                        <Wallet class="h-5 w-5 text-emerald-600" />
-                        <h2 class="text-lg font-bold text-slate-900">
+                        <Wallet
+                            class="h-5 w-5 text-emerald-600 dark:text-emerald-400"
+                        />
+                        <h2
+                            class="text-lg font-bold text-slate-900 dark:text-slate-100"
+                        >
                             Salary & Gender Requirements
                         </h2>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-student-gender">Student Gender</Label>
+                        <Label
+                            for="job-student-gender"
+                            class="text-slate-800 dark:text-slate-200"
+                            >Student Gender</Label
+                        >
                         <select
                             id="job-student-gender"
                             v-model="form.student_gender"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             required
                         >
                             <option
@@ -693,13 +774,15 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-tutor-gender"
+                        <Label
+                            for="job-tutor-gender"
+                            class="text-slate-800 dark:text-slate-200"
                             >Tutor Gender Preference</Label
                         >
                         <select
                             id="job-tutor-gender"
                             v-model="form.tutor_gender"
-                            class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                            class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                             required
                         >
                             <option
@@ -714,19 +797,26 @@ function submit() {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-students">No. of Students</Label>
+                        <Label
+                            for="job-students"
+                            class="text-slate-800 dark:text-slate-200"
+                            >No. of Students</Label
+                        >
                         <Input
                             id="job-students"
                             v-model="form.no_of_students"
                             type="number"
                             min="1"
                             placeholder="e.g. 1"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.no_of_students" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="job-salary-amount"
+                        <Label
+                            for="job-salary-amount"
+                            class="text-slate-800 dark:text-slate-200"
                             >Salary Amount (BDT / month)</Label
                         >
                         <Input
@@ -735,6 +825,7 @@ function submit() {
                             type="number"
                             min="0"
                             placeholder="e.g. 8000"
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <InputError :message="form.errors.salary_amount" />
                     </div>
@@ -746,9 +837,10 @@ function submit() {
                             <input
                                 v-model="form.salary_negotiable"
                                 type="checkbox"
-                                class="h-4 w-4 rounded border-slate-300 text-blue-600"
+                                class="h-4 w-4 rounded border-slate-300 text-blue-600 dark:border-slate-600"
                             />
-                            <span class="font-semibold text-slate-700"
+                            <span
+                                class="font-semibold text-slate-700 dark:text-slate-300"
                                 >Salary is negotiable</span
                             >
                         </label>
@@ -757,11 +849,15 @@ function submit() {
 
                     <template v-if="isAdmin">
                         <div class="grid gap-2">
-                            <Label for="job-guardian">Guardian</Label>
+                            <Label
+                                for="job-guardian"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Guardian</Label
+                            >
                             <select
                                 id="job-guardian"
                                 v-model="form.guardian_id"
-                                class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                                class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 required
                             >
                                 <option value="">Select guardian</option>
@@ -777,11 +873,15 @@ function submit() {
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="job-status">Initial Status</Label>
+                            <Label
+                                for="job-status"
+                                class="text-slate-800 dark:text-slate-200"
+                                >Initial Status</Label
+                            >
                             <select
                                 id="job-status"
                                 v-model="form.status"
-                                class="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm"
+                                class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                                 required
                             >
                                 <option
@@ -799,44 +899,53 @@ function submit() {
 
                 <!-- Summary Preview Card -->
                 <div
-                    class="space-y-3 rounded-2xl border border-blue-200 bg-blue-50/40 p-5"
+                    class="space-y-3 rounded-2xl border border-blue-200 bg-blue-50/40 p-5 dark:border-blue-900/60 dark:bg-blue-950/30"
                 >
                     <h3
-                        class="text-sm font-bold tracking-wide text-blue-900 uppercase"
+                        class="text-sm font-bold tracking-wide text-blue-900 uppercase dark:text-blue-200"
                     >
                         Review Job Summary
                     </h3>
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div>
-                            <span class="block font-semibold text-slate-400"
+                            <span
+                                class="block font-semibold text-slate-400 dark:text-slate-500"
                                 >Title</span
                             >
-                            <span class="font-bold text-slate-800">{{
-                                form.title || '—'
-                            }}</span>
+                            <span
+                                class="font-bold text-slate-800 dark:text-slate-200"
+                                >{{ form.title || '—' }}</span
+                            >
                         </div>
                         <div>
-                            <span class="block font-semibold text-slate-400"
+                            <span
+                                class="block font-semibold text-slate-400 dark:text-slate-500"
                                 >Curriculum & Class</span
                             >
-                            <span class="font-bold text-slate-800"
+                            <span
+                                class="font-bold text-slate-800 dark:text-slate-200"
                                 >{{ selectedCategoryName }} —
                                 {{ selectedClassName }}</span
                             >
                         </div>
                         <div>
-                            <span class="block font-semibold text-slate-400"
+                            <span
+                                class="block font-semibold text-slate-400 dark:text-slate-500"
                                 >City</span
                             >
-                            <span class="font-bold text-slate-800">{{
-                                selectedCityName
-                            }}</span>
+                            <span
+                                class="font-bold text-slate-800 dark:text-slate-200"
+                                >{{ selectedCityName }}</span
+                            >
                         </div>
                         <div>
-                            <span class="block font-semibold text-slate-400"
+                            <span
+                                class="block font-semibold text-slate-400 dark:text-slate-500"
                                 >Salary</span
                             >
-                            <span class="font-bold text-slate-800">
+                            <span
+                                class="font-bold text-slate-800 dark:text-slate-200"
+                            >
                                 {{
                                     form.salary_negotiable
                                         ? 'Negotiable'
@@ -845,7 +954,8 @@ function submit() {
                             </span>
                         </div>
                         <div class="col-span-2">
-                            <span class="block font-semibold text-slate-400"
+                            <span
+                                class="block font-semibold text-slate-400 dark:text-slate-500"
                                 >Selected Subjects</span
                             >
                             <div class="flex flex-wrap gap-1 pt-1">
@@ -853,13 +963,13 @@ function submit() {
                                     v-for="subj in selectedSubjectNames"
                                     :key="subj"
                                     variant="secondary"
-                                    class="bg-blue-100 text-[10px] text-blue-800"
+                                    class="bg-blue-100 text-[10px] text-blue-800 dark:bg-blue-900/60 dark:text-blue-200"
                                 >
                                     {{ subj }}
                                 </Badge>
                                 <span
                                     v-if="!selectedSubjectNames.length"
-                                    class="text-slate-400"
+                                    class="text-slate-400 dark:text-slate-500"
                                     >—</span
                                 >
                             </div>
@@ -870,13 +980,13 @@ function submit() {
 
             <!-- Navigation Buttons -->
             <div
-                class="flex items-center justify-between border-t border-slate-200 pt-4"
+                class="flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-800"
             >
                 <Button
                     v-if="currentStep > 1"
                     type="button"
                     variant="outline"
-                    class="gap-2"
+                    class="gap-2 dark:border-slate-700 dark:text-slate-300"
                     @click="goToPrevStep"
                 >
                     <ChevronLeft class="h-4 w-4" />
@@ -887,7 +997,7 @@ function submit() {
                 <div class="flex items-center gap-3">
                     <Link
                         :href="cancelHref"
-                        class="inline-flex h-9 items-center rounded-lg border border-slate-200 px-4 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                        class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                         Cancel
                     </Link>
@@ -905,7 +1015,7 @@ function submit() {
                     <Button
                         v-else
                         type="submit"
-                        class="bg-emerald-600 shadow-lg shadow-emerald-200 hover:bg-emerald-700"
+                        class="bg-emerald-600 shadow-lg shadow-emerald-200 hover:bg-emerald-700 dark:shadow-none"
                         :disabled="form.processing"
                     >
                         {{ submitLabel }}
