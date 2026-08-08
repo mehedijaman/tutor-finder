@@ -7,7 +7,13 @@ use App\Enums\VerificationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\InvoiceCreateRequest;
 use App\Http\Requests\Admin\VerificationDecisionRequest;
+use App\Models\Area;
+use App\Models\Category;
+use App\Models\City;
 use App\Models\GuardianProfile;
+use App\Models\SchoolClass;
+use App\Models\Subject;
+use App\Models\TuitionType;
 use App\Models\TutorProfile;
 use App\Models\User;
 use App\Models\VerificationRequest;
@@ -114,9 +120,57 @@ class VerificationRequestController extends Controller
             'invoice',
         ]);
 
-        $profileSnapshot = $verificationRequest->role === VerificationRole::Tutor
+        $profile = $verificationRequest->role === VerificationRole::Tutor
             ? TutorProfile::query()->where('user_id', $verificationRequest->user_id)->first()
             : GuardianProfile::query()->where('user_id', $verificationRequest->user_id)->first();
+
+        $profileSnapshotData = null;
+
+        if ($profile instanceof TutorProfile) {
+            $tuitionTypeMap = TuitionType::pluck('name', 'id')->all();
+            $categoryMap = Category::pluck('name', 'id')->all();
+            $classMap = SchoolClass::pluck('name', 'id')->all();
+            $subjectMap = Subject::pluck('name', 'id')->all();
+            $cityMap = City::pluck('name', 'id')->all();
+            $areaMap = Area::pluck('name', 'id')->all();
+
+            $mapIds = function (?array $ids, array $map): array {
+                if (! is_array($ids) || empty($ids)) {
+                    return [];
+                }
+
+                return collect($ids)
+                    ->map(fn ($id) => $map[(int) $id] ?? $id)
+                    ->values()
+                    ->all();
+            };
+
+            $profileSnapshotData = $profile->toArray();
+            $profileSnapshotData['preferred_tuition_types'] = $mapIds($profile->preferred_tuition_types, $tuitionTypeMap);
+            $profileSnapshotData['preferred_categories'] = $mapIds($profile->preferred_categories, $categoryMap);
+            $profileSnapshotData['preferred_classes'] = $mapIds($profile->preferred_classes, $classMap);
+            $profileSnapshotData['preferred_subjects'] = $mapIds($profile->preferred_subjects, $subjectMap);
+
+            $locationNames = [];
+
+            if (is_array($profile->preferred_locations)) {
+                foreach ($profile->preferred_locations as $locId) {
+                    $id = (int) $locId;
+
+                    if (isset($areaMap[$id])) {
+                        $locationNames[] = $areaMap[$id];
+                    } elseif (isset($cityMap[$id])) {
+                        $locationNames[] = $cityMap[$id];
+                    } else {
+                        $locationNames[] = $locId;
+                    }
+                }
+            }
+
+            $profileSnapshotData['preferred_locations'] = array_values(array_unique($locationNames));
+        } elseif ($profile instanceof GuardianProfile) {
+            $profileSnapshotData = $profile->toArray();
+        }
 
         $educationSnapshot = $verificationRequest->role === VerificationRole::Tutor
             ? $verificationRequest->user?->tutorEducations()->get()
@@ -157,7 +211,7 @@ class VerificationRequestController extends Controller
                     'transaction_id' => $verificationRequest->invoice->transaction_id,
                 ] : null,
             ],
-            'profileSnapshot' => $profileSnapshot,
+            'profileSnapshot' => $profileSnapshotData,
             'educationSnapshot' => $educationSnapshot,
         ]);
     }
