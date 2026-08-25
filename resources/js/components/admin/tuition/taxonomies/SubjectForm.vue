@@ -87,16 +87,22 @@ function submit() {
 <template>
     <form class="space-y-6" @submit.prevent="submit">
         <section
-            class="grid gap-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 dark:border-slate-800 dark:bg-slate-900"
         >
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 sm:col-span-2">Subject Details</h2>
+            <h2
+                class="text-lg font-semibold text-slate-900 sm:col-span-2 dark:text-slate-100"
+            >
+                Subject Details
+            </h2>
 
             <div class="grid gap-2 sm:col-span-2">
-                <Label for="subject-class" class="dark:text-slate-200">Class</Label>
+                <Label for="subject-class" class="dark:text-slate-200"
+                    >Class</Label
+                >
                 <select
                     id="subject-class"
                     v-model="form.class_id"
-                    class="h-10 w-full rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm text-slate-900 dark:text-slate-100"
+                    class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     required
                 >
                     <option
@@ -118,7 +124,9 @@ function submit() {
             </div>
 
             <div class="grid gap-2">
-                <Label for="subject-name" class="dark:text-slate-200">Name</Label>
+                <Label for="subject-name" class="dark:text-slate-200"
+                    >Name</Label
+                >
                 <Input
                     id="subject-name"
                     v-model="form.name"
@@ -131,7 +139,9 @@ function submit() {
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between gap-3">
-                    <Label for="subject-slug" class="dark:text-slate-200">Slug</Label>
+                    <Label for="subject-slug" class="dark:text-slate-200"
+                        >Slug</Label
+                    >
                     <Button
                         type="button"
                         size="sm"
@@ -153,11 +163,13 @@ function submit() {
             </div>
 
             <div class="grid gap-2">
-                <Label for="subject-status" class="dark:text-slate-200">Status</Label>
+                <Label for="subject-status" class="dark:text-slate-200"
+                    >Status</Label
+                >
                 <select
                     id="subject-status"
                     v-model="form.status"
-                    class="h-10 w-full rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm text-slate-900 dark:text-slate-100"
+                    class="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 >
                     <option
                         v-for="option in statusOptions"
@@ -171,7 +183,9 @@ function submit() {
             </div>
 
             <div class="grid gap-2">
-                <Label for="subject-sort-order" class="dark:text-slate-200">Sort Order</Label>
+                <Label for="subject-sort-order" class="dark:text-slate-200"
+                    >Sort Order</Label
+                >
                 <Input
                     id="subject-sort-order"
                     v-model.number="form.sort_order"
@@ -189,7 +203,7 @@ function submit() {
             }}</Button>
             <Link
                 :href="cancelHref"
-                class="inline-flex h-9 items-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+                class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                 >Cancel</Link
             >
         </div>

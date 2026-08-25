@@ -72,12 +72,18 @@ function submit() {
 <template>
     <form class="space-y-6" @submit.prevent="submit">
         <section
-            class="grid gap-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
+            class="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
         >
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Tuition Type Details</h2>
+            <h2
+                class="text-lg font-semibold text-slate-900 dark:text-slate-100"
+            >
+                Tuition Type Details
+            </h2>
 
             <div class="grid gap-2">
-                <Label for="tuition-type-name" class="dark:text-slate-200">Name</Label>
+                <Label for="tuition-type-name" class="dark:text-slate-200"
+                    >Name</Label
+                >
                 <Input
                     id="tuition-type-name"
                     v-model="form.name"
@@ -90,7 +96,9 @@ function submit() {
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between gap-3">
-                    <Label for="tuition-type-slug" class="dark:text-slate-200">Slug</Label>
+                    <Label for="tuition-type-slug" class="dark:text-slate-200"
+                        >Slug</Label
+                    >
                     <Button
                         type="button"
                         size="sm"
@@ -112,23 +120,29 @@ function submit() {
             </div>
 
             <div class="grid gap-2">
-                <Label for="tuition-type-description" class="dark:text-slate-200">Description</Label>
+                <Label
+                    for="tuition-type-description"
+                    class="dark:text-slate-200"
+                    >Description</Label
+                >
                 <textarea
                     id="tuition-type-description"
                     v-model="form.description"
                     rows="4"
-                    class="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-slate-100"
+                    class="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 ></textarea>
                 <InputError :message="form.errors.description" />
             </div>
 
             <div class="grid gap-2 sm:grid-cols-2">
                 <div class="grid gap-2">
-                    <Label for="tuition-type-status" class="dark:text-slate-200">Status</Label>
+                    <Label for="tuition-type-status" class="dark:text-slate-200"
+                        >Status</Label
+                    >
                     <select
                         id="tuition-type-status"
                         v-model="form.status"
-                        class="h-10 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm text-slate-900 dark:text-slate-100"
+                        class="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     >
                         <option
                             v-for="option in statusOptions"
@@ -142,7 +156,11 @@ function submit() {
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="tuition-type-sort-order" class="dark:text-slate-200">Sort Order</Label>
+                    <Label
+                        for="tuition-type-sort-order"
+                        class="dark:text-slate-200"
+                        >Sort Order</Label
+                    >
                     <Input
                         id="tuition-type-sort-order"
                         v-model.number="form.sort_order"
@@ -161,7 +179,7 @@ function submit() {
             }}</Button>
             <Link
                 :href="cancelHref"
-                class="inline-flex h-9 items-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+                class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                 >Cancel</Link
             >
         </div>

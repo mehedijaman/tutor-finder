@@ -202,7 +202,11 @@ function runConfirmedAction() {
     }
 
     if (action === 'restore' && row) {
-        router.patch(`${baseUrl}/${row.id}/restore`, {}, { preserveScroll: true });
+        router.patch(
+            `${baseUrl}/${row.id}/restore`,
+            {},
+            { preserveScroll: true },
+        );
     }
 
     if (action === 'force-delete' && row) {
@@ -271,9 +275,13 @@ function handleRowAction(actionKey, row) {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
-            <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6">
+            <div
+                class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
+            >
                 <div class="space-y-1">
-                    <h1 class="text-2xl font-semibold text-slate-900 dark:text-slate-100 sm:text-3xl">
+                    <h1
+                        class="text-2xl font-semibold text-slate-900 sm:text-3xl dark:text-slate-100"
+                    >
                         {{ filters.trash ? 'City Recycle Bin' : 'Cities' }}
                     </h1>
                     <p class="text-sm text-slate-600 dark:text-slate-400">
@@ -285,7 +293,7 @@ function handleRowAction(actionKey, row) {
                 <div class="flex items-center gap-2">
                     <Link
                         :href="filters.trash ? baseUrl : `${baseUrl}?trash=1`"
-                        class="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+                        class="rounded-md border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                         {{ filters.trash ? 'Back to Active' : 'Recycle Bin' }}
                     </Link>
@@ -310,7 +318,7 @@ function handleRowAction(actionKey, row) {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4"
+                class="grid gap-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 dark:border-slate-800 dark:bg-slate-900"
             >
                 <Input
                     v-model="search"
@@ -320,10 +328,14 @@ function handleRowAction(actionKey, row) {
                 />
 
                 <Select v-model="statusFilter">
-                    <SelectTrigger class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
-                    <SelectContent class="dark:border-slate-800 dark:bg-slate-900">
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All Statuses</SelectItem>
                         <SelectItem
                             v-for="option in statusOptions"
@@ -336,10 +348,14 @@ function handleRowAction(actionKey, row) {
                 </Select>
 
                 <Select v-model="countryFilter">
-                    <SelectTrigger class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                    <SelectTrigger
+                        class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    >
                         <SelectValue placeholder="All Countries" />
                     </SelectTrigger>
-                    <SelectContent class="dark:border-slate-800 dark:bg-slate-900">
+                    <SelectContent
+                        class="dark:border-slate-800 dark:bg-slate-900"
+                    >
                         <SelectItem value="all">All Countries</SelectItem>
                         <SelectItem
                             v-for="country in countries"
@@ -358,19 +374,29 @@ function handleRowAction(actionKey, row) {
                 empty-text="No cities found."
             >
                 <template #cell-name="{ value }">
-                    <span class="font-medium text-slate-900 dark:text-slate-100">{{ value }}</span>
+                    <span
+                        class="font-medium text-slate-900 dark:text-slate-100"
+                        >{{ value }}</span
+                    >
                 </template>
 
                 <template #cell-country_name="{ value }">
-                    <span class="text-slate-700 dark:text-slate-300">{{ value || '—' }}</span>
+                    <span class="text-slate-700 dark:text-slate-300">{{
+                        value || '—'
+                    }}</span>
                 </template>
 
                 <template #cell-slug="{ value }">
-                    <span class="font-mono text-xs text-slate-600 dark:text-slate-400">{{ value }}</span>
+                    <span
+                        class="font-mono text-xs text-slate-600 dark:text-slate-400"
+                        >{{ value }}</span
+                    >
                 </template>
 
                 <template #cell-areas_count="{ value }">
-                    <span class="text-slate-700 dark:text-slate-300">{{ value }}</span>
+                    <span class="text-slate-700 dark:text-slate-300">{{
+                        value
+                    }}</span>
                 </template>
 
                 <template #cell-status="{ row }">

@@ -119,7 +119,7 @@ function formatGender(g: string | null | undefined): string {
                             <Briefcase class="h-5 w-5" />
                         </div>
                         <h1
-                            class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
+                            class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             {{ job.title }}
                         </h1>

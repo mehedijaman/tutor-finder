@@ -64,11 +64,13 @@ function submit() {
                     href="/admin/jobs"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:bg-slate-50 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
                 >
-                    <ArrowLeft class="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                    <ArrowLeft
+                        class="h-5 w-5 text-slate-600 dark:text-slate-400"
+                    />
                 </Link>
                 <div>
                     <h1
-                        class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
+                        class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                     >
                         Finalize Settlement
                     </h1>

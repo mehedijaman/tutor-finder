@@ -30,11 +30,11 @@ const breadcrumbs = [
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
+                class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <div class="space-y-1">
                     <h1
-                        class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                     >
                         Create Admin User
                     </h1>
@@ -44,7 +44,7 @@ const breadcrumbs = [
                 </div>
                 <Link
                     href="/admin/users"
-                    class="inline-flex h-9 items-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+                    class="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >Back</Link
                 >
             </div>
@@ -52,24 +52,42 @@ const breadcrumbs = [
             <Form
                 action="/admin/users"
                 method="post"
-                class="space-y-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
+                class="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 #default="{ errors, processing }"
             >
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-2">
-                        <Label for="name" class="dark:text-slate-200">Name</Label>
-                        <Input id="name" name="name" type="text" required class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
+                        <Label for="name" class="dark:text-slate-200"
+                            >Name</Label
+                        >
+                        <Input
+                            id="name"
+                            name="name"
+                            type="text"
+                            required
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        />
                         <InputError :message="errors.name" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="email" class="dark:text-slate-200">Email</Label>
-                        <Input id="email" name="email" type="email" required class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
+                        <Label for="email" class="dark:text-slate-200"
+                            >Email</Label
+                        >
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            required
+                            class="dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                        />
                         <InputError :message="errors.email" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password" class="dark:text-slate-200">Password</Label>
+                        <Label for="password" class="dark:text-slate-200"
+                            >Password</Label
+                        >
                         <Input
                             id="password"
                             name="password"
@@ -81,7 +99,9 @@ const breadcrumbs = [
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation" class="dark:text-slate-200"
+                        <Label
+                            for="password_confirmation"
+                            class="dark:text-slate-200"
                             >Confirm password</Label
                         >
                         <Input
@@ -96,8 +116,14 @@ const breadcrumbs = [
                 </div>
 
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 p-4">
-                        <h2 class="mb-3 text-sm font-medium text-slate-900 dark:text-slate-100">Roles</h2>
+                    <div
+                        class="rounded-xl border border-slate-200/80 p-4 dark:border-slate-800"
+                    >
+                        <h2
+                            class="mb-3 text-sm font-medium text-slate-900 dark:text-slate-100"
+                        >
+                            Roles
+                        </h2>
                         <div class="space-y-2">
                             <label
                                 v-for="role in roles"
@@ -115,8 +141,12 @@ const breadcrumbs = [
                         <InputError :message="errors.roles" />
                     </div>
 
-                    <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 p-4">
-                        <h2 class="mb-3 text-sm font-medium text-slate-900 dark:text-slate-100">
+                    <div
+                        class="rounded-xl border border-slate-200/80 p-4 dark:border-slate-800"
+                    >
+                        <h2
+                            class="mb-3 text-sm font-medium text-slate-900 dark:text-slate-100"
+                        >
                             Direct Permissions
                         </h2>
                         <div class="space-y-2">

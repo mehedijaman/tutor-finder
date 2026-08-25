@@ -251,7 +251,9 @@ function handleRowAction(actionKey, row) {
                 </div>
             </div>
 
-            <div class="rounded-xl border bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+            <div
+                class="rounded-xl border bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            >
                 <Input
                     v-model="search"
                     type="text"

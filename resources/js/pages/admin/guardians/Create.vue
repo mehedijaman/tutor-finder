@@ -81,7 +81,9 @@ const submit = () => {
                         </div>
                         Register Complete Guardian
                     </h1>
-                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                    <p
+                        class="text-sm font-medium text-slate-500 dark:text-slate-400"
+                    >
                         Create account and set profile details in one step.
                     </p>
                 </div>

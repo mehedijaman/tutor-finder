@@ -474,7 +474,7 @@ function statusBadge(row: any) {
                             <Briefcase class="h-6 w-6" />
                         </div>
                         <h1
-                            class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
+                            class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                         >
                             {{ pageTitle }}
                         </h1>

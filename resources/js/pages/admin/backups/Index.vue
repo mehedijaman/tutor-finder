@@ -81,10 +81,10 @@ function deleteBackup(backup) {
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div
-                    class="w-full rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
+                    class="w-full rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
                     <h1
-                        class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
+                        class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                     >
                         Backup Management
                     </h1>
@@ -115,67 +115,91 @@ function deleteBackup(backup) {
 
             <div
                 v-if="resultMessage"
-                class="rounded-lg border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50 dark:bg-emerald-950/40 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-300"
+                class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
             >
                 {{ resultMessage }}
             </div>
 
             <div
                 v-if="errorMessage"
-                class="rounded-lg border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 px-4 py-3 text-sm text-rose-800 dark:text-rose-300"
+                class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
             >
                 {{ errorMessage }}
             </div>
 
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                <div
+                    class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
                     <p class="text-xs text-muted-foreground">Destinations</p>
-                    <p class="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100 sm:text-3xl">
+                    <p
+                        class="mt-1 text-2xl font-semibold text-slate-900 sm:text-3xl dark:text-slate-100"
+                    >
                         {{ stats.destinations_count ?? 0 }}
                     </p>
                 </div>
 
-                <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                <div
+                    class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
                     <p class="text-xs text-muted-foreground">Healthy</p>
                     <p
-                        class="mt-1 text-2xl font-semibold text-emerald-700 dark:text-emerald-400 sm:text-3xl"
+                        class="mt-1 text-2xl font-semibold text-emerald-700 sm:text-3xl dark:text-emerald-400"
                     >
                         {{ stats.healthy_count ?? 0 }}
                     </p>
                 </div>
 
-                <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                <div
+                    class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
                     <p class="text-xs text-muted-foreground">Unhealthy</p>
                     <p
-                        class="mt-1 text-2xl font-semibold text-rose-700 dark:text-rose-400 sm:text-3xl"
+                        class="mt-1 text-2xl font-semibold text-rose-700 sm:text-3xl dark:text-rose-400"
                     >
                         {{ stats.unhealthy_count ?? 0 }}
                     </p>
                 </div>
 
-                <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                <div
+                    class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
                     <p class="text-xs text-muted-foreground">Backup Files</p>
-                    <p class="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100 sm:text-3xl">
+                    <p
+                        class="mt-1 text-2xl font-semibold text-slate-900 sm:text-3xl dark:text-slate-100"
+                    >
                         {{ stats.backup_files_count ?? 0 }}
                     </p>
                 </div>
 
-                <div class="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                <div
+                    class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
                     <p class="text-xs text-muted-foreground">Total Storage</p>
-                    <p class="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100 sm:text-3xl">
+                    <p
+                        class="mt-1 text-2xl font-semibold text-slate-900 sm:text-3xl dark:text-slate-100"
+                    >
                         {{ stats.total_storage ?? '0 KB' }}
                     </p>
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                <div class="border-b border-slate-100 dark:border-slate-800 px-4 py-3">
-                    <h2 class="font-medium text-slate-900 dark:text-slate-100">Backup Destinations</h2>
+            <div
+                class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+            >
+                <div
+                    class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                >
+                    <h2 class="font-medium text-slate-900 dark:text-slate-100">
+                        Backup Destinations
+                    </h2>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400">
+                        <thead
+                            class="bg-slate-50 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400"
+                        >
                             <tr>
                                 <th class="px-4 py-3">Name</th>
                                 <th class="px-4 py-3">Disk</th>
@@ -187,16 +211,22 @@ function deleteBackup(backup) {
                                 <th class="px-4 py-3">Failures</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                        <tbody
+                            class="divide-y divide-slate-100 dark:divide-slate-800"
+                        >
                             <tr
                                 v-for="destination in destinations"
                                 :key="`${destination.backup_name}-${destination.disk}`"
                                 class="align-top transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/50"
                             >
-                                <td class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">
+                                <td
+                                    class="px-4 py-3 font-medium text-slate-900 dark:text-slate-100"
+                                >
                                     {{ destination.backup_name }}
                                 </td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
                                     {{ destination.disk }}
                                 </td>
                                 <td class="px-4 py-3">
@@ -227,10 +257,14 @@ function deleteBackup(backup) {
                                         }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
                                     {{ destination.total_backups }}
                                 </td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
                                     <div>
                                         {{
                                             destination.newest_backup_at || '—'
@@ -240,7 +274,9 @@ function deleteBackup(backup) {
                                         {{ destination.newest_backup_age }}
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
                                     {{ destination.used_storage }}
                                 </td>
                                 <td class="px-4 py-3">
@@ -277,14 +313,22 @@ function deleteBackup(backup) {
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                <div class="border-b border-slate-100 dark:border-slate-800 px-4 py-3">
-                    <h2 class="font-medium text-slate-900 dark:text-slate-100">Available Backup Files</h2>
+            <div
+                class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+            >
+                <div
+                    class="border-b border-slate-100 px-4 py-3 dark:border-slate-800"
+                >
+                    <h2 class="font-medium text-slate-900 dark:text-slate-100">
+                        Available Backup Files
+                    </h2>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400">
+                        <thead
+                            class="bg-slate-50 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400"
+                        >
                             <tr>
                                 <th class="px-4 py-3">File</th>
                                 <th class="px-4 py-3">Backup Name</th>
@@ -295,21 +339,37 @@ function deleteBackup(backup) {
                                 <th class="px-4 py-3">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                        <tbody
+                            class="divide-y divide-slate-100 dark:divide-slate-800"
+                        >
                             <tr
                                 v-for="backup in backupFiles"
                                 :key="`${backup.disk}-${backup.path}`"
                                 class="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/50"
                             >
-                                <td class="px-4 py-3 font-mono text-xs text-slate-900 dark:text-slate-100">
+                                <td
+                                    class="px-4 py-3 font-mono text-xs text-slate-900 dark:text-slate-100"
+                                >
                                     {{ backup.name }}
                                 </td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
                                     {{ backup.backup_name }}
                                 </td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">{{ backup.disk }}</td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">{{ backup.size }}</td>
-                                <td class="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
+                                    {{ backup.disk }}
+                                </td>
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
+                                    {{ backup.size }}
+                                </td>
+                                <td
+                                    class="px-4 py-3 text-slate-700 dark:text-slate-300"
+                                >
                                     {{ backup.created_at }}
                                 </td>
                                 <td class="px-4 py-3 text-muted-foreground">
@@ -320,7 +380,7 @@ function deleteBackup(backup) {
                                         <a
                                             v-if="permissions.can_download"
                                             :href="buildDownloadUrl(backup)"
-                                            class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 text-xs text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-700"
+                                            class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                                         >
                                             Download
                                         </a>

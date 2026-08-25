@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FloatingWhatsApp from '@/components/FloatingWhatsApp.vue';
 import SiteFooter from '@/components/SiteFooter.vue';
 import SiteHeader from '@/components/SiteHeader.vue';
 
@@ -16,5 +17,6 @@ defineProps<{
             <slot />
         </main>
         <SiteFooter variant="full" />
+        <FloatingWhatsApp />
     </div>
 </template>

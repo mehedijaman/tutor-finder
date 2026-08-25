@@ -286,7 +286,7 @@ function handleRowAction(actionKey, row) {
             </div>
 
             <div
-                class="grid gap-3 rounded-xl border bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-2 lg:grid-cols-3"
+                class="grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-3 dark:border-slate-800 dark:bg-slate-900"
             >
                 <Input
                     v-model="search"

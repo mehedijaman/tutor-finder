@@ -189,24 +189,26 @@ const socialLinks = computed(() =>
                         Contact
                     </h3>
                     <ul class="space-y-2.5 text-sm">
-                        <li
-                            v-if="primaryAddress"
-                            class="leading-relaxed text-slate-400"
-                        >
-                            {{ primaryAddress }}
+                        <li class="leading-relaxed text-slate-400">
+                            {{
+                                primaryAddress ||
+                                'Bepari Goli Wireless, Moghbazar Dhaka-1217'
+                            }}
                         </li>
-                        <li v-if="primaryPhone">
+                        <li>
                             <a
-                                :href="`tel:${primaryPhone}`"
+                                :href="`tel:${(primaryPhone || '+880 1947-368456').replace(/\s+/g, '')}`"
                                 class="text-slate-400 transition-colors hover:text-white"
-                                >{{ primaryPhone }}</a
+                                >{{ primaryPhone || '+880 1947-368456' }}</a
                             >
                         </li>
-                        <li v-if="primaryEmail">
+                        <li>
                             <a
-                                :href="`mailto:${primaryEmail}`"
+                                :href="`mailto:${primaryEmail || 'tutorfinder14@gmail.com'}`"
                                 class="break-all text-slate-400 transition-colors hover:text-white"
-                                >{{ primaryEmail }}</a
+                                >{{
+                                    primaryEmail || 'tutorfinder14@gmail.com'
+                                }}</a
                             >
                         </li>
                     </ul>

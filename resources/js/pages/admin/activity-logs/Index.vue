@@ -101,10 +101,10 @@ function formatProperties(value) {
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4 sm:p-6 lg:p-8">
             <div
-                class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm sm:p-6"
+                class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
             >
                 <h1
-                    class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
+                    class="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100"
                 >
                     Activity Logs
                 </h1>
@@ -114,7 +114,7 @@ function formatProperties(value) {
             </div>
 
             <div
-                class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm"
+                class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"
             >
                 <Input
                     v-model="search"
@@ -133,27 +133,43 @@ function formatProperties(value) {
                 @sort="handleSort"
             >
                 <template #cell-id="{ value }">
-                    <span class="text-slate-700 dark:text-slate-300 font-mono text-xs">{{ value }}</span>
+                    <span
+                        class="font-mono text-xs text-slate-700 dark:text-slate-300"
+                        >{{ value }}</span
+                    >
                 </template>
 
                 <template #cell-log_name="{ value }">
-                    <span class="text-slate-800 dark:text-slate-200 font-medium">{{ value || 'default' }}</span>
+                    <span
+                        class="font-medium text-slate-800 dark:text-slate-200"
+                        >{{ value || 'default' }}</span
+                    >
                 </template>
 
                 <template #cell-description="{ value }">
-                    <span class="text-slate-900 dark:text-slate-100 font-medium">{{ value }}</span>
+                    <span
+                        class="font-medium text-slate-900 dark:text-slate-100"
+                        >{{ value }}</span
+                    >
                 </template>
 
                 <template #cell-event="{ value }">
-                    <span class="text-slate-700 dark:text-slate-300 capitalize">{{ value || '—' }}</span>
+                    <span
+                        class="text-slate-700 capitalize dark:text-slate-300"
+                        >{{ value || '—' }}</span
+                    >
                 </template>
 
                 <template #cell-causer="{ row }">
-                    <span class="text-slate-700 dark:text-slate-300">{{ row.causer?.name || 'System' }}</span>
+                    <span class="text-slate-700 dark:text-slate-300">{{
+                        row.causer?.name || 'System'
+                    }}</span>
                 </template>
 
                 <template #cell-subject="{ row }">
-                    <span class="text-slate-700 dark:text-slate-300">{{ row.subject?.type || '—' }}</span>
+                    <span class="text-slate-700 dark:text-slate-300">{{
+                        row.subject?.type || '—'
+                    }}</span>
                 </template>
 
                 <template #cell-properties="{ value }">

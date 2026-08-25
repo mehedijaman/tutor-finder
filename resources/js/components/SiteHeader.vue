@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     Facebook,
-    Globe,
     Instagram,
     Linkedin,
+    Mail,
     Menu,
     MessageCircle,
+    Phone,
     Twitter,
     Youtube,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import {
     Sheet,
     SheetContent,
@@ -20,14 +22,14 @@ import {
 } from '@/components/ui/sheet';
 import { useSiteSettings } from '@/composables/useSiteSettings';
 import {
+    blog,
+    contact,
     dashboard,
-    login,
-    register,
     home,
     jobs,
-    contact,
+    login,
+    register,
     tutors,
-    blog,
     tutorials,
 } from '@/routes';
 
@@ -36,157 +38,250 @@ withDefaults(
         variant?: 'full' | 'simple';
     }>(),
     {
-        variant: 'simple',
+        variant: 'full',
     },
 );
 
-const { siteName, logoUrl, slogan, primaryPhone, primaryEmail, socialDetails } =
+const { siteName, slogan, primaryPhone, primaryEmail, socialDetails } =
     useSiteSettings();
 
 const mobileMenuOpen = ref(false);
+const page = usePage();
 
-const socialIconMap: Record<string, unknown> = {
-    facebook: Facebook,
-    instagram: Instagram,
-    linkedin: Linkedin,
-    twitter: Twitter,
-    x: Twitter,
-    youtube: Youtube,
-    whatsapp: MessageCircle,
-};
-
-const socialLinks = computed(() =>
-    Object.entries(socialDetails.value)
-        .filter(([, url]) => url)
-        .map(([platform, url]) => ({
-            platform,
-            url,
-            icon: socialIconMap[platform.toLowerCase()] ?? Globe,
-            label: platform
-                .replaceAll('_', ' ')
-                .replaceAll('-', ' ')
-                .replace(/\b\w/g, (l) => l.toUpperCase()),
-        })),
+const emailDisplay = computed(
+    () => primaryEmail.value || 'tutorfinder14@gmail.com',
 );
+const phoneDisplay = computed(() => primaryPhone.value || '+880 1947-368456');
+
+const navItems = computed(() => [
+    {
+        label: 'Find Tutor',
+        href: tutors(),
+        active: page.url.startsWith('/tutors'),
+    },
+    { label: 'Job Board', href: jobs(), active: page.url.startsWith('/jobs') },
+    { label: 'Blog', href: blog(), active: page.url.startsWith('/blog') },
+    {
+        label: 'Tutorials',
+        href: tutorials(),
+        active: page.url.startsWith('/tutorials'),
+    },
+    {
+        label: 'Contact',
+        href: contact(),
+        active: page.url.startsWith('/contact'),
+    },
+]);
 </script>
 
 <template>
-    <!-- Full Header -->
-    <template v-if="variant === 'full'">
-        <div
-            v-if="primaryPhone || primaryEmail || socialLinks.length"
-            class="border-b border-white/10 bg-slate-950 text-slate-100"
-        >
+    <div class="w-full">
+        <!-- Topbar -->
+        <div class="bg-[#1b2880] text-white">
             <div
-                class="mx-auto flex min-h-9 max-w-7xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 text-xs sm:px-6"
+                class="mx-auto flex min-h-10 max-w-7xl flex-wrap items-center justify-between gap-y-2 px-4 py-2 text-xs sm:px-6"
             >
-                <span v-if="primaryPhone" class="font-medium tracking-wide"
-                    >Phone: {{ primaryPhone }}</span
-                >
-                <span
-                    v-if="primaryPhone && primaryEmail"
-                    class="hidden text-slate-400 sm:inline"
-                    >|</span
-                >
-                <span v-if="primaryEmail" class="font-medium tracking-wide"
-                    >Email: {{ primaryEmail }}</span
-                >
-
+                <!-- Left: Contact Details -->
                 <div
-                    v-if="socialLinks.length"
-                    class="ml-auto flex items-center gap-2"
+                    class="flex flex-wrap items-center gap-4 font-medium sm:gap-6"
                 >
+                    <!-- Email -->
                     <a
-                        v-for="link in socialLinks"
-                        :key="link.platform"
-                        :href="link.url"
+                        :href="`mailto:${emailDisplay}`"
+                        class="flex items-center gap-2 transition-opacity hover:opacity-90"
+                    >
+                        <div
+                            class="flex h-5 w-6 items-center justify-center rounded-xs bg-white text-red-600 shadow-2xs"
+                        >
+                            <Mail class="h-3.5 w-3.5 fill-red-600 text-white" />
+                        </div>
+                        <span class="tracking-wide text-white/95">{{
+                            emailDisplay
+                        }}</span>
+                    </a>
+
+                    <!-- Phone -->
+                    <a
+                        :href="`tel:${phoneDisplay.replace(/\s+/g, '')}`"
+                        class="flex items-center gap-2 transition-opacity hover:opacity-90"
+                    >
+                        <div
+                            class="flex h-6 w-6 items-center justify-center rounded-full bg-[#0eb0e6] text-white shadow-2xs"
+                        >
+                            <Phone class="h-3.5 w-3.5 fill-current" />
+                        </div>
+                        <span
+                            class="font-semibold tracking-wide text-white/95"
+                            >{{ phoneDisplay }}</span
+                        >
+                    </a>
+                </div>
+
+                <!-- Right: Social Icons Badges -->
+                <div class="flex items-center gap-2">
+                    <a
+                        v-if="socialDetails?.facebook"
+                        :href="socialDetails.facebook"
                         target="_blank"
                         rel="noopener noreferrer"
-                        :aria-label="link.label"
-                        class="text-slate-400 transition-colors hover:text-white"
+                        aria-label="Facebook"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#1877f2] text-white transition-transform hover:scale-110"
                     >
-                        <component :is="link.icon" class="h-3.5 w-3.5" />
+                        <Facebook class="h-4 w-4 fill-current" />
+                    </a>
+                    <a
+                        v-else
+                        href="https://facebook.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#1877f2] text-white transition-transform hover:scale-110"
+                    >
+                        <Facebook class="h-4 w-4 fill-current" />
+                    </a>
+
+                    <a
+                        v-if="socialDetails?.whatsapp"
+                        :href="socialDetails.whatsapp"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="WhatsApp"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#25d366] text-white transition-transform hover:scale-110"
+                    >
+                        <MessageCircle class="h-4 w-4 fill-current" />
+                    </a>
+                    <a
+                        v-else
+                        href="https://wa.me/8801947368456"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="WhatsApp"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#25d366] text-white transition-transform hover:scale-110"
+                    >
+                        <MessageCircle class="h-4 w-4 fill-current" />
+                    </a>
+
+                    <a
+                        v-if="socialDetails?.instagram"
+                        :href="socialDetails.instagram"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white transition-transform hover:scale-110"
+                    >
+                        <Instagram class="h-4 w-4" />
+                    </a>
+                    <a
+                        v-else
+                        href="https://instagram.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white transition-transform hover:scale-110"
+                    >
+                        <Instagram class="h-4 w-4" />
+                    </a>
+
+                    <a
+                        v-if="socialDetails?.youtube"
+                        :href="socialDetails.youtube"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="YouTube"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#ff0000] text-white transition-transform hover:scale-110"
+                    >
+                        <Youtube class="h-4 w-4 fill-current" />
+                    </a>
+                    <a
+                        v-else
+                        href="https://youtube.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="YouTube"
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#ff0000] text-white transition-transform hover:scale-110"
+                    >
+                        <Youtube class="h-4 w-4 fill-current" />
                     </a>
                 </div>
             </div>
         </div>
 
+        <!-- Main Header / Navbar -->
         <header
-            class="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur"
+            class="sticky top-0 z-50 w-full border-b border-slate-100 bg-white shadow-2xs"
         >
             <div
-                class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-[4.5rem] sm:px-6"
+                class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6"
             >
-                <!-- Logo -->
+                <!-- Brand / Logo -->
                 <Link :href="home()" class="group flex items-center gap-3">
-                    <img
-                        v-if="logoUrl"
-                        :src="logoUrl"
-                        :alt="siteName"
-                        class="h-9 w-9 rounded-xl object-cover ring-1 ring-slate-200"
+                    <AppLogoIcon
+                        class="h-11 w-11 transition-transform group-hover:scale-105 sm:h-12 sm:w-12"
                     />
-                    <div
-                        v-else
-                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-sm"
-                    >
-                        {{ siteName.charAt(0).toUpperCase() }}
-                    </div>
                     <div class="flex flex-col leading-tight">
                         <span
-                            class="text-base font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-blue-700 sm:text-lg"
-                            >{{ siteName }}</span
+                            class="text-xl font-bold tracking-tight text-[#1b2880] sm:text-2xl"
                         >
+                            Tutor <span class="text-[#0eb0e6]">Finder</span>
+                        </span>
                         <span
-                            v-if="slogan"
-                            class="max-w-52 text-[11px] text-slate-500 sm:max-w-none"
-                            >{{ slogan }}</span
+                            class="text-[10px] font-extrabold tracking-widest text-slate-700 uppercase sm:text-[11px]"
                         >
+                            {{ slogan || 'EXPLORE FOR EXCELLENCE' }}
+                        </span>
                     </div>
                 </Link>
 
-                <!-- Desktop Nav -->
+                <!-- Desktop Navigation Links (Pill Style) -->
                 <nav
-                    class="hidden items-center gap-1 rounded-full border border-slate-200 bg-slate-50/70 p-1 text-sm font-medium text-slate-700 md:flex"
+                    v-if="variant === 'full'"
+                    class="hidden items-center gap-2 lg:flex"
                 >
                     <Link
-                        :href="home()"
-                        class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
-                        >Home</Link
+                        v-for="item in navItems"
+                        :key="item.label"
+                        :href="item.href"
+                        :class="[
+                            'rounded-full border-2 border-[#0eb0e6] px-4 py-1.5 text-xs font-bold shadow-2xs transition-all',
+                            item.active
+                                ? 'bg-[#0eb0e6] text-white'
+                                : 'bg-white text-slate-800 hover:bg-[#0eb0e6] hover:text-white',
+                        ]"
                     >
-                    <Link
-                        :href="tutors()"
-                        class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
-                        >Find Tutor</Link
-                    >
-                    <Link
-                        :href="jobs()"
-                        class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
-                        >Job Board</Link
-                    >
-                    <Link
-                        :href="blog()"
-                        class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
-                        >Blog</Link
-                    >
-                    <Link
-                        :href="tutorials()"
-                        class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
-                        >Tutorials</Link
-                    >
-                    <Link
-                        :href="contact()"
-                        class="rounded-full px-3 py-1.5 transition-colors hover:bg-white hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
-                        >Contact</Link
-                    >
+                        {{ item.label }}
+                    </Link>
                 </nav>
 
-                <!-- Auth Buttons -->
+                <!-- Right Actions: Auth Buttons -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Mobile Menu Button -->
+                    <template v-if="$page.props.auth.user">
+                        <Link
+                            :href="dashboard()"
+                            class="hidden rounded-full bg-[#0eb0e6] px-6 py-2 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#0c9bd0] md:inline-flex"
+                        >
+                            Dashboard
+                        </Link>
+                    </template>
+                    <template v-else>
+                        <Link
+                            :href="login()"
+                            class="hidden rounded-full bg-[#e5e7eb] px-5 py-2 text-xs font-bold text-slate-800 transition-colors hover:bg-slate-300 md:inline-flex"
+                        >
+                            Login
+                        </Link>
+                        <Link
+                            :href="register()"
+                            class="hidden rounded-full bg-[#0eb0e6] px-6 py-2 text-xs font-bold text-white shadow-xs transition-colors hover:bg-[#0c9bd0] md:inline-flex"
+                        >
+                            Join Now
+                        </Link>
+                    </template>
+
+                    <!-- Mobile Menu Trigger -->
                     <Sheet v-model:open="mobileMenuOpen">
                         <SheetTrigger as-child>
                             <button
-                                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-50 md:hidden"
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-700 transition-colors hover:bg-slate-100 lg:hidden"
                                 aria-label="Open menu"
                             >
                                 <Menu class="h-5 w-5" />
@@ -197,56 +292,33 @@ const socialLinks = computed(() =>
                             class="w-[300px] sm:w-[360px]"
                         >
                             <SheetHeader>
-                                <SheetTitle class="text-left">Menu</SheetTitle>
+                                <SheetTitle
+                                    class="text-left font-bold text-[#1b2880]"
+                                    >Navigation Menu</SheetTitle
+                                >
                             </SheetHeader>
-                            <nav class="mt-6 flex flex-col gap-1">
+                            <nav class="mt-6 flex flex-col gap-2">
                                 <Link
-                                    :href="home()"
-                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
+                                    v-for="item in navItems"
+                                    :key="item.label"
+                                    :href="item.href"
+                                    :class="[
+                                        'rounded-full border-2 border-[#0eb0e6] px-4 py-2 text-center text-sm font-bold transition-all',
+                                        item.active
+                                            ? 'bg-[#0eb0e6] text-white'
+                                            : 'bg-white text-slate-800 hover:bg-[#0eb0e6] hover:text-white',
+                                    ]"
                                     @click="mobileMenuOpen = false"
                                 >
-                                    Home
+                                    {{ item.label }}
                                 </Link>
-                                <Link
-                                    :href="tutors()"
-                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
-                                    @click="mobileMenuOpen = false"
-                                >
-                                    Find Tutor
-                                </Link>
-                                <Link
-                                    :href="jobs()"
-                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
-                                    @click="mobileMenuOpen = false"
-                                >
-                                    Job Board
-                                </Link>
-                                <Link
-                                    :href="blog()"
-                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
-                                    @click="mobileMenuOpen = false"
-                                >
-                                    Blog
-                                </Link>
-                                <Link
-                                    :href="tutorials()"
-                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
-                                    @click="mobileMenuOpen = false"
-                                >
-                                    Tutorials
-                                </Link>
-                                <Link
-                                    :href="contact()"
-                                    class="flex items-center rounded-xl px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700"
-                                    @click="mobileMenuOpen = false"
-                                >
-                                    Contact
-                                </Link>
+
                                 <div class="my-4 border-t border-slate-200" />
+
                                 <template v-if="$page.props.auth.user">
                                     <Link
                                         :href="dashboard()"
-                                        class="flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                                        class="flex items-center justify-center rounded-full bg-[#0eb0e6] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0c9bd0]"
                                         @click="mobileMenuOpen = false"
                                     >
                                         Dashboard
@@ -255,14 +327,14 @@ const socialLinks = computed(() =>
                                 <template v-else>
                                     <Link
                                         :href="login()"
-                                        class="flex items-center justify-center rounded-xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                                        class="flex items-center justify-center rounded-full bg-[#e5e7eb] px-4 py-2.5 text-sm font-bold text-slate-800 transition-colors hover:bg-slate-300"
                                         @click="mobileMenuOpen = false"
                                     >
                                         Login
                                     </Link>
                                     <Link
                                         :href="register()"
-                                        class="mt-2 flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                                        class="mt-2 flex items-center justify-center rounded-full bg-[#0eb0e6] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0c9bd0]"
                                         @click="mobileMenuOpen = false"
                                     >
                                         Join Now
@@ -271,129 +343,8 @@ const socialLinks = computed(() =>
                             </nav>
                         </SheetContent>
                     </Sheet>
-
-                    <template v-if="$page.props.auth.user">
-                        <Link
-                            :href="dashboard()"
-                            class="hidden items-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 md:inline-flex"
-                        >
-                            Dashboard
-                        </Link>
-                    </template>
-                    <template v-else>
-                        <Link
-                            :href="login()"
-                            class="hidden rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none md:block"
-                        >
-                            Login
-                        </Link>
-                        <Link
-                            :href="register()"
-                            class="hidden items-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-600/25 transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 md:inline-flex"
-                        >
-                            Join Now
-                        </Link>
-                    </template>
                 </div>
             </div>
         </header>
-    </template>
-
-    <!-- Simple Header -->
-    <template v-else>
-        <div
-            v-if="primaryPhone || primaryEmail || socialLinks.length"
-            class="border-b border-white/10 bg-slate-950 text-slate-100"
-        >
-            <div
-                class="mx-auto flex min-h-9 max-w-7xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 text-xs sm:px-6"
-            >
-                <span v-if="primaryPhone" class="font-medium tracking-wide"
-                    >Phone: {{ primaryPhone }}</span
-                >
-                <span
-                    v-if="primaryPhone && primaryEmail"
-                    class="hidden text-slate-400 sm:inline"
-                    >|</span
-                >
-                <span v-if="primaryEmail" class="font-medium tracking-wide"
-                    >Email: {{ primaryEmail }}</span
-                >
-
-                <div
-                    v-if="socialLinks.length"
-                    class="ml-auto flex items-center gap-2"
-                >
-                    <a
-                        v-for="link in socialLinks"
-                        :key="link.platform"
-                        :href="link.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        :aria-label="link.label"
-                        class="text-slate-400 transition-colors hover:text-white"
-                    >
-                        <component :is="link.icon" class="h-3.5 w-3.5" />
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <header
-            class="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur"
-        >
-            <div
-                class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-[4.5rem] sm:px-6"
-            >
-                <Link :href="home()" class="group flex items-center gap-2.5">
-                    <img
-                        v-if="logoUrl"
-                        :src="logoUrl"
-                        :alt="siteName"
-                        class="h-8 w-8 rounded-xl object-cover ring-1 ring-slate-200 sm:h-9 sm:w-9"
-                    />
-                    <div
-                        v-else
-                        class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-sm sm:h-9 sm:w-9"
-                    >
-                        {{ siteName.charAt(0).toUpperCase() }}
-                    </div>
-                    <div class="flex flex-col leading-tight">
-                        <span
-                            class="max-w-32 text-sm font-semibold tracking-tight text-slate-900 transition-colors group-hover:text-blue-700 sm:max-w-none sm:text-base"
-                            >{{ siteName }}</span
-                        >
-                        <span
-                            v-if="slogan"
-                            class="max-w-32 truncate text-[11px] text-slate-500 sm:max-w-none"
-                            >{{ slogan }}</span
-                        >
-                    </div>
-                </Link>
-
-                <nav class="flex items-center gap-2 text-sm sm:gap-3">
-                    <Link
-                        v-if="$page.props.auth.user"
-                        :href="dashboard()"
-                        class="inline-flex items-center rounded-xl bg-blue-600 px-3.5 py-2 font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 sm:px-4"
-                    >
-                        Dashboard
-                    </Link>
-                    <template v-else>
-                        <Link
-                            :href="login()"
-                            class="rounded-md px-1.5 py-1 font-medium text-slate-700 transition-colors hover:text-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-1 focus-visible:outline-none"
-                            >Login</Link
-                        >
-                        <Link
-                            :href="register()"
-                            class="inline-flex items-center rounded-xl bg-blue-600 px-3.5 py-2 font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-2 sm:px-4"
-                        >
-                            Register
-                        </Link>
-                    </template>
-                </nav>
-            </div>
-        </header>
-    </template>
+    </div>
 </template>
