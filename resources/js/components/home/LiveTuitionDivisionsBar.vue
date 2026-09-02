@@ -30,7 +30,7 @@ withDefaults(
 </script>
 
 <template>
-    <section class="w-full bg-slate-50/80 py-10">
+    <section class="w-full bg-white py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div
                 class="flex flex-col items-center gap-4 rounded-3xl border border-slate-200/90 bg-white/90 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-md sm:p-6 lg:flex-row lg:gap-6"

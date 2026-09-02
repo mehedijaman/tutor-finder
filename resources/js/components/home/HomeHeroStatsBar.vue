@@ -63,16 +63,14 @@ onMounted(() => {
 </script>
 
 <template>
-    <section
-        class="w-full bg-gradient-to-r from-[#0077b6] via-[#0eb0e6] to-[#0096c7] py-8 shadow-inner sm:py-12"
-    >
+    <section class="w-full bg-white py-8 sm:py-12">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div
                 class="grid grid-cols-2 gap-3 sm:grid-cols-2 md:gap-6 lg:grid-cols-4"
             >
                 <!-- Card 1: Live Tuitions -->
                 <div
-                    class="group flex flex-col items-center justify-center rounded-2xl border border-white/80 bg-white/95 px-3.5 py-5 shadow-xl ring-1 shadow-cyan-950/15 ring-cyan-500/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:rounded-full sm:px-5 sm:py-6"
+                    class="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white px-3.5 py-5 shadow-lg ring-1 ring-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-[#0eb0e6] hover:shadow-xl sm:rounded-full sm:px-5 sm:py-6"
                 >
                     <div
                         class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#1b2880] text-white shadow-md transition-transform duration-300 group-hover:scale-110 sm:h-13 sm:w-13"
@@ -93,7 +91,7 @@ onMounted(() => {
 
                 <!-- Card 2: Active Tutors -->
                 <div
-                    class="group flex flex-col items-center justify-center rounded-2xl border border-white/80 bg-white/95 px-3.5 py-5 shadow-xl ring-1 shadow-cyan-950/15 ring-cyan-500/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:rounded-full sm:px-5 sm:py-6"
+                    class="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white px-3.5 py-5 shadow-lg ring-1 ring-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-[#0eb0e6] hover:shadow-xl sm:rounded-full sm:px-5 sm:py-6"
                 >
                     <div
                         class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#0eb0e6] text-white shadow-md transition-transform duration-300 group-hover:scale-110 sm:h-13 sm:w-13"
@@ -114,7 +112,7 @@ onMounted(() => {
 
                 <!-- Card 3: Guardians / Students -->
                 <div
-                    class="group flex flex-col items-center justify-center rounded-2xl border border-white/80 bg-white/95 px-3.5 py-5 shadow-xl ring-1 shadow-cyan-950/15 ring-cyan-500/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:rounded-full sm:px-5 sm:py-6"
+                    class="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white px-3.5 py-5 shadow-lg ring-1 ring-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-[#0eb0e6] hover:shadow-xl sm:rounded-full sm:px-5 sm:py-6"
                 >
                     <div
                         class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#1b2880] text-white shadow-md transition-transform duration-300 group-hover:scale-110 sm:h-13 sm:w-13"
@@ -135,7 +133,7 @@ onMounted(() => {
 
                 <!-- Card 4: Rating -->
                 <div
-                    class="group flex flex-col items-center justify-center rounded-2xl border border-white/80 bg-white/95 px-3.5 py-5 shadow-xl ring-1 shadow-cyan-950/15 ring-cyan-500/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:rounded-full sm:px-5 sm:py-6"
+                    class="group flex flex-col items-center justify-center rounded-2xl border border-slate-200/90 bg-white px-3.5 py-5 shadow-lg ring-1 ring-slate-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-[#0eb0e6] hover:shadow-xl sm:rounded-full sm:px-5 sm:py-6"
                 >
                     <div
                         class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#0eb0e6] text-amber-300 shadow-md transition-transform duration-300 group-hover:scale-110 sm:h-13 sm:w-13"

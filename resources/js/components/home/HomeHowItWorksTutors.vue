@@ -2,9 +2,9 @@
 import { Link } from '@inertiajs/vue3';
 import {
     Briefcase,
-    CheckCircle,
+    FileSignature,
     GraduationCap,
-    UserPlus,
+    Handshake,
 } from 'lucide-vue-next';
 import { register } from '@/routes';
 
@@ -14,7 +14,7 @@ const tutorSteps = [
         title: 'Create Your Profile',
         description:
             'Sign up and complete your profile with educational background, teaching experience, subjects, preferred classes, and location.',
-        icon: UserPlus,
+        icon: FileSignature,
     },
     {
         step: '02',
@@ -27,8 +27,8 @@ const tutorSteps = [
         step: '03',
         title: 'Confirm the Tuition Jobs',
         description:
-            'Once selected, confirm the tuition job details and finalize the class schedule with the guardian.',
-        icon: CheckCircle,
+            'Once selected, confirm the tuition job details and finalize / ensure the class schedule with the guardian.',
+        icon: Handshake,
     },
     {
         step: '04',
@@ -41,65 +41,75 @@ const tutorSteps = [
 </script>
 
 <template>
-    <section class="bg-white py-16 lg:py-24">
+    <section
+        class="relative overflow-hidden bg-gradient-to-b from-[#eaf6ff] via-[#e1f0fc] to-[#eaf6ff] py-16 lg:py-24"
+    >
+        <!-- Ambient Radial Background Glow -->
+        <div
+            class="pointer-events-none absolute -top-24 left-1/2 -z-10 h-[400px] w-[700px] -translate-x-1/2 rounded-full bg-radial from-white/60 via-cyan-100/30 to-transparent blur-3xl"
+        ></div>
+
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <!-- Section Header -->
-            <div class="mx-auto max-w-3xl text-center">
-                <span
-                    class="inline-block rounded-full bg-cyan-50 px-4 py-1.5 text-xs font-extrabold text-[#0eb0e6] ring-1 ring-[#0eb0e6]/30"
+            <!-- Header Badge Pill -->
+            <div class="mx-auto max-w-4xl text-center">
+                <div
+                    class="inline-block rounded-full border-2 border-[#38bdf8] bg-white px-8 py-2.5 shadow-2xs sm:px-12 sm:py-3"
                 >
-                    FOR TUTORS
-                </span>
-                <h2
-                    class="mt-3 text-3xl font-extrabold tracking-tight text-[#1b2880] sm:text-4xl"
+                    <h2
+                        class="text-2xl font-black tracking-tight text-[#1c2346] sm:text-3xl lg:text-4xl"
+                    >
+                        How It Works For Tutors ?
+                    </h2>
+                </div>
+                <p
+                    class="mt-4 text-base font-semibold text-slate-600 sm:text-lg"
                 >
-                    How It Works For Tutors?
-                </h2>
-                <p class="mt-4 text-base text-slate-600 sm:text-lg">
                     Find your ideal tuition opportunities in just a few simple
                     steps.
                 </p>
             </div>
 
-            <!-- Vertical Entrance Timeline ("upor theke step by step show hobe", "icone gula move hove") -->
+            <!-- 4 Step Cards Grid -->
             <div
-                class="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+                class="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4"
             >
                 <div
                     v-for="item in tutorSteps"
                     :key="item.step"
-                    class="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-7 shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-[#0eb0e6] hover:shadow-xl"
+                    class="group relative flex flex-col transition-all duration-300 hover:-translate-y-1"
                 >
-                    <div>
-                        <!-- Icon Circle with Floating Animation -->
-                        <div class="flex items-center justify-between">
-                            <div
-                                class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1b2880] text-white shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:bg-[#0eb0e6]"
-                            >
-                                <component :is="item.icon" class="h-7 w-7" />
-                            </div>
-                            <span
-                                class="text-3xl font-black text-slate-200 transition-colors group-hover:text-[#0eb0e6]"
-                            >
-                                {{ item.step }}
-                            </span>
+                    <!-- Element A: Circular Icon Badge Top Center -->
+                    <div class="relative z-10 -mb-7 flex justify-center">
+                        <div
+                            class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#38bdf8] bg-white text-[#38bdf8] shadow-md transition-transform duration-300 group-hover:scale-110 sm:h-20 sm:w-20"
+                        >
+                            <component
+                                :is="item.icon"
+                                class="h-8 w-8 stroke-[2.2] text-[#38bdf8]"
+                            />
                         </div>
+                    </div>
 
-                        <!-- Step Content -->
+                    <!-- Element B: Dark Navy Header Capsule Pill -->
+                    <div
+                        class="relative z-0 flex min-h-[64px] items-center justify-center rounded-3xl bg-[#223180] px-4 pt-7 pb-3.5 text-center text-white shadow-md"
+                    >
                         <h3
-                            class="mt-6 text-xl font-bold text-slate-900 transition-colors group-hover:text-[#1b2880]"
+                            class="text-base font-black tracking-tight sm:text-lg"
                         >
                             {{ item.title }}
                         </h3>
-                        <p class="mt-3 text-sm leading-relaxed text-slate-600">
-                            {{ item.description }}
-                        </p>
                     </div>
 
+                    <!-- Element C: White Card Box with Cyan Outline -->
                     <div
-                        class="mt-6 border-t border-slate-100 pt-4 text-xs font-bold text-[#0eb0e6]"
+                        class="mt-3 flex min-h-[200px] flex-1 items-center justify-center rounded-3xl border-4 border-[#58b6ec] bg-white p-6 text-center shadow-sm backdrop-blur-xs"
                     >
-                        Step {{ item.step }} of 04
+                        <p
+                            class="text-xs leading-relaxed font-semibold text-slate-700 sm:text-sm"
+                        >
+                            {{ item.description }}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -108,7 +118,7 @@ const tutorSteps = [
             <div class="mt-16 text-center">
                 <Link
                     :href="register()"
-                    class="inline-flex h-12 items-center justify-center rounded-full bg-[#1b2880] px-8 text-base font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-[#15206b]"
+                    class="inline-flex h-12 items-center justify-center rounded-full bg-[#223180] px-9 text-base font-extrabold text-white shadow-lg shadow-indigo-900/20 transition-all duration-300 hover:scale-105 hover:bg-[#1b2668] hover:shadow-xl"
                 >
                     Become a Tutor Now
                 </Link>
