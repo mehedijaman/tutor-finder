@@ -61,7 +61,15 @@ const props = defineProps<{
 const primaryEducation = computed(() => {
     const educations = props.tutor.tutor_educations ?? [];
 
-    return educations.length > 0 ? educations[0] : null;
+    if (educations.length === 0) {
+        return null;
+    }
+
+    return (
+        educations.find((e) => e.is_current) ??
+        educations[educations.length - 1] ??
+        educations[0]
+    );
 });
 
 const preferredSubjectPreview = computed(() => {
@@ -117,18 +125,29 @@ function formatSalary(): string {
 }
 
 function getEducationLine(): string {
-    if (!primaryEducation.value) {
+    const educations = props.tutor.tutor_educations ?? [];
+
+    if (educations.length === 0) {
         return 'Professional Tutor';
     }
 
-    const degree = primaryEducation.value.degree?.trim();
-    const institute = primaryEducation.value.institute?.trim();
+    const degrees = educations
+        .map((e) => e.degree?.trim())
+        .filter((d): d is string => Boolean(d));
 
-    if (degree && institute) {
-        return `${degree} • ${institute}`;
+    const mainInstitute = primaryEducation.value?.institute?.trim();
+
+    if (degrees.length > 0) {
+        const degreesText = Array.from(new Set(degrees)).join(', ');
+
+        if (mainInstitute) {
+            return `${degreesText} • ${mainInstitute}`;
+        }
+
+        return degreesText;
     }
 
-    return degree || institute || 'Professional Tutor';
+    return mainInstitute || 'Professional Tutor';
 }
 
 function getAvailableSummary(): string {

@@ -391,10 +391,25 @@ const { tutor } = props;
                                     />
                                 </div>
 
-                                <!-- Contact Info Chips -->
+                                <!-- Contact & Degrees Info Chips -->
                                 <div
                                     class="mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start"
                                 >
+                                    <span
+                                        v-for="edu in tutor.tutor_educations"
+                                        :key="edu.id"
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition-colors dark:bg-indigo-950/50 dark:text-indigo-300"
+                                    >
+                                        <GraduationCap
+                                            class="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400"
+                                        />
+                                        {{ edu.degree
+                                        }}{{
+                                            edu.institute
+                                                ? ` • ${edu.institute}`
+                                                : ''
+                                        }}
+                                    </span>
                                     <span
                                         v-if="
                                             tutor.tutor_profile?.present_address

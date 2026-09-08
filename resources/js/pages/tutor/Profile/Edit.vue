@@ -26,7 +26,7 @@ import {
     User as UserIcon,
     X,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ConfirmDialog from '@/components/admin/dialogs/ConfirmDialog.vue';
 import InputError from '@/components/InputError.vue';
 import ProfilePhotoUpload from '@/components/ProfilePhotoUpload.vue';
@@ -155,7 +155,13 @@ const activeTab = ref('personal');
 const editingTab = ref<string | null>(null);
 const isEditingActiveTab = computed(() => editingTab.value === activeTab.value);
 
-const originalProfile = { ...props.profile };
+const originalProfile = ref(
+    props.profile ? JSON.parse(JSON.stringify(props.profile)) : {},
+);
+
+function updateOriginalProfile(p: any): void {
+    originalProfile.value = p ? JSON.parse(JSON.stringify(p)) : {};
+}
 
 function mapEducations(list: any = []): any[] {
     if (!Array.isArray(list)) {
@@ -166,7 +172,9 @@ function mapEducations(list: any = []): any[] {
         degree: education?.degree ?? '',
         institute: education?.institute ?? '',
         department: education?.department ?? '',
-        graduation_year: education?.graduation_year ?? '',
+        graduation_year: education?.graduation_year
+            ? String(education.graduation_year)
+            : '',
         result: education?.result ?? '',
         is_current: Boolean(education?.is_current),
         sort_order: education?.sort_order ?? index,
@@ -174,44 +182,52 @@ function mapEducations(list: any = []): any[] {
 }
 
 function resetFormToOriginal(): void {
-    form.name = originalProfile.name ?? '';
-    form.phone = originalProfile.phone ?? '';
-    form.gender = originalProfile.gender ?? 'none';
-    form.date_of_birth = originalProfile.date_of_birth ?? '';
-    form.present_address = originalProfile.present_address ?? '';
-    form.permanent_address = originalProfile.permanent_address ?? '';
-    form.nid_no = originalProfile.nid_no ?? '';
-    form.bio = originalProfile.bio ?? '';
-    form.preferred_tuition_types = Array.isArray(
-        originalProfile.preferred_tuition_types,
-    )
-        ? [...originalProfile.preferred_tuition_types]
+    const p = originalProfile.value;
+    form.name = p.name ?? '';
+    form.phone = p.phone ?? '';
+    form.gender = p.gender ?? 'none';
+    form.date_of_birth = p.date_of_birth ?? '';
+    form.present_address = p.present_address ?? '';
+    form.permanent_address = p.permanent_address ?? '';
+    form.nid_no = p.nid_no ?? '';
+    form.bio = p.bio ?? '';
+    form.preferred_tuition_types = Array.isArray(p.preferred_tuition_types)
+        ? [...p.preferred_tuition_types]
         : [];
-    form.preferred_categories = Array.isArray(
-        originalProfile.preferred_categories,
-    )
-        ? [...originalProfile.preferred_categories]
+    form.preferred_categories = Array.isArray(p.preferred_categories)
+        ? [...p.preferred_categories]
         : [];
-    form.preferred_classes = Array.isArray(originalProfile.preferred_classes)
-        ? [...originalProfile.preferred_classes]
+    form.preferred_classes = Array.isArray(p.preferred_classes)
+        ? [...p.preferred_classes]
         : [];
-    form.preferred_subjects = Array.isArray(originalProfile.preferred_subjects)
-        ? [...originalProfile.preferred_subjects]
+    form.preferred_subjects = Array.isArray(p.preferred_subjects)
+        ? [...p.preferred_subjects]
         : [];
-    form.preferred_locations = Array.isArray(
-        originalProfile.preferred_locations,
-    )
-        ? [...originalProfile.preferred_locations]
+    form.preferred_locations = Array.isArray(p.preferred_locations)
+        ? [...p.preferred_locations]
         : [];
-    form.expected_salary_min = originalProfile.expected_salary_min ?? '';
-    form.expected_salary_max = originalProfile.expected_salary_max ?? '';
-    form.available_days = Array.isArray(originalProfile.available_days)
-        ? [...originalProfile.available_days]
+    form.expected_salary_min = p.expected_salary_min ?? '';
+    form.expected_salary_max = p.expected_salary_max ?? '';
+    form.available_days = Array.isArray(p.available_days)
+        ? [...p.available_days]
         : [];
-    form.available_time = originalProfile.available_time ?? '';
-    form.status = originalProfile.status ?? 'active';
-    form.educations = mapEducations(originalProfile.educations);
+    form.available_time = p.available_time ?? '';
+    form.status = p.status ?? 'active';
+    form.educations = mapEducations(p.educations);
 }
+
+watch(
+    () => props.profile,
+    (newProfile) => {
+        if (newProfile) {
+            updateOriginalProfile(newProfile);
+            if (!editingTab.value) {
+                resetFormToOriginal();
+            }
+        }
+    },
+    { deep: true },
+);
 
 const form = useForm({
     name: props.profile.name ?? '',
@@ -419,14 +435,22 @@ function submit() {
     form.transform((data) => ({
         ...data,
         gender: data.gender === 'none' ? null : data.gender,
-        educations: data.educations.map((education, index) => ({
-            ...education,
-            sort_order: index,
-        })),
+        educations: data.educations
+            .filter(
+                (education: any) =>
+                    (education.degree && education.degree.trim() !== '') ||
+                    (education.institute && education.institute.trim() !== ''),
+            )
+            .map((education: any, index: number) => ({
+                ...education,
+                sort_order: index,
+            })),
     })).put('/tutor/profile', {
         preserveScroll: true,
         onSuccess: () => {
             editingTab.value = null;
+            updateOriginalProfile(props.profile);
+            form.educations = mapEducations(props.profile.educations);
         },
     });
 }
@@ -663,6 +687,38 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                     <span
                                         class="font-medium text-slate-900 dark:text-slate-200"
                                         >{{ form.present_address || '—' }}</span
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2.5">
+                                <GraduationCap
+                                    class="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
+                                />
+                                <div class="min-w-0">
+                                    <span
+                                        class="block text-[10px] font-semibold text-slate-400 uppercase dark:text-slate-500"
+                                        >Degrees</span
+                                    >
+                                    <div
+                                        v-if="form.educations.length > 0"
+                                        class="mt-0.5 flex flex-wrap gap-1"
+                                    >
+                                        <Badge
+                                            v-for="(
+                                                edu, idx
+                                            ) in form.educations"
+                                            :key="edu.id ?? idx"
+                                            variant="secondary"
+                                            class="text-[10px] font-semibold"
+                                        >
+                                            {{ edu.degree || 'Degree' }}
+                                        </Badge>
+                                    </div>
+                                    <span
+                                        v-else
+                                        class="font-medium text-slate-400 dark:text-slate-500"
+                                        >None added</span
                                     >
                                 </div>
                             </div>
@@ -934,13 +990,24 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                                 {{ education.institute }}
                                             </p>
                                         </div>
-                                        <Badge
-                                            v-if="education.result"
-                                            variant="secondary"
-                                            class="text-[10px] font-bold dark:bg-slate-800 dark:text-slate-200"
+                                        <div
+                                            class="flex flex-col items-end gap-1"
                                         >
-                                            Result: {{ education.result }}
-                                        </Badge>
+                                            <Badge
+                                                v-if="education.is_current"
+                                                variant="outline"
+                                                class="border-emerald-500/50 bg-emerald-50 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                            >
+                                                Currently Studying
+                                            </Badge>
+                                            <Badge
+                                                v-if="education.result"
+                                                variant="secondary"
+                                                class="text-[10px] font-bold dark:bg-slate-800 dark:text-slate-200"
+                                            >
+                                                Result: {{ education.result }}
+                                            </Badge>
+                                        </div>
                                     </div>
                                     <Separator class="dark:bg-slate-800" />
                                     <div
@@ -1469,6 +1536,23 @@ function startPayment(gateway: 'bkash' | 'sslcommerz') {
                                             placeholder="e.g. 3.80 out of 4.00"
                                             class="h-8 text-xs"
                                         />
+                                    </div>
+
+                                    <div
+                                        class="flex items-center gap-2 pt-1 sm:col-span-2"
+                                    >
+                                        <input
+                                            :id="`is-current-${index}`"
+                                            v-model="education.is_current"
+                                            type="checkbox"
+                                            class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800"
+                                        />
+                                        <Label
+                                            :for="`is-current-${index}`"
+                                            class="text-xs font-medium text-slate-700 dark:text-slate-300"
+                                        >
+                                            Currently studying here (Ongoing)
+                                        </Label>
                                     </div>
                                 </div>
                             </div>

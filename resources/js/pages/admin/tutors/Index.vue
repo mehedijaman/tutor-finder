@@ -520,16 +520,20 @@ function closeResetPasswordDialog() {
                         <div class="min-w-0">
                             <p class="truncate tracking-tight uppercase">
                                 {{
-                                    row.profile?.educations?.[0]?.degree ||
-                                    'No Degree'
+                                    row.profile?.educations
+                                        ?.map((e: any) => e.degree)
+                                        .filter(Boolean)
+                                        .join(', ') || 'No Degree'
                                 }}
                             </p>
                             <p
                                 class="truncate text-[10px] font-medium text-muted-foreground"
                             >
                                 {{
-                                    row.profile?.educations?.[0]?.institute ||
-                                    'Institution missing'
+                                    row.profile?.educations
+                                        ?.map((e: any) => e.institute)
+                                        .filter(Boolean)
+                                        .join(' • ') || 'Institution missing'
                                 }}
                             </p>
                         </div>

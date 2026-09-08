@@ -79,7 +79,7 @@ class TutorManagementController extends Controller
 
         $items = User::query()
             ->where('role', UserRole::Tutor)
-            ->with(['latestVerificationRequest.invoice'])
+            ->with(['latestVerificationRequest.invoice', 'tutorEducations'])
             ->when($filters['trash'], fn ($query) => $query->onlyTrashed())
             ->when($filters['search'] !== '', function ($query) use ($filters): void {
                 $search = $filters['search'];
@@ -116,6 +116,17 @@ class TutorManagementController extends Controller
                     'verification_invoice_status' => $latestVerificationRequest?->invoice?->status,
                     'created_at' => $user->created_at?->toDateTimeString(),
                     'deleted_at' => $user->deleted_at?->toDateTimeString(),
+                    'profile' => [
+                        'educations' => $user->tutorEducations->map(fn (TutorEducation $education): array => [
+                            'id' => $education->id,
+                            'degree' => $education->degree,
+                            'institute' => $education->institute,
+                            'department' => $education->department,
+                            'graduation_year' => $education->graduation_year,
+                            'result' => $education->result,
+                            'is_current' => $education->is_current,
+                        ])->values()->all(),
+                    ],
                 ];
             });
 
